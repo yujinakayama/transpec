@@ -282,6 +282,126 @@ module Transpec
           end
         end
       end
+
+      describe '#any_number_of_times?' do
+        subject { should_receive_object.any_number_of_times? }
+
+        context 'when it is `subject.should_receive(:method).any_number_of_times` form' do
+          let(:source) do
+            <<-END
+              it 'responds to #foo' do
+                subject.should_receive(:foo).any_number_of_times
+              end
+            END
+          end
+
+          it { should be_true }
+        end
+
+        context 'when it is `subject.should_receive(:method).with(arg).any_number_of_times` form' do
+          let(:source) do
+            <<-END
+              it 'responds to #foo with 1' do
+                subject.should_receive(:foo).with(1).any_number_of_times
+              end
+            END
+          end
+
+          it { should be_true }
+        end
+
+        context 'when it is `subject.should_receive(:method)` form' do
+          let(:source) do
+            <<-END
+              it 'receives to #foo' do
+                subject.should_receive(:foo)
+              end
+            END
+          end
+
+          it { should be_false }
+        end
+      end
+
+      describe '#allowize_any_number_of_times!' do
+        context 'when it is `subject.should_receive(:method).any_number_of_times` form' do
+          let(:source) do
+            <<-END
+              it 'responds to #foo' do
+                subject.should_receive(:foo).any_number_of_times
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'responds to #foo' do
+                allow(subject).to receive(:foo)
+              end
+            END
+          end
+
+          it 'converts into `allow(subject).to receive(:method)` form' do
+            should_receive_object.allowize_any_number_of_times!
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'when it is `subject.should_receive(:method)` form' do
+          let(:source) do
+            <<-END
+              it 'receives to #foo' do
+                subject.should_receive(:foo)
+              end
+            END
+          end
+
+          it 'does nothing' do
+            should_receive_object.allowize_any_number_of_times!
+            rewritten_source.should == source
+          end
+        end
+      end
+
+      describe '#stubize_any_number_of_times!' do
+        context 'when it is `subject.should_receive(:method).any_number_of_times` form' do
+          let(:source) do
+            <<-END
+              it 'responds to #foo' do
+                subject.should_receive(:foo).any_number_of_times
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'responds to #foo' do
+                subject.stub(:foo)
+              end
+            END
+          end
+
+          it 'converts into `subject.stub(:method)` form' do
+            should_receive_object.stubize_any_number_of_times!
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'when it is `subject.should_receive(:method)` form' do
+          let(:source) do
+            <<-END
+              it 'receives to #foo' do
+                subject.should_receive(:foo)
+              end
+            END
+          end
+
+          it 'does nothing' do
+            should_receive_object.stubize_any_number_of_times!
+            rewritten_source.should == source
+          end
+        end
+      end
     end
   end
 end

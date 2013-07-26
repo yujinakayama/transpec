@@ -3,25 +3,46 @@
 require 'transpec/syntax'
 require 'transpec/syntax/expectizable'
 require 'transpec/syntax/any_instanceable'
+require 'transpec/syntax/any_number_of_timesable'
 
 module Transpec
   class Syntax
     class ShouldReceive < Syntax
-      include Expectizable, AnyInstanceable
+      include Expectizable, AnyInstanceable, AnyNumberOfTimesable
 
       def positive?
         method_name == :should_receive
       end
 
       def expectize!(negative_form = 'not_to')
+        convert_to_syntax!('expect', negative_form)
+      end
+
+      def allowize_any_number_of_times!(negative_form = 'not_to')
+        return unless any_number_of_times?
+
+        convert_to_syntax!('allow', negative_form)
+        remove_any_number_of_times!
+      end
+
+      def stubize_any_number_of_times!(negative_form = 'not_to')
+        return unless any_number_of_times?
+
+        replace(selector_range, 'stub')
+        remove_any_number_of_times!
+      end
+
+      private
+
+      def convert_to_syntax!(syntax, negative_form)
         unless in_example_group_context?
-          fail NotInExampleGroupContextError.new(expression_range, "##{method_name}", '#expect')
+          fail NotInExampleGroupContextError.new(expression_range, "##{method_name}", "##{syntax}")
         end
 
         if any_instance?
           wrap_class_in_expect_any_instance_of!
         else
-          wrap_subject_in_expect!
+          wrap_subject_with_method!(syntax)
         end
 
         replace(selector_range, "#{positive? ? 'to' : negative_form} receive")
@@ -39,8 +60,6 @@ module Transpec
           replace(map.end, '}')
         end
       end
-
-      private
 
       def self.target_receiver_node?(node)
         !node.nil?
@@ -60,7 +79,7 @@ module Transpec
       def broken_block_nodes
         @broken_block_nodes ||= [
           block_node_taken_by_with_method_with_no_normal_args,
-          block_node_followed_by_message_expectation_method
+          block_node_following_message_expectation_method
         ].compact.uniq
       end
 
@@ -76,20 +95,12 @@ module Transpec
       #   (args
       #     (arg :block_arg)) nil)
       def block_node_taken_by_with_method_with_no_normal_args
-        @ancestor_nodes.reverse.reduce(@node) do |child_node, parent_node|
-          return nil unless [:send, :block].include?(parent_node.type)
-          return nil unless parent_node.children.first == child_node
-
-          if parent_node.type == :block
-            return nil unless child_node.children[1] == :with
-            return nil if child_node.children[2]
-            return parent_node
-          end
-
-          parent_node
+        each_following_chained_method_node do |chained_node, child_node|
+          next unless chained_node.type == :block
+          return nil unless child_node.children[1] == :with
+          return nil if child_node.children[2]
+          return chained_node
         end
-
-        nil
       end
 
       # subject.should_receive(:method_name) do |block_arg|
@@ -102,15 +113,11 @@ module Transpec
       #       (sym :method_name))
       #     (args
       #       (arg :block_arg)) nil) :once)
-      def block_node_followed_by_message_expectation_method
-        @ancestor_nodes.reverse.reduce(@node) do |child_node, parent_node|
-          return nil unless [:send, :block].include?(parent_node.type)
-          return nil unless parent_node.children.first == child_node
-          return child_node if child_node.type == :block && parent_node.type == :send
-          parent_node
+      def block_node_following_message_expectation_method
+        each_following_chained_method_node do |chained_node, child_node|
+          next unless chained_node.type == :send
+          return child_node if child_node.type == :block
         end
-
-        nil
       end
     end
   end

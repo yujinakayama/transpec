@@ -2,13 +2,14 @@
 
 require 'transpec/syntax'
 require 'transpec/syntax/any_instanceable'
+require 'transpec/syntax/any_number_of_timesable'
 require 'transpec/util'
 require 'English'
 
 module Transpec
   class Syntax
     class MethodStub < Syntax
-      include AnyInstanceable, Util
+      include AnyInstanceable, AnyNumberOfTimesable, Util
 
       def allowize!
         # There's no way of unstubbing in #allow syntax.

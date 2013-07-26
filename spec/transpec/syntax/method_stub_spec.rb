@@ -382,6 +382,86 @@ module Transpec
           end
         end
       end
+
+      describe '#any_number_of_times?' do
+        subject { method_stub_object.any_number_of_times? }
+
+        context 'when it is `subject.stub(:method).any_number_of_times` form' do
+          let(:source) do
+            <<-END
+              it 'responds to #foo' do
+                subject.stub(:foo).any_number_of_times
+              end
+            END
+          end
+
+          it { should be_true }
+        end
+
+        context 'when it is `subject.stub(:method).with(arg).any_number_of_times` form' do
+          let(:source) do
+            <<-END
+              it 'responds to #foo with 1' do
+                subject.stub(:foo).with(1).any_number_of_times
+              end
+            END
+          end
+
+          it { should be_true }
+        end
+
+        context 'when it is `subject.stub(:method)` form' do
+          let(:source) do
+            <<-END
+              it 'responds to #foo' do
+                subject.stub(:foo)
+              end
+            END
+          end
+
+          it { should be_false }
+        end
+      end
+
+      describe '#remove_any_number_of_times!' do
+        context 'when it is `subject.stub(:method).any_number_of_times` form' do
+          let(:source) do
+            <<-END
+              it 'responds to #foo' do
+                subject.stub(:foo).any_number_of_times
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'responds to #foo' do
+                subject.stub(:foo)
+              end
+            END
+          end
+
+          it 'removes `.any_number_of_times`' do
+            method_stub_object.remove_any_number_of_times!
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'when it is `subject.stub(:method)` form' do
+          let(:source) do
+            <<-END
+              it 'responds to #foo' do
+                subject.stub(:foo)
+              end
+            END
+          end
+
+          it 'does nothing' do
+            method_stub_object.remove_any_number_of_times!
+            rewritten_source.should == source
+          end
+        end
+      end
     end
   end
 end

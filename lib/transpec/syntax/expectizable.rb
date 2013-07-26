@@ -9,10 +9,16 @@ module Transpec
       include SendNodeSyntax
 
       def wrap_subject_in_expect!
+        wrap_subject_with_method!('expect')
+      end
+
+      private
+
+      def wrap_subject_with_method!(method)
         if Util.in_parentheses?(subject_node)
-          insert_before(subject_range, 'expect')
+          insert_before(subject_range, method)
         else
-          insert_before(subject_range, 'expect(')
+          insert_before(subject_range, "#{method}(")
           insert_after(subject_range, ')')
         end
       end

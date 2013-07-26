@@ -29,201 +29,22 @@ module Transpec
 
       let(:source) do
         <<-END
-          RSpec.configure do |config|
-            config.expect_with :rspec do |c|
-              c.syntax = :should
-            end
-
-            config.mock_with :rspec do |c|
-              c.syntax = :should
-            end
-          end
-
           describe 'example group' do
             it 'is an example' do
-              something = mock('something')
-              something.stub!(:message)
+              something.should == 'foo'
               something.should_receive(:message)
-              something.should_not == 'foo'
-              expect(1.0 / 3.0).to be_close(0.333, 0.001)
             end
           end
         END
       end
 
-      context 'when Configuration#convert_to_expect_to_matcher? is true' do
-        before { configuration.convert_to_expect_to_matcher = true }
-
-        context 'and Configuration#negative_form_of_to is "not_to"' do
-          before { configuration.negative_form_of_to = 'not_to' }
-
-          it 'invokes Should#expectize! with "not_to"' do
-            Syntax::Should.any_instance.should_receive(:expectize!).with('not_to', anything)
-            rewriter.rewrite(source)
-          end
-        end
-
-        context 'and Configuration#negative_form_of_to is "to_not"' do
-          before { configuration.negative_form_of_to = 'to_not' }
-
-          it 'invokes Should#expectize! with "to_not"' do
-            Syntax::Should.any_instance.should_receive(:expectize!).with('to_not', anything)
-            rewriter.rewrite(source)
-          end
-        end
-
-        context 'and Configuration#parenthesize_matcher_arg is true' do
-          before { configuration.parenthesize_matcher_arg = true }
-
-          it 'invokes Should#expectize! with true as second argument' do
-            Syntax::Should.any_instance.should_receive(:expectize!).with(anything, true)
-            rewriter.rewrite(source)
-          end
-        end
-
-        context 'and Configuration#parenthesize_matcher_arg is false' do
-          before { configuration.parenthesize_matcher_arg = false }
-
-          it 'invokes Should#expectize! with false as second argument' do
-            Syntax::Should.any_instance.should_receive(:expectize!).with(anything, false)
-            rewriter.rewrite(source)
-          end
-        end
+      it 'dispatches found syntax objects to each handler method' do
+        rewriter.should_receive(:process_should).with(an_instance_of(Syntax::Should))
+        rewriter.should_receive(:process_should_receive).with(an_instance_of(Syntax::ShouldReceive))
+        rewriter.rewrite(source)
       end
 
-      context 'when Configuration#convert_to_expect_to_matcher? is false' do
-        before { configuration.convert_to_expect_to_matcher = false }
-
-        it 'does not invoke Should#expectize!' do
-          Syntax::Should.any_instance.should_not_receive(:expectize!)
-          rewriter.rewrite(source)
-        end
-      end
-
-      context 'when Configuration#convert_to_expect_to_receive? is true' do
-        before { configuration.convert_to_expect_to_receive = true }
-
-        context 'and Configuration#negative_form_of_to is "not_to"' do
-          before { configuration.negative_form_of_to = 'not_to' }
-
-          it 'invokes ShouldReceive#expectize! with "not_to"' do
-            Syntax::ShouldReceive.any_instance.should_receive(:expectize!).with('not_to')
-            rewriter.rewrite(source)
-          end
-        end
-
-        context 'and Configuration#negative_form_of_to is "to_not"' do
-          before { configuration.negative_form_of_to = 'to_not' }
-
-          it 'invokes ShouldReceive#expectize! with "to_not"' do
-            Syntax::ShouldReceive.any_instance.should_receive(:expectize!).with('to_not')
-            rewriter.rewrite(source)
-          end
-        end
-      end
-
-      context 'when Configuration#convert_to_expect_to_receive? is false' do
-        before { configuration.convert_to_expect_to_receive = false }
-
-        it 'does not invoke ShouldReceive#expectize!' do
-          Syntax::ShouldReceive.any_instance.should_not_receive(:expectize!)
-          rewriter.rewrite(source)
-        end
-      end
-
-      context 'when Configuration#convert_to_allow_to_receive? is true' do
-        before { configuration.convert_to_allow_to_receive = true }
-
-        it 'invokes MethodStub#allowize!' do
-          Syntax::MethodStub.any_instance.should_receive(:allowize!)
-          rewriter.rewrite(source)
-        end
-      end
-
-      context 'when Configuration#convert_to_allow_to_receive? is false' do
-        before { configuration.convert_to_allow_to_receive = false }
-
-        it 'does not invoke MethodStub#allowize!' do
-          Syntax::MethodStub.any_instance.should_not_receive(:allowize!)
-          rewriter.rewrite(source)
-        end
-      end
-
-      context 'when Configuration#replace_deprecated_method? is true' do
-        before { configuration.replace_deprecated_method = true }
-
-        it 'invokes Double#convert_to_double!' do
-          Syntax::Double.any_instance.should_receive(:convert_to_double!)
-          rewriter.rewrite(source)
-        end
-
-        it 'invokes BeClose#convert_to_be_within!' do
-          Syntax::BeClose.any_instance.should_receive(:convert_to_be_within!)
-          rewriter.rewrite(source)
-        end
-      end
-
-      context 'when Configuration#replace_deprecated_method? is true' do
-        before { configuration.replace_deprecated_method = false }
-
-        it 'does not invoke Double#convert_to_double!' do
-          Syntax::Double.any_instance.should_not_receive(:convert_to_double!)
-          rewriter.rewrite(source)
-        end
-
-        it 'does not invoke BeClose#convert_to_be_within!' do
-          Syntax::BeClose.any_instance.should_not_receive(:convert_to_be_within!)
-          rewriter.rewrite(source)
-        end
-      end
-
-      context 'when #need_to_modify_expectation_syntax_configuration? returns true' do
-        before do
-          rewriter.stub(:need_to_modify_expectation_syntax_configuration?).and_return(true)
-        end
-
-        it 'invokes RSpecConfigure#modify_expectation_syntaxes! with :expect' do
-          Syntax::RSpecConfigure.any_instance
-            .should_receive(:modify_expectation_syntaxes!).with(:expect)
-          rewriter.rewrite(source)
-        end
-      end
-
-      context 'when #need_to_modify_expectation_syntax_configuration? returns false' do
-        before do
-          rewriter.stub(:need_to_modify_expectation_syntax_configuration?).and_return(false)
-        end
-
-        it 'does not invoke RSpecConfigure#modify_expectation_syntaxes!' do
-          Syntax::RSpecConfigure.any_instance.should_not_receive(:modify_expectation_syntaxes!)
-          rewriter.rewrite(source)
-        end
-      end
-
-      context 'when #need_to_modify_mock_syntax_configuration? returns true' do
-        before do
-          rewriter.stub(:need_to_modify_mock_syntax_configuration?).and_return(true)
-        end
-
-        it 'invokes RSpecConfigure#modify_mock_syntaxes! with :expect' do
-          Syntax::RSpecConfigure.any_instance
-            .should_receive(:modify_mock_syntaxes!).with(:expect)
-          rewriter.rewrite(source)
-        end
-      end
-
-      context 'when #need_to_modify_mock_syntax_configuration? returns false' do
-        before do
-          rewriter.stub(:need_to_modify_mock_syntax_configuration?).and_return(false)
-        end
-
-        it 'does not invoke RSpecConfigure#modify_mock_syntaxes!' do
-          Syntax::RSpecConfigure.any_instance.should_not_receive(:modify_mock_syntaxes!)
-          rewriter.rewrite(source)
-        end
-      end
-
-      context 'when the source have overlapped rewrite targets' do
+      context 'when the source has overlapped rewrite targets' do
         let(:source) do
           <<-END
             describe 'example group' do
@@ -249,7 +70,7 @@ module Transpec
         end
       end
 
-      context 'when the source have a monkey-patched expectation outside of example group context' do
+      context 'when the source has a monkey-patched expectation outside of example group context' do
         before do
           configuration.convert_to_expect_to_matcher = true
           rewriter.stub(:warn)
@@ -282,6 +103,366 @@ module Transpec
           end
 
           rewriter.rewrite(source)
+        end
+      end
+    end
+
+    describe '#process_should' do
+      let(:should_object) { double('should_object').as_null_object }
+
+      context 'when Configuration#convert_to_expect_to_matcher? is true' do
+        before { configuration.convert_to_expect_to_matcher = true }
+
+        context 'and Configuration#negative_form_of_to is "not_to"' do
+          before { configuration.negative_form_of_to = 'not_to' }
+
+          it 'invokes Should#expectize! with "not_to"' do
+            should_object.should_receive(:expectize!).with('not_to', anything)
+            rewriter.process_should(should_object)
+          end
+        end
+
+        context 'and Configuration#negative_form_of_to is "to_not"' do
+          before { configuration.negative_form_of_to = 'to_not' }
+
+          it 'invokes Should#expectize! with "to_not"' do
+            should_object.should_receive(:expectize!).with('to_not', anything)
+            rewriter.process_should(should_object)
+          end
+        end
+
+        context 'and Configuration#parenthesize_matcher_arg is true' do
+          before { configuration.parenthesize_matcher_arg = true }
+
+          it 'invokes Should#expectize! with true as second argument' do
+            should_object.should_receive(:expectize!).with(anything, true)
+            rewriter.process_should(should_object)
+          end
+        end
+
+        context 'and Configuration#parenthesize_matcher_arg is false' do
+          before { configuration.parenthesize_matcher_arg = false }
+
+          it 'invokes Should#expectize! with false as second argument' do
+            should_object.should_receive(:expectize!).with(anything, false)
+            rewriter.process_should(should_object)
+          end
+        end
+      end
+
+      context 'when Configuration#convert_to_expect_to_matcher? is false' do
+        before { configuration.convert_to_expect_to_matcher = false }
+
+        it 'does not invoke Should#expectize!' do
+          should_object.should_not_receive(:expectize!)
+          rewriter.process_should(should_object)
+        end
+      end
+    end
+
+    describe '#process_should_receive' do
+      let(:should_receive_object) { double('should_receive_object').as_null_object }
+
+      context 'when Configuration#convert_to_expect_to_receive? is true' do
+        before { configuration.convert_to_expect_to_receive = true }
+
+        context 'and ShouldReceive#any_number_of_times? returns true' do
+          before { should_receive_object.stub(:any_number_of_times?).and_return(true) }
+
+          context 'when Configuration#replace_deprecated_method? is true' do
+            before { configuration.replace_deprecated_method = true }
+
+            context 'and Configuration#negative_form_of_to is "not_to"' do
+              before { configuration.negative_form_of_to = 'not_to' }
+
+              it 'invokes ShouldReceive#allowize_any_number_of_times! with "not_to"' do
+                should_receive_object.should_receive(:allowize_any_number_of_times!).with('not_to')
+                rewriter.process_should_receive(should_receive_object)
+              end
+            end
+
+            context 'and Configuration#negative_form_of_to is "to_not"' do
+              before { configuration.negative_form_of_to = 'to_not' }
+
+              it 'invokes ShouldReceive#allowize_any_number_of_times! with "to_not"' do
+                should_receive_object.should_receive(:allowize_any_number_of_times!).with('to_not')
+                rewriter.process_should_receive(should_receive_object)
+              end
+            end
+          end
+
+          context 'when Configuration#replace_deprecated_method? is false' do
+            before { configuration.replace_deprecated_method = false }
+
+            context 'and Configuration#negative_form_of_to is "not_to"' do
+              before { configuration.negative_form_of_to = 'not_to' }
+
+              it 'invokes ShouldReceive#expectize! with "not_to"' do
+                should_receive_object.should_receive(:expectize!).with('not_to')
+                rewriter.process_should_receive(should_receive_object)
+              end
+            end
+
+            context 'and Configuration#negative_form_of_to is "to_not"' do
+              before { configuration.negative_form_of_to = 'to_not' }
+
+              it 'invokes ShouldReceive#expectize! with "to_not"' do
+                should_receive_object.should_receive(:expectize!).with('to_not')
+                rewriter.process_should_receive(should_receive_object)
+              end
+            end
+          end
+        end
+
+        context 'and ShouldReceive#any_number_of_times? returns false' do
+          before { should_receive_object.stub(:any_number_of_times?).and_return(false) }
+
+          [true, false].each do |replace_deprecated_method|
+            context "when Configuration#replace_deprecated_method? is #{replace_deprecated_method}" do
+              before { configuration.replace_deprecated_method = replace_deprecated_method }
+
+              context 'and Configuration#negative_form_of_to is "not_to"' do
+                before { configuration.negative_form_of_to = 'not_to' }
+
+                it 'invokes ShouldReceive#expectize! with "not_to"' do
+                  should_receive_object.should_receive(:expectize!).with('not_to')
+                  rewriter.process_should_receive(should_receive_object)
+                end
+              end
+
+              context 'and Configuration#negative_form_of_to is "to_not"' do
+                before { configuration.negative_form_of_to = 'to_not' }
+
+                it 'invokes ShouldReceive#expectize! with "to_not"' do
+                  should_receive_object.should_receive(:expectize!).with('to_not')
+                  rewriter.process_should_receive(should_receive_object)
+                end
+              end
+            end
+          end
+        end
+      end
+
+      shared_examples 'does nothing' do
+        it 'does nothing' do
+          should_receive_object.should_not_receive(:expectize!)
+          should_receive_object.should_not_receive(:allowize_any_number_of_times!)
+          should_receive_object.should_not_receive(:stubize_any_number_of_times!)
+          rewriter.process_should_receive(should_receive_object)
+        end
+      end
+
+      context 'when Configuration#convert_to_expect_to_receive? is false' do
+        before { configuration.convert_to_expect_to_receive = false }
+
+        context 'and ShouldReceive#any_number_of_times? returns true' do
+          before { should_receive_object.stub(:any_number_of_times?).and_return(true) }
+
+          context 'when Configuration#replace_deprecated_method? is true' do
+            before { configuration.replace_deprecated_method = true }
+
+            it 'invokes ShouldReceive#stubize_any_number_of_times! with "not_to"' do
+              should_receive_object.should_receive(:stubize_any_number_of_times!)
+              rewriter.process_should_receive(should_receive_object)
+            end
+          end
+
+          context 'when Configuration#replace_deprecated_method? is false' do
+            before { configuration.replace_deprecated_method = false }
+
+            include_examples 'does nothing'
+          end
+        end
+
+        context 'and ShouldReceive#any_number_of_times? returns false' do
+          before { should_receive_object.stub(:any_number_of_times?).and_return(false) }
+
+          [true, false].each do |replace_deprecated_method|
+            context "when Configuration#replace_deprecated_method? is #{replace_deprecated_method}" do
+              before { configuration.replace_deprecated_method = replace_deprecated_method }
+
+              include_examples 'does nothing'
+            end
+          end
+        end
+
+      end
+    end
+
+    describe '#process_method_stub' do
+      let(:method_stub_object) { double('method_stub_object').as_null_object }
+
+      shared_examples 'invokes MethodStub#allowize!' do
+        it 'invokes MethodStub#allowize!' do
+          method_stub_object.should_receive(:allowize!)
+          rewriter.process_method_stub(method_stub_object)
+        end
+      end
+
+      shared_examples 'does not invoke MethodStub#allowize!' do
+        it 'does not invoke MethodStub#allowize!' do
+          method_stub_object.should_not_receive(:allowize!)
+          rewriter.process_method_stub(method_stub_object)
+        end
+      end
+
+      shared_examples 'invokes MethodStub#replace_deprecated_method!' do
+        it 'invokes MethodStub#replace_deprecated_method!' do
+          method_stub_object.should_receive(:replace_deprecated_method!)
+          rewriter.process_method_stub(method_stub_object)
+        end
+      end
+
+      shared_examples 'does not invoke MethodStub#replace_deprecated_method!' do
+        it 'does not invoke MethodStub#replace_deprecated_method!' do
+          method_stub_object.should_not_receive(:replace_deprecated_method!)
+          rewriter.process_method_stub(method_stub_object)
+        end
+      end
+
+      shared_examples 'invokes MethodStub#remove_any_number_of_times!' do
+        it 'invokes MethodStub#remove_any_number_of_times!' do
+          method_stub_object.should_receive(:remove_any_number_of_times!)
+          rewriter.process_method_stub(method_stub_object)
+        end
+      end
+
+      shared_examples 'does not invoke MethodStub#remove_any_number_of_times!' do
+        it 'does not invoke MethodStub#remove_any_number_of_times!' do
+          method_stub_object.should_not_receive(:remove_any_number_of_times!)
+          rewriter.process_method_stub(method_stub_object)
+        end
+      end
+
+      context 'when Configuration#convert_to_allow_to_receive? is true' do
+        before { configuration.convert_to_allow_to_receive = true }
+
+        context 'and Configuration#replace_deprecated_method? is true' do
+          before { configuration.replace_deprecated_method = true }
+
+          include_examples 'invokes MethodStub#allowize!'
+          include_examples 'does not invoke MethodStub#replace_deprecated_method!'
+          include_examples 'invokes MethodStub#remove_any_number_of_times!'
+        end
+
+        context 'and Configuration#replace_deprecated_method? is false' do
+          before { configuration.replace_deprecated_method = false }
+
+          include_examples 'invokes MethodStub#allowize!'
+          include_examples 'does not invoke MethodStub#replace_deprecated_method!'
+          include_examples 'does not invoke MethodStub#remove_any_number_of_times!'
+        end
+      end
+
+      context 'when Configuration#convert_to_allow_to_receive? is false' do
+        before { configuration.convert_to_allow_to_receive = false }
+
+        context 'and Configuration#replace_deprecated_method? is true' do
+          before { configuration.replace_deprecated_method = true }
+
+          include_examples 'does not invoke MethodStub#allowize!'
+          include_examples 'invokes MethodStub#replace_deprecated_method!'
+          include_examples 'invokes MethodStub#remove_any_number_of_times!'
+        end
+
+        context 'and Configuration#replace_deprecated_method? is false' do
+          before { configuration.replace_deprecated_method = false }
+
+          include_examples 'does not invoke MethodStub#allowize!'
+          include_examples 'does not invoke MethodStub#replace_deprecated_method!'
+          include_examples 'does not invoke MethodStub#remove_any_number_of_times!'
+        end
+      end
+    end
+
+    describe '#process_double' do
+      let(:double_object) { double('double_object').as_null_object }
+
+      context 'when Configuration#replace_deprecated_method? is true' do
+        before { configuration.replace_deprecated_method = true }
+
+        it 'invokes Double#convert_to_double!' do
+          double_object.should_receive(:convert_to_double!)
+          rewriter.process_double(double_object)
+        end
+      end
+
+      context 'when Configuration#replace_deprecated_method? is false' do
+        before { configuration.replace_deprecated_method = false }
+
+        it 'does not invoke Double#convert_to_double!' do
+          double_object.should_not_receive(:convert_to_double!)
+          rewriter.process_double(double_object)
+        end
+      end
+    end
+
+    describe '#process_be_close' do
+      let(:be_close_object) { double('be_close_object').as_null_object }
+
+      context 'when Configuration#replace_deprecated_method? is true' do
+        before { configuration.replace_deprecated_method = true }
+
+        it 'invokes BeClose#convert_to_be_within!' do
+          be_close_object.should_receive(:convert_to_be_within!)
+          rewriter.process_be_close(be_close_object)
+        end
+      end
+
+      context 'when Configuration#replace_deprecated_method? is true' do
+        before { configuration.replace_deprecated_method = false }
+
+        it 'does not invoke BeClose#convert_to_be_within!' do
+          be_close_object.should_not_receive(:convert_to_be_within!)
+          rewriter.process_be_close(be_close_object)
+        end
+      end
+    end
+
+    describe '#process_rspec_configure' do
+      let(:rspec_configure) { double('rspec_configure').as_null_object }
+
+      context 'when #need_to_modify_expectation_syntax_configuration? returns true' do
+        before do
+          rewriter.stub(:need_to_modify_expectation_syntax_configuration?).and_return(true)
+        end
+
+        it 'invokes RSpecConfigure#modify_expectation_syntaxes! with :expect' do
+          rspec_configure.should_receive(:modify_expectation_syntaxes!).with(:expect)
+          rewriter.process_rspec_configure(rspec_configure)
+        end
+      end
+
+      context 'when #need_to_modify_expectation_syntax_configuration? returns false' do
+        before do
+          rewriter.stub(:need_to_modify_expectation_syntax_configuration?).and_return(false)
+        end
+
+        it 'does not invoke RSpecConfigure#modify_expectation_syntaxes!' do
+          rspec_configure.should_not_receive(:modify_expectation_syntaxes!)
+          rewriter.process_rspec_configure(rspec_configure)
+        end
+      end
+
+      context 'when #need_to_modify_mock_syntax_configuration? returns true' do
+        before do
+          rewriter.stub(:need_to_modify_mock_syntax_configuration?).and_return(true)
+        end
+
+        it 'invokes RSpecConfigure#modify_mock_syntaxes! with :expect' do
+          rspec_configure.should_receive(:modify_mock_syntaxes!).with(:expect)
+          rewriter.process_rspec_configure(rspec_configure)
+        end
+      end
+
+      context 'when #need_to_modify_mock_syntax_configuration? returns false' do
+        before do
+          rewriter.stub(:need_to_modify_mock_syntax_configuration?).and_return(false)
+        end
+
+        it 'does not invoke RSpecConfigure#modify_mock_syntaxes!' do
+          rspec_configure.should_not_receive(:modify_mock_syntaxes!)
+          rewriter.process_rspec_configure(rspec_configure)
         end
       end
     end
