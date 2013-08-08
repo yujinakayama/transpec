@@ -1,0 +1,286 @@
+# coding: utf-8
+
+require 'spec_helper'
+
+module Transpec
+  class Syntax
+    describe ShouldReceive do
+      include_context 'parsed objects'
+
+      subject(:should_receive_object) do
+        AST::Scanner.scan(ast) do |node, ancestor_nodes, in_example_group_context|
+          next unless ShouldReceive.target_node?(node)
+          return ShouldReceive.new(
+            node,
+            ancestor_nodes,
+            in_example_group_context?,
+            source_rewriter
+          )
+        end
+        fail 'No should_receive node is found!'
+      end
+
+      let(:in_example_group_context?) { true }
+
+      describe '#expectize!' do
+        context 'when it is `subject.should_receive(:method)` form' do
+          let(:source) do
+            <<-END
+              it 'receives #foo' do
+                subject.should_receive(:foo)
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'receives #foo' do
+                expect(subject).to receive(:foo)
+              end
+            END
+          end
+
+          it 'converts into `expect(subject).to receive(:method)` form' do
+            should_receive_object.expectize!
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'when it is `subject.should_not_receive(:method)` form' do
+          let(:source) do
+            <<-END
+              it 'does not receive #foo' do
+                subject.should_not_receive(:foo)
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'does not receive #foo' do
+                expect(subject).not_to receive(:foo)
+              end
+            END
+          end
+
+          it 'converts into `expect(subject).not_to receive(:method)` form' do
+            should_receive_object.expectize!
+            rewritten_source.should == expected_source
+          end
+
+          context 'and "to_not" is passed as negative form' do
+            let(:expected_source) do
+            <<-END
+              it 'does not receive #foo' do
+                expect(subject).to_not receive(:foo)
+              end
+            END
+            end
+
+            it 'converts into `expect(subject).to_not receive(:method)` form' do
+              should_receive_object.expectize!('to_not')
+              rewritten_source.should == expected_source
+            end
+          end
+        end
+
+        # Currently MessageExpectation#with supports the following syntax:
+        #
+        #   subject.should_receive(:foo).with do |arg|
+        #     arg == 1
+        #   end
+        #
+        # This syntax allows to expect arbitrary arguments without expect or should.
+        # This is available only when #with got no normal arguments but a block,
+        # and the block will not be used as a substitute implementation.
+        #
+        # https://github.com/rspec/rspec-mocks/blob/e6d1980/lib/rspec/mocks/message_expectation.rb#L307
+        # https://github.com/rspec/rspec-mocks/blob/e6d1980/lib/rspec/mocks/argument_list_matcher.rb#L43
+        #
+        # Then, if you convert the example into expect syntax straightforward:
+        #
+        #   expect(subject).to receive(:foo).with do |arg|
+        #     arg == 1
+        #   end
+        #
+        # The do..end block is taken by the #to method, because {..} blocks have higher precedence
+        # over do..end blocks. This behavior breaks the spec.
+        #
+        # To keep the same meaning of syntax, the block needs to be {..} form literal:
+        #
+        #   expect(subject).to receive(:foo).with { |arg|
+        #     arg == 1
+        #   }
+        #
+        context 'when it is `subject.should_receive(:method).with do..end` form' do
+          let(:source) do
+            <<-END
+              it 'receives #foo with 1' do
+                subject.should_receive(:foo).with do |arg|
+                  arg == 1
+                end
+                subject.foo(1)
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'receives #foo with 1' do
+                expect(subject).to receive(:foo).with { |arg|
+                  arg == 1
+                }
+                subject.foo(1)
+              end
+            END
+          end
+
+          it 'converts into `expect(subject).to receive(:method) { .. }` form' do
+            should_receive_object.expectize!
+            rewritten_source.should == expected_source
+          end
+        end
+
+        # If #with take normal arguments, the block won't be used as an argument matcher.
+        context 'when it is `subject.should_receive(:method).with(:arg) do..end` form' do
+          let(:source) do
+            <<-END
+              it 'receives #foo with 1' do
+                subject.should_receive(:foo).with(:bar) do |arg|
+                  do_some_substitute_implementation
+                end
+                subject.foo(1)
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'receives #foo with 1' do
+                expect(subject).to receive(:foo).with(:bar) do |arg|
+                  do_some_substitute_implementation
+                end
+                subject.foo(1)
+              end
+            END
+          end
+
+          it 'converts into `expect(subject).to receive(:method) { .. }` form' do
+            should_receive_object.expectize!
+            rewritten_source.should == expected_source
+          end
+        end
+
+        # In this case, the do..end block is taken by the #should_receive method.
+        # This means the receiver of #once method is return value of #should_receive,
+        # that is actually an instance of RSpec::Mocks::MessageExpectation.
+        #
+        #   subject.should_receive(:foo) do |arg|
+        #     arg == 1
+        #   end.once
+        #
+        # However with `expect(subject).to receive`, the do..end block is taken by the #to method.
+        # This means the receiver of #once method is return value of #to, that is actually
+        # return value of RSpec::Mocks::Matchers::Receive#setup_method_substitute
+        # and it's not the instance of RSpec::Mocks::MessageExpectation.
+        #
+        # https://github.com/rspec/rspec-mocks/blob/9cdef17/lib/rspec/mocks/targets.rb#L19
+        # https://github.com/rspec/rspec-mocks/blob/9cdef17/lib/rspec/mocks/matchers/receive.rb#L74
+        #
+        # Then, the following syntax will be error:
+        #
+        #   expect(subject).to receive(:foo) do |arg|
+        #     arg == 1
+        #   end.once
+        #
+        # So the block needs to be {..} form literal also in this case.
+        #
+        #   expect(subject).to receive(:foo) { |arg|
+        #     arg == 1
+        #   }.once
+        #
+        context 'when it is `subject.should_receive(:method) do..end.once` form' do
+          let(:source) do
+            <<-END
+              it 'receives #foo with 1' do
+                subject.should_receive(:foo) do |arg|
+                  arg == 1
+                end.once
+                subject.foo(1)
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'receives #foo with 1' do
+                expect(subject).to receive(:foo) { |arg|
+                  arg == 1
+                }.once
+                subject.foo(1)
+              end
+            END
+          end
+
+          it 'converts into `expect(subject).to receive(:method) { .. }.once` form' do
+            should_receive_object.expectize!
+            rewritten_source.should == expected_source
+          end
+        end
+
+        # This case, do..end block works without problem.
+        context 'when it is `subject.should_receive(:method) do..end` form' do
+          let(:source) do
+            <<-END
+              it 'receives #foo with 1' do
+                subject.should_receive(:foo) do |arg|
+                  expect(arg).to eq(1)
+                end
+                subject.foo(1)
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'receives #foo with 1' do
+                expect(subject).to receive(:foo) do |arg|
+                  expect(arg).to eq(1)
+                end
+                subject.foo(1)
+              end
+            END
+          end
+
+          it 'converts into `expect(subject).to receive(:method) do..end` form' do
+            should_receive_object.expectize!
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'when it is `SomeClass.any_instance.should_receive(:method)` form' do
+          let(:source) do
+            <<-END
+              it 'receives #foo' do
+                SomeClass.any_instance.should_receive(:foo)
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'receives #foo' do
+                expect_any_instance_of(SomeClass).to receive(:foo)
+              end
+            END
+          end
+
+          it 'converts into `expect_any_instance_of(SomeClass).to receive(:method)` form' do
+            should_receive_object.expectize!
+            rewritten_source.should == expected_source
+          end
+        end
+      end
+    end
+  end
+end

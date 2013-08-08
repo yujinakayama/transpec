@@ -1,0 +1,19 @@
+
+inherit_from: ../.rubocop.yml
+
+# Avoid warning "Possibly useless use of == in void context"
+# for `should ==`
+Void:
+  Enabled: false
+
+# Lengthen for long descriptions.
+LineLength:
+  Max: 110
+
+# raise_error matcher always requires {} form block.
+Blocks:
+  Enabled: false
+
+# Sometimes block alignment does not suit RSpec syntax.
+BlockAlignment:
+  Enabled: false

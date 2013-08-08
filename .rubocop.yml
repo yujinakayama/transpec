@@ -1,0 +1,13 @@
+
+LineLength:
+  Max: 100
+
+MethodLength:
+  Max: 20
+
+WordArray:
+  Enabled: false
+
+# TODO
+Documentation:
+  Enabled: false

@@ -1,0 +1,109 @@
+# coding: utf-8
+
+require 'parser'
+require 'parser/current'
+
+module Transpec
+  class Rewriter
+    def initialize(configuration = Configuration.new)
+      @configuration = configuration
+    end
+
+    def rewrite_file!(file_path)
+      source = File.read(file_path)
+      rewritten_source = rewrite(source, file_path)
+      File.write(file_path, rewritten_source)
+    end
+
+    def rewrite(source, name = '(string)')
+      source_buffer = create_source_buffer(source, name)
+      ast = parse(source_buffer)
+
+      @source_rewriter = Parser::Source::Rewriter.new(source_buffer)
+      failed_overlapping_rewrite = false
+      @source_rewriter.diagnostics.consumer = proc { failed_overlapping_rewrite = true }
+
+      AST::Scanner.scan(ast) do |node, ancestor_nodes, in_example_group_context|
+        dispatch_node(node, ancestor_nodes, in_example_group_context)
+      end
+
+      rewritten_source = @source_rewriter.process
+
+      if failed_overlapping_rewrite
+        rewriter = self.class.new(@configuration)
+        rewritten_source = rewriter.rewrite(rewritten_source, name)
+      end
+
+      rewritten_source
+    end
+
+    def create_source_buffer(source, name)
+      source_buffer = Parser::Source::Buffer.new(name)
+      source_buffer.source = source
+      source_buffer
+    end
+
+    def parse(source_buffer)
+      parser = Parser::CurrentRuby.new
+      ast = parser.parse(source_buffer)
+      ast
+    end
+
+    def dispatch_node(node, ancestor_nodes, in_example_group_context)
+      Syntax.all.each do |syntax_class|
+        next unless syntax_class.target_node?(node)
+
+        syntax = syntax_class.new(
+          node,
+          ancestor_nodes,
+          in_example_group_context,
+          @source_rewriter
+        )
+
+        handler_name = "process_#{syntax_class.snake_case_name}"
+        send(handler_name, syntax)
+
+        break
+      end
+    rescue Syntax::NotInExampleGroupContextError => error
+      warn_not_in_example_group_context_error(error)
+    end
+
+    def warn_not_in_example_group_context_error(error)
+      warn error.message
+      warn format(
+        '%s:%d:%s',
+        error.source_buffer.name,
+        error.source_range.line,
+        error.source_range.source_line
+      )
+    end
+
+    def process_should(should)
+      if @configuration.convert_to_expect_to_matcher?
+        should.expectize!(
+          @configuration.negative_form_of_to,
+          @configuration.parenthesize_matcher_arg?
+        )
+      end
+    end
+
+    def process_should_receive(should_receive)
+      if @configuration.convert_to_expect_to_receive?
+        should_receive.expectize!(@configuration.negative_form_of_to)
+      end
+    end
+
+    def process_double(double)
+      double.replace_deprecated_method! if @configuration.replace_deprecated_method?
+    end
+
+    def process_method_stub(method_stub)
+      if @configuration.convert_to_allow_to_receive?
+        method_stub.allowize!
+      elsif @configuration.replace_deprecated_method?
+        method_stub.replace_deprecated_method!
+      end
+    end
+  end
+end
