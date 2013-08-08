@@ -1,4 +1,4 @@
-[![Gem Version](https://badge.fury.io/rb/transpec.png)](http://badge.fury.io/rb/transpec) [![Dependency Status](https://gemnasium.com/yujinakayama/transpec.png)](https://gemnasium.com/yujinakayama/transpec) [![Build Status](https://travis-ci.org/yujinakayama/transpec.png?branch=master)](https://travis-ci.org/yujinakayama/transpec) [![Coverage Status](https://coveralls.io/repos/yujinakayama/transpec/badge.png)](https://coveralls.io/r/yujinakayama/transpec)
+[![Gem Version](https://badge.fury.io/rb/transpec.png)](http://badge.fury.io/rb/transpec) [![Dependency Status](https://gemnasium.com/yujinakayama/transpec.png)](https://gemnasium.com/yujinakayama/transpec) [![Build Status](https://travis-ci.org/yujinakayama/transpec.png?branch=master)](https://travis-ci.org/yujinakayama/transpec) [![Coverage Status](https://coveralls.io/repos/yujinakayama/transpec/badge.png)](https://coveralls.io/r/yujinakayama/transpec) [![Code Climate](https://codeclimate.com/github/yujinakayama/transpec.png)](https://codeclimate.com/github/yujinakayama/transpec)
 
 # Transpec
 
