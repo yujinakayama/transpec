@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/transpec.png)](http://badge.fury.io/rb/transpec)
+
 # Transpec
 
 **Transpec** automatically converts your specs into latest [RSpec](http://rspec.info/) syntax with static analysis.
