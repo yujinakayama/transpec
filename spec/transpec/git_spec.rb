@@ -6,6 +6,13 @@ module Transpec
   describe Git do
     include_context 'isolated environment'
 
+    if ENV['TRAVIS']
+      before do
+        system('git config --global user.email "you@example.com"')
+        system('git config --global user.name "Your Name"')
+      end
+    end
+
     describe '.command_available?' do
       subject { Git.command_available? }
 
