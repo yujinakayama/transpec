@@ -24,4 +24,22 @@ end
 desc 'Run RSpec and RuboCop'
 task all: [:spec, :style]
 
+desc 'Generate README.md'
+task :readme do
+  require 'erb'
+  require 'transpec'
+  erb = ERB.new(File.read('README.md.erb'), nil, '-')
+  content = erb.result(binding)
+  File.write('README.md', content)
+end
+
+task :abort_unless_latest_readme_is_committed => :readme do
+  unless Transpec::Git.clean?
+    warn 'Commit README.md before release.'
+    exit 1
+  end
+end
+
+Rake::Task[:release].enhance([:abort_unless_latest_readme_is_committed])
+
 task default: :all
