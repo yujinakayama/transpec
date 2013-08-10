@@ -4,11 +4,17 @@
 
 **Transpec** automatically converts your specs into latest [RSpec](http://rspec.info/) syntax with static analysis.
 
-See the following pages for new RSpec syntax:
+This aims to facilitate smooth transition to RSpec 3.
+
+See the following pages for the new RSpec syntax and the plan for RSpec 3:
 
 * [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax)
 * [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
 * [Myron Marston » The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3)
+
+Note that Transpec does not yet support all conversions for the RSpec changes,
+and also the changes for RSpec 3 is not fixed and may vary in the future.
+So it's recommended to follow updates of both RSpec and Transpec.
 
 ## Installation
 
@@ -18,17 +24,27 @@ $ gem install transpec
 
 ## Basic Usage
 
-Run `transpec` with no arguments in your project directory:
+Before converting your specs:
+
+* Make sure your project has `rspec` gem dependency `2.14` or later. If not, change your `*.gemspec` or `Gemfile` to do so.
+* Run `rspec` and check if all the specs pass.
+
+Then, run `transpec` with no arguments in the project root directory:
 
 ```bash
+$ cd some-project
 $ transpec
+Processing spec/spec_helper.rb
+Processing spec/spec_spec.rb
+Processing spec/support/file_helper.rb
+Processing spec/support/shared_context.rb
+Processing spec/transpec/ast/scanner_spec.rb
+Processing spec/transpec/ast/scope_stack_spec.rb
 ```
 
-This will inspect and overwrite all spec files in the `spec` directory.
+This will convert and overwrite all spec files in the `spec` directory.
 
-For more information, please see the help with `--help` option.
-
-**TODO:** Add more description
+After the conversion, run `rspec` again and check if all pass.
 
 ## Contributing
 
