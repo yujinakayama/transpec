@@ -18,9 +18,7 @@ module Transpec
         # There's no way of unstubbing in #allow syntax.
         return unless [:stub, :stub!].include?(method_name)
 
-        if @replaced_deprecated_method
-          fail 'Already replaced deprecated method, cannot allowize.'
-        end
+        fail 'Already replaced deprecated method, cannot allowize.' if @replaced_deprecated_method
 
         unless in_example_group_context?
           fail NotInExampleGroupContextError.new(expression_range, "##{method_name}", '#allow')
@@ -45,9 +43,7 @@ module Transpec
 
         return unless replacement_method_name
 
-        if @allowized
-          fail 'Already allowized, cannot replace deprecated method.'
-        end
+        fail 'Already allowized, cannot replace deprecated method.' if @allowized
 
         @source_rewriter.replace(selector_range, replacement_method_name)
 
@@ -108,9 +104,7 @@ module Transpec
 
       def message_source(node)
         message_source = node.loc.expression.source
-        if node.type == :sym && !message_source.start_with?(':')
-          message_source.prepend(':')
-        end
+        message_source.prepend(':') if node.type == :sym && !message_source.start_with?(':')
         message_source
       end
 

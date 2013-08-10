@@ -105,11 +105,7 @@ module Transpec
         @ancestor_nodes.reverse.reduce(@node) do |child_node, parent_node|
           return nil unless [:send, :block].include?(parent_node.type)
           return nil unless parent_node.children.first == child_node
-
-          if child_node.type == :block && parent_node.type == :send
-            return child_node
-          end
-
+          return child_node if child_node.type == :block && parent_node.type == :send
           parent_node
         end
 
