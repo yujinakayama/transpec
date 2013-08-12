@@ -16,6 +16,81 @@ Note that Transpec does not yet support all conversions for the RSpec changes,
 and also the changes for RSpec 3 is not fixed and may vary in the future.
 So it's recommended to follow updates of both RSpec and Transpec.
 
+## Example
+
+Here's an example spec:
+
+```ruby
+describe Account do
+  subject(:account) { Account.new(logger) }
+  let(:logger) { mock('logger') }
+
+  describe '#balance' do
+    context 'initially' do
+      it 'is zero' do
+        account.balance.should == 0
+      end
+    end
+  end
+
+  describe '#close' do
+    it 'logs an account closed message' do
+      logger.should_receive(:account_closed).with(account)
+      account.close
+    end
+  end
+
+  describe '#renew' do
+    context 'when it is renewable and not closed' do
+      before do
+        account.stub(:renewable? => true, :closed? => false)
+      end
+
+      it 'does not raise error' do
+        lambda { account.renew }.should_not raise_error
+      end
+    end
+  end
+end
+```
+
+Transpec would convert it to the following form:
+
+```ruby
+describe Account do
+  subject(:account) { Account.new(logger) }
+  let(:logger) { double('logger') }
+
+  describe '#balance' do
+    context 'initially' do
+      it 'is zero' do
+        expect(account.balance).to eq(0)
+      end
+    end
+  end
+
+  describe '#close' do
+    it 'logs an account closed message' do
+      expect(logger).to receive(:account_closed).with(account)
+      account.close
+    end
+  end
+
+  describe '#renew' do
+    context 'when it is renewable and not closed' do
+      before do
+        allow(account).to receive(:renewable?).and_return(true)
+        allow(account).to receive(:closed?).and_return(false)
+      end
+
+      it 'does not raise error' do
+        expect { account.renew }.not_to raise_error
+      end
+    end
+  end
+end
+```
+
 ## Installation
 
 ```bash
