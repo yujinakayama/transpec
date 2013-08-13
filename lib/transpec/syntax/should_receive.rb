@@ -22,17 +22,17 @@ module Transpec
         end
 
         if any_instance?(subject_node)
-          @source_rewriter.insert_before(subject_range, 'expect_any_instance_of(')
+          insert_before(subject_range, 'expect_any_instance_of(')
           map = subject_node.loc
           dot_any_instance_range = map.dot.join(map.selector)
-          @source_rewriter.replace(dot_any_instance_range, ')')
+          replace(dot_any_instance_range, ')')
         else
-          @source_rewriter.insert_before(subject_range, 'expect(')
-          @source_rewriter.insert_after(subject_range, ')')
+          insert_before(subject_range, 'expect(')
+          insert_after(subject_range, ')')
         end
 
         to_receive = "#{positive? ? 'to' : negative_form} receive"
-        @source_rewriter.replace(selector_range, to_receive)
+        replace(selector_range, to_receive)
 
         correct_block_style!
       end
@@ -48,8 +48,8 @@ module Transpec
         broken_block_nodes.each do |block_node|
           map = block_node.loc
           next if map.begin.source == '{'
-          @source_rewriter.replace(map.begin, '{')
-          @source_rewriter.replace(map.end, '}')
+          replace(map.begin, '{')
+          replace(map.end, '}')
         end
       end
 

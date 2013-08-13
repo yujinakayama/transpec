@@ -14,7 +14,7 @@ module Transpec
 
       def replace_deprecated_method!
         return if method_name == :double
-        @source_rewriter.replace(selector_range, 'double')
+        replace(selector_range, 'double')
       end
     end
   end

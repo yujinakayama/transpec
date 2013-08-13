@@ -26,10 +26,10 @@ module Transpec
 
         if arg_node.type == :hash
           expressions = build_allow_expressions_from_hash_node(arg_node)
-          @source_rewriter.replace(expression_range, expressions)
+          replace(expression_range, expressions)
         else
           expression = build_allow_expression(arg_node)
-          @source_rewriter.replace(expression_range, expression)
+          replace(expression_range, expression)
         end
 
         @allowized = true
@@ -45,7 +45,7 @@ module Transpec
 
         fail 'Already allowized, cannot replace deprecated method.' if @allowized
 
-        @source_rewriter.replace(selector_range, replacement_method_name)
+        replace(selector_range, replacement_method_name)
 
         @replaced_deprecated_method = true
       end

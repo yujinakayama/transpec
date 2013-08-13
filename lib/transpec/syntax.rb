@@ -54,5 +54,23 @@ module Transpec
     def parent_node
       @ancestor_nodes.last
     end
+
+    private
+
+    def remove(range)
+      @source_rewriter.remove(range)
+    end
+
+    def insert_before(range, content)
+      @source_rewriter.insert_before(range, content)
+    end
+
+    def insert_after(range, content)
+      @source_rewriter.insert_after(range, content)
+    end
+
+    def replace(range, content)
+      @source_rewriter.replace(range, content)
+    end
   end
 end

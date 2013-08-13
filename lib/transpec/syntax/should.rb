@@ -24,15 +24,15 @@ module Transpec
         if proc_literal?(subject_node)
           send_node = subject_node.children.first
           range_of_subject_method_taking_block = send_node.loc.expression
-          @source_rewriter.replace(range_of_subject_method_taking_block, 'expect')
+          replace(range_of_subject_method_taking_block, 'expect')
         elsif subject_range.source[0] == '('
-          @source_rewriter.insert_before(subject_range, 'expect')
+          insert_before(subject_range, 'expect')
         else
-          @source_rewriter.insert_before(subject_range, 'expect(')
-          @source_rewriter.insert_after(subject_range, ')')
+          insert_before(subject_range, 'expect(')
+          insert_after(subject_range, ')')
         end
 
-        @source_rewriter.replace(selector_range, positive? ? 'to' : negative_form)
+        replace(selector_range, positive? ? 'to' : negative_form)
 
         matcher.correct_operator!(parenthesize_matcher_arg)
       end

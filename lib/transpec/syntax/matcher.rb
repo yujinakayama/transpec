@@ -14,15 +14,15 @@ module Transpec
       def correct_operator!(parenthesize_arg = true)
         case method_name
         when :==
-          @source_rewriter.replace(selector_range, 'eq')
+          replace(selector_range, 'eq')
           parenthesize!(parenthesize_arg)
         when :===, :<, :<=, :>, :>=
-          @source_rewriter.insert_before(selector_range, 'be ')
+          insert_before(selector_range, 'be ')
         when :=~
           if arg_node.type == :array
-            @source_rewriter.replace(selector_range, 'match_array')
+            replace(selector_range, 'match_array')
           else
-            @source_rewriter.replace(selector_range, 'match')
+            replace(selector_range, 'match')
           end
           parenthesize!(parenthesize_arg)
         end
@@ -34,15 +34,15 @@ module Transpec
         case left_parenthesis_range.source
         when ' '
           if always || arg_node.type == :hash
-            @source_rewriter.replace(left_parenthesis_range, '(')
-            @source_rewriter.insert_after(expression_range, ')')
+            replace(left_parenthesis_range, '(')
+            insert_after(expression_range, ')')
           end
         when "\n", "\r"
-          @source_rewriter.insert_before(left_parenthesis_range, '(')
+          insert_before(left_parenthesis_range, '(')
           linefeed = left_parenthesis_range.source
           matcher_line_indentation = indentation_of_line(@node)
           right_parenthesis = "#{linefeed}#{matcher_line_indentation})"
-          @source_rewriter.insert_after(expression_range, right_parenthesis)
+          insert_after(expression_range, right_parenthesis)
         end
       end
 
