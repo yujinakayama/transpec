@@ -1,7 +1,9 @@
 require 'bundler/gem_tasks'
 require 'rspec/core/rake_task'
+require 'rubocop/rake_task'
 
 RSpec::Core::RakeTask.new(:spec)
+Rubocop::RakeTask.new(:style)
 
 namespace :ci do
   desc "#{Rake::Task['spec'].comment} for CI environment"
@@ -14,11 +16,6 @@ namespace :ci do
 
     Rake::Task['spec'].invoke
   end
-end
-
-desc 'Check code style with RuboCop'
-task :style do
-  sh('rubocop')
 end
 
 desc 'Run RSpec and RuboCop'
