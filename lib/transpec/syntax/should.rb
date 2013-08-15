@@ -3,6 +3,7 @@
 require 'transpec/syntax'
 require 'transpec/syntax/expectizable'
 require 'transpec/syntax/matcher'
+require 'transpec/util'
 
 module Transpec
   class Syntax

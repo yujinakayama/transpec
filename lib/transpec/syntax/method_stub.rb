@@ -2,6 +2,7 @@
 
 require 'transpec/syntax'
 require 'transpec/syntax/any_instanceable'
+require 'transpec/util'
 require 'English'
 
 module Transpec
