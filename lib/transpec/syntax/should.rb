@@ -26,14 +26,9 @@ module Transpec
         end
 
         if proc_literal?(subject_node)
-          send_node = subject_node.children.first
-          range_of_subject_method_taking_block = send_node.loc.expression
-          replace(range_of_subject_method_taking_block, 'expect')
-        elsif subject_range.source[0] == '('
-          insert_before(subject_range, 'expect')
+          replace_proc_selector_with_expect!
         else
-          insert_before(subject_range, 'expect(')
-          insert_after(subject_range, ')')
+          wrap_subject_in_expect!
         end
 
         replace(selector_range, positive? ? 'to' : negative_form)
@@ -47,6 +42,23 @@ module Transpec
 
       def matcher_node
         arg_node || parent_node
+      end
+
+      private
+
+      def replace_proc_selector_with_expect!
+        send_node = subject_node.children.first
+        range_of_subject_method_taking_block = send_node.loc.expression
+        replace(range_of_subject_method_taking_block, 'expect')
+      end
+
+      def wrap_subject_in_expect!
+        if subject_range.source[0] == '('
+          insert_before(subject_range, 'expect')
+        else
+          insert_before(subject_range, 'expect(')
+          insert_after(subject_range, ')')
+        end
       end
     end
   end
