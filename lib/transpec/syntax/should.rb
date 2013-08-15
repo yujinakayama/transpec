@@ -1,5 +1,9 @@
 # coding: utf-8
 
+require 'transpec/syntax'
+require 'transpec/syntax/send_node_syntax'
+require 'transpec/syntax/matcher'
+
 module Transpec
   class Syntax
     class Should < Syntax

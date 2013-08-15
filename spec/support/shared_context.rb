@@ -1,5 +1,9 @@
 # coding: utf-8
 
+require 'transpec/ast/scanner'
+require 'transpec/syntax/should'
+require 'parser'
+require 'parser/current'
 require 'tmpdir'
 
 # This context requires `source` to be defined with #let.

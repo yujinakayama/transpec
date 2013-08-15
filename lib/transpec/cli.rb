@@ -1,5 +1,9 @@
 # coding: utf-8
 
+require 'transpec/configuration'
+require 'transpec/git'
+require 'transpec/rewriter'
+require 'transpec/version'
 require 'optparse'
 require 'find'
 

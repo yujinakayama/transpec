@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require 'spec_helper'
+require 'transpec/ast/scope_stack'
 
 module Transpec
   module AST

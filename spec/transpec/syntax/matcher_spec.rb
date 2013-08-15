@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require 'spec_helper'
+require 'transpec/syntax/matcher'
 
 module Transpec
   class Syntax

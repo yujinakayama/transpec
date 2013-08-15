@@ -1,5 +1,7 @@
 # coding: utf-8
 
+require 'transpec/util'
+
 module Transpec
   module AST
     class ScopeStack < Array

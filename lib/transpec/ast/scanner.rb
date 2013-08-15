@@ -1,5 +1,8 @@
 # coding: utf-8
 
+require 'transpec/ast/scope_stack'
+require 'parser'
+
 module Transpec
   module AST
     class Scanner

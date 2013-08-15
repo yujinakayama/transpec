@@ -1,5 +1,8 @@
 # coding: utf-8
 
+require 'transpec/syntax'
+require 'transpec/syntax/send_node_syntax'
+
 module Transpec
   class Syntax
     class ShouldReceive < Syntax

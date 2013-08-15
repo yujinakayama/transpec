@@ -1,12 +1,12 @@
 # coding: utf-8
 
 require 'spec_helper'
+require 'transpec/ast/scanner'
 
 module Transpec
   module AST
     describe Scanner do
       include_context 'parsed objects'
-      include ::AST::Sexp
 
       let(:source) do
         <<-END

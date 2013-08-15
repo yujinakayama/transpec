@@ -1,6 +1,13 @@
 # coding: utf-8
 
-require 'parser'
+require 'transpec/ast/scanner'
+require 'transpec/configuration'
+require 'transpec/syntax'
+require 'transpec/syntax/double'
+require 'transpec/syntax/matcher'
+require 'transpec/syntax/method_stub'
+require 'transpec/syntax/should'
+require 'transpec/syntax/should_receive'
 require 'parser/current'
 
 module Transpec
