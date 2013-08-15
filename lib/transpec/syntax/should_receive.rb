@@ -1,12 +1,13 @@
 # coding: utf-8
 
 require 'transpec/syntax'
-require 'transpec/syntax/send_node_syntax'
+require 'transpec/syntax/expectizable'
+require 'transpec/syntax/any_instanceable'
 
 module Transpec
   class Syntax
     class ShouldReceive < Syntax
-      include SendNodeSyntax
+      include Expectizable, AnyInstanceable
 
       def self.target_node?(node)
         return false unless node.type == :send
@@ -24,28 +25,18 @@ module Transpec
           fail NotInExampleGroupContextError.new(expression_range, "##{method_name}", '#expect')
         end
 
-        if any_instance?(subject_node)
-          insert_before(subject_range, 'expect_any_instance_of(')
-          map = subject_node.loc
-          dot_any_instance_range = map.dot.join(map.selector)
-          replace(dot_any_instance_range, ')')
+        if any_instance?
+          wrap_class_in_expect_any_instance_of!
         else
-          insert_before(subject_range, 'expect(')
-          insert_after(subject_range, ')')
+          wrap_subject_in_expect!
         end
 
-        to_receive = "#{positive? ? 'to' : negative_form} receive"
-        replace(selector_range, to_receive)
+        replace(selector_range, "#{positive? ? 'to' : negative_form} receive")
 
         correct_block_style!
       end
 
       def correct_block_style!
-        broken_block_nodes = [
-          block_node_taken_by_with_method_with_no_normal_args,
-          block_node_followed_by_message_expectation_method
-        ].compact.uniq
-
         return if broken_block_nodes.empty?
 
         broken_block_nodes.each do |block_node|
@@ -58,12 +49,18 @@ module Transpec
 
       private
 
-      def any_instance?(node)
-        return false unless node.type == :send
-        return false unless node.children.count == 2
-        receiver_node, method_name = *node
-        return false unless method_name == :any_instance
-        receiver_node.type == :const
+      def wrap_class_in_expect_any_instance_of!
+        insert_before(subject_range, 'expect_any_instance_of(')
+        map = subject_node.loc
+        dot_any_instance_range = map.dot.join(map.selector)
+        replace(dot_any_instance_range, ')')
+      end
+
+      def broken_block_nodes
+        @broken_block_nodes ||= [
+          block_node_taken_by_with_method_with_no_normal_args,
+          block_node_followed_by_message_expectation_method
+        ].compact.uniq
       end
 
       # subject.should_receive(:method_name).once.with do |block_arg|

@@ -1,13 +1,13 @@
 # coding: utf-8
 
 require 'transpec/syntax'
-require 'transpec/syntax/send_node_syntax'
+require 'transpec/syntax/expectizable'
 require 'transpec/syntax/matcher'
 
 module Transpec
   class Syntax
     class Should < Syntax
-      include SendNodeSyntax, Util
+      include Expectizable, Util
 
       def self.target_node?(node)
         return false unless node.type == :send
@@ -50,15 +50,6 @@ module Transpec
         send_node = subject_node.children.first
         range_of_subject_method_taking_block = send_node.loc.expression
         replace(range_of_subject_method_taking_block, 'expect')
-      end
-
-      def wrap_subject_in_expect!
-        if subject_range.source[0] == '('
-          insert_before(subject_range, 'expect')
-        else
-          insert_before(subject_range, 'expect(')
-          insert_after(subject_range, ')')
-        end
       end
     end
   end
