@@ -69,15 +69,7 @@ module Transpec
       end
 
       def build_allow_expression(message_node, return_value_node = nil, keep_form_around_arg = true)
-        expression = ''
-
-        expression << if any_instance?
-                        class_source = class_node_of_any_instance.loc.expression.source
-                        "allow_any_instance_of(#{class_source})"
-                      else
-                        "allow(#{subject_range.source})"
-                      end
-
+        expression =  allow_source
         expression << range_in_between_subject_and_selector.source
         expression << 'to receive'
         expression << (keep_form_around_arg ? range_in_between_selector_and_arg.source : '(')
@@ -90,6 +82,15 @@ module Transpec
         end
 
         expression
+      end
+
+      def allow_source
+        if any_instance?
+          class_source = class_node_of_any_instance.loc.expression.source
+          "allow_any_instance_of(#{class_source})"
+        else
+          "allow(#{subject_range.source})"
+        end
       end
 
       def message_source(node)
