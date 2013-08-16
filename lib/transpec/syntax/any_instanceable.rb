@@ -1,12 +1,8 @@
 # coding: utf-8
 
-require 'transpec/syntax/send_node_syntax'
-
 module Transpec
   class Syntax
     module AnyInstanceable
-      include SendNodeSyntax
-
       def any_instance?
         !class_node_of_any_instance.nil?
       end

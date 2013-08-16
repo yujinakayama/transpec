@@ -1,13 +1,10 @@
 # coding: utf-8
 
 require 'transpec/syntax'
-require 'transpec/syntax/send_node_syntax'
 
 module Transpec
   class Syntax
     class Double < Syntax
-      include SendNodeSyntax
-
       def self.target_node?(node)
         return false unless node.type == :send
         receiver_node, method_name, *_ = *node

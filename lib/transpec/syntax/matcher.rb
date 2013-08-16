@@ -1,13 +1,12 @@
 # coding: utf-8
 
 require 'transpec/syntax'
-require 'transpec/syntax/send_node_syntax'
 require 'transpec/util'
 
 module Transpec
   class Syntax
     class Matcher < Syntax
-      include SendNodeSyntax, Util
+      include Util
 
       def initialize(node, in_example_group_context, source_rewriter)
         @node = node
