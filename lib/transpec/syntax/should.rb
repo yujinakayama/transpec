@@ -10,13 +10,6 @@ module Transpec
     class Should < Syntax
       include Expectizable, Util
 
-      def self.target_node?(node)
-        return false unless node.type == :send
-        receiver_node, method_name, *_ = *node
-        return false unless receiver_node
-        [:should, :should_not].include?(method_name)
-      end
-
       def positive?
         method_name == :should
       end
@@ -46,6 +39,14 @@ module Transpec
       end
 
       private
+
+      def self.target_receiver_node?(node)
+        !node.nil?
+      end
+
+      def self.target_method_names
+        [:should, :should_not]
+      end
 
       def replace_proc_selector_with_expect!
         send_node = subject_node.children.first

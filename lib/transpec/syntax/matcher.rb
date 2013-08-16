@@ -8,6 +8,10 @@ module Transpec
     class Matcher < Syntax
       include Util
 
+      def self.target_node?(node)
+        false
+      end
+
       def initialize(node, in_example_group_context, source_rewriter)
         @node = node
         @in_example_group_context = in_example_group_context

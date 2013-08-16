@@ -10,13 +10,6 @@ module Transpec
     class MethodStub < Syntax
       include AnyInstanceable, Util
 
-      def self.target_node?(node)
-        return false unless node.type == :send
-        receiver_node, method_name, *_ = *node
-        return false unless receiver_node
-        [:stub, :unstub, :stub!, :unstub!].include?(method_name)
-      end
-
       def allowize!
         # There's no way of unstubbing in #allow syntax.
         return unless [:stub, :stub!].include?(method_name)
@@ -54,6 +47,14 @@ module Transpec
       end
 
       private
+
+      def self.target_receiver_node?(node)
+        !node.nil?
+      end
+
+      def self.target_method_names
+        [:stub, :unstub, :stub!, :unstub!]
+      end
 
       def build_allow_expressions_from_hash_node(hash_node)
         expressions = []

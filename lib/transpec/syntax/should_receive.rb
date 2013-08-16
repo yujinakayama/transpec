@@ -9,13 +9,6 @@ module Transpec
     class ShouldReceive < Syntax
       include Expectizable, AnyInstanceable
 
-      def self.target_node?(node)
-        return false unless node.type == :send
-        receiver_node, method_name, *_ = *node
-        return false unless receiver_node
-        [:should_receive, :should_not_receive].include?(method_name)
-      end
-
       def positive?
         method_name == :should_receive
       end
@@ -48,6 +41,14 @@ module Transpec
       end
 
       private
+
+      def self.target_receiver_node?(node)
+        !node.nil?
+      end
+
+      def self.target_method_names
+        [:should_receive, :should_not_receive]
+      end
 
       def wrap_class_in_expect_any_instance_of!
         insert_before(subject_range, 'expect_any_instance_of(')

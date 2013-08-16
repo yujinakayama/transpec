@@ -41,7 +41,10 @@ module Transpec
     end
 
     def self.target_node?(node)
-      false
+      return false unless node.type == :send
+      receiver_node, method_name, *_ = *node
+      return false unless target_receiver_node?(receiver_node)
+      target_method_names.include?(method_name)
     end
 
     def initialize(node, ancestor_nodes, in_example_group_context, source_rewriter)
@@ -85,6 +88,16 @@ module Transpec
 
     def arg_range
       arg_node.loc.expression
+    end
+
+    protected
+
+    def self.target_receiver_node?(node)
+      false
+    end
+
+    def self.target_method_names
+      []
     end
 
     private
