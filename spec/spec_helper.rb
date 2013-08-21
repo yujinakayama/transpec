@@ -10,10 +10,6 @@ RSpec.configure do |config|
   config.filter_run_excluding do_not_run_in_transpeced_spec: ENV['TRANSPECED_SPEC']
 end
 
-Dir[File.join(File.dirname(__FILE__), 'support', '*')].each do |path|
-  require path
-end
-
 require 'simplecov'
 SimpleCov.coverage_dir(File.join('spec', 'coverage'))
 
@@ -28,4 +24,8 @@ end
 SimpleCov.start do
   add_filter '/spec/'
   add_filter '/vendor/bundle/'
+end
+
+Dir[File.join(File.dirname(__FILE__), 'support', '*')].each do |path|
+  require path
 end
