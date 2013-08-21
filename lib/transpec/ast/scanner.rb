@@ -13,6 +13,7 @@ module Transpec
       def self.scan(origin_node, &block)
         instance = new(&block)
         instance.scan(origin_node, true)
+        nil
       end
 
       def initialize(&block)

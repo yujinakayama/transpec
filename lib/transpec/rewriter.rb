@@ -7,6 +7,7 @@ require 'transpec/syntax/be_close'
 require 'transpec/syntax/double'
 require 'transpec/syntax/matcher'
 require 'transpec/syntax/method_stub'
+require 'transpec/syntax/rspec_configure'
 require 'transpec/syntax/should'
 require 'transpec/syntax/should_receive'
 require 'parser/current'
@@ -116,6 +117,27 @@ module Transpec
 
     def process_be_close(be_close)
       be_close.convert_to_be_within! if @configuration.replace_deprecated_method?
+    end
+
+    def process_rspec_configure(rspec_configure)
+      if need_to_modify_expectation_syntax_configuration?(rspec_configure)
+        rspec_configure.modify_expectation_syntaxes!(:expect)
+      end
+
+      if need_to_modify_mock_syntax_configuration?(rspec_configure)
+        rspec_configure.modify_mock_syntaxes!(:expect)
+      end
+    end
+
+    def need_to_modify_expectation_syntax_configuration?(rspec_configure)
+      return false unless @configuration.convert_to_expect_to_matcher?
+      rspec_configure.expectation_syntaxes == [:should]
+    end
+
+    def need_to_modify_mock_syntax_configuration?(rspec_configure)
+      return false if !@configuration.convert_to_expect_to_receive? &&
+                      !@configuration.convert_to_allow_to_receive?
+      rspec_configure.mock_syntaxes == [:should]
     end
   end
 end

@@ -29,6 +29,16 @@ module Transpec
 
       let(:source) do
         <<-END
+          RSpec.configure do |config|
+            config.expect_with :rspec do |c|
+              c.syntax = :should
+            end
+
+            config.mock_with :rspec do |c|
+              c.syntax = :should
+            end
+          end
+
           describe 'example group' do
             it 'is an example' do
               something = mock('something')
@@ -167,6 +177,52 @@ module Transpec
         end
       end
 
+      context 'when #need_to_modify_expectation_syntax_configuration? returns true' do
+        before do
+          rewriter.stub(:need_to_modify_expectation_syntax_configuration?).and_return(true)
+        end
+
+        it 'invokes RSpecConfigure#modify_expectation_syntaxes! with :expect' do
+          Syntax::RSpecConfigure.any_instance
+            .should_receive(:modify_expectation_syntaxes!).with(:expect)
+          rewriter.rewrite(source)
+        end
+      end
+
+      context 'when #need_to_modify_expectation_syntax_configuration? returns false' do
+        before do
+          rewriter.stub(:need_to_modify_expectation_syntax_configuration?).and_return(false)
+        end
+
+        it 'does not invoke RSpecConfigure#modify_expectation_syntaxes!' do
+          Syntax::RSpecConfigure.any_instance.should_not_receive(:modify_expectation_syntaxes!)
+          rewriter.rewrite(source)
+        end
+      end
+
+      context 'when #need_to_modify_mock_syntax_configuration? returns true' do
+        before do
+          rewriter.stub(:need_to_modify_mock_syntax_configuration?).and_return(true)
+        end
+
+        it 'invokes RSpecConfigure#modify_mock_syntaxes! with :expect' do
+          Syntax::RSpecConfigure.any_instance
+            .should_receive(:modify_mock_syntaxes!).with(:expect)
+          rewriter.rewrite(source)
+        end
+      end
+
+      context 'when #need_to_modify_mock_syntax_configuration? returns false' do
+        before do
+          rewriter.stub(:need_to_modify_mock_syntax_configuration?).and_return(false)
+        end
+
+        it 'does not invoke RSpecConfigure#modify_mock_syntaxes!' do
+          Syntax::RSpecConfigure.any_instance.should_not_receive(:modify_mock_syntaxes!)
+          rewriter.rewrite(source)
+        end
+      end
+
       context 'when the source have overlapped rewrite targets' do
         let(:source) do
           <<-END
@@ -226,6 +282,104 @@ module Transpec
           end
 
           rewriter.rewrite(source)
+        end
+      end
+    end
+
+    shared_examples 'syntaxes' do |syntaxes_reader, expectations|
+      expectations.each do |current_syntaxes, return_value|
+        context "and RSpecConfigure##{syntaxes_reader} returns #{current_syntaxes.inspect}" do
+          before do
+            rspec_configure.stub(syntaxes_reader).and_return(current_syntaxes)
+          end
+
+          it "returns #{return_value}" do
+            should == return_value
+          end
+        end
+      end
+    end
+
+    describe '#need_to_modify_expectation_syntax_configuration?' do
+      subject { rewriter.need_to_modify_expectation_syntax_configuration?(rspec_configure) }
+      let(:rspec_configure) { double('rspec_configure') }
+
+      context 'when Configuration#convert_to_expect_to_matcher? is true' do
+        before { configuration.convert_to_expect_to_matcher = true }
+
+        include_examples 'syntaxes', :expectation_syntaxes, {
+          []                 => false,
+          [:should]          => true,
+          [:expect]          => false,
+          [:should, :expect] => false
+        }
+      end
+
+      context 'when Configuration#convert_to_expect_to_matcher? is false' do
+        before { configuration.convert_to_expect_to_matcher = false }
+
+        include_examples 'syntaxes', :expectation_syntaxes, {
+          []                 => false,
+          [:should]          => false,
+          [:expect]          => false,
+          [:should, :expect] => false
+        }
+      end
+    end
+
+    describe '#need_to_modify_mock_syntax_configuration?' do
+      subject { rewriter.need_to_modify_mock_syntax_configuration?(rspec_configure) }
+      let(:rspec_configure) { double('rspec_configure') }
+
+      context 'when Configuration#convert_to_expect_to_receive? is true' do
+        before { configuration.convert_to_expect_to_receive = true }
+
+        context 'and Configuration#convert_to_allow_to_receive? is true' do
+          before { configuration.convert_to_allow_to_receive = true }
+
+          include_examples 'syntaxes', :mock_syntaxes, {
+            []                 => false,
+            [:should]          => true,
+            [:expect]          => false,
+            [:should, :expect] => false
+          }
+        end
+
+        context 'and Configuration#convert_to_allow_to_receive? is false' do
+          before { configuration.convert_to_allow_to_receive = false }
+
+          include_examples 'syntaxes', :mock_syntaxes, {
+            []                 => false,
+            [:should]          => true,
+            [:expect]          => false,
+            [:should, :expect] => false
+          }
+        end
+      end
+
+      context 'when Configuration#convert_to_expect_to_receive? is false' do
+        before { configuration.convert_to_expect_to_receive = false }
+
+        context 'and Configuration#convert_to_allow_to_receive? is true' do
+          before { configuration.convert_to_allow_to_receive = true }
+
+          include_examples 'syntaxes', :mock_syntaxes, {
+            []                 => false,
+            [:should]          => true,
+            [:expect]          => false,
+            [:should, :expect] => false
+          }
+        end
+
+        context 'and Configuration#convert_to_allow_to_receive? is false' do
+          before { configuration.convert_to_allow_to_receive = false }
+
+          include_examples 'syntaxes', :mock_syntaxes, {
+            []                 => false,
+            [:should]          => false,
+            [:expect]          => false,
+            [:should, :expect] => false
+          }
         end
       end
     end
