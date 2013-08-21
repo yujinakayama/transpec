@@ -1,10 +1,13 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/send_node_syntax'
 
 module Transpec
   class Syntax
     class Double < Syntax
+      include SendNodeSyntax
+
       def replace_deprecated_method!
         return if method_name == :double
         replace(selector_range, 'double')

@@ -1,12 +1,13 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/send_node_syntax'
 require 'transpec/util'
 
 module Transpec
   class Syntax
     class Matcher < Syntax
-      include Util
+      include SendNodeSyntax, Util
 
       def self.target_node?(node)
         false
