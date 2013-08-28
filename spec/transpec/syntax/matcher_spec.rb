@@ -403,34 +403,6 @@ module Transpec
           end
         end
       end
-
-      describe '#convert_deprecated_method!' do
-        before do
-          matcher.convert_deprecated_method!
-        end
-
-        context 'when it is `be_close(expected, delta)` form' do
-          let(:source) do
-            <<-END
-              it 'is close to 0.333' do
-                (1.0 / 3.0).should be_close(0.333, 0.001)
-              end
-            END
-          end
-
-          let(:expected_source) do
-            <<-END
-              it 'is close to 0.333' do
-                (1.0 / 3.0).should be_within(0.001).of(0.333)
-              end
-            END
-          end
-
-          it 'converts into `be_within(delta).of(expected)` form' do
-            rewritten_source.should == expected_source
-          end
-        end
-      end
     end
   end
 end

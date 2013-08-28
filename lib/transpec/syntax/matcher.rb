@@ -54,20 +54,6 @@ module Transpec
         end
       end
 
-      def convert_deprecated_method!
-        return unless method_name == :be_close
-
-        _receiver_node, _method_name, expected_node, delta_node = *node
-
-        be_within_source = 'be_within('
-        be_within_source << delta_node.loc.expression.source
-        be_within_source << ').of('
-        be_within_source << expected_node.loc.expression.source
-        be_within_source << ')'
-
-        replace(expression_range, be_within_source)
-      end
-
       private
 
       def left_parenthesis_range
