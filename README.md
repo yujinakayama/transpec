@@ -121,6 +121,73 @@ This will convert and overwrite all spec files in the `spec` directory.
 
 After the conversion, run `rspec` again and check if all pass.
 
+## Options
+
+### `-d/--disable`
+
+Disable specific conversions.
+
+```bash
+$ transpec --disable expect_to_receive,allow_to_receive
+```
+
+#### Available conversion types
+
+Conversion Type     | Target Syntax                    | Converted Syntax
+--------------------|----------------------------------|----------------------------
+`expect_to_matcher` | `obj.should`                     | `expect(obj).to`
+`expect_to_receive` | `obj.should_receive`             | `expect(obj).to receive`
+`allow_to_receive`  | `obj.stub`                       | `allow(obj).to receive`
+`deprecated`        | `obj.stub!`, `mock('foo')`, etc. | `obj.stub`, `double('foo')`
+
+### `-n/--negative-form`
+
+Specify negative form of `to` that is used in `expect` syntax.
+Either `not_to` or `to_not`.
+`not_to` is used by default.
+
+```bash
+$ transpec --negative-form to_not
+```
+
+### `-p/--no-parentheses-matcher-arg`
+
+Suppress parenthesizing argument of matcher when converting `should` with operator matcher to `expect` with non-operator matcher (`expect` syntax does not directly support the operator matchers). Note that it will be parenthesized even if this option is specified when parentheses are necessary to keep the meaning of the expression.
+
+```ruby
+describe 'original spec' do
+  it 'is example' do
+    1.should == 1
+    2.should > 1
+    'string'.should =~ /str/
+    [1, 2, 3].should =~ [2, 1, 3]
+    { key: value }.should == { key: value }
+  end
+end
+
+describe 'converted spec' do
+  it 'is example' do
+    expect(1).to eq(1)
+    expect(2).to be > 1
+    expect('string').to match(/str/)
+    expect([1, 2, 3]).to match_array([2, 1, 3])
+    expect({ key: value }).to eq({ key: value })
+  end
+end
+
+describe 'converted spec with -p/--no-parentheses-matcher-arg option' do
+  it 'is example' do
+    expect(1).to eq 1
+    expect(2).to be > 1
+    expect('string').to match /str/
+    expect([1, 2, 3]).to match_array [2, 1, 3]
+    # With non-operator method, parentheses are always required
+    # to prevent the hash from being interpreted as a block.
+    expect({ key: value }).to eq({ key: value })
+  end
+end
+```
+
 ## Compatibility
 
 Tested on MRI 1.9, MRI 2.0 and JRuby in 1.9 mode.
