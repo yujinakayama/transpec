@@ -35,6 +35,7 @@ module Transpec
               something.stub!(:message)
               something.should_receive(:message)
               something.should_not == 'foo'
+              expect(1.0 / 3.0).to be_close(0.333, 0.001)
             end
           end
         END
@@ -134,6 +135,34 @@ module Transpec
 
         it 'does not invoke MethodStub#allowize!' do
           Syntax::MethodStub.any_instance.should_not_receive(:allowize!)
+          rewriter.rewrite(source)
+        end
+      end
+
+      context 'when the configuration #replace_deprecated_method? is true' do
+        before { configuration.replace_deprecated_method = true }
+
+        it 'invokes Double#convert_to_double!' do
+          Syntax::Double.any_instance.should_receive(:convert_to_double!)
+          rewriter.rewrite(source)
+        end
+
+        it 'invokes BeClose#convert_to_be_within!' do
+          Syntax::BeClose.any_instance.should_receive(:convert_to_be_within!)
+          rewriter.rewrite(source)
+        end
+      end
+
+      context 'when the configuration #replace_deprecated_method? is true' do
+        before { configuration.replace_deprecated_method = false }
+
+        it 'does not invoke Double#convert_to_double!' do
+          Syntax::Double.any_instance.should_not_receive(:convert_to_double!)
+          rewriter.rewrite(source)
+        end
+
+        it 'does not invoke BeClose#convert_to_be_within!' do
+          Syntax::BeClose.any_instance.should_not_receive(:convert_to_be_within!)
           rewriter.rewrite(source)
         end
       end

@@ -3,6 +3,7 @@
 require 'transpec/ast/scanner'
 require 'transpec/configuration'
 require 'transpec/syntax'
+require 'transpec/syntax/be_close'
 require 'transpec/syntax/double'
 require 'transpec/syntax/matcher'
 require 'transpec/syntax/method_stub'
@@ -102,7 +103,7 @@ module Transpec
     end
 
     def process_double(double)
-      double.replace_deprecated_method! if @configuration.replace_deprecated_method?
+      double.convert_to_double! if @configuration.replace_deprecated_method?
     end
 
     def process_method_stub(method_stub)
@@ -111,6 +112,10 @@ module Transpec
       elsif @configuration.replace_deprecated_method?
         method_stub.replace_deprecated_method!
       end
+    end
+
+    def process_be_close(be_close)
+      be_close.convert_to_be_within! if @configuration.replace_deprecated_method?
     end
   end
 end

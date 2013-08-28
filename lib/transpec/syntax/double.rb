@@ -8,7 +8,7 @@ module Transpec
     class Double < Syntax
       include SendNodeSyntax
 
-      def replace_deprecated_method!
+      def convert_to_double!
         return if method_name == :double
         replace(selector_range, 'double')
       end

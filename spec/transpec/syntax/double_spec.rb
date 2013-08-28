@@ -38,9 +38,9 @@ module Transpec
         end
       end
 
-      describe '#replace_deprecated_method!' do
+      describe '#convert_to_double!' do
         before do
-          double_object.replace_deprecated_method!
+          double_object.convert_to_double!
         end
 
         [:mock, :stub].each do |method|
