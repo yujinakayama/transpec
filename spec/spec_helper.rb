@@ -1,8 +1,12 @@
 # coding: utf-8
 
 RSpec.configure do |config|
+  # Yes, I'm writing specs in should syntax intentionally!
   config.expect_with :rspec do |c|
-    # Yes, I'm writing specs in should syntax intentionally!
+    c.syntax = :should
+  end
+
+  config.mock_with :rspec do |c|
     c.syntax = :should
   end
 
