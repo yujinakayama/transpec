@@ -152,7 +152,11 @@ $ transpec --negative-form to_not
 
 ### `-p/--no-parentheses-matcher-arg`
 
-Suppress parenthesizing argument of matcher when converting `should` with operator matcher to `expect` with non-operator matcher (`expect` syntax does not directly support the operator matchers). Note that it will be parenthesized even if this option is specified when parentheses are necessary to keep the meaning of the expression.
+Suppress parenthesizing argument of matcher when converting
+`should` with operator matcher to `expect` with non-operator matcher
+(`expect` syntax does not directly support the operator matchers).
+Note that it will be parenthesized even if this option is specified
+when parentheses are necessary to keep the meaning of the expression.
 
 ```ruby
 describe 'original spec' do
@@ -181,7 +185,7 @@ describe 'converted spec with -p/--no-parentheses-matcher-arg option' do
     expect(2).to be > 1
     expect('string').to match /str/
     expect([1, 2, 3]).to match_array [2, 1, 3]
-    # With non-operator method, parentheses are always required
+    # With non-operator method, the parentheses are always required
     # to prevent the hash from being interpreted as a block.
     expect({ key: value }).to eq({ key: value })
   end

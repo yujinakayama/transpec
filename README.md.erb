@@ -163,7 +163,7 @@ rewriter.rewrite(parenthesizing_example)
     'converted spec with -p/--no-parentheses-matcher-arg option'
   )
   .gsub(/^.+\{ key: value \}/) do |match|
-    "    # With non-operator method, parentheses are always required\n" +
+    "    # With non-operator method, the parentheses are always required\n" +
     "    # to prevent the hash from being interpreted as a block.\n" +
     match
   end
