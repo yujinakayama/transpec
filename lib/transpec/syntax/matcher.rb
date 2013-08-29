@@ -41,7 +41,9 @@ module Transpec
 
         case left_parenthesis_range.source
         when ' '
-          if always || arg_node.type == :hash
+          if in_parentheses?(arg_node)
+            remove(left_parenthesis_range)
+          elsif always || arg_node.type == :hash
             replace(left_parenthesis_range, '(')
             insert_after(expression_range, ')')
           end

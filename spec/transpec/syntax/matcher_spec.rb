@@ -133,6 +133,28 @@ module Transpec
           end
         end
 
+        context 'when it is `== (2 - 1)` form' do
+          let(:source) do
+            <<-END
+              it 'is 1' do
+                subject.should == (2 - 1)
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'is 1' do
+                subject.should eq(2 - 1)
+              end
+            END
+          end
+
+          it 'converts into `eq(2 - 1)` form without superfluous parentheses' do
+            rewritten_source.should == expected_source
+          end
+        end
+
         context "when it is `== { 'key' => 'value' }` form" do
           let(:source) do
             <<-END

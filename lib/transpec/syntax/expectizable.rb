@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require 'transpec/syntax/send_node_syntax'
+require 'transpec/util'
 
 module Transpec
   class Syntax
@@ -8,7 +9,7 @@ module Transpec
       include SendNodeSyntax
 
       def wrap_subject_in_expect!
-        if subject_range.source[0] == '('
+        if Util.in_parentheses?(subject_range)
           insert_before(subject_range, 'expect')
         else
           insert_before(subject_range, 'expect(')
