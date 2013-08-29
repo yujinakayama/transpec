@@ -108,10 +108,28 @@ $ transpec --disable expect_to_receive,allow_to_receive
 
 Conversion Type     | Target Syntax                    | Converted Syntax
 --------------------|----------------------------------|----------------------------
+<%=
+conversion_type_table = <<END
 `expect_to_matcher` | `obj.should`                     | `expect(obj).to`
 `expect_to_receive` | `obj.should_receive`             | `expect(obj).to receive`
 `allow_to_receive`  | `obj.stub`                       | `allow(obj).to receive`
 `deprecated`        | `obj.stub!`, `mock('foo')`, etc. | `obj.stub`, `double('foo')`
+END
+
+types_in_readme = conversion_type_table.lines.map do |line|
+  first_column = line.split('|').first
+  first_column.gsub(/[^\w]/, '').to_sym
+end.sort
+
+types_in_code = Transpec::CLI::CONFIG_ATTRS_FOR_CLI_TYPES.keys.sort
+
+unless types_in_readme == types_in_code
+  types_missing_description = types_in_code - types_in_readme
+  fail "No descriptions for conversion types #{types_missing_description}"
+end
+
+conversion_type_table
+-%>
 
 ### `-n/--negative-form`
 

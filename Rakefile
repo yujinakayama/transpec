@@ -24,7 +24,7 @@ task all: [:spec, :style]
 desc 'Generate README.md'
 task :readme do
   require 'erb'
-  require 'transpec/rewriter'
+  require 'transpec/cli'
 
   gem_specification = Gem::Specification.load('transpec.gemspec')
   rspec_dependency = gem_specification.dependencies.find { |d| d.name == 'rspec' }
