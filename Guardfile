@@ -14,5 +14,7 @@ guard :rubocop do
 end
 
 guard :shell do
-  watch('README.md.erb') { `rake readme` }
+  watch('README.md.erb') do
+    system('rake', 'readme') || n('Failed to build README.md', 'README Build Result', :failed)
+  end
 end
