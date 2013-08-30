@@ -5,4 +5,4 @@ rvm:
   - jruby-19mode
 script:
   - bundle exec rake
-  - bundle exec rake test:other_projects
+  - bundle exec rake test:all

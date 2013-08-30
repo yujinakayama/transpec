@@ -43,18 +43,21 @@ end
 Rake::Task[:release].enhance([:abort_unless_latest_readme_is_committed])
 
 namespace :test do
-  desc 'Test Transpec on some other projects'
-  task :other_projects do
-    projects = [
-      ['Twitter', 'https://github.com/sferik/twitter.git', 'v4.1.0'],
-      ['Guard',   'https://github.com/guard/guard.git',    'v1.8.1', '--without development']
-    ]
+  projects = [
+    [:twitter, 'https://github.com/sferik/twitter.git', 'v4.1.0'],
+    [:guard,   'https://github.com/guard/guard.git',    'v1.8.1', '--without development']
+  ]
 
-    require 'tmpdir'
+  desc 'Test Transpec on all other projects'
+  task :all => projects.map(&:first)
 
-    Dir.chdir(Dir.mktmpdir) do
-      projects.each do |project|
-        test_on_project(*project)
+  projects.each do |name, url, ref, bundler_args|
+    desc "Test Transpec on #{name.to_s.capitalize} project"
+    task name do
+      require 'tmpdir'
+
+      Dir.chdir(Dir.mktmpdir) do
+        test_on_project(name.to_s.capitalize, url, ref, bundler_args)
       end
     end
   end
