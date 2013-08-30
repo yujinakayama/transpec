@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require 'spec_helper'
+require 'transpec'
 require 'tmpdir'
 require 'English'
 
@@ -8,8 +9,7 @@ describe 'Transpec project spec', :do_not_run_in_converted_spec do
   copied_project_root = Dir.mktmpdir
 
   before(:all) do
-    project_root = File.expand_path('..', File.dirname(__FILE__))
-    Dir.chdir(project_root) do
+    Dir.chdir(Transpec.root) do
       FileUtils.cp_r(Dir['*'], copied_project_root)
     end
   end

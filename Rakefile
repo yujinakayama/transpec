@@ -42,4 +42,52 @@ end
 
 Rake::Task[:release].enhance([:abort_unless_latest_readme_is_committed])
 
+namespace :test do
+  desc 'Test Transpec on some other projects'
+  task :other_projects do
+    projects = [
+      ['Twitter', 'https://github.com/sferik/twitter.git', 'v4.1.0'],
+      ['Guard',   'https://github.com/guard/guard.git',    'v1.8.1']
+    ]
+
+    require 'tmpdir'
+
+    Dir.chdir(Dir.mktmpdir) do
+      projects.each do |project|
+        test_on_project(*project)
+      end
+    end
+  end
+
+  def test_on_project(name, url, ref)
+    require 'transpec'
+
+    puts " Testing on #{name} Project ".center(80, '=')
+
+    # Disabling checkout here to suppress "detached HEAD" warning.
+    sh "git clone --no-checkout --depth 1 --branch #{ref} #{url}"
+    
+    repo_dir = File.basename(url, '.git')
+
+    Dir.chdir(repo_dir) do
+      sh "git checkout --quiet #{ref}"
+      with_clean_bundler_env do
+        sh 'bundle install'
+        sh File.join(Transpec.root, 'bin', 'transpec')
+        sh 'rspec'
+      end
+    end
+  end
+
+  def with_clean_bundler_env
+    if defined?(Bundler)
+      Bundler.with_clean_env do
+        yield
+      end
+    else
+      yield
+    end
+  end
+end
+
 task default: [:spec, :style, :readme]

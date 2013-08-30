@@ -3,4 +3,6 @@ rvm:
   - 1.9.3
   - 2.0.0
   - jruby-19mode
-script: bundle exec rake
+script:
+  - bundle exec rake
+  - bundle exec rake test:other_projects
