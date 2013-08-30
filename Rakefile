@@ -47,7 +47,7 @@ namespace :test do
   task :other_projects do
     projects = [
       ['Twitter', 'https://github.com/sferik/twitter.git', 'v4.1.0'],
-      ['Guard',   'https://github.com/guard/guard.git',    'v1.8.1']
+      ['Guard',   'https://github.com/guard/guard.git',    'v1.8.1', '--without development']
     ]
 
     require 'tmpdir'
@@ -59,7 +59,7 @@ namespace :test do
     end
   end
 
-  def test_on_project(name, url, ref)
+  def test_on_project(name, url, ref, bundler_args = nil)
     require 'transpec'
 
     puts " Testing on #{name} Project ".center(80, '=')
@@ -72,7 +72,7 @@ namespace :test do
     Dir.chdir(repo_dir) do
       sh "git checkout --quiet #{ref}"
       with_clean_bundler_env do
-        sh 'bundle install'
+        sh "bundle install #{bundler_args}"
         sh File.join(Transpec.root, 'bin', 'transpec')
         sh 'rspec'
       end
