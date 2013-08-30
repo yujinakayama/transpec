@@ -2,6 +2,8 @@
 
 ## Master
 
+## v0.0.4
+
 * Fix a bug where necessary parentheses were not added when converting operator matcher to non-operator matcher in some cases (e.g. `== (2 - 1) + (1 + 2)` was converted into `eq(2 - 1) + (1 + 2)` unintentionally)
 
 ## v0.0.3
