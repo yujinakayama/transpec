@@ -11,7 +11,7 @@ RSpec.configure do |config|
   end
 
   config.treat_symbols_as_metadata_keys_with_true_values = true
-  config.filter_run_excluding do_not_run_in_transpeced_spec: ENV['TRANSPECED_SPEC']
+  config.filter_run_excluding do_not_run_in_converted_spec: ENV['TRANSPEC_CONVERTED_SPEC']
 
   if ENV['TRAVIS']
     config.before(:all) do
@@ -21,20 +21,22 @@ RSpec.configure do |config|
   end
 end
 
-require 'simplecov'
-SimpleCov.coverage_dir(File.join('spec', 'coverage'))
+unless ENV['TRANSPEC_CONVERTED_SPEC']
+  require 'simplecov'
+  SimpleCov.coverage_dir(File.join('spec', 'coverage'))
 
-if ENV['TRAVIS']
-  require 'coveralls'
-  SimpleCov.formatter = Coveralls::SimpleCov::Formatter
-elsif ENV['CI']
-  require 'simplecov-rcov'
-  SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
-end
+  if ENV['TRAVIS']
+    require 'coveralls'
+    SimpleCov.formatter = Coveralls::SimpleCov::Formatter
+  elsif ENV['CI']
+    require 'simplecov-rcov'
+    SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
+  end
 
-SimpleCov.start do
-  add_filter '/spec/'
-  add_filter '/vendor/bundle/'
+  SimpleCov.start do
+    add_filter '/spec/'
+    add_filter '/vendor/bundle/'
+  end
 end
 
 Dir[File.join(File.dirname(__FILE__), 'support', '*')].each do |path|
