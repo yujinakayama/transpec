@@ -41,19 +41,10 @@ module Transpec
       node.loc.begin.source.start_with?('<<')
     end
 
-    def in_parentheses?(subject)
-      source = case subject
-               when String
-                 subject
-               when Parser::Source::Range
-                 subject.source
-               when Parser::AST::Node
-                 subject.loc.expression.source
-               else
-                 fail ArgumentError
-               end
-
-      source[0] == '('
+    def in_parentheses?(node)
+      return false unless node.type == :begin
+      source = node.loc.expression.source
+      source[0] == '(' && source[-1] == ')'
     end
 
     def indentation_of_line(node)
