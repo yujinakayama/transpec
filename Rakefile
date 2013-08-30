@@ -18,9 +18,6 @@ namespace :ci do
   end
 end
 
-desc 'Run RSpec and RuboCop'
-task all: [:spec, :style]
-
 desc 'Generate README.md'
 task :readme do
   require 'erb'
@@ -45,4 +42,4 @@ end
 
 Rake::Task[:release].enhance([:abort_unless_latest_readme_is_committed])
 
-task default: :all
+task default: [:spec, :style, :readme]
