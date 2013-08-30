@@ -12,6 +12,13 @@ RSpec.configure do |config|
 
   config.treat_symbols_as_metadata_keys_with_true_values = true
   config.filter_run_excluding do_not_run_in_transpeced_spec: ENV['TRANSPECED_SPEC']
+
+  if ENV['TRAVIS']
+    config.before(:all) do
+      system('git config --global user.email "you@example.com"')
+      system('git config --global user.name "Your Name"')
+    end
+  end
 end
 
 require 'simplecov'
