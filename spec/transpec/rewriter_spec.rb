@@ -41,10 +41,10 @@ module Transpec
         END
       end
 
-      context 'when the configuration #convert_to_expect_to_matcher? is true' do
+      context 'when Configuration#convert_to_expect_to_matcher? is true' do
         before { configuration.convert_to_expect_to_matcher = true }
 
-        context 'and configuration #negative_form_of_to is "not_to"' do
+        context 'and Configuration#negative_form_of_to is "not_to"' do
           before { configuration.negative_form_of_to = 'not_to' }
 
           it 'invokes Should#expectize! with "not_to"' do
@@ -53,7 +53,7 @@ module Transpec
           end
         end
 
-        context 'and configuration #negative_form_of_to is "to_not"' do
+        context 'and Configuration#negative_form_of_to is "to_not"' do
           before { configuration.negative_form_of_to = 'to_not' }
 
           it 'invokes Should#expectize! with "to_not"' do
@@ -62,7 +62,7 @@ module Transpec
           end
         end
 
-        context 'and configuration #parenthesize_matcher_arg is true' do
+        context 'and Configuration#parenthesize_matcher_arg is true' do
           before { configuration.parenthesize_matcher_arg = true }
 
           it 'invokes Should#expectize! with true as second argument' do
@@ -71,7 +71,7 @@ module Transpec
           end
         end
 
-        context 'and configuration #parenthesize_matcher_arg is false' do
+        context 'and Configuration#parenthesize_matcher_arg is false' do
           before { configuration.parenthesize_matcher_arg = false }
 
           it 'invokes Should#expectize! with false as second argument' do
@@ -81,7 +81,7 @@ module Transpec
         end
       end
 
-      context 'when the configuration #convert_to_expect_to_matcher? is false' do
+      context 'when Configuration#convert_to_expect_to_matcher? is false' do
         before { configuration.convert_to_expect_to_matcher = false }
 
         it 'does not invoke Should#expectize!' do
@@ -90,10 +90,10 @@ module Transpec
         end
       end
 
-      context 'when the configuration #convert_to_expect_to_receive? is true' do
+      context 'when Configuration#convert_to_expect_to_receive? is true' do
         before { configuration.convert_to_expect_to_receive = true }
 
-        context 'and configuration #negative_form_of_to is "not_to"' do
+        context 'and Configuration#negative_form_of_to is "not_to"' do
           before { configuration.negative_form_of_to = 'not_to' }
 
           it 'invokes ShouldReceive#expectize! with "not_to"' do
@@ -102,7 +102,7 @@ module Transpec
           end
         end
 
-        context 'and configuration #negative_form_of_to is "to_not"' do
+        context 'and Configuration#negative_form_of_to is "to_not"' do
           before { configuration.negative_form_of_to = 'to_not' }
 
           it 'invokes ShouldReceive#expectize! with "to_not"' do
@@ -112,7 +112,7 @@ module Transpec
         end
       end
 
-      context 'when the configuration #convert_to_expect_to_receive? is false' do
+      context 'when Configuration#convert_to_expect_to_receive? is false' do
         before { configuration.convert_to_expect_to_receive = false }
 
         it 'does not invoke ShouldReceive#expectize!' do
@@ -121,7 +121,7 @@ module Transpec
         end
       end
 
-      context 'when the configuration #convert_to_allow_to_receive? is true' do
+      context 'when Configuration#convert_to_allow_to_receive? is true' do
         before { configuration.convert_to_allow_to_receive = true }
 
         it 'invokes MethodStub#allowize!' do
@@ -130,7 +130,7 @@ module Transpec
         end
       end
 
-      context 'when the configuration #convert_to_allow_to_receive? is false' do
+      context 'when Configuration#convert_to_allow_to_receive? is false' do
         before { configuration.convert_to_allow_to_receive = false }
 
         it 'does not invoke MethodStub#allowize!' do
@@ -139,7 +139,7 @@ module Transpec
         end
       end
 
-      context 'when the configuration #replace_deprecated_method? is true' do
+      context 'when Configuration#replace_deprecated_method? is true' do
         before { configuration.replace_deprecated_method = true }
 
         it 'invokes Double#convert_to_double!' do
@@ -153,7 +153,7 @@ module Transpec
         end
       end
 
-      context 'when the configuration #replace_deprecated_method? is true' do
+      context 'when Configuration#replace_deprecated_method? is true' do
         before { configuration.replace_deprecated_method = false }
 
         it 'does not invoke Double#convert_to_double!' do
