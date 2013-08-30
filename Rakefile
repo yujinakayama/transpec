@@ -82,11 +82,20 @@ namespace :test do
   def with_clean_bundler_env
     if defined?(Bundler)
       Bundler.with_clean_env do
+        # Bundler.with_clean_env cleans environment variables
+        # which are set after bundler is loaded.
+        prepare_env
         yield
       end
     else
+      prepare_env
       yield
     end
+  end
+
+  def prepare_env
+    # Disable Coveralls in other projects.
+    ENV['CI'] = ENV['JENKINS_URL'] = ENV['COVERALLS_RUN_LOCALLY'] = nil
   end
 end
 
