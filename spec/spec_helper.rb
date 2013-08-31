@@ -10,6 +10,7 @@ RSpec.configure do |config|
     c.syntax = :should
   end
 
+  config.color_enabled = true
   config.treat_symbols_as_metadata_keys_with_true_values = true
   config.filter_run_excluding do_not_run_in_converted_spec: ENV['TRANSPEC_CONVERTED_SPEC']
 
