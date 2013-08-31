@@ -96,6 +96,21 @@ After the conversion, run `rspec` again and check if all pass.
 
 ## Options
 
+### `--force`
+
+Force processing even if the current Git repository is not clean.
+
+```bash
+$ git status --short
+ M spec/spec_helper.rb
+$ transpec
+The current Git repository is not clean. Aborting.
+$ transpec --force
+Processing spec/spec_helper.rb
+Processing spec/spec_spec.rb
+Processing spec/support/file_helper.rb
+```
+
 ### `-d/--disable`
 
 Disable specific conversions.
