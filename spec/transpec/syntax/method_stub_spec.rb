@@ -65,16 +65,16 @@ module Transpec
           context "when it is `subject.#{method}(:method).and_return(value)` form" do
             let(:source) do
               <<-END
-                it 'responds to #foo' do
-                  subject.#{method}(:foo).and_return(value)
+                it 'responds to #foo and returns 1' do
+                  subject.#{method}(:foo).and_return(1)
                 end
               END
             end
 
             let(:expected_source) do
               <<-END
-                it 'responds to #foo' do
-                  allow(subject).to receive(:foo).and_return(value)
+                it 'responds to #foo and returns 1' do
+                  allow(subject).to receive(:foo).and_return(1)
                 end
               END
             end
@@ -88,7 +88,7 @@ module Transpec
           context "when it is `subject.#{method}(:method).and_raise(RuntimeError)` form" do
             let(:source) do
               <<-END
-                it 'responds to #foo' do
+                it 'responds to #foo and raises RuntimeError' do
                   subject.#{method}(:foo).and_raise(RuntimeError)
                 end
               END
@@ -96,7 +96,7 @@ module Transpec
 
             let(:expected_source) do
               <<-END
-                it 'responds to #foo' do
+                it 'responds to #foo and raises RuntimeError' do
                   allow(subject).to receive(:foo).and_raise(RuntimeError)
                 end
               END
@@ -108,15 +108,15 @@ module Transpec
             end
           end
 
-          context "when it's statement continues over multi lines" do
+          context 'when the statement continues over multi lines' do
             let(:source) do
               <<-END
-                it 'responds to #foo' do
+                it 'responds to #foo and returns 1' do
                   subject.#{method}(
-                      :baz
+                      :foo
                     ).
                     and_return(
-                      3
+                      1
                     )
                 end
               END
@@ -124,12 +124,12 @@ module Transpec
 
             let(:expected_source) do
               <<-END
-                it 'responds to #foo' do
+                it 'responds to #foo and returns 1' do
                   allow(subject).to receive(
-                      :baz
+                      :foo
                     ).
                     and_return(
-                      3
+                      1
                     )
                 end
               END
@@ -190,7 +190,7 @@ module Transpec
           context "when it is `subject.#{method}(:a_method => a_value, b_method => b_value)` form" do
             let(:source) do
               <<-END
-                it 'responds to #foo and returns 1' do
+                it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
                   subject.#{method}(:foo => 1, :bar => 2)
                 end
               END
@@ -198,7 +198,7 @@ module Transpec
 
             let(:expected_source) do
               <<-END
-                it 'responds to #foo and returns 1' do
+                it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
                   allow(subject).to receive(:foo).and_return(1)
                   allow(subject).to receive(:bar).and_return(2)
                 end
@@ -211,10 +211,10 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            context "when it's statement continues over multi lines" do
+            context 'when the statement continues over multi lines' do
               let(:source) do
                 <<-END
-                  it 'responds to #foo' do
+                  it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
                     subject
                       .#{method}(
                         :foo => 1,
@@ -226,7 +226,7 @@ module Transpec
 
               let(:expected_source) do
                 <<-END
-                  it 'responds to #foo' do
+                  it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
                     allow(subject)
                       .to receive(:foo).and_return(1)
                     allow(subject)

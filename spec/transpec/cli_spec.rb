@@ -164,7 +164,7 @@ module Transpec
           context "when #{cli_type.inspect} is specified" do
             let(:args) { ['--disable', cli_type] }
 
-            it "sets configuration ##{config_attr} false" do
+            it "sets Configuration##{config_attr} false" do
               cli.parse_options(args)
               cli.configuration.send(config_attr).should be_false
             end
@@ -197,7 +197,7 @@ module Transpec
           context "when #{form.inspect} is specified" do
             let(:args) { ['--negative-form', form] }
 
-            it "sets configuration #negative_form_of_to? #{form.inspect}" do
+            it "sets Configuration#negative_form_of_to? #{form.inspect}" do
               cli.parse_options(args)
               cli.configuration.negative_form_of_to.should == form
             end
@@ -208,7 +208,7 @@ module Transpec
       describe '-p/--no-parentheses-matcher-arg option' do
         let(:args) { ['--no-parentheses-matcher-arg'] }
 
-        it 'sets configuration #parenthesize_matcher_arg? false' do
+        it 'sets Configuration#parenthesize_matcher_arg? false' do
           cli.parse_options(args)
           cli.configuration.parenthesize_matcher_arg.should be_false
         end
@@ -282,7 +282,7 @@ module Transpec
       context 'when a directory path is passed' do
         let(:paths) { ['dir'] }
 
-        it 'returns file paths with .rb extension in the directory' do
+        it 'returns file paths with .rb extension in the directory recursively' do
           should == ['dir/file.rb']
         end
       end

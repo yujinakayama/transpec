@@ -155,11 +155,11 @@ module Transpec
           end
         end
 
-        context 'when it is `== (2 - 1) + (1 + 2)` form' do
+        context 'when it is `== (5 - 3) / (4 - 2)` form' do
           let(:source) do
             <<-END
               it 'is 1' do
-                subject.should == (2 - 1) + (1 + 2)
+                subject.should == (5 - 3) / (4 - 2)
               end
             END
           end
@@ -167,12 +167,12 @@ module Transpec
           let(:expected_source) do
             <<-END
               it 'is 1' do
-                subject.should eq((2 - 1) + (1 + 2))
+                subject.should eq((5 - 3) / (4 - 2))
               end
             END
           end
 
-          it 'converts into `eq((2 - 1) + (1 + 2))` form' do
+          it 'converts into `eq((5 - 3) / (4 - 2))` form' do
             rewritten_source.should == expected_source
           end
         end
@@ -180,7 +180,7 @@ module Transpec
         context "when it is `== { 'key' => 'value' }` form" do
           let(:source) do
             <<-END
-              it 'is 1' do
+              it 'is the hash' do
                 subject.should == { 'key' => 'value' }
               end
             END
@@ -188,7 +188,7 @@ module Transpec
 
           let(:expected_source) do
             <<-END
-              it 'is 1' do
+              it 'is the hash' do
                 subject.should eq({ 'key' => 'value' })
               end
             END

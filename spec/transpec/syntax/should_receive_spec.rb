@@ -113,7 +113,7 @@ module Transpec
         #     arg == 1
         #   }
         #
-        context 'when it is `subject.should_receive(:method).with do..end` form' do
+        context 'when it is `subject.should_receive(:method).with do .. end` form' do
           let(:source) do
             <<-END
               it 'receives #foo with 1' do
@@ -143,11 +143,11 @@ module Transpec
         end
 
         # If #with take normal arguments, the block won't be used as an argument matcher.
-        context 'when it is `subject.should_receive(:method).with(:arg) do..end` form' do
+        context 'when it is `subject.should_receive(:method).with(arg) do .. end` form' do
           let(:source) do
             <<-END
               it 'receives #foo with 1' do
-                subject.should_receive(:foo).with(:bar) do |arg|
+                subject.should_receive(:foo).with(1) do |arg|
                   do_some_substitute_implementation
                 end
                 subject.foo(1)
@@ -158,7 +158,7 @@ module Transpec
           let(:expected_source) do
             <<-END
               it 'receives #foo with 1' do
-                expect(subject).to receive(:foo).with(:bar) do |arg|
+                expect(subject).to receive(:foo).with(1) do |arg|
                   do_some_substitute_implementation
                 end
                 subject.foo(1)
@@ -166,7 +166,7 @@ module Transpec
             END
           end
 
-          it 'converts into `expect(subject).to receive(:method) { .. }` form' do
+          it 'converts into `expect(subject).to receive(:method).with(arg) do .. end` form' do
             should_receive_object.expectize!
             rewritten_source.should == expected_source
           end
@@ -200,7 +200,7 @@ module Transpec
         #     arg == 1
         #   }.once
         #
-        context 'when it is `subject.should_receive(:method) do..end.once` form' do
+        context 'when it is `subject.should_receive(:method) do .. end.once` form' do
           let(:source) do
             <<-END
               it 'receives #foo with 1' do
@@ -230,7 +230,7 @@ module Transpec
         end
 
         # This case, do..end block works without problem.
-        context 'when it is `subject.should_receive(:method) do..end` form' do
+        context 'when it is `subject.should_receive(:method) do .. end` form' do
           let(:source) do
             <<-END
               it 'receives #foo with 1' do
@@ -253,7 +253,7 @@ module Transpec
             END
           end
 
-          it 'converts into `expect(subject).to receive(:method) do..end` form' do
+          it 'converts into `expect(subject).to receive(:method) do .. end` form' do
             should_receive_object.expectize!
             rewritten_source.should == expected_source
           end
