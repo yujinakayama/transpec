@@ -54,12 +54,12 @@ namespace :test do
   projects.each do |name, url, ref, bundler_args|
     desc "Test Transpec on #{name.to_s.capitalize} project"
     task name do
-      require 'tmpdir'
+      tmpdir = 'tmp'
 
-      Dir.mktmpdir do |tmpdir|
-        Dir.chdir(tmpdir) do
-          test_on_project(name.to_s.capitalize, url, ref, bundler_args)
-        end
+      Dir.mkdir(tmpdir) unless Dir.exist?(tmpdir)
+
+      Dir.chdir(tmpdir) do
+        test_on_project(name.to_s.capitalize, url, ref, bundler_args)
       end
     end
   end
@@ -69,19 +69,52 @@ namespace :test do
 
     puts " Testing on #{name} Project ".center(80, '=')
 
-    # Disabling checkout here to suppress "detached HEAD" warning.
-    sh "git clone --no-checkout --depth 1 --branch #{ref} #{url}"
-    
-    repo_dir = File.basename(url, '.git')
+    repo_dir = prepare_git_repo(url, ref)
 
     Dir.chdir(repo_dir) do
-      sh "git checkout --quiet #{ref}"
       with_clean_bundler_env do
         sh "bundle install #{bundler_args}"
         sh File.join(Transpec.root, 'bin', 'transpec')
         sh 'rspec'
       end
     end
+  end
+
+  def prepare_git_repo(url, ref)
+    repo_dir = File.basename(url, '.git')
+
+    needs_clone = false
+
+    if Dir.exist?(repo_dir)
+      current_ref = nil
+
+      Dir.chdir(repo_dir) do
+        current_ref = `git describe --all`.chomp.sub(/\Aheads\//, '')
+      end
+
+      if current_ref == ref
+        Dir.chdir(repo_dir) do
+          sh 'git reset --hard'
+        end
+      else
+        require 'fileutils'
+        FileUtils.rm_rf(repo_dir)
+        needs_clone = true
+      end
+    else
+      needs_clone = true
+    end
+
+    if needs_clone
+      # Disabling checkout here to suppress "detached HEAD" warning.
+      sh "git clone --no-checkout --depth 1 --branch #{ref} #{url}"
+
+      Dir.chdir(repo_dir) do
+        sh "git checkout --quiet #{ref}"
+      end
+    end
+
+    repo_dir
   end
 
   def with_clean_bundler_env
