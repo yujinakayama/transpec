@@ -56,8 +56,10 @@ namespace :test do
     task name do
       require 'tmpdir'
 
-      Dir.chdir(Dir.mktmpdir) do
-        test_on_project(name.to_s.capitalize, url, ref, bundler_args)
+      Dir.mktmpdir do |tmpdir|
+        Dir.chdir(tmpdir) do
+          test_on_project(name.to_s.capitalize, url, ref, bundler_args)
+        end
       end
     end
   end
