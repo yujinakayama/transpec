@@ -62,7 +62,7 @@ module Transpec
       @node.loc.expression
     end
 
-    protected
+    private
 
     def self.target_receiver_node?(node)
       false
@@ -71,8 +71,6 @@ module Transpec
     def self.target_method_names
       []
     end
-
-    private
 
     def remove(range)
       @source_rewriter.remove(range)
