@@ -40,7 +40,7 @@ module Transpec
         end
 
         if any_instance?
-          wrap_class_in_expect_any_instance_of!
+          wrap_class_with_any_instance_of!(syntax)
         else
           wrap_subject_with_method!(syntax)
         end
@@ -69,8 +69,8 @@ module Transpec
         [:should_receive, :should_not_receive]
       end
 
-      def wrap_class_in_expect_any_instance_of!
-        insert_before(subject_range, 'expect_any_instance_of(')
+      def wrap_class_with_any_instance_of!(syntax)
+        insert_before(subject_range, "#{syntax}_any_instance_of(")
         map = subject_node.loc
         dot_any_instance_range = map.dot.join(map.selector)
         replace(dot_any_instance_range, ')')

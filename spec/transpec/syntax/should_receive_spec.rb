@@ -347,6 +347,29 @@ module Transpec
           end
         end
 
+        context 'when it is `SomeClass.any_instance.should_receive(:method).any_number_of_times` form' do
+          let(:source) do
+            <<-END
+              it 'responds to #foo' do
+                SomeClass.any_instance.should_receive(:foo).any_number_of_times
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'responds to #foo' do
+                allow_any_instance_of(SomeClass).to receive(:foo)
+              end
+            END
+          end
+
+          it 'converts into `allow_any_instance_of(subject).to receive(:method)` form' do
+            should_receive_object.allowize_any_number_of_times!
+            rewritten_source.should == expected_source
+          end
+        end
+
         context 'when it is `subject.should_receive(:method)` form' do
           let(:source) do
             <<-END
