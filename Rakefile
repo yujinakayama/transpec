@@ -74,9 +74,13 @@ namespace :test do
 
     repo_dir = prepare_git_repo(url, ref)
 
+    bundler_args ||= ''
+    # On Travis CI, reuse system gems to speed up build.
+    bundler_args << '--path vendor/bundle' unless ENV['TRAVIS']
+
     Dir.chdir(repo_dir) do
       with_clean_bundler_env do
-        sh "bundle install --path vendor/bundle #{bundler_args}"
+        sh "bundle install #{bundler_args}"
         sh File.join(Transpec.root, 'bin', 'transpec'), '--force'
         sh 'bundle exec rspec'
       end
