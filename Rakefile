@@ -76,9 +76,9 @@ namespace :test do
 
     Dir.chdir(repo_dir) do
       with_clean_bundler_env do
-        sh "bundle install #{bundler_args}"
-        sh File.join(Transpec.root, 'bin', 'transpec')
-        sh 'rspec'
+        sh "bundle install --path vendor/bundle #{bundler_args}"
+        sh File.join(Transpec.root, 'bin', 'transpec'), '--force'
+        sh 'bundle exec rspec'
       end
     end
   end
