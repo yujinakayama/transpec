@@ -54,9 +54,12 @@ namespace :test do
   projects.each do |name, url, ref, bundler_args|
     desc "Test Transpec on #{name.to_s.capitalize} project"
     task name do
-      tmpdir = 'tmp'
+      tmpdir = File.join('tmp', 'projects')
 
-      Dir.mkdir(tmpdir) unless Dir.exist?(tmpdir)
+      unless Dir.exist?(tmpdir)
+        require 'fileutils'
+        FileUtils.mkdir_p(tmpdir)
+      end
 
       Dir.chdir(tmpdir) do
         test_on_project(name.to_s.capitalize, url, ref, bundler_args)
