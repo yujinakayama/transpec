@@ -45,7 +45,7 @@ Rake::Task[:release].enhance([:abort_unless_latest_readme_is_committed])
 namespace :test do
   projects = [
     [:twitter, 'https://github.com/sferik/twitter.git', 'v4.1.0'],
-    [:guard,   'https://github.com/guard/guard.git',    'v1.8.1', '--without development']
+    [:guard,   'https://github.com/guard/guard.git',    'v1.8.1', %w(--without development)]
   ]
 
   desc 'Test Transpec on all other projects'
@@ -74,13 +74,13 @@ namespace :test do
 
     repo_dir = prepare_git_repo(url, ref)
 
-    bundler_args ||= ''
+    bundler_args ||= []
     # On Travis CI, reuse system gems to speed up build.
-    bundler_args << '--path vendor/bundle' unless ENV['TRAVIS']
+    bundler_args.concat(%w(--path vendor/bundle)) unless ENV['TRAVIS']
 
     Dir.chdir(repo_dir) do
       with_clean_bundler_env do
-        sh "bundle install #{bundler_args}"
+        sh 'bundle', 'install', *bundler_args
         sh File.join(Transpec.root, 'bin', 'transpec'), '--force'
         sh 'bundle exec rspec'
       end
