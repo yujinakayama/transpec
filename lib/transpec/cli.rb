@@ -131,7 +131,7 @@ module Transpec
           file_paths.concat(ruby_files_in_directory(path))
         elsif File.file?(path)
           file_paths << path
-        elsif !File.exists?(path) # rubocop:disable FavorUnlessOverNegatedIf
+        elsif !File.exists?(path)
           fail ArgumentError, "No such file or directory #{path.inspect}"
         end
       end
