@@ -2,6 +2,8 @@
 
 ## Master
 
+## v0.0.8
+
 * Support conversion from `not_to raise_error(SpecificErrorClass)` to `not_to raise_error`
 
 ## v0.0.7
