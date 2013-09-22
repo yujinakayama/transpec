@@ -2,6 +2,8 @@
 
 ## Master
 
+* Avoid confusing `Typhoeus.stub` with RSpec's `stub` ([#4](https://github.com/yujinakayama/transpec/issues/4))
+
 ## v0.0.6
 
 * Fix a bug where `SomeClass.any_instance.should_receive(:message).any_number_of_times` was converted into `expect_any_instance_of(SomeClass).to receive(:message)` unintentionally (now it's converted into `allow_any_instance_of(SomeClass).to receive(:message)`)

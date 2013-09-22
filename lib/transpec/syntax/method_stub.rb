@@ -11,6 +11,8 @@ module Transpec
     class MethodStub < Syntax
       include AnyInstanceable, AnyNumberOfTimesable, Util
 
+      RECEIVER_CLASS_WHITELIST = ['Typhoeus']
+
       def allowize!
         # There's no way of unstubbing in #allow syntax.
         return unless [:stub, :stub!].include?(method_name)
@@ -50,7 +52,9 @@ module Transpec
       private
 
       def self.target_receiver_node?(node)
-        !node.nil?
+        return false if node.nil?
+        const_name = Util.const_name(node)
+        !RECEIVER_CLASS_WHITELIST.include?(const_name)
       end
 
       def self.target_method_names
