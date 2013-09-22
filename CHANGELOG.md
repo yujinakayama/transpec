@@ -2,6 +2,8 @@
 
 ## Master
 
+## v0.0.7
+
 * Avoid confusing `Typhoeus.stub` with RSpec's `stub` ([#4](https://github.com/yujinakayama/transpec/issues/4))
 
 ## v0.0.6
