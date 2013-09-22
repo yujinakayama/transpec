@@ -44,8 +44,8 @@ Rake::Task[:release].enhance([:abort_unless_latest_readme_is_committed])
 
 namespace :test do
   projects = [
-    [:twitter, 'https://github.com/sferik/twitter.git', 'v4.1.0'],
-    [:guard,   'https://github.com/guard/guard.git',    'v1.8.1', %w(--without development)]
+    [:twitter, 'https://github.com/sferik/twitter.git',     'v4.1.0'],
+    [:guard,   'https://github.com/yujinakayama/guard.git', 'transpec', %w(--without development)]
   ]
 
   desc 'Test Transpec on all other projects'
