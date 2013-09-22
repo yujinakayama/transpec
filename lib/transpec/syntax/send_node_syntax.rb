@@ -32,6 +32,10 @@ module Transpec
       def arg_range
         arg_node.loc.expression
       end
+
+      def parentheses_range
+        selector_range.end.join(expression_range.end)
+      end
     end
   end
 end

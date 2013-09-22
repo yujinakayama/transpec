@@ -7,6 +7,7 @@ require 'transpec/syntax/be_close'
 require 'transpec/syntax/double'
 require 'transpec/syntax/matcher'
 require 'transpec/syntax/method_stub'
+require 'transpec/syntax/raise_error'
 require 'transpec/syntax/rspec_configure'
 require 'transpec/syntax/should'
 require 'transpec/syntax/should_receive'
@@ -125,6 +126,12 @@ module Transpec
 
     def process_be_close(be_close)
       be_close.convert_to_be_within! if @configuration.replace_deprecated_method?
+    end
+
+    def process_raise_error(raise_error)
+      if @configuration.replace_deprecated_method?
+        raise_error.remove_error_specification_with_negative_expectation!
+      end
     end
 
     def process_rspec_configure(rspec_configure)

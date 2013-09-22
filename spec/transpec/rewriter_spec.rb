@@ -419,6 +419,28 @@ module Transpec
       end
     end
 
+    describe '#process_raise_error' do
+      let(:raise_error_object) { double('raise_error_object').as_null_object }
+
+      context 'when Configuration#replace_deprecated_method? is true' do
+        before { configuration.replace_deprecated_method = true }
+
+        it 'invokes RaiseError#remove_error_specification_with_negative_expectation!' do
+          raise_error_object.should_receive(:remove_error_specification_with_negative_expectation!)
+          rewriter.process_raise_error(raise_error_object)
+        end
+      end
+
+      context 'when Configuration#replace_deprecated_method? is true' do
+        before { configuration.replace_deprecated_method = false }
+
+        it 'does not invoke BeClose#convert_to_be_within!' do
+          raise_error_object.should_not_receive(:remove_error_specification_with_negative_expectation!)
+          rewriter.process_raise_error(raise_error_object)
+        end
+      end
+    end
+
     describe '#process_rspec_configure' do
       let(:rspec_configure) { double('rspec_configure').as_null_object }
 

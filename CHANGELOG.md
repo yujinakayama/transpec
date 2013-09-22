@@ -2,6 +2,8 @@
 
 ## Master
 
+* Support conversion from `not_to raise_error(SpecificErrorClass)` to `not_to raise_error`
+
 ## v0.0.7
 
 * Avoid confusing `Typhoeus.stub` with RSpec's `stub` ([#4](https://github.com/yujinakayama/transpec/issues/4))
