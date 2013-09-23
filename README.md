@@ -207,6 +207,180 @@ describe 'converted spec with -p/--no-parentheses-matcher-arg option' do
 end
 ```
 
+## Supported Conversions
+
+### Standard expectations
+
+```ruby
+# Target
+obj.should matcher
+obj.should_not matcher
+
+# Converted
+expect(obj).to matcher
+expect(obj).not_to matcher
+expect(obj).to_not matcher # with `--negative-form to_not`
+```
+
+Disabled by: `--disable expect_to_matcher`
+
+### Operator matchers
+
+```ruby
+# Target
+1.should == 1
+1.should < 2
+Integer.should === 1
+'string'.should =~ /^str/
+[1, 2, 3].should =~ [2, 1, 3]
+
+# Converted
+expect(1).to eq(1)
+expect(1).to be < 2
+expect(Integer).to be === 1
+expect('string').to match(/^str/)
+expect([1, 2, 3]).to match_array([2, 1, 3])
+```
+
+### `be_close` matcher
+
+```ruby
+# Target
+(1.0 / 3.0).should be_close(0.333, 0.001)
+
+# Converted
+(1.0 / 3.0).should be_within(0.001).of(0.333)
+```
+
+Disabled by: `--disable deprecated`
+
+### Error expectations
+
+```ruby
+# Target
+lambda { do_something }.should raise_error
+proc { do_something }.should raise_error
+-> { do_something }.should raise_error
+
+# Converted
+expect { do_something }.to raise_error
+```
+
+Disabled by: `--disable expect_to_matcher`
+
+### Negative error expectations with specific error
+
+```ruby
+# Target
+expect { do_something }.not_to raise_error(SomeErrorClass)
+expect { do_something }.not_to raise_error('message')
+expect { do_something }.not_to raise_error(SomeErrorClass, 'message')
+lambda { do_something }.should_not raise_error(SomeErrorClass)
+
+# Converted
+expect { do_something }.not_to raise_error
+lambda { do_something }.should_not raise_error # with `--disable expect_to_matcher`
+```
+
+Disabled by: `--disable deprecated`
+
+### Message expectations
+
+```ruby
+# Target
+obj.should_receive(:foo)
+SomeClass.any_instance.should_receive(:foo)
+
+# Converted
+expect(obj).to receive(:foo)
+expect_any_instance_of(SomeClass).to receive(:foo)
+```
+
+Disabled by: `--disable expect_to_receive`
+
+### Message expectations with `any_number_of_times`
+
+```ruby
+# Target
+obj.should_receive(:foo).any_number_of_times
+
+SomeClass.any_instance.should_receive(:foo).any_number_of_times
+
+# Converted
+allow(obj).to receive(:foo)
+obj.stub(:foo) # with `--disable allow_to_receive`
+
+allow_any_instance_of(SomeClass).to receive(:foo)
+SomeClass.any_instance.stub(:foo) # with `--disable allow_to_receive`
+```
+
+Disabled by: `--disable deprecated`
+
+### Method stubs
+
+```ruby
+# Target
+obj.stub(:foo)
+
+obj.stub!(:foo)
+
+obj.stub(:foo => 1, :bar => 2)
+
+SomeClass.any_instance.stub(:foo)
+
+# Converted
+allow(obj).to receive(:foo)
+
+allow(obj).to receive(:foo)
+
+allow(obj).to receive(:foo).and_return(1)
+allow(obj).to receive(:bar).and_return(2)
+
+allow_any_instance_of(SomeClass).to receive(:foo)
+```
+
+Disabled by: `--disable allow_to_receive`
+
+### Deprecated method stub aliases
+
+```ruby
+# Target
+obj.stub!(:foo)
+obj.unstub!(:foo)
+
+# Converted
+obj.stub(:foo) # with `--disable allow_to_receive`
+obj.unstub(:foo)
+```
+
+Disabled by: `--disable deprecated`
+
+### Method stubs with `any_number_of_times`
+
+```ruby
+# Target
+obj.stub(:foo).any_number_of_times
+
+# Converted
+allow(obj).to receive(:foo)
+obj.stub(:foo) # with `--disable allow_to_receive`
+```
+
+Disabled by: `--disable deprecated`
+
+### Deprecated test double aliases
+
+```ruby
+# Target
+stub('something')
+mock('something')
+
+# Converted
+double('something')
+```
+
+Disabled by: `--disable deprecated`
+
 ## Compatibility
 
 Tested on MRI 1.9, MRI 2.0 and JRuby in 1.9 mode.
