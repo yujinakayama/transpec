@@ -150,7 +150,7 @@ $ transpec --disable expect_to_receive,allow_to_receive
 
 Conversion Type     | Target Syntax                    | Converted Syntax
 --------------------|----------------------------------|----------------------------
-`expect_to_matcher` | `obj.should`                     | `expect(obj).to`
+`expect_to_matcher` | `obj.should matcher`             | `expect(obj).to matcher`
 `expect_to_receive` | `obj.should_receive`             | `expect(obj).to receive`
 `allow_to_receive`  | `obj.stub`                       | `allow(obj).to receive`
 `deprecated`        | `obj.stub!`, `mock('foo')`, etc. | `obj.stub`, `double('foo')`
@@ -175,30 +175,30 @@ when parentheses are necessary to keep the meaning of the expression.
 
 ```ruby
 describe 'original spec' do
-  it 'is example' do
+  it 'is an example' do
     1.should == 1
     2.should > 1
-    'string'.should =~ /str/
+    'string'.should =~ /^str/
     [1, 2, 3].should =~ [2, 1, 3]
     { key: value }.should == { key: value }
   end
 end
 
 describe 'converted spec' do
-  it 'is example' do
+  it 'is an example' do
     expect(1).to eq(1)
     expect(2).to be > 1
-    expect('string').to match(/str/)
+    expect('string').to match(/^str/)
     expect([1, 2, 3]).to match_array([2, 1, 3])
     expect({ key: value }).to eq({ key: value })
   end
 end
 
 describe 'converted spec with -p/--no-parentheses-matcher-arg option' do
-  it 'is example' do
+  it 'is an example' do
     expect(1).to eq 1
     expect(2).to be > 1
-    expect('string').to match /str/
+    expect('string').to match /^str/
     expect([1, 2, 3]).to match_array [2, 1, 3]
     # With non-operator method, the parentheses are always required
     # to prevent the hash from being interpreted as a block.
