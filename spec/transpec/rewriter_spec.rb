@@ -163,86 +163,6 @@ module Transpec
     describe '#process_should_receive' do
       let(:should_receive_object) { double('should_receive_object').as_null_object }
 
-      context 'when Configuration#convert_to_expect_to_receive? is true' do
-        before { configuration.convert_to_expect_to_receive = true }
-
-        context 'and ShouldReceive#any_number_of_times? returns true' do
-          before { should_receive_object.stub(:any_number_of_times?).and_return(true) }
-
-          context 'when Configuration#replace_deprecated_method? is true' do
-            before { configuration.replace_deprecated_method = true }
-
-            context 'and Configuration#negative_form_of_to is "not_to"' do
-              before { configuration.negative_form_of_to = 'not_to' }
-
-              it 'invokes ShouldReceive#allowize_any_number_of_times! with "not_to"' do
-                should_receive_object.should_receive(:allowize_any_number_of_times!).with('not_to')
-                rewriter.process_should_receive(should_receive_object)
-              end
-            end
-
-            context 'and Configuration#negative_form_of_to is "to_not"' do
-              before { configuration.negative_form_of_to = 'to_not' }
-
-              it 'invokes ShouldReceive#allowize_any_number_of_times! with "to_not"' do
-                should_receive_object.should_receive(:allowize_any_number_of_times!).with('to_not')
-                rewriter.process_should_receive(should_receive_object)
-              end
-            end
-          end
-
-          context 'when Configuration#replace_deprecated_method? is false' do
-            before { configuration.replace_deprecated_method = false }
-
-            context 'and Configuration#negative_form_of_to is "not_to"' do
-              before { configuration.negative_form_of_to = 'not_to' }
-
-              it 'invokes ShouldReceive#expectize! with "not_to"' do
-                should_receive_object.should_receive(:expectize!).with('not_to')
-                rewriter.process_should_receive(should_receive_object)
-              end
-            end
-
-            context 'and Configuration#negative_form_of_to is "to_not"' do
-              before { configuration.negative_form_of_to = 'to_not' }
-
-              it 'invokes ShouldReceive#expectize! with "to_not"' do
-                should_receive_object.should_receive(:expectize!).with('to_not')
-                rewriter.process_should_receive(should_receive_object)
-              end
-            end
-          end
-        end
-
-        context 'and ShouldReceive#any_number_of_times? returns false' do
-          before { should_receive_object.stub(:any_number_of_times?).and_return(false) }
-
-          [true, false].each do |replace_deprecated_method|
-            context "when Configuration#replace_deprecated_method? is #{replace_deprecated_method}" do
-              before { configuration.replace_deprecated_method = replace_deprecated_method }
-
-              context 'and Configuration#negative_form_of_to is "not_to"' do
-                before { configuration.negative_form_of_to = 'not_to' }
-
-                it 'invokes ShouldReceive#expectize! with "not_to"' do
-                  should_receive_object.should_receive(:expectize!).with('not_to')
-                  rewriter.process_should_receive(should_receive_object)
-                end
-              end
-
-              context 'and Configuration#negative_form_of_to is "to_not"' do
-                before { configuration.negative_form_of_to = 'to_not' }
-
-                it 'invokes ShouldReceive#expectize! with "to_not"' do
-                  should_receive_object.should_receive(:expectize!).with('to_not')
-                  rewriter.process_should_receive(should_receive_object)
-                end
-              end
-            end
-          end
-        end
-      end
-
       shared_examples 'does nothing' do
         it 'does nothing' do
           should_receive_object.should_not_receive(:expectize!)
@@ -252,40 +172,149 @@ module Transpec
         end
       end
 
-      context 'when Configuration#convert_to_expect_to_receive? is false' do
-        before { configuration.convert_to_expect_to_receive = false }
+      context 'when ShouldReceive#any_number_of_times? returns true' do
+        before { should_receive_object.stub(:any_number_of_times?).and_return(true) }
 
-        context 'and ShouldReceive#any_number_of_times? returns true' do
-          before { should_receive_object.stub(:any_number_of_times?).and_return(true) }
+        context 'and Configuration#replace_deprecated_method? is true' do
+          before { configuration.replace_deprecated_method = true }
 
-          context 'when Configuration#replace_deprecated_method? is true' do
-            before { configuration.replace_deprecated_method = true }
+          context 'and Configuration#convert_to_allow_to_receive? is true' do
+            before { configuration.convert_to_allow_to_receive = true }
 
-            it 'invokes ShouldReceive#stubize_any_number_of_times! with "not_to"' do
-              should_receive_object.should_receive(:stubize_any_number_of_times!)
-              rewriter.process_should_receive(should_receive_object)
+            [true, false].each do |convert_to_expect_to_receive|
+              context "and Configuration#convert_to_expect_to_receive? is #{convert_to_expect_to_receive}" do
+                before { configuration.convert_to_expect_to_receive = convert_to_expect_to_receive }
+
+                context 'and Configuration#negative_form_of_to is "not_to"' do
+                  before { configuration.negative_form_of_to = 'not_to' }
+
+                  it 'invokes ShouldReceive#allowize_any_number_of_times! with "not_to"' do
+                    should_receive_object.should_receive(:allowize_any_number_of_times!).with('not_to')
+                    rewriter.process_should_receive(should_receive_object)
+                  end
+                end
+
+                context 'and Configuration#negative_form_of_to is "to_not"' do
+                  before { configuration.negative_form_of_to = 'to_not' }
+
+                  it 'invokes ShouldReceive#allowize_any_number_of_times! with "to_not"' do
+                    should_receive_object.should_receive(:allowize_any_number_of_times!).with('to_not')
+                    rewriter.process_should_receive(should_receive_object)
+                  end
+                end
+              end
             end
           end
 
-          context 'when Configuration#replace_deprecated_method? is false' do
-            before { configuration.replace_deprecated_method = false }
+          context 'and Configuration#convert_to_allow_to_receive? is false' do
+            before { configuration.convert_to_allow_to_receive = false }
 
-            include_examples 'does nothing'
+            [true, false].each do |convert_to_expect_to_receive|
+              context "and Configuration#convert_to_expect_to_receive? is #{convert_to_expect_to_receive}" do
+                before { configuration.convert_to_expect_to_receive = convert_to_expect_to_receive }
+
+                it 'invokes ShouldReceive#stubize_any_number_of_times!' do
+                  should_receive_object.should_receive(:stubize_any_number_of_times!)
+                  rewriter.process_should_receive(should_receive_object)
+                end
+              end
+            end
           end
         end
 
-        context 'and ShouldReceive#any_number_of_times? returns false' do
-          before { should_receive_object.stub(:any_number_of_times?).and_return(false) }
+        context 'and Configuration#replace_deprecated_method? is false' do
+          before { configuration.replace_deprecated_method = false }
+
+          [true, false].each do |convert_to_allow_to_receive|
+            context "and Configuration#convert_to_allow_to_receive? is #{convert_to_allow_to_receive}" do
+              before { configuration.convert_to_allow_to_receive = convert_to_allow_to_receive }
+
+              context 'and Configuration#convert_to_expect_to_receive? is true' do
+                before { configuration.convert_to_expect_to_receive = true }
+
+                context 'and Configuration#negative_form_of_to is "not_to"' do
+                  before { configuration.negative_form_of_to = 'not_to' }
+
+                  it 'invokes ShouldReceive#expectize! with "not_to"' do
+                    should_receive_object.should_receive(:expectize!).with('not_to')
+                    rewriter.process_should_receive(should_receive_object)
+                  end
+                end
+
+                context 'and Configuration#negative_form_of_to is "to_not"' do
+                  before { configuration.negative_form_of_to = 'to_not' }
+
+                  it 'invokes ShouldReceive#expectize! with "to_not"' do
+                    should_receive_object.should_receive(:expectize!).with('to_not')
+                    rewriter.process_should_receive(should_receive_object)
+                  end
+                end
+              end
+
+              context 'and Configuration#convert_to_expect_to_receive? is false' do
+                before { configuration.convert_to_expect_to_receive = false }
+
+                include_examples 'does nothing'
+              end
+            end
+          end
+        end
+      end
+
+      context 'when ShouldReceive#any_number_of_times? returns false' do
+        before { should_receive_object.stub(:any_number_of_times?).and_return(false) }
+
+        context 'and Configuration#convert_to_expect_to_receive? is true' do
+          before { configuration.convert_to_expect_to_receive = true }
 
           [true, false].each do |replace_deprecated_method|
-            context "when Configuration#replace_deprecated_method? is #{replace_deprecated_method}" do
+            context "and Configuration#replace_deprecated_method? is #{replace_deprecated_method}" do
               before { configuration.replace_deprecated_method = replace_deprecated_method }
 
-              include_examples 'does nothing'
+              [true, false].each do |convert_to_allow_to_receive|
+                context "and Configuration#convert_to_allow_to_receive? is #{convert_to_allow_to_receive}" do
+                  before { configuration.convert_to_allow_to_receive = convert_to_allow_to_receive }
+
+                  context 'and Configuration#negative_form_of_to is "not_to"' do
+                    before { configuration.negative_form_of_to = 'not_to' }
+
+                    it 'invokes ShouldReceive#expectize! with "not_to"' do
+                      should_receive_object.should_receive(:expectize!).with('not_to')
+                      rewriter.process_should_receive(should_receive_object)
+                    end
+                  end
+
+                  context 'and Configuration#negative_form_of_to is "to_not"' do
+                    before { configuration.negative_form_of_to = 'to_not' }
+
+                    it 'invokes ShouldReceive#expectize! with "to_not"' do
+                      should_receive_object.should_receive(:expectize!).with('to_not')
+                      rewriter.process_should_receive(should_receive_object)
+                    end
+                  end
+                end
+              end
             end
           end
         end
 
+        context 'and Configuration#convert_to_expect_to_receive? is false' do
+          before { configuration.convert_to_expect_to_receive = false }
+
+          [true, false].each do |replace_deprecated_method|
+            context "and Configuration#replace_deprecated_method? is #{replace_deprecated_method}" do
+              before { configuration.replace_deprecated_method = replace_deprecated_method }
+
+              [true, false].each do |convert_to_allow_to_receive|
+                context "and Configuration#convert_to_allow_to_receive? is #{convert_to_allow_to_receive}" do
+                  before { configuration.convert_to_allow_to_receive = convert_to_allow_to_receive }
+
+                  include_examples 'does nothing'
+                end
+              end
+            end
+          end
+        end
       end
     end
 

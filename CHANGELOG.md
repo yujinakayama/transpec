@@ -2,6 +2,8 @@
 
 ## Master
 
+* Use `--disable allow_to_receive` to disable conversion from `obj.should_receive(:foo).any_number_of_times` to `allow(obj).to receive(:foo)` (Previously it was `--disable expect_to_receive`)
+
 ## v0.0.8
 
 * Support conversion from `not_to raise_error(SpecificErrorClass)` to `not_to raise_error`
