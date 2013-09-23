@@ -47,7 +47,7 @@ describe Account do
       end
 
       it 'does not raise error' do
-        lambda { account.renew }.should_not raise_error
+        lambda { account.renew }.should_not raise_error(Account::RenewalError)
       end
     end
   end
