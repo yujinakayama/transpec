@@ -222,7 +222,8 @@ expect(obj).not_to matcher
 expect(obj).to_not matcher # with `--negative-form to_not`
 ```
 
-Disabled by: `--disable expect_to_matcher`
+* Disabled by: `--disable expect_to_matcher`
+* Related Information: [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax)
 
 ### Operator matchers
 
@@ -242,6 +243,8 @@ expect('string').to match(/^str/)
 expect([1, 2, 3]).to match_array([2, 1, 3])
 ```
 
+* Related Information: [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax)
+
 ### `be_close` matcher
 
 ```ruby
@@ -252,7 +255,8 @@ expect([1, 2, 3]).to match_array([2, 1, 3])
 (1.0 / 3.0).should be_within(0.001).of(0.333)
 ```
 
-Disabled by: `--disable deprecated`
+* Disabled by: `--disable deprecated`
+* Related Information: [New be within matcher and RSpec.deprecate fix · rspec/rspec-expectations](https://github.com/rspec/rspec-expectations/pull/32)
 
 ### Error expectations
 
@@ -266,7 +270,8 @@ proc { do_something }.should raise_error
 expect { do_something }.to raise_error
 ```
 
-Disabled by: `--disable expect_to_matcher`
+* Disabled by: `--disable expect_to_matcher`
+* Related Information: [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax)
 
 ### Negative error expectations with specific error
 
@@ -282,7 +287,8 @@ expect { do_something }.not_to raise_error
 lambda { do_something }.should_not raise_error # with `--disable expect_to_matcher`
 ```
 
-Disabled by: `--disable deprecated`
+* Disabled by: `--disable deprecated`
+* Related Information: [Consider deprecating `expect { }.not_to raise_error(SpecificErrorClass)` · rspec/rspec-expectations](https://github.com/rspec/rspec-expectations/issues/231)
 
 ### Message expectations
 
@@ -296,7 +302,8 @@ expect(obj).to receive(:foo)
 expect_any_instance_of(SomeClass).to receive(:foo)
 ```
 
-Disabled by: `--disable expect_to_receive`
+* Disabled by: `--disable expect_to_receive`
+* Related Information: [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
 
 ### Message expectations with `any_number_of_times`
 
@@ -314,7 +321,8 @@ allow_any_instance_of(SomeClass).to receive(:foo)
 SomeClass.any_instance.stub(:foo) # with `--disable allow_to_receive`
 ```
 
-Disabled by: `--disable deprecated`
+* Disabled by: `--disable deprecated`
+* Related Information: [Don't allow at_least(0) · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/133)
 
 ### Method stubs
 
@@ -339,7 +347,8 @@ allow(obj).to receive(:bar).and_return(2)
 allow_any_instance_of(SomeClass).to receive(:foo)
 ```
 
-Disabled by: `--disable allow_to_receive`
+* Disabled by: `--disable allow_to_receive`
+* Related Information: [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
 
 ### Deprecated method stub aliases
 
@@ -353,7 +362,8 @@ obj.stub(:foo) # with `--disable allow_to_receive`
 obj.unstub(:foo)
 ```
 
-Disabled by: `--disable deprecated`
+* Disabled by: `--disable deprecated`
+* Related Information: [Consider deprecating and/or removing #stub! and #unstub! at some point · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/122)
 
 ### Method stubs with `any_number_of_times`
 
@@ -366,7 +376,8 @@ allow(obj).to receive(:foo)
 obj.stub(:foo) # with `--disable allow_to_receive`
 ```
 
-Disabled by: `--disable deprecated`
+* Disabled by: `--disable deprecated`
+* Related Information: [Don't allow at_least(0) · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/133)
 
 ### Deprecated test double aliases
 
@@ -379,7 +390,8 @@ mock('something')
 double('something')
 ```
 
-Disabled by: `--disable deprecated`
+* Disabled by: `--disable deprecated`
+* Related Information: [Deprecate "stub" for doubles · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/214)
 
 ## Compatibility
 
