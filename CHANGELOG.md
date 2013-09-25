@@ -2,6 +2,8 @@
 
 ## Master
 
+* Add `-f` shorthand for `--force` option
+
 ## v0.0.9
 
 * Use `--disable allow_to_receive` to disable conversion from `obj.should_receive(:foo).any_number_of_times` to `allow(obj).to receive(:foo)` (Previously it was `--disable expect_to_receive`)

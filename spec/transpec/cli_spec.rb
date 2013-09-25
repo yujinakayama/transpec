@@ -145,7 +145,7 @@ module Transpec
         args.should == ['some_file', '--negative-form', 'to_not', 'some_dir']
       end
 
-      describe '--force option' do
+      describe '-f/--force option' do
         let(:args) { ['--force'] }
 
         it 'sets #forced? true' do

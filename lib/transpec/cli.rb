@@ -63,7 +63,7 @@ module Transpec
       parser.banner = "Usage: transpec [options] [files or directories]\n\n"
 
       parser.on(
-        '--force',
+        '-f', '--force',
         'Force processing even if the current Git',
         'repository is not clean.'
       ) do
