@@ -1,5 +1,6 @@
 # coding: utf-8
 
+require 'transpec/ast/builder'
 require 'transpec/ast/scanner'
 require 'transpec/configuration'
 require 'transpec/syntax'
@@ -54,7 +55,8 @@ module Transpec
     end
 
     def parse(source_buffer)
-      parser = Parser::CurrentRuby.new
+      builder = AST::Builder.new
+      parser = Parser::CurrentRuby.new(builder)
       ast = parser.parse(source_buffer)
       ast
     end

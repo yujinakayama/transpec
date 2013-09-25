@@ -1,5 +1,6 @@
 # coding: utf-8
 
+require 'transpec/ast/builder'
 require 'transpec/ast/scanner'
 require 'transpec/syntax/should'
 require 'parser'
@@ -15,9 +16,9 @@ shared_context 'parsed objects' do
   end
 
   let(:ast) do
-    parser = Parser::CurrentRuby.new
-    ast = parser.parse(source_buffer)
-    ast
+    builder = Transpec::AST::Builder.new
+    parser = Parser::CurrentRuby.new(builder)
+    parser.parse(source_buffer)
   end
 
   let(:source_rewriter) { Parser::Source::Rewriter.new(source_buffer) }
