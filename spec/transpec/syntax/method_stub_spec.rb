@@ -24,10 +24,8 @@ module Transpec
       let(:in_example_group_context?) { true }
 
       describe '.target_node?' do
-        include ASTHelper
-
         let(:send_node) do
-          scan_node(ast, include_origin_node: true) do |node|
+          ast.each_descendent_node do |node|
             next unless node.type == :send
             method_name = node.children[1]
             next unless method_name == :stub
@@ -53,7 +51,9 @@ module Transpec
         context 'when #stub node with Typhoeus receiver is passed' do
           let(:source) do
             <<-END
-              ::Typhoeus.stub(url, :method => method).and_return(response)
+              it "is not RSpec's #stub" do
+                ::Typhoeus.stub(url, :method => method).and_return(response)
+              end
             END
           end
 
