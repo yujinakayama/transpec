@@ -258,7 +258,7 @@ expect([1, 2, 3]).to match_array([2, 1, 3])
 * Disabled by: `--disable deprecated`
 * Related Information: [New be within matcher and RSpec.deprecate fix · rspec/rspec-expectations](https://github.com/rspec/rspec-expectations/pull/32)
 
-### Error expectations
+### Expectations on Proc
 
 ```ruby
 # Target
