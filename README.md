@@ -243,7 +243,7 @@ expect('string').to match(/^str/)
 expect([1, 2, 3]).to match_array([2, 1, 3])
 ```
 
-* Related Information: [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax)
+* Related Information: [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#almost_all_matchers_are_supported)
 
 ### `be_close` matcher
 
@@ -271,7 +271,7 @@ expect { do_something }.to raise_error
 ```
 
 * Disabled by: `--disable expect_to_matcher`
-* Related Information: [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax)
+* Related Information: [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#unification_of_block_vs_value_syntaxes)
 
 ### Negative error expectations with specific error
 
