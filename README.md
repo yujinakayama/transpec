@@ -103,6 +103,7 @@ Before converting your specs:
 
 * Make sure your project has `rspec` gem dependency `2.14` or later. If not, change your `*.gemspec` or `Gemfile` to do so.
 * Run `rspec` and check if all the specs pass.
+* Ensure the Git repository is clean. (You don't want to mix up your changes and Transpec's changes, right?)
 
 Then, run `transpec` with no arguments in the project root directory:
 
