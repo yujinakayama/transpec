@@ -95,15 +95,6 @@ module Transpec
         it 'does not rewrite the expectation to non-monkey-patch syntax' do
           should == source
         end
-
-        it 'warns to user' do
-          rewriter.should_receive(:warn) do |message|
-            message.should =~ /cannot/i
-            message.should =~ /context/i
-          end
-
-          rewriter.rewrite(source)
-        end
       end
     end
 

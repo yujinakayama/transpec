@@ -44,9 +44,7 @@ module Transpec
       end
 
       target_files(paths).each do |file_path|
-        puts "Processing #{file_path}"
-        rewriter = Rewriter.new(@configuration)
-        rewriter.rewrite_file!(file_path)
+        process_file(file_path)
       end
 
       # TODO: Print summary
@@ -55,6 +53,17 @@ module Transpec
     rescue => error
       warn error.message
       false
+    end
+
+    def process_file(file_path)
+      puts "Processing #{file_path}"
+
+      rewriter = Rewriter.new(@configuration)
+      rewriter.rewrite_file!(file_path)
+
+      rewriter.errors.each do |error|
+        warn_not_in_example_group_context_error(error)
+      end
     end
 
     # rubocop:disable MethodLength
@@ -161,6 +170,18 @@ module Transpec
       return if Git.clean?
 
       fail 'The current Git repository is not clean. Aborting.'
+    end
+
+    def warn_not_in_example_group_context_error(error)
+      message = error.message + $RS
+      message << format(
+        '%s:%d:%s',
+        error.source_buffer.name,
+        error.source_range.line,
+        error.source_range.source_line
+      )
+
+      warn message
     end
   end
 end

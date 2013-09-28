@@ -132,6 +132,44 @@ module Transpec
       end
     end
 
+    describe '#process_file' do
+      include_context 'isolated environment'
+
+      let(:file_path) { 'example.rb' }
+
+      before do
+        FileHelper.create_file(file_path, source)
+        cli.stub(:puts)
+      end
+
+      context 'when the source has a monkey-patched expectation outside of example group context' do
+        let(:source) do
+          <<-END
+            describe 'example group' do
+              class SomeClass
+                def some_method
+                  1.should == 1
+                end
+              end
+
+              it 'is an example' do
+                SomeClass.new.some_method
+              end
+            end
+          END
+        end
+
+        it 'warns to user' do
+          cli.should_receive(:warn) do |message|
+            message.should =~ /cannot/i
+            message.should =~ /context/i
+          end
+
+          cli.process_file(file_path)
+        end
+      end
+    end
+
     describe '#parse_options' do
       subject { cli.parse_options(args) }
       let(:args) { ['some_file', '--negative-form', 'to_not', 'some_dir'] }

@@ -16,8 +16,11 @@ require 'parser/current'
 
 module Transpec
   class Rewriter
+    attr_reader :errors
+
     def initialize(configuration = Configuration.new)
       @configuration = configuration
+      @errors = []
     end
 
     def rewrite_file!(file_path)
@@ -78,17 +81,7 @@ module Transpec
         break
       end
     rescue Syntax::NotInExampleGroupContextError => error
-      warn_not_in_example_group_context_error(error)
-    end
-
-    def warn_not_in_example_group_context_error(error)
-      warn error.message
-      warn format(
-        '%s:%d:%s',
-        error.source_buffer.name,
-        error.source_range.line,
-        error.source_range.source_line
-      )
+      @errors << error
     end
 
     def process_should(should)
