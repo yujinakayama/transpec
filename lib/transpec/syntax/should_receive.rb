@@ -10,6 +10,8 @@ module Transpec
     class ShouldReceive < Syntax
       include Expectizable, AnyInstanceable, AnyNumberOfTimesable
 
+      alias_method :useless_expectation?, :allow_no_message?
+
       def positive?
         method_name == :should_receive
       end
@@ -18,18 +20,18 @@ module Transpec
         convert_to_syntax!('expect', negative_form)
       end
 
-      def allowize_any_number_of_times!(negative_form = 'not_to')
-        return unless any_number_of_times?
+      def allowize_useless_expectation!(negative_form = 'not_to')
+        return unless useless_expectation?
 
         convert_to_syntax!('allow', negative_form)
-        remove_any_number_of_times!
+        remove_allowance_for_no_message!
       end
 
-      def stubize_any_number_of_times!(negative_form = 'not_to')
-        return unless any_number_of_times?
+      def stubize_useless_expectation!(negative_form = 'not_to')
+        return unless useless_expectation?
 
         replace(selector_range, 'stub')
-        remove_any_number_of_times!
+        remove_allowance_for_no_message!
       end
 
       private

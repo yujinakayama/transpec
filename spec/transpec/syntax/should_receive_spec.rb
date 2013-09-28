@@ -283,8 +283,8 @@ module Transpec
         end
       end
 
-      describe '#any_number_of_times?' do
-        subject { should_receive_object.any_number_of_times? }
+      describe '#useless_expectation?' do
+        subject { should_receive_object.useless_expectation? }
 
         context 'when it is `subject.should_receive(:method).any_number_of_times` form' do
           let(:source) do
@@ -310,6 +310,30 @@ module Transpec
           it { should be_true }
         end
 
+        context 'when it is `subject.should_receive(:method).at_least(0)` form' do
+          let(:source) do
+            <<-END
+              it 'responds to #foo' do
+                subject.should_receive(:foo).at_least(0)
+              end
+            END
+          end
+
+          it { should be_true }
+        end
+
+        context 'when it is `subject.should_receive(:method).at_least(1)` form' do
+          let(:source) do
+            <<-END
+              it 'receives #foo at least once' do
+                subject.should_receive(:foo).with(1).at_least(1)
+              end
+            END
+          end
+
+          it { should be_false }
+        end
+
         context 'when it is `subject.should_receive(:method)` form' do
           let(:source) do
             <<-END
@@ -323,7 +347,7 @@ module Transpec
         end
       end
 
-      describe '#allowize_any_number_of_times!' do
+      describe '#allowize_useless_expectation!' do
         context 'when it is `subject.should_receive(:method).any_number_of_times` form' do
           let(:source) do
             <<-END
@@ -342,7 +366,7 @@ module Transpec
           end
 
           it 'converts into `allow(subject).to receive(:method)` form' do
-            should_receive_object.allowize_any_number_of_times!
+            should_receive_object.allowize_useless_expectation!
             rewritten_source.should == expected_source
           end
         end
@@ -365,7 +389,53 @@ module Transpec
           end
 
           it 'converts into `allow_any_instance_of(subject).to receive(:method)` form' do
-            should_receive_object.allowize_any_number_of_times!
+            should_receive_object.allowize_useless_expectation!
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'when it is `subject.should_receive(:method).at_least(0)` form' do
+          let(:source) do
+            <<-END
+              it 'responds to #foo' do
+                subject.should_receive(:foo).at_least(0)
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'responds to #foo' do
+                allow(subject).to receive(:foo)
+              end
+            END
+          end
+
+          it 'converts into `allow(subject).to receive(:method)` form' do
+            should_receive_object.allowize_useless_expectation!
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'when it is `SomeClass.any_instance.should_receive(:method).at_least(0)` form' do
+          let(:source) do
+            <<-END
+              it 'responds to #foo' do
+                SomeClass.any_instance.should_receive(:foo).at_least(0)
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'responds to #foo' do
+                allow_any_instance_of(SomeClass).to receive(:foo)
+              end
+            END
+          end
+
+          it 'converts into `allow_any_instance_of(subject).to receive(:method)` form' do
+            should_receive_object.allowize_useless_expectation!
             rewritten_source.should == expected_source
           end
         end
@@ -380,13 +450,13 @@ module Transpec
           end
 
           it 'does nothing' do
-            should_receive_object.allowize_any_number_of_times!
+            should_receive_object.allowize_useless_expectation!
             rewritten_source.should == source
           end
         end
       end
 
-      describe '#stubize_any_number_of_times!' do
+      describe '#stubize_useless_expectation!' do
         context 'when it is `subject.should_receive(:method).any_number_of_times` form' do
           let(:source) do
             <<-END
@@ -405,7 +475,7 @@ module Transpec
           end
 
           it 'converts into `subject.stub(:method)` form' do
-            should_receive_object.stubize_any_number_of_times!
+            should_receive_object.stubize_useless_expectation!
             rewritten_source.should == expected_source
           end
         end
@@ -420,7 +490,7 @@ module Transpec
           end
 
           it 'does nothing' do
-            should_receive_object.stubize_any_number_of_times!
+            should_receive_object.stubize_useless_expectation!
             rewritten_source.should == source
           end
         end

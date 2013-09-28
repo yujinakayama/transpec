@@ -306,13 +306,15 @@ expect_any_instance_of(SomeClass).to receive(:foo)
 * Disabled by: `--disable expect_to_receive`
 * Related Information: [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
 
-### Message expectations with `any_number_of_times`
+### Message expectations that are actually method stubs
 
 ```ruby
 # Target
 obj.should_receive(:foo).any_number_of_times
+obj.should_receive(:foo).at_least(0)
 
 SomeClass.any_instance.should_receive(:foo).any_number_of_times
+SomeClass.any_instance.should_receive(:foo).at_least(0)
 
 # Converted
 allow(obj).to receive(:foo)
@@ -366,11 +368,12 @@ obj.unstub(:foo)
 * Disabled by: `--disable deprecated`
 * Related Information: [Consider deprecating and/or removing #stub! and #unstub! at some point · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/122)
 
-### Method stubs with `any_number_of_times`
+### Method stubs with deprecated specification of number of times
 
 ```ruby
 # Target
 obj.stub(:foo).any_number_of_times
+obj.stub(:foo).at_least(0)
 
 # Converted
 allow(obj).to receive(:foo)

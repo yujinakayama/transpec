@@ -101,12 +101,12 @@ module Transpec
     end
 
     def process_should_receive(should_receive)
-      if should_receive.any_number_of_times?
+      if should_receive.useless_expectation?
         if @configuration.replace_deprecated_method?
           if @configuration.convert_to_allow_to_receive?
-            should_receive.allowize_any_number_of_times!(@configuration.negative_form_of_to)
+            should_receive.allowize_useless_expectation!(@configuration.negative_form_of_to)
           else
-            should_receive.stubize_any_number_of_times!
+            should_receive.stubize_useless_expectation!
           end
         elsif @configuration.convert_to_expect_to_receive?
           should_receive.expectize!(@configuration.negative_form_of_to)
@@ -127,7 +127,7 @@ module Transpec
         method_stub.replace_deprecated_method!
       end
 
-      method_stub.remove_any_number_of_times! if @configuration.replace_deprecated_method?
+      method_stub.remove_allowance_for_no_message! if @configuration.replace_deprecated_method?
     end
 
     def process_be_close(be_close)

@@ -423,8 +423,8 @@ module Transpec
         end
       end
 
-      describe '#any_number_of_times?' do
-        subject { method_stub_object.any_number_of_times? }
+      describe '#allow_no_message?' do
+        subject { method_stub_object.allow_no_message? }
 
         context 'when it is `subject.stub(:method).any_number_of_times` form' do
           let(:source) do
@@ -450,6 +450,18 @@ module Transpec
           it { should be_true }
         end
 
+        context 'when it is `subject.stub(:method).at_least(0)` form' do
+          let(:source) do
+            <<-END
+              it 'responds to #foo' do
+                subject.stub(:foo).at_least(0)
+              end
+            END
+          end
+
+          it { should be_true }
+        end
+
         context 'when it is `subject.stub(:method)` form' do
           let(:source) do
             <<-END
@@ -463,7 +475,7 @@ module Transpec
         end
       end
 
-      describe '#remove_any_number_of_times!' do
+      describe '#remove_allowance_for_no_message!' do
         context 'when it is `subject.stub(:method).any_number_of_times` form' do
           let(:source) do
             <<-END
@@ -482,7 +494,30 @@ module Transpec
           end
 
           it 'removes `.any_number_of_times`' do
-            method_stub_object.remove_any_number_of_times!
+            method_stub_object.remove_allowance_for_no_message!
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'when it is `subject.stub(:method).at_least(0)` form' do
+          let(:source) do
+            <<-END
+              it 'responds to #foo' do
+                subject.stub(:foo).at_least(0)
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'responds to #foo' do
+                subject.stub(:foo)
+              end
+            END
+          end
+
+          it 'removes `.at_least(0)`' do
+            method_stub_object.remove_allowance_for_no_message!
             rewritten_source.should == expected_source
           end
         end
@@ -497,7 +532,7 @@ module Transpec
           end
 
           it 'does nothing' do
-            method_stub_object.remove_any_number_of_times!
+            method_stub_object.remove_allowance_for_no_message!
             rewritten_source.should == source
           end
         end

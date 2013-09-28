@@ -172,8 +172,8 @@ module Transpec
         end
       end
 
-      context 'when ShouldReceive#any_number_of_times? returns true' do
-        before { should_receive_object.stub(:any_number_of_times?).and_return(true) }
+      context 'when ShouldReceive#useless_expectation? returns true' do
+        before { should_receive_object.stub(:useless_expectation?).and_return(true) }
 
         context 'and Configuration#replace_deprecated_method? is true' do
           before { configuration.replace_deprecated_method = true }
@@ -188,8 +188,8 @@ module Transpec
                 context 'and Configuration#negative_form_of_to is "not_to"' do
                   before { configuration.negative_form_of_to = 'not_to' }
 
-                  it 'invokes ShouldReceive#allowize_any_number_of_times! with "not_to"' do
-                    should_receive_object.should_receive(:allowize_any_number_of_times!).with('not_to')
+                  it 'invokes ShouldReceive#allowize_useless_expectation! with "not_to"' do
+                    should_receive_object.should_receive(:allowize_useless_expectation!).with('not_to')
                     rewriter.process_should_receive(should_receive_object)
                   end
                 end
@@ -197,8 +197,8 @@ module Transpec
                 context 'and Configuration#negative_form_of_to is "to_not"' do
                   before { configuration.negative_form_of_to = 'to_not' }
 
-                  it 'invokes ShouldReceive#allowize_any_number_of_times! with "to_not"' do
-                    should_receive_object.should_receive(:allowize_any_number_of_times!).with('to_not')
+                  it 'invokes ShouldReceive#allowize_useless_expectation! with "to_not"' do
+                    should_receive_object.should_receive(:allowize_useless_expectation!).with('to_not')
                     rewriter.process_should_receive(should_receive_object)
                   end
                 end
@@ -213,8 +213,8 @@ module Transpec
               context "and Configuration#convert_to_expect_to_receive? is #{convert_to_expect_to_receive}" do
                 before { configuration.convert_to_expect_to_receive = convert_to_expect_to_receive }
 
-                it 'invokes ShouldReceive#stubize_any_number_of_times!' do
-                  should_receive_object.should_receive(:stubize_any_number_of_times!)
+                it 'invokes ShouldReceive#stubize_useless_expectation!' do
+                  should_receive_object.should_receive(:stubize_useless_expectation!)
                   rewriter.process_should_receive(should_receive_object)
                 end
               end
@@ -261,8 +261,8 @@ module Transpec
         end
       end
 
-      context 'when ShouldReceive#any_number_of_times? returns false' do
-        before { should_receive_object.stub(:any_number_of_times?).and_return(false) }
+      context 'when ShouldReceive#useless_expectation? returns false' do
+        before { should_receive_object.stub(:useless_expectation?).and_return(false) }
 
         context 'and Configuration#convert_to_expect_to_receive? is true' do
           before { configuration.convert_to_expect_to_receive = true }
@@ -349,16 +349,16 @@ module Transpec
         end
       end
 
-      shared_examples 'invokes MethodStub#remove_any_number_of_times!' do
-        it 'invokes MethodStub#remove_any_number_of_times!' do
-          method_stub_object.should_receive(:remove_any_number_of_times!)
+      shared_examples 'invokes MethodStub#remove_allowance_for_no_message!' do
+        it 'invokes MethodStub#remove_allowance_for_no_message!' do
+          method_stub_object.should_receive(:remove_allowance_for_no_message!)
           rewriter.process_method_stub(method_stub_object)
         end
       end
 
-      shared_examples 'does not invoke MethodStub#remove_any_number_of_times!' do
-        it 'does not invoke MethodStub#remove_any_number_of_times!' do
-          method_stub_object.should_not_receive(:remove_any_number_of_times!)
+      shared_examples 'does not invoke MethodStub#remove_allowance_for_no_message!' do
+        it 'does not invoke MethodStub#remove_allowance_for_no_message!' do
+          method_stub_object.should_not_receive(:remove_allowance_for_no_message!)
           rewriter.process_method_stub(method_stub_object)
         end
       end
@@ -371,7 +371,7 @@ module Transpec
 
           include_examples 'invokes MethodStub#allowize!'
           include_examples 'does not invoke MethodStub#replace_deprecated_method!'
-          include_examples 'invokes MethodStub#remove_any_number_of_times!'
+          include_examples 'invokes MethodStub#remove_allowance_for_no_message!'
         end
 
         context 'and Configuration#replace_deprecated_method? is false' do
@@ -379,7 +379,7 @@ module Transpec
 
           include_examples 'invokes MethodStub#allowize!'
           include_examples 'does not invoke MethodStub#replace_deprecated_method!'
-          include_examples 'does not invoke MethodStub#remove_any_number_of_times!'
+          include_examples 'does not invoke MethodStub#remove_allowance_for_no_message!'
         end
       end
 
@@ -391,7 +391,7 @@ module Transpec
 
           include_examples 'does not invoke MethodStub#allowize!'
           include_examples 'invokes MethodStub#replace_deprecated_method!'
-          include_examples 'invokes MethodStub#remove_any_number_of_times!'
+          include_examples 'invokes MethodStub#remove_allowance_for_no_message!'
         end
 
         context 'and Configuration#replace_deprecated_method? is false' do
@@ -399,7 +399,7 @@ module Transpec
 
           include_examples 'does not invoke MethodStub#allowize!'
           include_examples 'does not invoke MethodStub#replace_deprecated_method!'
-          include_examples 'does not invoke MethodStub#remove_any_number_of_times!'
+          include_examples 'does not invoke MethodStub#remove_allowance_for_no_message!'
         end
       end
     end
