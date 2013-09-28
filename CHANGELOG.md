@@ -2,6 +2,8 @@
 
 ## Master
 
+## v0.1.1
+
 * Fix a bug where `be > 1` was converted into `be be > 1`
 
 ## v0.1.0
