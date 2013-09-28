@@ -15,6 +15,7 @@ RSpec.configure do |config|
   config.filter_run_excluding do_not_run_in_converted_spec: ENV['TRANSPEC_CONVERTED_SPEC']
 
   config.before(:all) do
+    require 'rainbow'
     Sickill::Rainbow.enabled = false
 
     if ENV['TRAVIS']
