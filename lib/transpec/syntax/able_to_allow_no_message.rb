@@ -4,7 +4,7 @@ require 'transpec/syntax'
 
 module Transpec
   class Syntax
-    module AnyNumberOfTimesable
+    module AbleToAllowNoMessage
       include ::AST::Sexp
 
       def allow_no_message?

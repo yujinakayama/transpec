@@ -4,7 +4,7 @@ require 'transpec/syntax/send_node_syntax'
 
 module Transpec
   class Syntax
-    module AnyInstanceable
+    module AbleToTargetAnyInstance
       include SendNodeSyntax
 
       def any_instance?

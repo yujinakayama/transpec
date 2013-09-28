@@ -1,15 +1,15 @@
 # coding: utf-8
 
 require 'transpec/syntax'
-require 'transpec/syntax/any_instanceable'
-require 'transpec/syntax/any_number_of_timesable'
+require 'transpec/syntax/able_to_allow_no_message'
+require 'transpec/syntax/able_to_target_any_instance'
 require 'transpec/util'
 require 'English'
 
 module Transpec
   class Syntax
     class MethodStub < Syntax
-      include AnyInstanceable, AnyNumberOfTimesable, Util
+      include AbleToAllowNoMessage, AbleToTargetAnyInstance, Util
 
       RECEIVER_CLASS_WHITELIST = ['Typhoeus']
 

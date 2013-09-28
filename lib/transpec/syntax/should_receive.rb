@@ -2,13 +2,13 @@
 
 require 'transpec/syntax'
 require 'transpec/syntax/expectizable'
-require 'transpec/syntax/any_instanceable'
-require 'transpec/syntax/any_number_of_timesable'
+require 'transpec/syntax/able_to_allow_no_message'
+require 'transpec/syntax/able_to_target_any_instance'
 
 module Transpec
   class Syntax
     class ShouldReceive < Syntax
-      include Expectizable, AnyInstanceable, AnyNumberOfTimesable
+      include Expectizable, AbleToAllowNoMessage, AbleToTargetAnyInstance
 
       alias_method :useless_expectation?, :allow_no_message?
 
