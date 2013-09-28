@@ -7,7 +7,7 @@ require 'transpec/util'
 module Transpec
   class Syntax
     class Matcher < Syntax
-      include SendNodeSyntax, Util
+      include SendNodeSyntax, Util, ::AST::Sexp
 
       def self.target_node?(node)
         false
@@ -25,6 +25,7 @@ module Transpec
           replace(selector_range, 'eq')
           parenthesize!(parenthesize_arg)
         when :===, :<, :<=, :>, :>=
+          return if prefixed_with_be?
           insert_before(selector_range, 'be ')
         when :=~
           if arg_node.type == :array
@@ -57,6 +58,10 @@ module Transpec
       end
 
       private
+
+      def prefixed_with_be?
+        receiver_node == s(:send, nil, :be)
+      end
 
       def left_parenthesis_range
         Parser::Source::Range.new(

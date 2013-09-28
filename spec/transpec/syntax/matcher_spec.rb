@@ -235,6 +235,20 @@ module Transpec
               rewritten_source.should == expected_source
             end
           end
+
+          context "when it is `be #{operator} 1` form" do
+            let(:source) do
+              <<-END
+                it '#{description} 1' do
+                  subject.should be #{operator} 1
+                end
+              END
+            end
+
+            it 'does nothing' do
+              rewritten_source.should == source
+            end
+          end
         end
 
         context 'when it is `=~ /pattern/` form' do

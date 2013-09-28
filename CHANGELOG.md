@@ -2,6 +2,8 @@
 
 ## Master
 
+* Fix a bug where `be > 1` was converted into `be be > 1`
+
 ## v0.1.0
 
 * Highlight source in console when warning conversion error
