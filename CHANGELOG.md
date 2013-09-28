@@ -2,6 +2,8 @@
 
 ## Master
 
+* Highlight source in console when warning conversion error
+
 ## v0.0.10
 
 * Support conversion of `at_least(0)`

@@ -14,8 +14,10 @@ RSpec.configure do |config|
   config.treat_symbols_as_metadata_keys_with_true_values = true
   config.filter_run_excluding do_not_run_in_converted_spec: ENV['TRANSPEC_CONVERTED_SPEC']
 
-  if ENV['TRAVIS']
-    config.before(:all) do
+  config.before(:all) do
+    Sickill::Rainbow.enabled = false
+
+    if ENV['TRAVIS']
       system('git config --global user.email "you@example.com"')
       system('git config --global user.name "Your Name"')
     end

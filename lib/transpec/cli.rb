@@ -6,6 +6,7 @@ require 'transpec/rewriter'
 require 'transpec/version'
 require 'optparse'
 require 'find'
+require 'rainbow'
 
 module Transpec
   class CLI
@@ -173,15 +174,21 @@ module Transpec
     end
 
     def warn_not_in_example_group_context_error(error)
-      message = error.message + $RS
-      message << format(
-        '%s:%d:%s',
-        error.source_buffer.name,
-        error.source_range.line,
-        error.source_range.source_line
-      )
-
+      message = error.message.color(:yellow) + $RS
+      message << highlighted_source(error)
       warn message
+    end
+
+    def highlighted_source(error)
+      filename = error.source_buffer.name.color(:cyan)
+
+      line_number = error.source_range.line
+
+      source = error.source_range.source_line
+      highlight_range = error.source_range.column_range
+      source[highlight_range] = source[highlight_range].underline
+
+      [filename, line_number, source].join(':')
     end
   end
 end
