@@ -124,6 +124,10 @@ module Transpec
         @configuration.parenthesize_matcher_arg = false
       end
 
+      parser.on('--no-color', 'Disable color in the output.') do
+        Sickill::Rainbow.enabled = false
+      end
+
       parser.on('--version', 'Show Transpec version.') do
         puts Version.to_s
         exit

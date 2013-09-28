@@ -3,6 +3,7 @@
 ## Master
 
 * Highlight source in console when warning conversion error
+* Add `--no-color` option
 
 ## v0.0.10
 

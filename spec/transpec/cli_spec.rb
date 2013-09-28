@@ -252,6 +252,19 @@ module Transpec
         end
       end
 
+      describe '--no-color option' do
+        before do
+          Sickill::Rainbow.enabled = true
+        end
+
+        let(:args) { ['--no-color'] }
+
+        it 'disables color in the output' do
+          cli.parse_options(args)
+          Sickill::Rainbow.enabled.should be_false
+        end
+      end
+
       describe '--version option' do
         before do
           cli.stub(:puts)
