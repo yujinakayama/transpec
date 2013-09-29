@@ -180,6 +180,29 @@ module Transpec
           end
         end
 
+        context 'when it is `subject.should() == 1` form' do
+          let(:source) do
+            <<-END
+              it 'is 1' do
+                subject.should() == 1
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'is 1' do
+                expect(subject).to eq(1)
+              end
+            END
+          end
+
+          it 'converts into `expect(subject).to eq(1)` form' do
+            should_object.expectize!
+            rewritten_source.should == expected_source
+          end
+        end
+
         [
           'lambda', 'Kernel.lambda', '::Kernel.lambda',
           'proc', 'Kernel.proc', '::Kernel.proc',

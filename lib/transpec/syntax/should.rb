@@ -25,7 +25,7 @@ module Transpec
           wrap_subject_in_expect!
         end
 
-        replace(selector_range, positive? ? 'to' : negative_form)
+        replace(should_range, positive? ? 'to' : negative_form)
 
         matcher.correct_operator!(parenthesize_matcher_arg)
       end
@@ -52,6 +52,14 @@ module Transpec
         send_node = subject_node.children.first
         range_of_subject_method_taking_block = send_node.loc.expression
         replace(range_of_subject_method_taking_block, 'expect')
+      end
+
+      def should_range
+        if arg_node
+          selector_range
+        else
+          selector_range.join(expression_range.end)
+        end
       end
     end
   end
