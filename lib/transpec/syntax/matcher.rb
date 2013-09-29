@@ -38,7 +38,7 @@ module Transpec
       end
 
       def parenthesize!(always = true)
-        return if here_document?(arg_node)
+        return if argument_is_here_document?
 
         case left_parenthesis_range.source
         when ' '
@@ -58,6 +58,11 @@ module Transpec
       end
 
       private
+
+      def argument_is_here_document?
+        here_document?(arg_node) ||
+          arg_node.each_descendent_node.any? { |n| here_document?(n) }
+      end
 
       def prefixed_with_be?
         receiver_node == s(:send, nil, :be)

@@ -428,6 +428,34 @@ module Transpec
           end
         end
 
+        context 'when its argument is a here document with chained method' do
+          let(:source) do
+            <<-END
+              it 'returns the document' do
+                subject.should eq <<-HEREDOC.gsub('foo', 'bar')
+                foo
+                HEREDOC
+              end
+            END
+          end
+
+          # (block
+          #   (send nil :it
+          #     (str "returns the document"))
+          #   (args)
+          #   (send
+          #     (send nil :subject) :should
+          #     (send nil :eq
+          #       (send
+          #         (str "                foo\n") :gsub
+          #         (str "foo")
+          #         (str "bar")))))
+
+          it 'does nothing' do
+            rewritten_source.should == source
+          end
+        end
+
         context 'when its argument is a here document with interpolation' do
           let(:source) do
             <<-'END'

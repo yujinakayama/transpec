@@ -39,6 +39,7 @@ module Transpec
 
     def here_document?(node)
       return false unless [:str, :dstr].include?(node.type)
+      return false unless node.loc.begin
       node.loc.begin.source.start_with?('<<')
     end
 

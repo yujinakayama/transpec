@@ -4,6 +4,7 @@
 
 * Continue processing files even if a file has invalid syntax
 * Fix a crash on source `variable::Const`
+* Fix generating invalid code with here document followed by method
 
 ## v0.1.1
 
