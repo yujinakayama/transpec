@@ -5,6 +5,8 @@ require 'transpec/cli'
 
 module Transpec
   describe CLI do
+    include FileHelper
+
     subject(:cli) { CLI.new }
 
     describe '.run' do
@@ -28,7 +30,6 @@ module Transpec
         cli.stub(:puts)
         cli.stub(:warn)
         cli.stub(:target_files).and_return(args)
-        Rewriter.stub(:new).and_return(rewriter)
       end
 
       subject { cli.run(args) }
@@ -46,7 +47,15 @@ module Transpec
         end
       end
 
+      shared_context 'stubbed rewriter' do
+        before do
+          Rewriter.stub(:new).and_return(rewriter)
+        end
+      end
+
       context 'when git is available' do
+        include_context 'stubbed rewriter'
+
         before { Git.stub(:command_available?).and_return(true) }
 
         context 'and inside of a repository' do
@@ -91,11 +100,41 @@ module Transpec
       end
 
       context 'when git is not available' do
+        include_context 'stubbed rewriter'
         before { Git.stub(:command_available?).and_return(false) }
         include_examples 'rewrites files'
       end
 
-      context 'when an exception is raised while running' do
+      context 'when a syntax error is raised while processing files' do
+        include_context 'isolated environment'
+
+        let(:args) { [invalid_syntax_file_path, valid_syntax_file_path] }
+        let(:invalid_syntax_file_path) { 'invalid_example.rb' }
+        let(:valid_syntax_file_path) { 'valid_example.rb' }
+
+        before do
+          create_file(invalid_syntax_file_path, 'This is invalid syntax <')
+          create_file(valid_syntax_file_path, 'this_is_valid_syntax')
+        end
+
+        it 'warns to the user' do
+          cli.should_receive(:warn) do |message|
+            message.should include('Syntax error')
+          end
+
+          cli.run(args)
+        end
+
+        it 'continues processing files' do
+          cli.should_receive(:puts).with("Processing #{invalid_syntax_file_path}")
+          cli.should_receive(:puts).with("Processing #{valid_syntax_file_path}")
+          cli.run(args)
+        end
+      end
+
+      context 'when any other error is raised while running' do
+        include_context 'stubbed rewriter'
+
         before do
           cli.stub(:parse_options).and_raise(ArgumentError, 'No such file or directory - non-existent-file')
         end
@@ -112,6 +151,7 @@ module Transpec
 
       context 'when no target paths are specified' do
         include_context 'isolated environment'
+        include_context 'stubbed rewriter'
 
         let(:args) { [] }
 
@@ -138,7 +178,7 @@ module Transpec
       let(:file_path) { 'example.rb' }
 
       before do
-        FileHelper.create_file(file_path, source)
+        create_file(file_path, source)
         cli.stub(:puts)
       end
 
@@ -290,7 +330,7 @@ module Transpec
 
       before do
         ['file', 'file.rb', 'dir/file', 'dir/file.rb'].each do |path|
-          FileHelper.create_file(path, '')
+          create_file(path, '')
         end
       end
 

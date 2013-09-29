@@ -2,6 +2,8 @@
 
 ## Master
 
+* Continue processing files even if a file has invalid syntax
+
 ## v0.1.1
 
 * Fix a bug where `be > 1` was converted into `be be > 1`

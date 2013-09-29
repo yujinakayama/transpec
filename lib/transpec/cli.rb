@@ -65,6 +65,8 @@ module Transpec
       rewriter.errors.each do |error|
         warn_not_in_example_group_context_error(error)
       end
+    rescue Parser::SyntaxError => error
+      warn_syntax_error(error)
     end
 
     # rubocop:disable MethodLength
@@ -175,6 +177,10 @@ module Transpec
       return if Git.clean?
 
       fail 'The current Git repository is not clean. Aborting.'
+    end
+
+    def warn_syntax_error(error)
+      warn "Syntax error at #{error.diagnostic.location}. Skipping the file.".color(:red)
     end
 
     def warn_not_in_example_group_context_error(error)
