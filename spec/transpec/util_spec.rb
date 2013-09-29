@@ -34,7 +34,8 @@ module Transpec
         ['Foo::Bar',      'Foo::Bar'],
         ['Foo::Bar::Baz', 'Foo::Bar::Baz'],
         ['::Foo',         'Foo'],
-        ['::Foo::Bar',    'Foo::Bar']
+        ['::Foo::Bar',    'Foo::Bar'],
+        ['variable::Foo', 'variable::Foo']
       ].each do |source, expected_return_value|
         context "when the source is #{source.inspect}" do
           let(:source) { source }
