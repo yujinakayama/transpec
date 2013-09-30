@@ -22,9 +22,6 @@ class TranspecTest
     @url = url
     @ref = ref
     @bundler_args = bundler_args
-
-    # On Travis CI, reuse system gems to speed up build.
-    @bundler_args.concat(%w(--path vendor/bundle)) unless ENV['TRAVIS']
   end
 
   def name
@@ -40,7 +37,7 @@ class TranspecTest
 
     puts " Testing on #{name} Project ".center(80, '=')
 
-    prepare_git_repo
+    prepare_project
 
     in_project_dir do
       with_clean_bundler_env do
@@ -53,7 +50,31 @@ class TranspecTest
 
   private
 
-  def prepare_git_repo
+  def prepare_project
+    if url.start_with?('/')
+      prepare_with_local_dir
+    else
+      prepare_with_git_repo
+    end
+  end
+
+  def prepare_with_local_dir
+    if Dir.exist?(project_dir)
+      require 'fileutils'
+      FileUtils.rm_rf(project_dir)
+    end
+
+    Dir.mkdir(project_dir)
+
+    Dir.chdir(url) do
+      Dir.new('.').each do |entry|
+        next if ['.', '..', '.git', 'tmp'].include?(entry)
+        FileUtils.cp_r(entry, project_dir)
+      end
+    end
+  end
+
+  def prepare_with_git_repo
     if Dir.exist?(project_dir)
       if current_ref == ref
         git_reset_hard
@@ -115,11 +136,21 @@ class TranspecTest
 end
 
 namespace :test do
+  # On Travis CI, reuse system gems to speed up build.
+  bundler_args = if ENV['TRAVIS']
+                   []
+                 else
+                   %w(--path vendor/bundle)
+                 end
+
+  # rubocop:disable LineLength
   tests = [
-    TranspecTest.new('https://github.com/sferik/twitter.git', 'v4.1.0'),
-    TranspecTest.new('https://github.com/yujinakayama/guard.git', 'transpec', %w(--without development)), # rubocop:disable LineLength
-    TranspecTest.new('https://github.com/yujinakayama/mail.git', 'transpec')
+    TranspecTest.new(File.expand_path('.'), nil, []),
+    TranspecTest.new('https://github.com/sferik/twitter.git', 'v4.1.0', bundler_args),
+    TranspecTest.new('https://github.com/yujinakayama/guard.git', 'transpec', bundler_args + %w(--without development)),
+    TranspecTest.new('https://github.com/yujinakayama/mail.git', 'transpec', bundler_args)
   ]
+  # rubocop:enable LineLength
 
   desc 'Test Transpec on all projects'
   task all: tests.map(&:name)
