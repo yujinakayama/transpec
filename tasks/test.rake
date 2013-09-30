@@ -1,43 +1,48 @@
 # coding: utf-8
 
-namespace :test do
-  projects = [
-    [:twitter, 'https://github.com/sferik/twitter.git',     'v4.1.0'],
-    [:guard,   'https://github.com/yujinakayama/guard.git', 'transpec', %w(--without development)],
-    [:mail,    'https://github.com/yujinakayama/mail.git', 'transpec']
-  ]
+class TranspecTest
+  include FileUtils # This is Rake's one.
 
-  desc 'Test Transpec on all projects'
-  task all: projects.map(&:first)
+  attr_reader :url, :ref, :bundler_args
 
-  projects.each do |name, url, ref, bundler_args|
-    desc "Test Transpec on #{name.to_s.capitalize} project"
-    task name do
-      tmpdir = File.join('tmp', 'projects')
+  def self.base_dir
+    @base_dir ||= begin
+      base_dir = File.join('tmp', 'projects')
 
-      unless Dir.exist?(tmpdir)
+      unless Dir.exist?(base_dir)
         require 'fileutils'
-        FileUtils.mkdir_p(tmpdir)
+        FileUtils.mkdir_p(base_dir)
       end
 
-      Dir.chdir(tmpdir) do
-        test_on_project(name.to_s.capitalize, url, ref, bundler_args)
-      end
+      base_dir
     end
   end
 
-  def test_on_project(name, url, ref, bundler_args = nil)
+  def initialize(url, ref = nil, bundler_args = [])
+    @url = url
+    @ref = ref
+    @bundler_args = bundler_args
+
+    # On Travis CI, reuse system gems to speed up build.
+    @bundler_args.concat(%w(--path vendor/bundle)) unless ENV['TRAVIS']
+  end
+
+  def name
+    @name ||= File.basename(url, '.git')
+  end
+
+  def project_dir
+    @project_dir ||= File.join(self.class.base_dir, name)
+  end
+
+  def run
     require 'transpec'
 
     puts " Testing on #{name} Project ".center(80, '=')
 
-    repo_dir = prepare_git_repo(url, ref)
+    prepare_git_repo
 
-    bundler_args ||= []
-    # On Travis CI, reuse system gems to speed up build.
-    bundler_args.concat(%w(--path vendor/bundle)) unless ENV['TRAVIS']
-
-    Dir.chdir(repo_dir) do
+    in_project_dir do
       with_clean_bundler_env do
         sh 'bundle', 'install', *bundler_args
         sh File.join(Transpec.root, 'bin', 'transpec'), '--force'
@@ -46,41 +51,47 @@ namespace :test do
     end
   end
 
-  def prepare_git_repo(url, ref)
-    repo_dir = File.basename(url, '.git')
+  private
 
-    needs_clone = false
-
-    if Dir.exist?(repo_dir)
-      current_ref = nil
-
-      Dir.chdir(repo_dir) do
-        current_ref = `git describe --all`.chomp.sub(/\Aheads\//, '')
-      end
-
+  def prepare_git_repo
+    if Dir.exist?(project_dir)
       if current_ref == ref
-        Dir.chdir(repo_dir) do
-          sh 'git reset --hard'
-        end
+        git_reset_hard
       else
         require 'fileutils'
-        FileUtils.rm_rf(repo_dir)
-        needs_clone = true
+        FileUtils.rm_rf(project_dir)
+        git_clone
       end
     else
-      needs_clone = true
+      git_clone
     end
+  end
 
-    if needs_clone
+  def in_project_dir(&block)
+    Dir.chdir(project_dir, &block)
+  end
+
+  def current_ref
+    in_project_dir do
+      `git describe --all`.chomp.sub(/\Aheads\//, '')
+    end
+  end
+
+  def git_reset_hard
+    in_project_dir do
+      sh 'git reset --hard'
+    end
+  end
+
+  def git_clone
+    Dir.chdir(self.class.base_dir) do
       # Disabling checkout here to suppress "detached HEAD" warning.
       sh "git clone --no-checkout --depth 1 --branch #{ref} #{url}"
-
-      Dir.chdir(repo_dir) do
-        sh "git checkout --quiet #{ref}"
-      end
     end
 
-    repo_dir
+    in_project_dir do
+      sh "git checkout --quiet #{ref}"
+    end
   end
 
   def with_clean_bundler_env
@@ -98,7 +109,25 @@ namespace :test do
   end
 
   def prepare_env
-    # Disable Coveralls in other projects.
+    # Disable Coveralls.
     ENV['CI'] = ENV['JENKINS_URL'] = ENV['COVERALLS_RUN_LOCALLY'] = nil
+  end
+end
+
+namespace :test do
+  tests = [
+    TranspecTest.new('https://github.com/sferik/twitter.git', 'v4.1.0'),
+    TranspecTest.new('https://github.com/yujinakayama/guard.git', 'transpec', %w(--without development)), # rubocop:disable LineLength
+    TranspecTest.new('https://github.com/yujinakayama/mail.git', 'transpec')
+  ]
+
+  desc 'Test Transpec on all projects'
+  task all: tests.map(&:name)
+
+  tests.each do |test|
+    desc "Test Transpec on #{test.name.capitalize} project"
+    task test.name do
+      test.run
+    end
   end
 end
