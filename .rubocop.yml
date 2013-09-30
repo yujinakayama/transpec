@@ -1,5 +1,7 @@
 
 AllCops:
+  Includes:
+    - tasks/*.rake
   Excludes:
     - tmp/*
 
