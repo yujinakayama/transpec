@@ -130,9 +130,9 @@ module Transpec
           brief
         end
 
-        it 'returns current scope stack' do
+        it 'returns current context' do
           scanner = Scanner.new do |node|
-            expected_scope_stack = begin
+            expected_context = begin
               case brief_of_node(node)
               when 'lvasgn :some_var'
                 []
@@ -166,7 +166,7 @@ module Transpec
             #   But from scope point of view, the child nodes are not in the parent's scope,
             #   they should be in the next outer scope.
 
-            scanner.scope_stack.should == expected_scope_stack if expected_scope_stack
+            scanner.context.should == expected_context if expected_context
           end
 
           scanner.scan(ast, true)

@@ -1,6 +1,6 @@
 # coding: utf-8
 
-require 'transpec/ast/scope_stack'
+require 'transpec/context'
 require 'parser'
 
 module Transpec
@@ -8,7 +8,7 @@ module Transpec
     class Scanner
       SCOPE_TYPES = [:module, :class, :sclass, :def, :defs, :block].freeze
 
-      attr_reader :scope_stack
+      attr_reader :context
 
       def self.scan(origin_node, &block)
         instance = new(&block)
@@ -19,7 +19,7 @@ module Transpec
       def initialize(&block)
         @callback = block
         @ancestor_nodes = []
-        @scope_stack = ScopeStack.new
+        @context = Context.new
       end
 
       def scan(origin_node, yield_origin_node = false)
@@ -28,7 +28,7 @@ module Transpec
         yield_node(origin_node) if yield_origin_node
 
         @ancestor_nodes.push(origin_node)
-        @scope_stack.push_scope(origin_node) if scope_node?(origin_node)
+        @context.push_scope(origin_node) if scope_node?(origin_node)
 
         origin_node.children.each_with_index do |child, index|
           next unless child.is_a?(Parser::AST::Node)
@@ -37,14 +37,14 @@ module Transpec
           scan(node)
         end
 
-        @scope_stack.pop_scope if scope_node?(origin_node)
+        @context.pop_scope if scope_node?(origin_node)
         @ancestor_nodes.pop
       end
 
       private
 
       def yield_node(node)
-        @callback.call(node, @ancestor_nodes, @scope_stack.in_example_group_context?)
+        @callback.call(node, @ancestor_nodes, @context.in_example_group_context?)
       end
 
       def scope_node?(node)
