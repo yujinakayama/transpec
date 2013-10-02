@@ -11,7 +11,10 @@ module Transpec
     class MethodStub < Syntax
       include AbleToAllowNoMessage, AbleToTargetAnyInstance, Util
 
-      RECEIVER_CLASS_WHITELIST = ['Typhoeus']
+      CLASSES_DEFINING_OWN_STUB_METHOD = [
+        'Typhoeus', # https://github.com/typhoeus/typhoeus/blob/6a59c62/lib/typhoeus.rb#L66-L85
+        'Excon'     # https://github.com/geemus/excon/blob/6af4f9c/lib/excon.rb#L143-L178
+      ]
 
       def allowize!
         # There's no way of unstubbing in #allow syntax.
@@ -54,7 +57,7 @@ module Transpec
       def self.target_receiver_node?(node)
         return false if node.nil?
         const_name = Util.const_name(node)
-        !RECEIVER_CLASS_WHITELIST.include?(const_name)
+        !CLASSES_DEFINING_OWN_STUB_METHOD.include?(const_name)
       end
 
       def self.target_method_names

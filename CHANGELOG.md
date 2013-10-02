@@ -2,6 +2,8 @@
 
 ## Master
 
+* Avoid confusing `Excon.stub` with RSpec's `stub` ([#4](https://github.com/yujinakayama/transpec/issues/4))
+
 ## v0.1.2
 
 * Continue processing files even if a file has invalid syntax

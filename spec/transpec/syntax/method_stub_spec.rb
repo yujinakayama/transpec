@@ -58,6 +58,20 @@ module Transpec
             MethodStub.target_node?(send_node).should be_false
           end
         end
+
+        context 'when #stub node with Excon receiver is passed' do
+          let(:source) do
+            <<-END
+              it "is not RSpec's #stub" do
+                ::Excon.stub({}, {:body => 'body', :status => 200})
+              end
+            END
+          end
+
+          it 'returns false' do
+            MethodStub.target_node?(send_node).should be_false
+          end
+        end
       end
 
       describe '#method_name' do
