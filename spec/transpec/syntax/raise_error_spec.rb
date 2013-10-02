@@ -14,14 +14,11 @@ module Transpec
           return RaiseError.new(
             node,
             ancestor_nodes,
-            in_example_group_context?,
             source_rewriter
           )
         end
         fail 'No raise_error node is found!'
       end
-
-      let(:in_example_group_context?) { true }
 
       describe '#remove_error_specification_with_negative_expectation!' do
         before do

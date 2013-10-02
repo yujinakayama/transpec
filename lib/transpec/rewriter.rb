@@ -37,8 +37,8 @@ module Transpec
       failed_overlapping_rewrite = false
       @source_rewriter.diagnostics.consumer = proc { failed_overlapping_rewrite = true }
 
-      AST::Scanner.scan(ast) do |node, ancestor_nodes, in_example_group_context|
-        dispatch_node(node, ancestor_nodes, in_example_group_context)
+      AST::Scanner.scan(ast) do |node, ancestor_nodes|
+        dispatch_node(node, ancestor_nodes)
       end
 
       rewritten_source = @source_rewriter.process
@@ -64,14 +64,13 @@ module Transpec
       ast
     end
 
-    def dispatch_node(node, ancestor_nodes, in_example_group_context)
+    def dispatch_node(node, ancestor_nodes)
       Syntax.all.each do |syntax_class|
         next unless syntax_class.target_node?(node)
 
         syntax = syntax_class.new(
           node,
           ancestor_nodes,
-          in_example_group_context,
           @source_rewriter
         )
 

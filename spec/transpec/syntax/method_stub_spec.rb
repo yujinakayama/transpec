@@ -14,14 +14,11 @@ module Transpec
           return MethodStub.new(
             node,
             ancestor_nodes,
-            in_example_group_context?,
             source_rewriter
           )
         end
         fail 'No method stub node is found!'
       end
-
-      let(:in_example_group_context?) { true }
 
       describe '.target_node?' do
         let(:send_node) do
@@ -78,6 +75,10 @@ module Transpec
       end
 
       describe '#allowize!' do
+        before do
+          method_stub_object.context.stub(:in_example_group?).and_return(true)
+        end
+
         [:stub, :stub!].each do |method|
           context "when it is `subject.#{method}(:method)` form" do
             let(:source) do
@@ -359,6 +360,10 @@ module Transpec
       end
 
       describe '#replace_deprecated_method!' do
+        before do
+          method_stub_object.context.stub(:in_example_group?).and_return(true)
+        end
+
         [
           [:stub!,   :stub,   'responds to'],
           [:unstub!, :unstub, 'does not respond to']

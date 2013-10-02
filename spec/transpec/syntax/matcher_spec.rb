@@ -10,10 +10,8 @@ module Transpec
       include_context 'should object'
 
       subject(:matcher) do
-        Matcher.new(should_object.matcher_node, in_example_group_context?, source_rewriter)
+        Matcher.new(should_object.matcher_node, source_rewriter)
       end
-
-      let(:in_example_group_context?) { true }
 
       describe '#method_name' do
         context 'when it is operator matcher' do

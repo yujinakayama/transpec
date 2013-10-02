@@ -1,5 +1,7 @@
 # coding: utf-8
 
+require 'transpec/context'
+
 module Transpec
   class Syntax
     class NotInExampleGroupContextError < StandardError
@@ -22,8 +24,7 @@ module Transpec
       end
     end
 
-    attr_reader :node, :ancestor_nodes, :in_example_group_context, :source_rewriter
-    alias_method :in_example_group_context?, :in_example_group_context
+    attr_reader :node, :ancestor_nodes, :source_rewriter
 
     def self.all
       @subclasses ||= []
@@ -47,11 +48,14 @@ module Transpec
       target_method_names.include?(method_name)
     end
 
-    def initialize(node, ancestor_nodes, in_example_group_context, source_rewriter)
+    def initialize(node, ancestor_nodes, source_rewriter)
       @node = node
       @ancestor_nodes = ancestor_nodes
-      @in_example_group_context = in_example_group_context
       @source_rewriter = source_rewriter
+    end
+
+    def context
+      @context ||= Context.new(@ancestor_nodes)
     end
 
     def parent_node

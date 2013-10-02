@@ -14,14 +14,11 @@ module Transpec
           return Double.new(
             node,
             ancestor_nodes,
-            in_example_group_context?,
             source_rewriter
           )
         end
         fail 'No double node is found!'
       end
-
-      let(:in_example_group_context?) { true }
 
       describe '#method_name' do
         let(:source) do

@@ -15,7 +15,7 @@ module Transpec
       end
 
       def expectize!(negative_form = 'not_to', parenthesize_matcher_arg = true)
-        unless in_example_group_context?
+        unless context.in_example_group?
           fail NotInExampleGroupContextError.new(selector_range, "##{method_name}", '#expect')
         end
 
@@ -31,7 +31,7 @@ module Transpec
       end
 
       def matcher
-        @matcher ||= Matcher.new(matcher_node, in_example_group_context?, @source_rewriter)
+        @matcher ||= Matcher.new(matcher_node, @source_rewriter)
       end
 
       def matcher_node

@@ -37,7 +37,7 @@ module Transpec
       private
 
       def convert_to_syntax!(syntax, negative_form)
-        unless in_example_group_context?
+        unless context.in_example_group?
           fail NotInExampleGroupContextError.new(selector_range, "##{method_name}", "##{syntax}")
         end
 

@@ -14,14 +14,11 @@ module Transpec
           return BeClose.new(
             node,
             ancestor_nodes,
-            in_example_group_context?,
             source_rewriter
           )
         end
         fail 'No be_close node is found!'
       end
-
-      let(:in_example_group_context?) { true }
 
       describe '#convert_to_be_within!' do
         context 'when it is `be_close(expected, delta)` form' do

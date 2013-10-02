@@ -33,15 +33,12 @@ shared_context 'should object' do
       return Transpec::Syntax::Should.new(
         node,
         ancestor_nodes,
-        in_example_group_context?,
         source_rewriter
       )
     end
 
     fail 'No should node is found!'
   end
-
-  let(:in_example_group_context?) { true }
 end
 
 shared_context 'isolated environment' do

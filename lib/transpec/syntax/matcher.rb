@@ -13,9 +13,8 @@ module Transpec
         false
       end
 
-      def initialize(node, in_example_group_context, source_rewriter)
+      def initialize(node, source_rewriter)
         @node = node
-        @in_example_group_context = in_example_group_context
         @source_rewriter = source_rewriter
       end
 

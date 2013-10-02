@@ -14,14 +14,15 @@ module Transpec
           return ShouldReceive.new(
             node,
             ancestor_nodes,
-            in_example_group_context?,
             source_rewriter
           )
         end
         fail 'No should_receive node is found!'
       end
 
-      let(:in_example_group_context?) { true }
+      before do
+        should_receive_object.context.stub(:in_example_group?).and_return(true)
+      end
 
       describe '#expectize!' do
         context 'when it is `subject.should_receive(:method)` form' do

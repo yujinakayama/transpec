@@ -14,14 +14,11 @@ module Transpec
           return RSpecConfigure.new(
             node,
             ancestor_nodes,
-            in_example_group_context?,
             source_rewriter
           )
         end
         fail 'No RSpec.configure node is found!'
       end
-
-      let(:in_example_group_context?) { true }
 
       [
         [:expectation_syntaxes, :expect_with, 'RSpec::Matchers::Configuration'],

@@ -9,6 +9,10 @@ module Transpec
       include_context 'parsed objects'
       include_context 'should object'
 
+      before do
+        should_object.context.stub(:in_example_group?).and_return(true)
+      end
+
       describe '#matcher_node' do
         context 'when it is taking operator matcher' do
           let(:source) do

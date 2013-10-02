@@ -119,59 +119,6 @@ module Transpec
           index.should_not == 0
         end
       end
-
-      describe '#scope_stack' do
-        def brief_of_node(node)
-          brief = node.type.to_s
-          node.children.each do |child|
-            break if child.is_a?(Parser::AST::Node)
-            brief << " #{child.inspect}"
-          end
-          brief
-        end
-
-        it 'returns current context' do
-          scanner = Scanner.new do |node|
-            expected_context = begin
-              case brief_of_node(node)
-              when 'lvasgn :some_var'
-                []
-              when 'send nil :prepare_something'
-                [:rspec_configure, :block]
-              when 'module'
-                []
-              when 'const nil :SomeModule'
-                # [:module] # TODO
-              when 'casgn nil :SOME_CONST'
-                [:module]
-              when 'send nil :describe'
-                # [:module] # TODO
-              when 'def :some_method'
-                [:module, :example_group]
-              when 'arg :some_arg'
-                # [:module, :example_group] # TODO
-              when 'send nil :do_something'
-                [:module, :example_group, :def]
-              when 'send nil :it'
-                # [:module, :example_group] # TODO
-              when 'str "is 1"'
-                # [:module, :example_group] # TODO
-              when 'send nil :something'
-                [:module, :example_group, :block]
-              end
-            end
-
-            # TODO: Some scope nodes have special child nodes
-            #   such as their arguments or their subject.
-            #   But from scope point of view, the child nodes are not in the parent's scope,
-            #   they should be in the next outer scope.
-
-            scanner.context.should == expected_context if expected_context
-          end
-
-          scanner.scan(ast, true)
-        end
-      end
     end
   end
 end
