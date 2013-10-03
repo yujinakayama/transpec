@@ -2,6 +2,8 @@
 
 ## Master
 
+## v0.1.3
+
 * Avoid confusing `Excon.stub` with RSpec's `stub` ([#4](https://github.com/yujinakayama/transpec/issues/4))
 * Fix a bug where `be == 1` was converted into `be eq(1)` (now it's converted into `eq(1)`)
 * Fix a bug where `obj.should==1` was converted into `obj.toeq1` (now it's converted into `obj.to eq(1)`)
