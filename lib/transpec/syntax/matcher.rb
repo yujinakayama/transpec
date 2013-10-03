@@ -32,27 +32,19 @@ module Transpec
       def parenthesize!(always = true)
         return if argument_is_here_document?
 
-        case left_parenthesis_range.source
-        when ' '
-          if in_parentheses?(arg_node)
-            remove(left_parenthesis_range)
-          elsif always || arg_node.type == :hash
-            replace(left_parenthesis_range, '(')
-            insert_after(expression_range, ')')
-          end
-        when "\n", "\r"
-          insert_before(left_parenthesis_range, '(')
-          linefeed = left_parenthesis_range.source
-          matcher_line_indentation = indentation_of_line(@node)
-          right_parenthesis = "#{linefeed}#{matcher_line_indentation})"
-          insert_after(expression_range, right_parenthesis)
+        left_of_arg_source = range_in_between_selector_and_arg.source
+
+        if left_of_arg_source.match(/\A *\Z/)
+          parenthesize_single_line!(always)
+        elsif left_of_arg_source.match(/\n|\r/)
+          parenthesize_multi_line!(Regexp.last_match(0))
         end
       end
 
       private
 
       def convert_to_eq!(parenthesize_arg)
-        remove_be! if prefixed_with_be?
+        handle_anterior_of_operator!
         replace(selector_range, 'eq')
         parenthesize!(parenthesize_arg)
       end
@@ -63,7 +55,7 @@ module Transpec
       end
 
       def convert_to_match!(parenthesize_arg)
-        remove_be! if prefixed_with_be?
+        handle_anterior_of_operator!
 
         if arg_node.type == :array
           replace(selector_range, 'match_array')
@@ -72,6 +64,32 @@ module Transpec
         end
 
         parenthesize!(parenthesize_arg)
+      end
+
+      def handle_anterior_of_operator!
+        if prefixed_with_be?
+          remove_be!
+        elsif range_in_between_receiver_and_selector.source.empty?
+          insert_before(selector_range, ' ')
+        end
+      end
+
+      def parenthesize_single_line!(always)
+        if in_parentheses?(arg_node)
+          remove(range_in_between_selector_and_arg)
+        elsif always || arg_node.type == :hash
+          replace(range_in_between_selector_and_arg, '(')
+          insert_after(expression_range, ')')
+        elsif range_in_between_selector_and_arg.source.empty?
+          insert_after(selector_range, ' ')
+        end
+      end
+
+      def parenthesize_multi_line!(linefeed)
+        insert_before(range_in_between_selector_and_arg, '(')
+        matcher_line_indentation = indentation_of_line(@node)
+        right_parenthesis = "#{linefeed}#{matcher_line_indentation})"
+        insert_after(expression_range, right_parenthesis)
       end
 
       def prefixed_with_be?
@@ -94,14 +112,6 @@ module Transpec
       def argument_is_here_document?
         here_document?(arg_node) ||
           arg_node.each_descendent_node.any? { |n| here_document?(n) }
-      end
-
-      def left_parenthesis_range
-        Parser::Source::Range.new(
-          selector_range.source_buffer,
-          selector_range.end_pos,
-          selector_range.end_pos + 1
-        )
       end
     end
   end
