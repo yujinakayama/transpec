@@ -37,14 +37,9 @@ class TranspecTest
 
     puts " Testing on #{name} Project ".center(80, '=')
 
-    prepare_project
-
-    in_project_dir do
-      with_clean_bundler_env do
-        sh 'bundle', 'install', *bundler_args
-        sh File.join(Transpec.root, 'bin', 'transpec'), '--force'
-        sh 'bundle exec rspec'
-      end
+    [%w(--force), %w(--force --no-parentheses-matcher-arg)].each do |args|
+      prepare_project
+      run_test(args)
     end
   end
 
@@ -72,19 +67,31 @@ class TranspecTest
         FileUtils.cp_r(entry, project_dir)
       end
     end
+
+    bundle_install
   end
 
   def prepare_with_git_repo
     if Dir.exist?(project_dir)
       if current_ref == ref
         git_reset_hard
+        return
       else
         require 'fileutils'
         FileUtils.rm_rf(project_dir)
-        git_clone
       end
-    else
-      git_clone
+    end
+
+    git_clone
+    bundle_install
+  end
+
+  def run_test(transpec_args = [])
+    in_project_dir do
+      with_clean_bundler_env do
+        sh File.join(Transpec.root, 'bin', 'transpec'), *transpec_args
+        sh 'bundle exec rspec'
+      end
     end
   end
 
@@ -112,6 +119,14 @@ class TranspecTest
 
     in_project_dir do
       sh "git checkout --quiet #{ref}"
+    end
+  end
+
+  def bundle_install
+    in_project_dir do
+      with_clean_bundler_env do
+        sh 'bundle', 'install', *bundler_args
+      end
     end
   end
 
@@ -145,7 +160,7 @@ namespace :test do
 
   # rubocop:disable LineLength
   tests = [
-    TranspecTest.new(File.expand_path('.'), nil, []),
+    TranspecTest.new(File.expand_path('.'), nil, ['--quiet']),
     TranspecTest.new('https://github.com/sferik/twitter.git', 'v4.1.0', bundler_args),
     TranspecTest.new('https://github.com/yujinakayama/guard.git', 'transpec', bundler_args + %w(--without development)),
     TranspecTest.new('https://github.com/yujinakayama/mail.git', 'transpec', bundler_args)
