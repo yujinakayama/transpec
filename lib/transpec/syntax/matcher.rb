@@ -21,18 +21,11 @@ module Transpec
       def correct_operator!(parenthesize_arg = true)
         case method_name
         when :==
-          replace(selector_range, 'eq')
-          parenthesize!(parenthesize_arg)
+          convert_to_eq!(parenthesize_arg)
         when :===, :<, :<=, :>, :>=
-          return if prefixed_with_be?
-          insert_before(selector_range, 'be ')
+          convert_to_be_operator!
         when :=~
-          if arg_node.type == :array
-            replace(selector_range, 'match_array')
-          else
-            replace(selector_range, 'match')
-          end
-          parenthesize!(parenthesize_arg)
+          convert_to_match!(parenthesize_arg)
         end
       end
 
@@ -58,13 +51,49 @@ module Transpec
 
       private
 
-      def argument_is_here_document?
-        here_document?(arg_node) ||
-          arg_node.each_descendent_node.any? { |n| here_document?(n) }
+      def convert_to_eq!(parenthesize_arg)
+        remove_be! if prefixed_with_be?
+        replace(selector_range, 'eq')
+        parenthesize!(parenthesize_arg)
+      end
+
+      def convert_to_be_operator!
+        return if prefixed_with_be?
+        insert_before(selector_range, 'be ')
+      end
+
+      def convert_to_match!(parenthesize_arg)
+        remove_be! if prefixed_with_be?
+
+        if arg_node.type == :array
+          replace(selector_range, 'match_array')
+        else
+          replace(selector_range, 'match')
+        end
+
+        parenthesize!(parenthesize_arg)
       end
 
       def prefixed_with_be?
-        receiver_node == s(:send, nil, :be)
+        !be_node.nil?
+      end
+
+      def remove_be!
+        be_range = be_node.loc.expression.join(selector_range.begin)
+        remove(be_range)
+      end
+
+      def be_node
+        if receiver_node == s(:send, nil, :be)
+          receiver_node
+        else
+          nil
+        end
+      end
+
+      def argument_is_here_document?
+        here_document?(arg_node) ||
+          arg_node.each_descendent_node.any? { |n| here_document?(n) }
       end
 
       def left_parenthesis_range

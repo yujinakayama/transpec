@@ -131,6 +131,50 @@ module Transpec
           end
         end
 
+        context 'when it is `be == 1` form' do
+          let(:source) do
+            <<-END
+              it 'is 1' do
+                subject.should be == 1
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'is 1' do
+                subject.should eq(1)
+              end
+            END
+          end
+
+          it 'converts into `eq(1)` form' do
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'when it is `be.==(1)` form' do
+          let(:source) do
+            <<-END
+              it 'is 1' do
+                subject.should be.==(1)
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'is 1' do
+                subject.should eq(1)
+              end
+            END
+          end
+
+          it 'converts into `eq(1)` form' do
+            rewritten_source.should == expected_source
+          end
+        end
+
         context 'when it is `== (2 - 1)` form' do
           let(:source) do
             <<-END
@@ -271,11 +315,55 @@ module Transpec
           end
         end
 
+        context 'when it is `be =~ /pattern/` form' do
+          let(:source) do
+            <<-END
+              it 'matches the pattern' do
+                subject.should be =~ /pattern/
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'matches the pattern' do
+                subject.should match(/pattern/)
+              end
+            END
+          end
+
+          it 'converts into `match(/pattern/)` form' do
+            rewritten_source.should == expected_source
+          end
+        end
+
         context 'when it is `=~ [1, 2]` form' do
           let(:source) do
             <<-END
               it 'contains 1 and 2' do
                 subject.should =~ [1, 2]
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'contains 1 and 2' do
+                subject.should match_array([1, 2])
+              end
+            END
+          end
+
+          it 'converts into `match_array([1, 2])` form' do
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'when it is `be =~ [1, 2]` form' do
+          let(:source) do
+            <<-END
+              it 'contains 1 and 2' do
+                subject.should be =~ [1, 2]
               end
             END
           end
