@@ -79,7 +79,7 @@ module Transpec
 
       def build_allow_expression(message_node, return_value_node = nil, keep_form_around_arg = true)
         expression =  allow_source
-        expression << range_in_between_subject_and_selector.source
+        expression << range_in_between_receiver_and_selector.source
         expression << 'to receive'
         expression << (keep_form_around_arg ? range_in_between_selector_and_arg.source : '(')
         expression << message_source(message_node)
@@ -106,30 +106,6 @@ module Transpec
         message_source = node.loc.expression.source
         message_source.prepend(':') if node.type == :sym && !message_source.start_with?(':')
         message_source
-      end
-
-      def range_in_between_subject_and_selector
-        Parser::Source::Range.new(
-          subject_range.source_buffer,
-          subject_range.end_pos,
-          selector_range.begin_pos
-        )
-      end
-
-      def range_in_between_selector_and_arg
-        Parser::Source::Range.new(
-          selector_range.source_buffer,
-          selector_range.end_pos,
-          arg_range.begin_pos
-        )
-      end
-
-      def range_after_arg
-        Parser::Source::Range.new(
-          arg_range.source_buffer,
-          arg_range.end_pos,
-          expression_range.end_pos
-        )
       end
     end
   end

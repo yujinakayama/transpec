@@ -36,6 +36,18 @@ module Transpec
       def parentheses_range
         selector_range.end.join(expression_range.end)
       end
+
+      def range_in_between_receiver_and_selector
+        receiver_range.end.join(selector_range.begin)
+      end
+
+      def range_in_between_selector_and_arg
+        selector_range.end.join(arg_range.begin)
+      end
+
+      def range_after_arg
+        arg_range.end.join(expression_range.end)
+      end
     end
   end
 end
