@@ -91,6 +91,7 @@ module Transpec
       describe '#allowize!' do
         before do
           method_stub_object.context.stub(:in_example_group?).and_return(true)
+          method_stub_object.allowize!
         end
 
         [:stub, :stub!].each do |method|
@@ -112,7 +113,6 @@ module Transpec
             end
 
             it 'converts into `allow(subject).to receive(:method)` form' do
-              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
           end
@@ -135,7 +135,6 @@ module Transpec
             end
 
             it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
-              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
           end
@@ -158,7 +157,6 @@ module Transpec
             end
 
             it 'converts into `allow(subject).to receive(:method).and_raise(RuntimeError)` form' do
-              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
           end
@@ -191,7 +189,6 @@ module Transpec
             end
 
             it 'keeps the style as far as possible' do
-              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
           end
@@ -214,7 +211,6 @@ module Transpec
             end
 
             it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
-              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
           end
@@ -237,7 +233,6 @@ module Transpec
             end
 
             it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
-              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
           end
@@ -262,7 +257,6 @@ module Transpec
 
             it 'converts into `allow(subject).to receive(:a_method).and_return(a_value)` ' +
                'and `allow(subject).to receive(:b_method).and_return(b_value)` form' do
-              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
 
@@ -291,7 +285,6 @@ module Transpec
               end
 
               it 'keeps the style except around the hash' do
-                method_stub_object.allowize!
                 rewritten_source.should == expected_source
               end
             end
@@ -334,7 +327,6 @@ module Transpec
             end
 
             it 'converts into `allow_any_instance_of(SomeClass).to receive(:method)` form' do
-              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
           end
@@ -351,24 +343,8 @@ module Transpec
             end
 
             it 'does nothing' do
-              method_stub_object.allowize!
               rewritten_source.should == source
             end
-          end
-        end
-
-        context 'when already replaced deprecated method' do
-          let(:source) do
-            <<-END
-              it 'responds to #foo' do
-                subject.stub!(:foo)
-              end
-            END
-          end
-
-          it 'raises error' do
-            method_stub_object.replace_deprecated_method!
-            -> { method_stub_object.allowize! }.should raise_error
           end
         end
       end
@@ -376,6 +352,7 @@ module Transpec
       describe '#replace_deprecated_method!' do
         before do
           method_stub_object.context.stub(:in_example_group?).and_return(true)
+          method_stub_object.replace_deprecated_method!
         end
 
         [
@@ -400,7 +377,6 @@ module Transpec
             end
 
             it "replaces with ##{replacement_method}" do
-              method_stub_object.replace_deprecated_method!
               rewritten_source.should == expected_source
             end
           end
@@ -420,24 +396,8 @@ module Transpec
             end
 
             it 'does nothing' do
-              method_stub_object.replace_deprecated_method!
               rewritten_source.should == source
             end
-          end
-        end
-
-        context 'when already allowized' do
-          let(:source) do
-            <<-END
-              it 'responds to #foo' do
-                subject.stub!(:foo)
-              end
-            END
-          end
-
-          it 'raises error' do
-            method_stub_object.allowize!
-            -> { method_stub_object.replace_deprecated_method! }.should raise_error
           end
         end
       end
@@ -495,6 +455,10 @@ module Transpec
       end
 
       describe '#remove_allowance_for_no_message!' do
+        before do
+          method_stub_object.remove_allowance_for_no_message!
+        end
+
         context 'when it is `subject.stub(:method).any_number_of_times` form' do
           let(:source) do
             <<-END
@@ -513,7 +477,6 @@ module Transpec
           end
 
           it 'removes `.any_number_of_times`' do
-            method_stub_object.remove_allowance_for_no_message!
             rewritten_source.should == expected_source
           end
         end
@@ -536,7 +499,6 @@ module Transpec
           end
 
           it 'removes `.at_least(0)`' do
-            method_stub_object.remove_allowance_for_no_message!
             rewritten_source.should == expected_source
           end
         end
@@ -551,7 +513,6 @@ module Transpec
           end
 
           it 'does nothing' do
-            method_stub_object.remove_allowance_for_no_message!
             rewritten_source.should == source
           end
         end

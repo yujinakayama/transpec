@@ -43,7 +43,7 @@ module Transpec
 
       context 'when a form other than "not_to" or "to_not" is passed' do
         it 'raises error' do
-          proc do
+          lambda do
             configuration.negative_form_of_to = 'foo'
           end.should raise_error(ArgumentError)
         end

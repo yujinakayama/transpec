@@ -349,6 +349,10 @@ module Transpec
       end
 
       describe '#allowize_useless_expectation!' do
+        before do
+          should_receive_object.allowize_useless_expectation!
+        end
+
         context 'when it is `subject.should_receive(:method).any_number_of_times` form' do
           let(:source) do
             <<-END
@@ -367,7 +371,6 @@ module Transpec
           end
 
           it 'converts into `allow(subject).to receive(:method)` form' do
-            should_receive_object.allowize_useless_expectation!
             rewritten_source.should == expected_source
           end
         end
@@ -390,7 +393,6 @@ module Transpec
           end
 
           it 'converts into `allow_any_instance_of(subject).to receive(:method)` form' do
-            should_receive_object.allowize_useless_expectation!
             rewritten_source.should == expected_source
           end
         end
@@ -413,7 +415,6 @@ module Transpec
           end
 
           it 'converts into `allow(subject).to receive(:method)` form' do
-            should_receive_object.allowize_useless_expectation!
             rewritten_source.should == expected_source
           end
         end
@@ -436,7 +437,6 @@ module Transpec
           end
 
           it 'converts into `allow_any_instance_of(subject).to receive(:method)` form' do
-            should_receive_object.allowize_useless_expectation!
             rewritten_source.should == expected_source
           end
         end
@@ -451,13 +451,16 @@ module Transpec
           end
 
           it 'does nothing' do
-            should_receive_object.allowize_useless_expectation!
             rewritten_source.should == source
           end
         end
       end
 
       describe '#stubize_useless_expectation!' do
+        before do
+          should_receive_object.stubize_useless_expectation!
+        end
+
         context 'when it is `subject.should_receive(:method).any_number_of_times` form' do
           let(:source) do
             <<-END
@@ -476,7 +479,6 @@ module Transpec
           end
 
           it 'converts into `subject.stub(:method)` form' do
-            should_receive_object.stubize_useless_expectation!
             rewritten_source.should == expected_source
           end
         end
@@ -491,7 +493,6 @@ module Transpec
           end
 
           it 'does nothing' do
-            should_receive_object.stubize_useless_expectation!
             rewritten_source.should == source
           end
         end
