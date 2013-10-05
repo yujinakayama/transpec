@@ -34,20 +34,19 @@ module Transpec
           replace(expression_range, expression)
         end
 
+        register_record(:allow)
+
         @allowized = true
       end
 
       def replace_deprecated_method!
-        replacement_method_name = case method_name
-                                  when :stub!   then 'stub'
-                                  when :unstub! then 'unstub'
-                                  end
-
-        return unless replacement_method_name
+        return unless replacement_method_for_deprecated_method
 
         fail 'Already allowized, cannot replace deprecated method.' if @allowized
 
-        replace(selector_range, replacement_method_name)
+        replace(selector_range, replacement_method_for_deprecated_method)
+
+        register_record(:deprecated)
 
         @replaced_deprecated_method = true
       end
@@ -106,6 +105,39 @@ module Transpec
         message_source = node.loc.expression.source
         message_source.prepend(':') if node.type == :sym && !message_source.start_with?(':')
         message_source
+      end
+
+      def replacement_method_for_deprecated_method
+        case method_name
+        when :stub!   then 'stub'
+        when :unstub! then 'unstub'
+        else nil
+        end
+      end
+
+      def register_record(conversion_type)
+        @report.records << Record.new(original_syntax, converted_syntax(conversion_type))
+      end
+
+      def original_syntax
+        syntax = any_instance? ? 'SomeClass.any_instance' : 'obj'
+        syntax << ".#{method_name}"
+        syntax << (arg_node.type == :hash ? '(:message => value)' : '(:message)')
+      end
+
+      def converted_syntax(conversion_type)
+        case conversion_type
+        when :allow
+          syntax = any_instance? ? 'allow_any_instance_of(SomeClass)' : 'allow(obj)'
+          syntax << '.to receive(:message)'
+          syntax << '.and_return(value)' if arg_node.type == :hash
+        when :deprecated
+          syntax = 'obj.'
+          syntax << replacement_method_for_deprecated_method
+          syntax << '(:message)'
+        end
+
+        syntax
       end
     end
   end

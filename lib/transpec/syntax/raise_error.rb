@@ -15,6 +15,8 @@ module Transpec
         return if arg_nodes.empty?
 
         remove(parentheses_range)
+
+        register_record
       end
 
       def positive?
@@ -30,6 +32,21 @@ module Transpec
 
       def self.target_method_names
         [:raise_error]
+      end
+
+      def register_record
+        original_syntax = 'expect { }.not_to raise_error('
+
+        if arg_nodes.first.type == :const
+          original_syntax << 'SpecificErrorClass'
+          original_syntax << ', message' if arg_nodes.count >= 2
+        else
+          original_syntax << 'message'
+        end
+
+        original_syntax << ')'
+
+        @report.records << Record.new(original_syntax, 'expect { }.not_to raise_error')
       end
     end
   end

@@ -1,6 +1,8 @@
 # coding: utf-8
 
 require 'transpec/context'
+require 'transpec/report'
+require 'transpec/record'
 
 module Transpec
   class Syntax
@@ -24,7 +26,7 @@ module Transpec
       end
     end
 
-    attr_reader :node, :ancestor_nodes, :source_rewriter
+    attr_reader :node, :ancestor_nodes, :source_rewriter, :report
 
     def self.all
       @subclasses ||= []
@@ -48,10 +50,11 @@ module Transpec
       target_method_names.include?(method_name)
     end
 
-    def initialize(node, ancestor_nodes, source_rewriter)
+    def initialize(node, ancestor_nodes, source_rewriter, report = Report.new)
       @node = node
       @ancestor_nodes = ancestor_nodes
       @source_rewriter = source_rewriter
+      @report = report
     end
 
     def context

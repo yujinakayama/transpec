@@ -20,6 +20,8 @@ module Transpec
         fail 'No should_receive node is found!'
       end
 
+      let(:record) { should_receive_object.report.records.first }
+
       before do
         should_receive_object.context.stub(:in_example_group?).and_return(true)
       end
@@ -46,6 +48,12 @@ module Transpec
             should_receive_object.expectize!
             rewritten_source.should == expected_source
           end
+
+          it 'adds record "`obj.should_receive(:message)` -> `expect(obj).to receive(:message)`"' do
+            should_receive_object.expectize!
+            record.original_syntax.should  == 'obj.should_receive(:message)'
+            record.converted_syntax.should == 'expect(obj).to receive(:message)'
+          end
         end
 
         context 'when it is `subject.should_not_receive(:method)` form' do
@@ -70,6 +78,13 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
+          it 'adds record ' +
+             '"`obj.should_not_receive(:message)` -> `expect(obj).not_to receive(:message)`"' do
+            should_receive_object.expectize!
+            record.original_syntax.should  == 'obj.should_not_receive(:message)'
+            record.converted_syntax.should == 'expect(obj).not_to receive(:message)'
+          end
+
           context 'and "to_not" is passed as negative form' do
             let(:expected_source) do
             <<-END
@@ -82,6 +97,13 @@ module Transpec
             it 'converts into `expect(subject).to_not receive(:method)` form' do
               should_receive_object.expectize!('to_not')
               rewritten_source.should == expected_source
+            end
+
+            it 'adds record ' +
+               '"`obj.should_not_receive(:message)` -> `expect(obj).to_not receive(:message)`"' do
+              should_receive_object.expectize!('to_not')
+              record.original_syntax.should  == 'obj.should_not_receive(:message)'
+              record.converted_syntax.should == 'expect(obj).to_not receive(:message)'
             end
           end
         end
@@ -281,6 +303,13 @@ module Transpec
             should_receive_object.expectize!
             rewritten_source.should == expected_source
           end
+
+          it 'adds record "`SomeClass.any_instance.should_receive(:message)` ' +
+             '-> `expect_any_instance_of(SomeClass).to receive(:message)`"' do
+            should_receive_object.expectize!
+            record.original_syntax.should  == 'SomeClass.any_instance.should_receive(:message)'
+            record.converted_syntax.should == 'expect_any_instance_of(SomeClass).to receive(:message)'
+          end
         end
       end
 
@@ -373,6 +402,12 @@ module Transpec
           it 'converts into `allow(subject).to receive(:method)` form' do
             rewritten_source.should == expected_source
           end
+
+          it 'adds record ' +
+             '"`obj.should_receive(:message).any_number_of_times` -> `allow(obj).to receive(:message)`"' do
+            record.original_syntax.should  == 'obj.should_receive(:message).any_number_of_times'
+            record.converted_syntax.should == 'allow(obj).to receive(:message)'
+          end
         end
 
         context 'when it is `SomeClass.any_instance.should_receive(:method).any_number_of_times` form' do
@@ -394,6 +429,12 @@ module Transpec
 
           it 'converts into `allow_any_instance_of(subject).to receive(:method)` form' do
             rewritten_source.should == expected_source
+          end
+
+          it 'adds record "`SomeClass.any_instance.should_receive(:message).any_number_of_times` ' +
+             '-> `allow_any_instance_of(SomeClass).to receive(:message)`"' do
+            record.original_syntax.should  == 'SomeClass.any_instance.should_receive(:message).any_number_of_times'
+            record.converted_syntax.should == 'allow_any_instance_of(SomeClass).to receive(:message)'
           end
         end
 
@@ -417,6 +458,12 @@ module Transpec
           it 'converts into `allow(subject).to receive(:method)` form' do
             rewritten_source.should == expected_source
           end
+
+          it 'adds record ' +
+             '"`obj.should_receive(:message).at_least(0)` -> `allow(obj).to receive(:message)`"' do
+            record.original_syntax.should  == 'obj.should_receive(:message).at_least(0)'
+            record.converted_syntax.should == 'allow(obj).to receive(:message)'
+          end
         end
 
         context 'when it is `SomeClass.any_instance.should_receive(:method).at_least(0)` form' do
@@ -438,6 +485,12 @@ module Transpec
 
           it 'converts into `allow_any_instance_of(subject).to receive(:method)` form' do
             rewritten_source.should == expected_source
+          end
+
+          it 'adds record "`SomeClass.any_instance.should_receive(:message).at_least(0)` ' +
+             '-> `allow_any_instance_of(SomeClass).to receive(:message)`"' do
+            record.original_syntax.should  == 'SomeClass.any_instance.should_receive(:message).at_least(0)'
+            record.converted_syntax.should == 'allow_any_instance_of(SomeClass).to receive(:message)'
           end
         end
 
@@ -480,6 +533,12 @@ module Transpec
 
           it 'converts into `subject.stub(:method)` form' do
             rewritten_source.should == expected_source
+          end
+
+          it 'adds record ' +
+             '"`obj.should_receive(:message).any_number_of_times` -> `obj.stub(:message)`"' do
+            record.original_syntax.should  == 'obj.should_receive(:message).any_number_of_times'
+            record.converted_syntax.should == 'obj.stub(:message)'
           end
         end
 

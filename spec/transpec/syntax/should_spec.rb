@@ -9,6 +9,8 @@ module Transpec
       include_context 'parsed objects'
       include_context 'should object'
 
+      let(:record) { should_object.report.records.first }
+
       before do
         should_object.context.stub(:in_example_group?).and_return(true)
       end
@@ -121,6 +123,12 @@ module Transpec
             should_object.expectize!
             rewritten_source.should == expected_source
           end
+
+          it 'adds record "`obj.should` -> `expect(obj).to`"' do
+            should_object.expectize!
+            record.original_syntax.should  == 'obj.should'
+            record.converted_syntax.should == 'expect(obj).to'
+          end
         end
 
         context 'when it is `subject.should_not` form' do
@@ -145,6 +153,12 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
+          it 'adds record "`obj.should_not` -> `expect(obj).not_to`"' do
+            should_object.expectize!
+            record.original_syntax.should  == 'obj.should_not'
+            record.converted_syntax.should == 'expect(obj).not_to'
+          end
+
           context 'and "to_not" is passed as negative form' do
             let(:expected_source) do
             <<-END
@@ -157,6 +171,12 @@ module Transpec
             it 'converts into `expect(subject).to_not` form' do
               should_object.expectize!('to_not')
               rewritten_source.should == expected_source
+            end
+
+            it 'adds record "`obj.should_not` -> `expect(obj).to_not`"' do
+              should_object.expectize!('to_not')
+              record.original_syntax.should  == 'obj.should_not'
+              record.converted_syntax.should == 'expect(obj).to_not'
             end
           end
         end
@@ -233,6 +253,12 @@ module Transpec
             it 'converts into `expect {...}.to` form' do
               should_object.expectize!
               rewritten_source.should == expected_source
+            end
+
+            it 'adds record "`lambda { }.should` -> `expect { }.to`"' do
+              should_object.expectize!
+              record.original_syntax.should  == 'lambda { }.should'
+              record.converted_syntax.should == 'expect { }.to'
             end
           end
         end

@@ -20,16 +20,18 @@ module Transpec
         fail 'No raise_error node is found!'
       end
 
+      let(:record) { raise_error_object.report.records.first }
+
       describe '#remove_error_specification_with_negative_expectation!' do
         before do
           raise_error_object.remove_error_specification_with_negative_expectation!
         end
 
-        context 'when it is `lambda { ... }.should raise_error(SomeErrorClass)` form' do
+        context 'when it is `lambda { }.should raise_error(SpecificErrorClass)` form' do
           let(:source) do
             <<-END
-              it 'raises SomeErrorClass' do
-                lambda { do_something }.should raise_error(SomeErrorClass)
+              it 'raises SpecificErrorClass' do
+                lambda { do_something }.should raise_error(SpecificErrorClass)
               end
             END
           end
@@ -37,13 +39,17 @@ module Transpec
           it 'does nothing' do
             rewritten_source.should == source
           end
+
+          it 'reports nothing' do
+            raise_error_object.report.records.should be_empty
+          end
         end
 
-        context 'when it is `expect { ... }.to raise_error(SomeErrorClass)` form' do
+        context 'when it is `expect { }.to raise_error(SpecificErrorClass)` form' do
           let(:source) do
             <<-END
-              it 'raises SomeErrorClass' do
-                expect { do_something }.to raise_error(SomeErrorClass)
+              it 'raises SpecificErrorClass' do
+                expect { do_something }.to raise_error(SpecificErrorClass)
               end
             END
           end
@@ -51,13 +57,17 @@ module Transpec
           it 'does nothing' do
             rewritten_source.should == source
           end
+
+          it 'reports nothing' do
+            raise_error_object.report.records.should be_empty
+          end
         end
 
-        context 'when it is `lambda { ... }.should_not raise_error(SomeErrorClass)` form' do
+        context 'when it is `lambda { }.should_not raise_error(SpecificErrorClass)` form' do
           let(:source) do
             <<-END
               it 'does not raise error' do
-                lambda { do_something }.should_not raise_error(SomeErrorClass)
+                lambda { do_something }.should_not raise_error(SpecificErrorClass)
               end
             END
           end
@@ -70,16 +80,22 @@ module Transpec
             END
           end
 
-          it 'converts into `lambda { ... }.should_not raise_error` form' do
+          it 'converts into `lambda { }.should_not raise_error` form' do
             rewritten_source.should == expected_source
+          end
+
+          it 'adds record ' +
+             '"`expect { }.not_to raise_error(SpecificErrorClass)` -> `expect { }.not_to raise_error`\"' do
+            record.original_syntax.should  == 'expect { }.not_to raise_error(SpecificErrorClass)'
+            record.converted_syntax.should == 'expect { }.not_to raise_error'
           end
         end
 
-        context 'when it is `expect { ... }.not_to raise_error(SomeErrorClass)` form' do
+        context 'when it is `expect { }.not_to raise_error(SpecificErrorClass)` form' do
           let(:source) do
             <<-END
               it 'does not raise error' do
-                expect { do_something }.not_to raise_error(SomeErrorClass)
+                expect { do_something }.not_to raise_error(SpecificErrorClass)
               end
             END
           end
@@ -92,16 +108,16 @@ module Transpec
             END
           end
 
-          it 'converts into `expect { ... }.not_to raise_error` form' do
+          it 'converts into `expect { }.not_to raise_error` form' do
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is `expect { ... }.to_not raise_error(SomeErrorClass)` form' do
+        context 'when it is `expect { }.to_not raise_error(SpecificErrorClass)` form' do
           let(:source) do
             <<-END
               it 'does not raise error' do
-                expect { do_something }.to_not raise_error(SomeErrorClass)
+                expect { do_something }.to_not raise_error(SpecificErrorClass)
               end
             END
           end
@@ -114,16 +130,22 @@ module Transpec
             END
           end
 
-          it 'converts into `expect { ... }.to_not raise_error` form' do
+          it 'converts into `expect { }.to_not raise_error` form' do
             rewritten_source.should == expected_source
+          end
+
+          it 'adds record ' +
+             '"`expect { }.not_to raise_error(SpecificErrorClass)` -> `expect { }.not_to raise_error`\"' do
+            record.original_syntax.should  == 'expect { }.not_to raise_error(SpecificErrorClass)'
+            record.converted_syntax.should == 'expect { }.not_to raise_error'
           end
         end
 
-        context 'when it is `expect { ... }.not_to raise_error SomeErrorClass` form' do
+        context 'when it is `expect { }.not_to raise_error SpecificErrorClass` form' do
           let(:source) do
             <<-END
               it 'does not raise error' do
-                expect { do_something }.not_to raise_error SomeErrorClass
+                expect { do_something }.not_to raise_error SpecificErrorClass
               end
             END
           end
@@ -136,16 +158,22 @@ module Transpec
             END
           end
 
-          it 'converts into `expect { ... }.not_to raise_error` form' do
+          it 'converts into `expect { }.not_to raise_error` form' do
             rewritten_source.should == expected_source
+          end
+
+          it 'adds record ' +
+             '"`expect { }.not_to raise_error(SpecificErrorClass)` -> `expect { }.not_to raise_error`\"' do
+            record.original_syntax.should  == 'expect { }.not_to raise_error(SpecificErrorClass)'
+            record.converted_syntax.should == 'expect { }.not_to raise_error'
           end
         end
 
-        context "when it is `expect { ... }.not_to raise_error(SomeErrorClass, 'message')` form" do
+        context 'when it is `expect { }.not_to raise_error(SpecificErrorClass, message)` form' do
           let(:source) do
             <<-END
               it 'does not raise error' do
-                expect { do_something }.not_to raise_error(SomeErrorClass, 'message')
+                expect { do_something }.not_to raise_error(SpecificErrorClass, message)
               end
             END
           end
@@ -158,16 +186,22 @@ module Transpec
             END
           end
 
-          it 'converts into `expect { ... }.not_to raise_error` form' do
+          it 'converts into `expect { }.not_to raise_error` form' do
             rewritten_source.should == expected_source
+          end
+
+          it 'adds record ' +
+             '"`expect { }.not_to raise_error(SpecificErrorClass, message)` -> `expect { }.not_to raise_error`"' do
+            record.original_syntax.should  == 'expect { }.not_to raise_error(SpecificErrorClass, message)'
+            record.converted_syntax.should == 'expect { }.not_to raise_error'
           end
         end
 
-        context "when it is `expect { ... }.not_to raise_error(nil, 'message')` form" do
+        context 'when it is `expect { }.not_to raise_error(message)` form' do
           let(:source) do
             <<-END
               it 'does not raise error' do
-                expect { do_something }.not_to raise_error(nil, 'message')
+                expect { do_something }.not_to raise_error(message)
               end
             END
           end
@@ -180,8 +214,14 @@ module Transpec
             END
           end
 
-          it 'converts into `expect { ... }.not_to raise_error` form' do
+          it 'converts into `expect { }.not_to raise_error` form' do
             rewritten_source.should == expected_source
+          end
+
+          it 'adds record ' +
+             '"`expect { }.not_to raise_error(message)` -> `expect { }.not_to raise_error`"' do
+            record.original_syntax.should  == 'expect { }.not_to raise_error(message)'
+            record.converted_syntax.should == 'expect { }.not_to raise_error'
           end
         end
       end

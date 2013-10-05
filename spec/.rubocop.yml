@@ -8,7 +8,7 @@ Void:
 
 # Lengthen for long descriptions.
 LineLength:
-  Max: 110
+  Max: 120
 
 # raise_error matcher always requires {} form block.
 Blocks:

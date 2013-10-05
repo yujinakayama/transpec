@@ -27,11 +27,13 @@ module Transpec
 
         replace(should_range, positive? ? 'to' : negative_form)
 
+        register_record(negative_form)
+
         matcher.correct_operator!(parenthesize_matcher_arg)
       end
 
       def matcher
-        @matcher ||= Matcher.new(matcher_node, @source_rewriter)
+        @matcher ||= Matcher.new(matcher_node, @source_rewriter, @report)
       end
 
       def matcher_node
@@ -60,6 +62,25 @@ module Transpec
         else
           selector_range.join(expression_range.end)
         end
+      end
+
+      def register_record(negative_form_of_to)
+        if proc_literal?(subject_node)
+          original_syntax = 'lambda { }.should'
+          converted_syntax = 'expect { }.'
+        else
+          original_syntax = 'obj.should'
+          converted_syntax = 'expect(obj).'
+        end
+
+        if positive?
+          converted_syntax << 'to'
+        else
+          original_syntax << '_not'
+          converted_syntax << negative_form_of_to
+        end
+
+        @report.records << Record.new(original_syntax, converted_syntax)
       end
     end
   end

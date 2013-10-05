@@ -63,6 +63,12 @@ module Transpec
             it 'replaces with #double' do
               rewritten_source.should == expected_source
             end
+
+            it "adds record \"`#{method}('something')` -> `double('something')`\"" do
+              record = double_object.report.records.first
+              record.original_syntax.should  == "#{method}('something')"
+              record.converted_syntax.should == "double('something')"
+            end
           end
         end
 
@@ -78,6 +84,10 @@ module Transpec
 
           it 'does nothing' do
             rewritten_source.should == source
+          end
+
+          it 'reports nothing' do
+            double_object.report.records.should be_empty
           end
         end
       end

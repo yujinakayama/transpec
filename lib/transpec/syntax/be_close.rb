@@ -16,6 +16,8 @@ module Transpec
         be_within_source << ')'
 
         replace(expression_range, be_within_source)
+
+        register_record
       end
 
       private
@@ -26,6 +28,10 @@ module Transpec
 
       def self.target_method_names
         [:be_close]
+      end
+
+      def register_record
+        @report.records << Record.new('be_close(expected, delta)', 'be_within(delta).of(expected)')
       end
     end
   end

@@ -19,6 +19,10 @@ module Transpec
         @node.children[2]
       end
 
+      def arg_nodes
+        @node.children[2..-1]
+      end
+
       def selector_range
         @node.loc.selector
       end

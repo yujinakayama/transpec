@@ -18,6 +18,7 @@ module Transpec
 
       def expectize!(negative_form = 'not_to')
         convert_to_syntax!('expect', negative_form)
+        register_record(:expect, negative_form)
       end
 
       def allowize_useless_expectation!(negative_form = 'not_to')
@@ -25,13 +26,17 @@ module Transpec
 
         convert_to_syntax!('allow', negative_form)
         remove_allowance_for_no_message!
+
+        register_record(:allow, negative_form)
       end
 
-      def stubize_useless_expectation!(negative_form = 'not_to')
+      def stubize_useless_expectation!
         return unless useless_expectation?
 
         replace(selector_range, 'stub')
         remove_allowance_for_no_message!
+
+        register_record(:stub)
       end
 
       private
@@ -120,6 +125,53 @@ module Transpec
           next unless chained_node.type == :send
           return child_node if child_node.type == :block
         end
+      end
+
+      def register_record(conversion_type, negative_form_of_to = nil)
+        @report.records << Record.new(
+          original_syntax(conversion_type),
+          converted_syntax(conversion_type, negative_form_of_to)
+        )
+      end
+
+      def original_syntax(conversion_type)
+        syntax = if any_instance? && conversion_type != :stub
+                  'SomeClass.any_instance.'
+                 else
+                  'obj.'
+                 end
+
+        syntax << (positive? ? 'should_receive' : 'should_not_receive')
+        syntax << '(:message)'
+
+        if [:allow, :stub].include?(conversion_type)
+          syntax << '.any_number_of_times' if any_number_of_times?
+          syntax << '.at_least(0)' if at_least_zero?
+        end
+
+        syntax
+      end
+
+      def converted_syntax(conversion_type, negative_form_of_to)
+        return 'obj.stub(:message)' if conversion_type == :stub
+
+        syntax = case conversion_type
+                 when :expect
+                   if any_instance?
+                     'expect_any_instance_of(SomeClass).'
+                   else
+                     'expect(obj).'
+                   end
+                 when :allow
+                   if any_instance?
+                     'allow_any_instance_of(SomeClass).'
+                   else
+                     'allow(obj).'
+                   end
+                 end
+
+        syntax << (positive? ? 'to' : negative_form_of_to)
+        syntax << ' receive(:message)'
       end
     end
   end

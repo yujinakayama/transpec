@@ -13,9 +13,10 @@ module Transpec
         false
       end
 
-      def initialize(node, source_rewriter)
+      def initialize(node, source_rewriter, report = Report.new)
         @node = node
         @source_rewriter = source_rewriter
+        @report = report
       end
 
       def correct_operator!(parenthesize_arg = true)
@@ -47,11 +48,13 @@ module Transpec
         handle_anterior_of_operator!
         replace(selector_range, 'eq')
         parenthesize!(parenthesize_arg)
+        register_record(nil, 'eq(expected)')
       end
 
       def convert_to_be_operator!
         return if prefixed_with_be?
         insert_before(selector_range, 'be ')
+        register_record(nil, "be #{method_name} expected")
       end
 
       def convert_to_match!(parenthesize_arg)
@@ -59,8 +62,10 @@ module Transpec
 
         if arg_node.type == :array
           replace(selector_range, 'match_array')
+          register_record('=~ [1, 2]', 'match_array([1, 2])')
         else
           replace(selector_range, 'match')
+          register_record('=~ /pattern/', 'match(/pattern/)')
         end
 
         parenthesize!(parenthesize_arg)
@@ -112,6 +117,11 @@ module Transpec
       def argument_is_here_document?
         here_document?(arg_node) ||
           arg_node.each_descendent_node.any? { |n| here_document?(n) }
+      end
+
+      def register_record(original_syntax, converted_syntax)
+        original_syntax ||= "#{method_name} expected"
+        @report.records << Record.new(original_syntax, converted_syntax)
       end
     end
   end

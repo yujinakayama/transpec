@@ -11,6 +11,7 @@ module Transpec
       def convert_to_double!
         return if method_name == :double
         replace(selector_range, 'double')
+        register_record
       end
 
       private
@@ -21,6 +22,10 @@ module Transpec
 
       def self.target_method_names
         [:double, :mock, :stub]
+      end
+
+      def register_record
+        @report.records << Record.new("#{method_name}('something')", "double('something')")
       end
     end
   end

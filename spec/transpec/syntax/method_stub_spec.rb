@@ -20,6 +20,8 @@ module Transpec
         fail 'No method stub node is found!'
       end
 
+      let(:record) { method_stub_object.report.records.first }
+
       describe '.target_node?' do
         let(:send_node) do
           ast.each_descendent_node do |node|
@@ -114,6 +116,11 @@ module Transpec
 
             it 'converts into `allow(subject).to receive(:method)` form' do
               rewritten_source.should == expected_source
+            end
+
+            it "adds record \"`obj.#{method}(:message)` -> `allow(obj).to receive(:message)`\"" do
+              record.original_syntax.should  == "obj.#{method}(:message)"
+              record.converted_syntax.should == 'allow(obj).to receive(:message)'
             end
           end
 
@@ -213,6 +220,12 @@ module Transpec
             it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
               rewritten_source.should == expected_source
             end
+
+            it 'adds record ' +
+               "\"`obj.#{method}(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
+              record.original_syntax.should  == "obj.#{method}(:message => value)"
+              record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
+            end
           end
 
           context "when it is `subject.#{method}(method: value)` form" do
@@ -234,6 +247,12 @@ module Transpec
 
             it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
               rewritten_source.should == expected_source
+            end
+
+            it 'adds record ' +
+               "\"`obj.#{method}(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
+              record.original_syntax.should  == "obj.#{method}(:message => value)"
+              record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
             end
           end
 
@@ -258,6 +277,12 @@ module Transpec
             it 'converts into `allow(subject).to receive(:a_method).and_return(a_value)` ' +
                'and `allow(subject).to receive(:b_method).and_return(b_value)` form' do
               rewritten_source.should == expected_source
+            end
+
+            it 'adds record ' +
+               "\"`obj.#{method}(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
+              record.original_syntax.should  == "obj.#{method}(:message => value)"
+              record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
             end
 
             context 'when the statement continues over multi lines' do
@@ -302,8 +327,11 @@ module Transpec
             end
 
             it 'does nothing' do
-              method_stub_object.allowize!
               rewritten_source.should == source
+            end
+
+            it 'reports nothing' do
+              method_stub_object.report.records.should be_empty
             end
           end
         end
@@ -329,6 +357,12 @@ module Transpec
             it 'converts into `allow_any_instance_of(SomeClass).to receive(:method)` form' do
               rewritten_source.should == expected_source
             end
+
+            it "adds record \"`SomeClass.any_instance.#{method}(:message)` " +
+               '-> `allow_any_instance_of(obj).to receive(:message)`"' do
+              record.original_syntax.should  == "SomeClass.any_instance.#{method}(:message)"
+              record.converted_syntax.should == 'allow_any_instance_of(SomeClass).to receive(:message)'
+            end
           end
         end
 
@@ -344,6 +378,10 @@ module Transpec
 
             it 'does nothing' do
               rewritten_source.should == source
+            end
+
+            it 'reports nothing' do
+              method_stub_object.report.records.should be_empty
             end
           end
         end
@@ -379,6 +417,12 @@ module Transpec
             it "replaces with ##{replacement_method}" do
               rewritten_source.should == expected_source
             end
+
+            it 'adds record ' +
+               "\"`obj.#{method}(:message)` -> `obj.#{replacement_method}(:message)`\"" do
+              record.original_syntax.should  == "obj.#{method}(:message)"
+              record.converted_syntax.should == "obj.#{replacement_method}(:message)"
+            end
           end
         end
 
@@ -397,6 +441,10 @@ module Transpec
 
             it 'does nothing' do
               rewritten_source.should == source
+            end
+
+            it 'reports nothing' do
+              method_stub_object.report.records.should be_empty
             end
           end
         end

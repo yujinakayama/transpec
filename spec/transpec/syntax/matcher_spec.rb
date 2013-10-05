@@ -13,6 +13,8 @@ module Transpec
         Matcher.new(should_object.matcher_node, source_rewriter)
       end
 
+      let(:record) { matcher.report.records.first }
+
       describe '#method_name' do
         context 'when it is operator matcher' do
           let(:source) do
@@ -87,6 +89,11 @@ module Transpec
 
           it 'converts into `eq(1)` form' do
             rewritten_source.should == expected_source
+          end
+
+          it 'adds record "`== expected` -> `eq(expected)`"' do
+            record.original_syntax.should == '== expected'
+            record.converted_syntax.should == 'eq(expected)'
           end
 
           # Operator methods allow their argument to be in the next line,
@@ -188,6 +195,11 @@ module Transpec
 
           it 'converts into `eq(1)` form' do
             rewritten_source.should == expected_source
+          end
+
+          it 'adds record "`== expected` -> `eq(expected)`"' do
+            record.original_syntax.should == '== expected'
+            record.converted_syntax.should == 'eq(expected)'
           end
         end
 
@@ -314,6 +326,11 @@ module Transpec
             it "converts into `be #{operator} 1` form" do
               rewritten_source.should == expected_source
             end
+
+            it "adds record \"`#{operator} expected` -> `be #{operator} expected`\"" do
+              record.original_syntax.should == "#{operator} expected"
+              record.converted_syntax.should == "be #{operator} expected"
+            end
           end
 
           context "when it is `be #{operator} 1` form" do
@@ -327,6 +344,10 @@ module Transpec
 
             it 'does nothing' do
               rewritten_source.should == source
+            end
+
+            it 'reports nothing' do
+              matcher.report.records.should be_empty
             end
           end
         end
@@ -350,6 +371,11 @@ module Transpec
 
           it 'converts into `match(/pattern/)` form' do
             rewritten_source.should == expected_source
+          end
+
+          it 'adds record "`=~ /pattern/` -> `match(/pattern/)`"' do
+            record.original_syntax.should == '=~ /pattern/'
+            record.converted_syntax.should == 'match(/pattern/)'
           end
         end
 
@@ -416,6 +442,11 @@ module Transpec
 
           it 'converts into `match_array([1, 2])` form' do
             rewritten_source.should == expected_source
+          end
+
+          it 'adds record "`=~ [1, 2]` -> `match_array([1, 2])`"' do
+            record.original_syntax.should == '=~ [1, 2]'
+            record.converted_syntax.should == 'match_array([1, 2])'
           end
         end
 
