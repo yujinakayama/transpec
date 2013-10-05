@@ -2,6 +2,8 @@
 
 ## Master
 
+* Display conversion summary at the end
+
 ## v0.1.3
 
 * Avoid confusing `Excon.stub` with RSpec's `stub` ([#4](https://github.com/yujinakayama/transpec/issues/4))
