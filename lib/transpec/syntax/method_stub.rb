@@ -23,7 +23,7 @@ module Transpec
         fail 'Already replaced deprecated method, cannot allowize.' if @replaced_deprecated_method
 
         unless context.in_example_group?
-          fail NotInExampleGroupContextError.new(selector_range, "##{method_name}", '#allow')
+          fail InvalidContextError.new(selector_range, "##{method_name}", '#allow')
         end
 
         if arg_node.type == :hash

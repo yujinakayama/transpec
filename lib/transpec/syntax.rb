@@ -6,26 +6,6 @@ require 'transpec/record'
 
 module Transpec
   class Syntax
-    class NotInExampleGroupContextError < StandardError
-      attr_reader :message, :source_range
-
-      def initialize(source_range, original_syntax, target_syntax)
-        @source_range = source_range
-        @message = build_message(original_syntax, target_syntax)
-      end
-
-      def source_buffer
-        @source_range.source_buffer
-      end
-
-      private
-
-      def build_message(original_syntax, target_syntax)
-        "Cannot convert #{original_syntax} into #{target_syntax} " +
-        "since #{target_syntax} is not available in the context."
-      end
-    end
-
     attr_reader :node, :ancestor_nodes, :source_rewriter, :report
 
     def self.all
@@ -93,6 +73,26 @@ module Transpec
 
     def replace(range, content)
       @source_rewriter.replace(range, content)
+    end
+
+    class InvalidContextError < StandardError
+      attr_reader :message, :source_range
+
+      def initialize(source_range, original_syntax, target_syntax)
+        @source_range = source_range
+        @message = build_message(original_syntax, target_syntax)
+      end
+
+      def source_buffer
+        @source_range.source_buffer
+      end
+
+      private
+
+      def build_message(original_syntax, target_syntax)
+        "Cannot convert #{original_syntax} into #{target_syntax} " +
+        "since #{target_syntax} is not available in the context."
+      end
     end
   end
 end

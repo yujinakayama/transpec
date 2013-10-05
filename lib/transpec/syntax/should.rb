@@ -16,7 +16,7 @@ module Transpec
 
       def expectize!(negative_form = 'not_to', parenthesize_matcher_arg = true)
         unless context.in_example_group?
-          fail NotInExampleGroupContextError.new(selector_range, "##{method_name}", '#expect')
+          fail InvalidContextError.new(selector_range, "##{method_name}", '#expect')
         end
 
         if proc_literal?(subject_node)

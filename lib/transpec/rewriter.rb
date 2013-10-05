@@ -17,12 +17,12 @@ require 'parser/current'
 
 module Transpec
   class Rewriter
-    attr_reader :report, :errors
+    attr_reader :report, :invalid_context_errors
 
     def initialize(configuration = Configuration.new, report = Report.new)
       @configuration = configuration
       @report = report
-      @errors = []
+      @invalid_context_errors = []
     end
 
     def rewrite_file!(file_path)
@@ -86,8 +86,8 @@ module Transpec
         break
       end
     rescue OverlappedRewriteError # rubocop:disable HandleExceptions
-    rescue Syntax::NotInExampleGroupContextError => error
-      @errors << error
+    rescue Syntax::InvalidContextError => error
+      @invalid_context_errors << error
     end
 
     def process_should(should)
