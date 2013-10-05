@@ -186,9 +186,15 @@ module Transpec
 
     def display_summary
       puts
-      puts 'Summary:'
-      puts
-      puts @report.colored_summary
+
+      unless @report.records.empty?
+        puts 'Summary:'
+        puts
+        puts @report.colored_summary
+        puts
+      end
+
+      puts @report.colored_stats
     end
 
     def warn_syntax_error(error)

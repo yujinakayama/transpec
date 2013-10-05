@@ -31,9 +31,6 @@ module Transpec
         summary << '    ' + 'to: '.color(:cyan) + record.converted_syntax + "\n"
       end
 
-      summary << "\n"
-      summary << colored_stats + "\n"
-
       summary
     end
 

@@ -41,19 +41,21 @@ module Transpec
     end
 
     describe '#summary' do
-      subject(:summary) { report.summary }
-
       it 'returns summary string' do
-        summary.should == <<-END.gsub(/^\s+\|/, '')
+        report.summary.should == <<-END.gsub(/^\s+\|/, '')
           |2 conversions
           |  from: obj.should
           |    to: expect(obj).to
           |1 conversion
           |  from: obj.stub(:message)
           |    to: allow(obj).to receive(:message)
-          |
-          |3 conversions, 1 incomplete, 0 errors
         END
+      end
+    end
+
+    describe '#stats' do
+      it 'returns stats string' do
+        report.stats.should == '3 conversions, 1 incomplete, 0 errors'
       end
     end
   end
