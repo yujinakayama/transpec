@@ -188,7 +188,7 @@ module Transpec
       puts
       puts 'Summary:'
       puts
-      puts @report.summary
+      puts @report.colored_summary
     end
 
     def warn_syntax_error(error)
