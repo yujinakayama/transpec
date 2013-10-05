@@ -62,13 +62,19 @@ module Transpec
 
         if arg_node.type == :array
           replace(selector_range, 'match_array')
-          register_record('=~ [1, 2]', 'match_array([1, 2])')
         else
           replace(selector_range, 'match')
-          register_record('=~ /pattern/', 'match(/pattern/)')
         end
 
         parenthesize!(parenthesize_arg)
+
+        # Need to register record after all source rewrites are done
+        # to avoid false record when failed with overlapped rewrite.
+        if arg_node.type == :array
+          register_record('=~ [1, 2]', 'match_array([1, 2])')
+        else
+          register_record('=~ /pattern/', 'match(/pattern/)')
+        end
       end
 
       def handle_anterior_of_operator!

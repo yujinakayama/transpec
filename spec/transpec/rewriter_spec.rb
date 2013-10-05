@@ -68,6 +68,11 @@ module Transpec
         it 'rewrites all targets properly' do
           should == expected_source
         end
+
+        it 'adds records for only completed conversions' do
+          rewriter.rewrite(source)
+          rewriter.report.records.count.should == 2
+        end
       end
 
       context 'when the source has a monkey-patched expectation outside of example group context' do

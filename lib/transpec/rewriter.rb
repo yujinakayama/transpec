@@ -37,7 +37,10 @@ module Transpec
 
       @source_rewriter = Parser::Source::Rewriter.new(source_buffer)
       failed_overlapping_rewrite = false
-      @source_rewriter.diagnostics.consumer = proc { failed_overlapping_rewrite = true }
+      @source_rewriter.diagnostics.consumer = proc do
+        failed_overlapping_rewrite = true
+        fail OverlappedRewriteError
+      end
 
       AST::Scanner.scan(ast) do |node, ancestor_nodes|
         dispatch_node(node, ancestor_nodes)
@@ -82,6 +85,7 @@ module Transpec
 
         break
       end
+    rescue OverlappedRewriteError # rubocop:disable HandleExceptions
     rescue Syntax::NotInExampleGroupContextError => error
       @errors << error
     end
@@ -155,5 +159,7 @@ module Transpec
                       !@configuration.convert_to_allow_to_receive?
       rspec_configure.mock_syntaxes == [:should]
     end
+
+    class OverlappedRewriteError < StandardError; end
   end
 end
