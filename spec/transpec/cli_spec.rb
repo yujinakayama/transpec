@@ -33,8 +33,14 @@ module Transpec
       end
 
       subject { cli.run(args) }
+
       let(:args) { ['some_file.rb'] }
-      let(:rewriter) { double('rewriter').as_null_object }
+
+      let(:rewriter) do
+        rewriter = double('rewriter').as_null_object
+        rewriter.stub(:invalid_context_errors).and_return([])
+        rewriter
+      end
 
       shared_examples 'rewrites files' do
         it 'rewrites files' do

@@ -2,10 +2,12 @@
 
 module Transpec
   class Report
-    attr_reader :records
+    attr_reader :records, :invalid_context_errors, :syntax_errors
 
     def initialize
       @records = []
+      @invalid_context_errors = []
+      @syntax_errors = []
     end
 
     def unique_record_counts
@@ -28,7 +30,10 @@ module Transpec
       end
 
       summary << "\n"
-      summary << pluralize(records.count, 'conversion') + " total\n"
+      summary << pluralize(records.count, 'conversion') + ', '
+      summary << pluralize(invalid_context_errors.count, 'incomplete') + ', '
+      summary << pluralize(syntax_errors.count, 'error')
+      summary << "\n"
 
       summary
     end

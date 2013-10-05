@@ -64,10 +64,13 @@ module Transpec
       rewriter = Rewriter.new(@configuration, @report)
       rewriter.rewrite_file!(file_path)
 
+      @report.invalid_context_errors.concat(rewriter.invalid_context_errors)
+
       rewriter.invalid_context_errors.each do |error|
         warn_not_in_example_group_context_error(error)
       end
     rescue Parser::SyntaxError => error
+      @report.syntax_errors << error
       warn_syntax_error(error)
     end
 

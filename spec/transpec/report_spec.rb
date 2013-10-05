@@ -3,6 +3,7 @@
 require 'spec_helper'
 require 'transpec/report'
 require 'transpec/record'
+require 'transpec/syntax'
 
 module Transpec
   describe Report do
@@ -12,6 +13,8 @@ module Transpec
       report.records << Record.new('obj.stub(:message)', 'allow(obj).to receive(:message)')
       report.records << Record.new('obj.should', 'expect(obj).to')
       report.records << Record.new('obj.should', 'expect(obj).to')
+      report.invalid_context_errors <<
+        Syntax::InvalidContextError.new(double('range'), '#should', '#expect')
     end
 
     describe '#unique_record_counts' do
@@ -49,7 +52,7 @@ module Transpec
           |  from: obj.stub(:message)
           |    to: allow(obj).to receive(:message)
           |
-          |3 conversions total
+          |3 conversions, 1 incomplete, 0 errors
         END
       end
     end
