@@ -2,6 +2,7 @@
 
 require 'transpec/configuration'
 require 'transpec/git'
+require 'transpec/report'
 require 'transpec/rewriter'
 require 'transpec/version'
 require 'optparse'
@@ -27,6 +28,7 @@ module Transpec
     def initialize
       @configuration = Configuration.new
       @forced = false
+      @report = Report.new
     end
 
     def run(args)
@@ -48,7 +50,7 @@ module Transpec
         process_file(file_path)
       end
 
-      # TODO: Print summary
+      display_summary
 
       true
     rescue => error
@@ -59,7 +61,7 @@ module Transpec
     def process_file(file_path)
       puts "Processing #{file_path}"
 
-      rewriter = Rewriter.new(@configuration)
+      rewriter = Rewriter.new(@configuration, @report)
       rewriter.rewrite_file!(file_path)
 
       rewriter.errors.each do |error|
@@ -177,6 +179,13 @@ module Transpec
       return if Git.clean?
 
       fail 'The current Git repository is not clean. Aborting.'
+    end
+
+    def display_summary
+      puts
+      puts 'Summary:'
+      puts
+      puts @report.summary
     end
 
     def warn_syntax_error(error)

@@ -1,5 +1,6 @@
 # coding: utf-8
 
+require 'transpec/report'
 require 'transpec/ast/builder'
 require 'transpec/ast/scanner'
 require 'transpec/configuration'
@@ -16,10 +17,11 @@ require 'parser/current'
 
 module Transpec
   class Rewriter
-    attr_reader :errors
+    attr_reader :report, :errors
 
-    def initialize(configuration = Configuration.new)
+    def initialize(configuration = Configuration.new, report = Report.new)
       @configuration = configuration
+      @report = report
       @errors = []
     end
 
@@ -44,7 +46,7 @@ module Transpec
       rewritten_source = @source_rewriter.process
 
       if failed_overlapping_rewrite
-        rewriter = self.class.new(@configuration)
+        rewriter = self.class.new(@configuration, @report)
         rewritten_source = rewriter.rewrite(rewritten_source, name)
       end
 
@@ -71,7 +73,8 @@ module Transpec
         syntax = syntax_class.new(
           node,
           ancestor_nodes,
-          @source_rewriter
+          @source_rewriter,
+          @report
         )
 
         handler_name = "process_#{syntax_class.snake_case_name}"
