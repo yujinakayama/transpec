@@ -26,25 +26,30 @@ module Transpec
     end
 
     describe '#run' do
-      before do
-        cli.stub(:puts)
-        cli.stub(:warn)
-        cli.stub(:target_files).and_return(args)
-      end
+      include_context 'isolated environment'
 
       subject { cli.run(args) }
 
-      let(:args) { ['some_file.rb'] }
+      let(:args) { [file_path] }
+      let(:file_path) { 'spec/example_spec.rb' }
 
-      let(:rewriter) do
-        rewriter = double('rewriter').as_null_object
-        rewriter.stub(:invalid_context_errors).and_return([])
-        rewriter
+      before do
+        cli.stub(:puts)
+        cli.stub(:warn)
+
+        create_file(file_path, <<-END
+          describe 'something' do
+            it 'is 1' do
+              1.should == 1
+            end
+          end
+          END
+        )
       end
 
       shared_examples 'rewrites files' do
         it 'rewrites files' do
-          rewriter.should_receive(:rewrite_file!)
+          cli.should_receive(:process_file)
           cli.run(args)
         end
 
@@ -53,15 +58,7 @@ module Transpec
         end
       end
 
-      shared_context 'stubbed rewriter' do
-        before do
-          Rewriter.stub(:new).and_return(rewriter)
-        end
-      end
-
       context 'when git is available' do
-        include_context 'stubbed rewriter'
-
         before { Git.stub(:command_available?).and_return(true) }
 
         context 'and inside of a repository' do
@@ -74,7 +71,7 @@ module Transpec
               before { cli.stub(:forced?).and_return(false) }
 
               it 'aborts processing' do
-                rewriter.should_not_receive(:rewrite_file!)
+                cli.should_not_receive(:process_file)
                 cli.run(args).should be_false
               end
 
@@ -106,14 +103,11 @@ module Transpec
       end
 
       context 'when git is not available' do
-        include_context 'stubbed rewriter'
         before { Git.stub(:command_available?).and_return(false) }
         include_examples 'rewrites files'
       end
 
       context 'when a syntax error is raised while processing files' do
-        include_context 'isolated environment'
-
         let(:args) { [invalid_syntax_file_path, valid_syntax_file_path] }
         let(:invalid_syntax_file_path) { 'invalid_example.rb' }
         let(:valid_syntax_file_path) { 'valid_example.rb' }
@@ -139,30 +133,23 @@ module Transpec
       end
 
       context 'when any other error is raised while running' do
-        include_context 'stubbed rewriter'
-
-        before do
-          cli.stub(:parse_options).and_raise(ArgumentError, 'No such file or directory - non-existent-file')
-        end
+        let(:args) { ['non-existent-file'] }
 
         it 'return false' do
           should be_false
         end
 
         it 'prints message of the exception' do
-          cli.should_receive(:warn).with('No such file or directory - non-existent-file')
-          cli.run([])
+          cli.should_receive(:warn).with(/No such file or directory/)
+          cli.run(args)
         end
       end
 
       context 'when no target paths are specified' do
-        include_context 'isolated environment'
-        include_context 'stubbed rewriter'
-
         let(:args) { [] }
 
         context 'and there is "spec" directory' do
-          before { Dir.mkdir('spec') }
+          let(:file_path) { 'spec/example_spec.rb' }
 
           it 'targets files in the "spec" directoy' do
             cli.should_receive(:target_files).with(['spec'])
@@ -171,6 +158,8 @@ module Transpec
         end
 
         context 'and there is not "spec" directory' do
+          let(:file_path) { 'example_spec.rb' }
+
           it 'aborts' do
             should be_false
           end
