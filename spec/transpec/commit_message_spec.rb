@@ -24,7 +24,7 @@ module Transpec
         end
       end
 
-      let(:lines) { commit_message.to_s.lines }
+      let(:lines) { commit_message.to_s.lines.to_a }
 
       it 'has concise summary at first line' do
         lines[0].chomp.should == 'Convert specs to latest RSpec syntax with Transpec'
@@ -34,7 +34,7 @@ module Transpec
         lines[1].chomp.should be_empty
       end
 
-      let(:body_lines) { commit_message.to_s.lines[2..-1] }
+      let(:body_lines) { lines[2..-1] }
 
       it 'has Transpec description at the beginning of the body'  do
         body_lines[0].chomp
