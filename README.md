@@ -105,11 +105,11 @@ Before converting your specs:
 * Run `rspec` and check if all the specs pass.
 * Ensure the Git repository is clean. (You don't want to mix up your changes and Transpec's changes, right?)
 
-Then, run `transpec` with no arguments in the project root directory:
+Then, run `transpec` (using `--commit-message` is recommended) in the project root directory:
 
 ```bash
 $ cd some-project
-$ transpec
+$ transpec --commit-message
 Processing spec/spec_helper.rb
 Processing spec/spec_spec.rb
 Processing spec/support/file_helper.rb
@@ -120,7 +120,22 @@ Processing spec/transpec/ast/scope_stack_spec.rb
 
 This will convert and overwrite all spec files in the `spec` directory.
 
-After the conversion, run `rspec` again and check if all pass.
+After the conversion, run `rspec` again and check whether all pass:
+
+```bash
+$ bundle exec rspec
+# ...
+843 examples, 0 failures
+```
+
+If all pass, commit the changes with auto-generated message:
+
+```bash
+$ git add -u
+$ git commit -eF .git/COMMIT_EDITMSG
+```
+
+And you are done!
 
 ## Options
 
