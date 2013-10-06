@@ -2,6 +2,8 @@
 
 ## Master
 
+## v0.2.0
+
 * Display conversion summary at the end
 * Add `-m/--commit-message` option that allows to generate commit message automatically
 
