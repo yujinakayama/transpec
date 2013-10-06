@@ -2,6 +2,8 @@
 
 ## Master
 
+* Fix a crash on operator matcher that have `__FILE__` in its arguments
+
 ## v0.2.0
 
 * Display conversion summary at the end

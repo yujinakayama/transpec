@@ -39,8 +39,9 @@ module Transpec
 
     def here_document?(node)
       return false unless [:str, :dstr].include?(node.type)
-      return false unless node.loc.begin
-      node.loc.begin.source.start_with?('<<')
+      map = node.loc
+      return false if !map.respond_to?(:begin) || map.begin.nil?
+      map.begin.source.start_with?('<<')
     end
 
     def in_parentheses?(node)

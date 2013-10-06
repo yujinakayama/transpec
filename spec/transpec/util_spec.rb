@@ -46,5 +46,15 @@ module Transpec
         end
       end
     end
+
+    describe '#here_document?' do
+      subject { Util.here_document?(ast) }
+
+      context 'when pseudo-variable __FILE__ node is passed' do
+        let(:source) { '__FILE__' }
+
+        it { should be_false }
+      end
+    end
   end
 end
