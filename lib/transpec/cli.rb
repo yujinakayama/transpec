@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require 'transpec/configuration'
+require 'transpec/commit_message'
 require 'transpec/git'
 require 'transpec/report'
 require 'transpec/rewriter'
@@ -18,8 +19,9 @@ module Transpec
              deprecated: :replace_deprecated_method=
     }
 
-    attr_reader :configuration, :forced
+    attr_reader :configuration, :forced, :generates_commit_message
     alias_method :forced?, :forced
+    alias_method :generates_commit_message?, :generates_commit_message
 
     def self.run(args = ARGV)
       new.run(args)
@@ -28,6 +30,7 @@ module Transpec
     def initialize
       @configuration = Configuration.new
       @forced = false
+      @generates_commit_message = false
       @report = Report.new
     end
 
@@ -51,6 +54,7 @@ module Transpec
       end
 
       display_summary
+      generate_commit_message if generates_commit_message?
 
       true
     rescue => error
@@ -85,6 +89,18 @@ module Transpec
         'repository is not clean.'
       ) do
         @forced = true
+      end
+
+      parser.on(
+        '-m', '--commit-message',
+        'Generate commit message that describes',
+        'conversion summary. Only Git is supported.'
+      ) do
+        unless Git.inside_of_repository?
+          fail '-m/--commit-message option is specified but not in a Git repository'
+        end
+
+        @generates_commit_message = true
       end
 
       parser.on(
@@ -195,6 +211,18 @@ module Transpec
       end
 
       puts @report.colored_stats
+    end
+
+    def generate_commit_message
+      return if @report.records.empty?
+
+      commit_message = CommitMessage.new(@report, ARGV)
+      Git.write_commit_message(commit_message.to_s)
+
+      puts
+      puts 'Commit message was generated to .git/COMMIT_EDITMSG.'.color(:cyan)
+      puts 'Use the following command for the next commit:'.color(:cyan)
+      puts '    git commit -eF .git/COMMIT_EDITMSG'
     end
 
     def warn_syntax_error(error)

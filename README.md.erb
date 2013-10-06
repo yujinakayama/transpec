@@ -112,6 +112,17 @@ Processing spec/spec_spec.rb
 Processing spec/support/file_helper.rb
 ```
 
+### `-m/--commit-message`
+
+Generate commit message that describes conversion summary.
+Currently only Git is supported.
+
+When you commit, you need to run the following command to use the generated message:
+
+```bash
+$ git commit -eF .git/COMMIT_EDITMSG
+```
+
 ### `-d/--disable`
 
 Disable specific conversions.

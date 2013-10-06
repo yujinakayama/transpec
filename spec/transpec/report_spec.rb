@@ -51,6 +51,33 @@ module Transpec
           |    to: allow(obj).to receive(:message)
         END
       end
+
+      context 'when :separate_by_blank_line option is enabled' do
+        it 'separates conversion entries by blank line' do
+          report.summary(separate_by_blank_line: true).should == <<-END.gsub(/^\s+\|/, '')
+            |2 conversions
+            |  from: obj.should
+            |    to: expect(obj).to
+            |
+            |1 conversion
+            |  from: obj.stub(:message)
+            |    to: allow(obj).to receive(:message)
+          END
+        end
+      end
+
+      context 'when :bullet option is specified' do
+        it 'adds the bullet for each conversion entry' do
+          report.summary(bullet: '-').should == <<-END.gsub(/^\s+\|/, '')
+            |- 2 conversions
+            |    from: obj.should
+            |      to: expect(obj).to
+            |- 1 conversion
+            |    from: obj.stub(:message)
+            |      to: allow(obj).to receive(:message)
+          END
+        end
+      end
     end
 
     describe '#stats' do

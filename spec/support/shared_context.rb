@@ -50,3 +50,13 @@ shared_context 'isolated environment' do
     end
   end
 end
+
+shared_context 'inside of git repository' do
+  around do |example|
+    Dir.mkdir('repo')
+    Dir.chdir('repo') do
+      `git init`
+      example.run
+    end
+  end
+end

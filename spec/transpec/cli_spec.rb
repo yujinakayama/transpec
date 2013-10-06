@@ -25,6 +25,14 @@ module Transpec
       end
     end
 
+    describe '#generates_commit_message?' do
+      subject { cli.generates_commit_message? }
+
+      context 'by default' do
+        it { should be_false }
+      end
+    end
+
     describe '#run' do
       include_context 'isolated environment'
 
@@ -32,19 +40,20 @@ module Transpec
 
       let(:args) { [file_path] }
       let(:file_path) { 'spec/example_spec.rb' }
-
-      before do
-        cli.stub(:puts)
-        cli.stub(:warn)
-
-        create_file(file_path, <<-END
+      let(:file_content) do
+        <<-END
           describe 'something' do
             it 'is 1' do
               1.should == 1
             end
           end
-          END
-        )
+        END
+      end
+
+      before do
+        cli.stub(:puts)
+        cli.stub(:warn)
+        create_file(file_path, file_content)
       end
 
       shared_examples 'rewrites files' do
@@ -165,6 +174,28 @@ module Transpec
           end
         end
       end
+
+      context 'when -m/--commit-message option is specified' do
+        include_context 'inside of git repository'
+
+        let(:args) { ['--force', '--commit-message', file_path] }
+
+        context 'and any conversion is done' do
+          it 'writes commit message to .git/COMMIT_EDITMSG' do
+            cli.run(args)
+            File.read('.git/COMMIT_EDITMSG').should start_with('Convert specs')
+          end
+        end
+
+        context 'and no conversion is done' do
+          let(:file_content) { '' }
+
+          it 'does not writes commit message' do
+            cli.run(args)
+            File.exist?('.git/COMMIT_EDITMSG').should be_false
+          end
+        end
+      end
     end
 
     describe '#process_file' do
@@ -224,6 +255,27 @@ module Transpec
         it 'sets #forced? true' do
           cli.parse_options(args)
           cli.should be_forced
+        end
+      end
+
+      describe '-m/--commit-message option' do
+        include_context 'isolated environment'
+
+        let(:args) { ['--commit-message'] }
+
+        context 'when inside of git repository' do
+          include_context 'inside of git repository'
+
+          it 'sets #generates_commit_message? true' do
+            cli.parse_options(args)
+            cli.generates_commit_message?.should be_true
+          end
+        end
+
+        context 'when not inside of git repository' do
+          it 'raises error' do
+            -> { cli.parse_options(args) }.should raise_error(/not in a Git repository/)
+          end
         end
       end
 
