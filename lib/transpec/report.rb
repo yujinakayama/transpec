@@ -25,20 +25,11 @@ module Transpec
     def colored_summary(options = nil)
       options ||= { bullet: nil, separate_by_blank_line: false }
 
-      entry_prefix = options[:bullet] ? options[:bullet] + ' ' : ''
-      indentation = if options[:bullet]
-                      ' ' * entry_prefix.length
-                    else
-                      ''
-                    end
-
       summary = ''
 
       unique_record_counts.each do |record, count|
         summary << "\n" if options[:separate_by_blank_line] && !summary.empty?
-        summary << entry_prefix + pluralize(count, 'conversion').color(:cyan) + "\n"
-        summary << indentation + '  ' + 'from: '.color(:cyan) + record.original_syntax + "\n"
-        summary << indentation + '    ' + 'to: '.color(:cyan) + record.converted_syntax + "\n"
+        summary << format_record(record, count, options[:bullet])
       end
 
       summary
@@ -49,14 +40,7 @@ module Transpec
     end
 
     def colored_stats
-      color = invalid_context_errors.count == 0 ? :green : :yellow
-
-      stats = pluralize(records.count, 'conversion') + ', '
-      stats << pluralize(invalid_context_errors.count, 'incomplete') + ', '
-      stats = stats.color(color)
-
-      error_color = syntax_errors.count == 0 ? color : :red
-      stats << pluralize(syntax_errors.count, 'error').color(error_color)
+      convertion_and_incomplete_stats + error_stats
     end
 
     def stats
@@ -72,6 +56,39 @@ module Transpec
       value = yield
       Sickill::Rainbow.enabled = original_coloring_state
       value
+    end
+
+    def format_record(record, count, bullet = nil)
+      entry_prefix = bullet ? bullet + ' ' : ''
+      indentation = if bullet
+                      ' ' * entry_prefix.length
+                    else
+                      ''
+                    end
+
+      text = entry_prefix + pluralize(count, 'conversion').color(:cyan) + "\n"
+      text << indentation + '  ' + 'from: '.color(:cyan) + record.original_syntax + "\n"
+      text << indentation + '    ' + 'to: '.color(:cyan) + record.converted_syntax + "\n"
+    end
+
+    def convertion_and_incomplete_stats
+      color = invalid_context_errors.empty? ? :green : :yellow
+
+      text = pluralize(records.count, 'conversion') + ', '
+      text << pluralize(invalid_context_errors.count, 'incomplete') + ', '
+      text.color(color)
+    end
+
+    def error_stats
+      color = if !syntax_errors.empty?
+                :red
+              elsif invalid_context_errors.empty?
+                :green
+              else
+                :yellow
+              end
+
+      pluralize(syntax_errors.count, 'error').color(color)
     end
 
     def pluralize(number, thing, options = {})
