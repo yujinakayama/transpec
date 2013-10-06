@@ -434,3 +434,9 @@ Tested on MRI 1.9, MRI 2.0 and JRuby in 1.9 mode.
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+
+## License
+
+Copyright (c) 2013 Yuji Nakayama
+
+See the [LICENSE.txt](LICENSE.txt) for details.
