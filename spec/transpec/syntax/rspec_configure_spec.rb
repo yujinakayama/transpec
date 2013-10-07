@@ -59,6 +59,22 @@ module Transpec
             end
           end
 
+          context 'when the syntax is specified indirectly with method or variable' do
+            let(:source) do
+              <<-END
+                RSpec.configure do |config|
+                  config.#{config_block_method} :rspec do |c|
+                    c.syntax = some_syntax
+                  end
+                end
+              END
+            end
+
+            it 'raises error' do
+              -> { subject }.should raise_error(RSpecConfigure::UnknownSyntaxError)
+            end
+          end
+
           context "when RSpec::Core::Configuration##{config_block_method} block does not exist" do
             let(:source) do
               <<-END

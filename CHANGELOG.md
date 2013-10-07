@@ -2,6 +2,8 @@
 
 ## Master
 
+* Fix a crash on syntax configuration with variable in `RSpec.configure` (e.g. `RSpec.configure { |config| config.expect_with { |c| c.syntax = some_syntax } }`)
+
 ## v0.2.1
 
 * Fix a crash on operator matcher that have `__FILE__` in its arguments

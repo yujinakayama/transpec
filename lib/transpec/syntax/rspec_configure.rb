@@ -27,7 +27,7 @@ module Transpec
               child_node.children.first
             end
           else
-            fail
+            fail UnknownSyntaxError, "Unknown syntax specification: #{syntaxes_node}"
           end
         end
 
@@ -108,6 +108,8 @@ module Transpec
 
       add_framework_configuration :expectation, :expect_with
       add_framework_configuration :mock,        :mock_with
+
+      class UnknownSyntaxError < StandardError; end
     end
   end
 end

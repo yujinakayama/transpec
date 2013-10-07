@@ -526,6 +526,16 @@ module Transpec
           end
         end
       end
+
+      context "and RSpecConfigure##{syntaxes_reader} raises UnknownSyntaxError" do
+        before do
+          rspec_configure.stub(syntaxes_reader).and_raise(Syntax::RSpecConfigure::UnknownSyntaxError)
+        end
+
+        it 'returns false' do
+          should be_false
+        end
+      end
     end
 
     describe '#need_to_modify_expectation_syntax_configuration?' do
