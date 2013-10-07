@@ -47,3 +47,11 @@ Documentation:
 # Currently IndentationWidth reports false positive offence around here document.
 IndentationWidth:
   Enabled: false
+
+# Custom error classes require custom arguments.
+RaiseArgs:
+  Enabled: false
+
+# Currently ClassLength counts innner class' codes in a namespace class.
+ClassLength:
+  Enabled: false
