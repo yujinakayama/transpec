@@ -16,7 +16,7 @@ Note that Transpec does not yet support all conversions for the RSpec changes,
 and also the changes for RSpec 3 is not fixed and may vary in the future.
 So it's recommended to follow updates of both RSpec and Transpec.
 
-## Example
+## Examples
 
 Here's an example spec:
 
@@ -90,6 +90,14 @@ describe Account do
   end
 end
 ```
+
+### Real examples
+
+You can see real conversion examples below:
+
+* https://github.com/yujinakayama/guard/commit/transpec-demo
+* https://github.com/yujinakayama/mail/commit/transpec-demo
+* https://github.com/yujinakayama/twitter/commit/transpec-demo
 
 ## Installation
 
