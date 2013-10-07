@@ -7,15 +7,17 @@ class TranspecTest
 
   def self.base_dir
     @base_dir ||= begin
-      base_dir = File.join('tmp', 'projects')
-
-      unless Dir.exist?(base_dir)
+      unless Dir.exist?(base_dir_path)
         require 'fileutils'
-        FileUtils.mkdir_p(base_dir)
+        FileUtils.mkdir_p(base_dir_path)
       end
 
-      base_dir
+      base_dir_path
     end
+  end
+
+  def self.base_dir_path
+    @base_dir_path = File.join('tmp', 'tests')
   end
 
   def initialize(url, ref = nil, bundler_args = [])
@@ -73,17 +75,12 @@ class TranspecTest
 
   def prepare_with_git_repo
     if Dir.exist?(project_dir)
-      if current_ref == ref
-        git_reset_hard
-        return
-      else
-        require 'fileutils'
-        FileUtils.rm_rf(project_dir)
-      end
+      git_checkout(ref) unless current_ref == ref
+      git_checkout('.')
+    else
+      git_clone
+      bundle_install
     end
-
-    git_clone
-    bundle_install
   end
 
   def run_test(transpec_args = [])
@@ -105,9 +102,9 @@ class TranspecTest
     end
   end
 
-  def git_reset_hard
+  def git_checkout(*args)
     in_project_dir do
-      sh 'git reset --hard'
+      sh 'git', 'checkout', *args
     end
   end
 

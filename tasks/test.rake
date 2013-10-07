@@ -14,8 +14,8 @@ namespace :test do
   tests = [
     TranspecTest.new(File.expand_path('.'), nil, ['--quiet']),
     TranspecTest.new('https://github.com/sferik/twitter.git', 'v4.1.0', bundler_args),
-    TranspecTest.new('https://github.com/yujinakayama/guard.git', 'transpec', bundler_args + %w(--without development)),
-    TranspecTest.new('https://github.com/yujinakayama/mail.git', 'transpec', bundler_args)
+    TranspecTest.new('https://github.com/yujinakayama/guard.git', 'transpec-test', bundler_args + %w(--without development)),
+    TranspecTest.new('https://github.com/yujinakayama/mail.git', 'transpec-test', bundler_args)
   ]
   # rubocop:enable LineLength
 
