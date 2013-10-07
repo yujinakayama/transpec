@@ -44,30 +44,31 @@ module Transpec
         def syntaxes_node
           return nil unless framework_block_node
 
-          @syntaxes_node ||= begin
-            framework_config_variable_name = first_block_arg_name(framework_block_node)
+          return @syntaxes_node if instance_variable_defined?(:@syntaxes_node)
 
-            AST::Scanner.scan(framework_block_node) do |descendent_node|
-              next unless descendent_node.type == :send
-              receiver_node, method_name, arg_node, *_ = *descendent_node
-              next unless receiver_node == s(:lvar, framework_config_variable_name)
-              next unless method_name == :syntax=
-              break arg_node
-            end
+          framework_config_variable_name = first_block_arg_name(framework_block_node)
+
+          framework_block_node.each_descendent_node do |node|
+            next unless node.type == :send
+            receiver_node, method_name, arg_node, *_ = *node
+            next unless receiver_node == s(:lvar, framework_config_variable_name)
+            next unless method_name == :syntax=
+            return @syntaxes_node = arg_node
           end
+
+          @syntaxes_node = nil
         end
 
         def framework_block_node
-          @framework_block_node ||= begin
-            AST::Scanner.scan(@rspec_configure_node) do |descendent_node|
-              next unless descendent_node.type == :block
-              send_node = descendent_node.children.first
-              receiver_node, method_name, *_ = *send_node
-              next unless receiver_node == s(:lvar, rspec_configure_block_arg_name)
-              next unless method_name == @framework_config_method_name
-              # TODO: Check expectation framework.
-              break descendent_node
-            end
+          return @framework_block_node if instance_variable_defined?(:@framework_block_node)
+
+          @framework_block_node = @rspec_configure_node.each_descendent_node.find do |node|
+            next unless node.type == :block
+            send_node = node.children.first
+            receiver_node, method_name, *_ = *send_node
+            next unless receiver_node == s(:lvar, rspec_configure_block_arg_name)
+            method_name == @framework_config_method_name
+            # TODO: Check expectation framework.
           end
         end
 
