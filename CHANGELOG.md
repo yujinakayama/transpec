@@ -2,6 +2,8 @@
 
 ## Master
 
+* Fix a bug where arguments of positive error expectation with block were removed (e.g. `expect { }.to raise_error(SpecificErrorClass) { |e| ... }` was converted to `expect { }.to raise_error { |e| ... }` unintentionally)
+
 ## v0.2.2
 
 * Fix a crash on syntax configuration with variable in `RSpec.configure` (e.g. `RSpec.configure { |config| config.expect_with { |c| c.syntax = some_syntax } }`)

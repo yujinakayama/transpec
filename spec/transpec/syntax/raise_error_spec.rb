@@ -22,6 +22,94 @@ module Transpec
 
       let(:record) { raise_error_object.report.records.first }
 
+      describe '#positive?' do
+        subject { raise_error_object.positive? }
+
+        context 'when it is `lambda { }.should raise_error` form' do
+          let(:source) do
+            <<-END
+              it 'raises error' do
+                lambda { do_something }.should raise_error
+              end
+            END
+          end
+
+          it { should be_true }
+        end
+
+        context 'when it is `expect { }.to raise_error` form' do
+          let(:source) do
+            <<-END
+              it 'raises error' do
+                expect { do_something }.to raise_error
+              end
+            END
+          end
+
+          it { should be_true }
+        end
+
+        context 'when it is `lambda { }.should raise_error { |error| ... }` form' do
+          let(:source) do
+            <<-END
+              it 'raises error' do
+                lambda { do_something }.should raise_error { |error| do_anything }
+              end
+            END
+          end
+
+          it { should be_true }
+        end
+
+        context 'when it is `expect { }.to raise_error { |error| ... }` form' do
+          let(:source) do
+            <<-END
+              it 'raises error' do
+                expect { do_something }.to raise_error { |error| do_anything }
+              end
+            END
+          end
+
+          it { should be_true }
+        end
+
+        context 'when it is `lambda { }.should_not raise_error` form' do
+          let(:source) do
+            <<-END
+              it 'does not raise error' do
+                lambda { do_something }.should_not raise_error
+              end
+            END
+          end
+
+          it { should be_false }
+        end
+
+        context 'when it is `expect { }.not_to raise_error` form' do
+          let(:source) do
+            <<-END
+              it 'does not raise error' do
+                expect { do_something }.not_to raise_error
+              end
+            END
+          end
+
+          it { should be_false }
+        end
+
+        context 'when it is `expect { }.to_not raise_error` form' do
+          let(:source) do
+            <<-END
+              it 'does not raise error' do
+                expect { do_something }.to_not raise_error
+              end
+            END
+          end
+
+          it { should be_false }
+        end
+      end
+
       describe '#remove_error_specification_with_negative_expectation!' do
         before do
           raise_error_object.remove_error_specification_with_negative_expectation!
@@ -50,6 +138,42 @@ module Transpec
             <<-END
               it 'raises SpecificErrorClass' do
                 expect { do_something }.to raise_error(SpecificErrorClass)
+              end
+            END
+          end
+
+          it 'does nothing' do
+            rewritten_source.should == source
+          end
+
+          it 'reports nothing' do
+            raise_error_object.report.records.should be_empty
+          end
+        end
+
+        context 'when it is `lambda { }.should raise_error(SpecificErrorClass) { |error| ... }` form' do
+          let(:source) do
+            <<-END
+              it 'raises SpecificErrorClass' do
+                lambda { do_something }.should raise_error(SpecificErrorClass) { |error| do_anything }
+              end
+            END
+          end
+
+          it 'does nothing' do
+            rewritten_source.should == source
+          end
+
+          it 'reports nothing' do
+            raise_error_object.report.records.should be_empty
+          end
+        end
+
+        context 'when it is `expect { }.to raise_error(SpecificErrorClass) { |error| ... }` form' do
+          let(:source) do
+            <<-END
+              it 'raises SpecificErrorClass' do
+                expect { do_something }.to raise_error(SpecificErrorClass) { |error| do_anything }
               end
             END
           end
