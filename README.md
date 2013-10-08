@@ -91,7 +91,7 @@ describe Account do
 end
 ```
 
-### Real examples
+### Real Examples
 
 You can see real conversion examples below:
 
@@ -247,7 +247,7 @@ end
 ### Standard expectations
 
 ```ruby
-# Target
+# Targets
 obj.should matcher
 obj.should_not matcher
 
@@ -263,7 +263,7 @@ expect(obj).to_not matcher # with `--negative-form to_not`
 ### Operator matchers
 
 ```ruby
-# Target
+# Targets
 1.should == 1
 1.should < 2
 Integer.should === 1
@@ -283,7 +283,7 @@ expect([1, 2, 3]).to match_array([2, 1, 3])
 ### `be_close` matcher
 
 ```ruby
-# Target
+# Targets
 (1.0 / 3.0).should be_close(0.333, 0.001)
 
 # Converted
@@ -296,7 +296,7 @@ expect([1, 2, 3]).to match_array([2, 1, 3])
 ### Expectations on Proc
 
 ```ruby
-# Target
+# Targets
 lambda { do_something }.should raise_error
 proc { do_something }.should raise_error
 -> { do_something }.should raise_error
@@ -311,7 +311,7 @@ expect { do_something }.to raise_error
 ### Negative error expectations with specific error
 
 ```ruby
-# Target
+# Targets
 expect { do_something }.not_to raise_error(SomeErrorClass)
 expect { do_something }.not_to raise_error('message')
 expect { do_something }.not_to raise_error(SomeErrorClass, 'message')
@@ -328,7 +328,7 @@ lambda { do_something }.should_not raise_error # with `--disable expect_to_match
 ### Message expectations
 
 ```ruby
-# Target
+# Targets
 obj.should_receive(:foo)
 SomeClass.any_instance.should_receive(:foo)
 
@@ -343,7 +343,7 @@ expect_any_instance_of(SomeClass).to receive(:foo)
 ### Message expectations that are actually method stubs
 
 ```ruby
-# Target
+# Targets
 obj.should_receive(:foo).any_number_of_times
 obj.should_receive(:foo).at_least(0)
 
@@ -364,7 +364,7 @@ SomeClass.any_instance.stub(:foo) # with `--disable allow_to_receive`
 ### Method stubs
 
 ```ruby
-# Target
+# Targets
 obj.stub(:foo)
 
 obj.stub!(:foo)
@@ -390,7 +390,7 @@ allow_any_instance_of(SomeClass).to receive(:foo)
 ### Deprecated method stub aliases
 
 ```ruby
-# Target
+# Targets
 obj.stub!(:foo)
 obj.unstub!(:foo)
 
@@ -405,7 +405,7 @@ obj.unstub(:foo)
 ### Method stubs with deprecated specification of number of times
 
 ```ruby
-# Target
+# Targets
 obj.stub(:foo).any_number_of_times
 obj.stub(:foo).at_least(0)
 
@@ -420,7 +420,7 @@ obj.stub(:foo) # with `--disable allow_to_receive`
 ### Deprecated test double aliases
 
 ```ruby
-# Target
+# Targets
 stub('something')
 mock('something')
 
