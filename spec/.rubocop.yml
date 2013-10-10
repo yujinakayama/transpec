@@ -17,3 +17,7 @@ Blocks:
 # Sometimes block alignment does not suit RSpec syntax.
 BlockAlignment:
   Enabled: false
+
+# Suppress offences for namespace classes only with #describe.
+ClassLength:
+  Enabled: false

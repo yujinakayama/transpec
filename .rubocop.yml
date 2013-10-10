@@ -48,10 +48,6 @@ Documentation:
 IndentationWidth:
   Enabled: false
 
-# Custom error classes require custom arguments.
-RaiseArgs:
-  Enabled: false
-
-# Currently ClassLength counts innner class' codes in a namespace class.
+# TODO: Shorten to 100.
 ClassLength:
-  Enabled: false
+  Max: 186
