@@ -89,6 +89,8 @@ module Transpec
     end
 
     describe '#in_example_group?' do
+      include_context 'isolated environment'
+
       let(:context_object) do
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
           next unless node == s(:send, nil, :target)
@@ -100,12 +102,37 @@ module Transpec
 
       subject { context_object.in_example_group? }
 
+      shared_examples 'returns expected value' do
+        let(:self_class_name_in_context) do
+          result_path = 'result.txt'
+
+          helper_source = <<-END
+            def target
+              File.write(#{result_path.inspect}, self.class.name)
+            end
+          END
+
+          source_path = 'context_spec.rb'
+          File.write(source_path, helper_source + source)
+
+          `rspec #{source_path}`
+
+          File.read(result_path)
+        end
+
+        let(:expected) do
+          self_class_name_in_context.start_with?('RSpec::Core::ExampleGroup::')
+        end
+
+        it { should == expected }
+      end
+
       context 'when in top level' do
         let(:source) do
           'target'
         end
 
-        it { should be_false }
+        include_examples 'returns expected value'
       end
 
       context 'when in an instance method in top level' do
@@ -114,10 +141,12 @@ module Transpec
             def some_method
               target
             end
+
+            describe('test') { example { target } }
           END
         end
 
-        it { should be_true }
+        include_examples 'returns expected value'
       end
 
       context 'when in a block in an instance method in top level' do
@@ -128,10 +157,12 @@ module Transpec
                 target
               end
             end
+
+            describe('test') { example { target } }
           END
         end
 
-        it { should be_true }
+        include_examples 'returns expected value'
       end
 
       context 'when in #describe block in top level' do
@@ -143,7 +174,7 @@ module Transpec
           END
         end
 
-        it { should be_false }
+        include_examples 'returns expected value'
       end
 
       context 'when in an instance method in #describe block in top level' do
@@ -153,11 +184,13 @@ module Transpec
               def some_method
                 target
               end
+
+              example { some_method }
             end
           END
         end
 
-        it { should be_true }
+        include_examples 'returns expected value'
       end
 
       context 'when in a block in #describe block in top level' do
@@ -171,7 +204,7 @@ module Transpec
           END
         end
 
-        it { should be_true }
+        include_examples 'returns expected value'
       end
 
       context 'when in a class in a block in #describe block' do
@@ -187,7 +220,7 @@ module Transpec
           END
         end
 
-       it { should be_false }
+        include_examples 'returns expected value'
       end
 
       context 'when in an instance method in a class in a block in #describe block' do
@@ -200,12 +233,14 @@ module Transpec
                     target
                   end
                 end
+
+                SomeClass.new.some_method
               end
             end
           END
         end
 
-        it { should be_false }
+        include_examples 'returns expected value'
       end
 
       context 'when in #describe block in a module' do
@@ -219,7 +254,7 @@ module Transpec
           END
         end
 
-        it { should be_false }
+        include_examples 'returns expected value'
       end
 
       context 'when in an instance method in #describe block in a module' do
@@ -230,12 +265,14 @@ module Transpec
                 def some_method
                   target
                 end
+
+                example { some_method }
               end
             end
           END
         end
 
-        it { should be_true }
+        include_examples 'returns expected value'
       end
 
       context 'when in a block in #describe block in a module' do
@@ -251,7 +288,7 @@ module Transpec
           END
         end
 
-        it { should be_true }
+        include_examples 'returns expected value'
       end
 
       context 'when in an instance method in a module' do
@@ -262,11 +299,16 @@ module Transpec
                 target
               end
             end
+
+            describe 'test' do
+              include SomeModule
+              example { some_method }
+            end
           END
         end
 
         # Instance methods of module can be used by `include SomeModule` in #describe block.
-        it { should be_true }
+        include_examples 'returns expected value'
       end
 
       context 'when in an instance method in a class' do
@@ -277,10 +319,14 @@ module Transpec
                 target
               end
             end
+
+            describe 'test' do
+              example { SomeClass.new.some_method }
+            end
           END
         end
 
-        it { should be_false }
+        include_examples 'returns expected value'
       end
 
       context 'when in RSpec.configure' do
@@ -292,7 +338,7 @@ module Transpec
           END
         end
 
-        it { should be_false }
+        include_examples 'returns expected value'
       end
 
       context 'when in a block in RSpec.configure' do
@@ -303,10 +349,12 @@ module Transpec
                 target
               end
             end
+
+            describe('test') { example { } }
           END
         end
 
-        it { should be_true }
+        include_examples 'returns expected value'
       end
 
       context 'when in an instance method in RSpec.configure' do
@@ -317,10 +365,12 @@ module Transpec
                 target
               end
             end
+
+            describe('test') { example { some_method } }
           END
         end
 
-        it { should be_true }
+        include_examples 'returns expected value'
       end
     end
   end
