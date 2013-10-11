@@ -7,17 +7,18 @@ module Transpec
   describe Context do
     include ::AST::Sexp
     include_context 'parsed objects'
-
-    def node_id(node)
-      id = node.type.to_s
-      node.children.each do |child|
-        break if child.is_a?(Parser::AST::Node)
-        id << " #{child.inspect}"
-      end
-      id
-    end
+    include_context 'isolated environment'
 
     describe '#scopes' do
+      def node_id(node)
+        id = node.type.to_s
+        node.children.each do |child|
+          break if child.is_a?(Parser::AST::Node)
+          id << " #{child.inspect}"
+        end
+        id
+      end
+
       let(:source) do
         <<-END
           top_level
@@ -94,9 +95,7 @@ module Transpec
       end
     end
 
-    describe '#in_example_group?' do
-      include_context 'isolated environment'
-
+    shared_examples 'context inspection methods' do
       let(:context_object) do
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
           next unless node == s(:send, nil, :target)
@@ -106,484 +105,487 @@ module Transpec
         fail 'Target node not found!'
       end
 
-      subject { context_object.in_example_group? }
+      def eval_with_rspec_in_context(eval_source)
+        result_path = 'result'
 
-      shared_examples 'returns expected value' do
-        let(:self_class_name_in_context) do
-          result_path = 'result.txt'
-
-          helper_source = <<-END
-            def target
-              File.write(#{result_path.inspect}, self.class.name)
+        helper_source = <<-END
+          def target
+            File.open(#{result_path.inspect}, 'w') do |file|
+              Marshal.dump(#{eval_source}, file)
             end
-          END
+          end
+        END
 
-          source_path = 'context_spec.rb'
-          File.write(source_path, helper_source + source)
+        source_path = 'spec.rb'
+        File.write(source_path, helper_source + source)
 
-          `rspec #{source_path}`
+        `rspec #{source_path}`
 
-          File.read(result_path)
-        end
+        Marshal.load(File.read(result_path))
+      end
+
+      describe '#in_example_group?' do
+        subject { context_object.in_example_group? }
 
         let(:expected) do
-          self_class_name_in_context.start_with?('RSpec::Core::ExampleGroup::')
+          class_name = eval_with_rspec_in_context('self.class.name')
+          class_name.start_with?('RSpec::Core::ExampleGroup::')
         end
 
         it { should == expected }
       end
+    end
 
-      context 'when in top level' do
-        let(:source) do
-          'target'
-        end
-
-        include_examples 'returns expected value'
+    context 'when in top level' do
+      let(:source) do
+        'target'
       end
 
-      context 'when in an instance method in top level' do
-        let(:source) do
-          <<-END
+      include_examples 'context inspection methods'
+    end
+
+    context 'when in an instance method in top level' do
+      let(:source) do
+        <<-END
+          def some_method
+            target
+          end
+
+          describe('test') { example { target } }
+        END
+      end
+
+      include_examples 'context inspection methods'
+    end
+
+    context 'when in a block in an instance method in top level' do
+      let(:source) do
+        <<-END
+          def some_method
+            1.times do
+              target
+            end
+          end
+
+          describe('test') { example { target } }
+        END
+      end
+
+      include_examples 'context inspection methods'
+    end
+
+    context 'when in #describe block in top level' do
+      let(:source) do
+        <<-END
+          describe 'foo' do
+            target
+          end
+        END
+      end
+
+      include_examples 'context inspection methods'
+    end
+
+    context 'when in an instance method in #describe block in top level' do
+      let(:source) do
+        <<-END
+          describe 'foo' do
             def some_method
               target
             end
 
-            describe('test') { example { target } }
-          END
-        end
-
-        include_examples 'returns expected value'
+            example { some_method }
+          end
+        END
       end
 
-      context 'when in a block in an instance method in top level' do
-        let(:source) do
-          <<-END
-            def some_method
-              1.times do
-                target
-              end
-            end
+      include_examples 'context inspection methods'
+    end
 
-            describe('test') { example { target } }
-          END
-        end
-
-        include_examples 'returns expected value'
-      end
-
-      context 'when in #describe block in top level' do
-        let(:source) do
-          <<-END
-            describe 'foo' do
+    context 'when in #it block in #describe block in top level' do
+      let(:source) do
+        <<-END
+          describe 'foo' do
+            it 'is an example' do
               target
             end
-          END
-        end
-
-        include_examples 'returns expected value'
+          end
+        END
       end
 
-      context 'when in an instance method in #describe block in top level' do
-        let(:source) do
-          <<-END
-            describe 'foo' do
-              def some_method
-                target
-              end
+      include_examples 'context inspection methods'
+    end
 
-              example { some_method }
+    context 'when in #before block in #describe block in top level' do
+      let(:source) do
+        <<-END
+          describe 'foo' do
+            before do
+              target
             end
-          END
-        end
 
-        include_examples 'returns expected value'
+            example { }
+          end
+        END
       end
 
-      context 'when in #it block in #describe block in top level' do
-        let(:source) do
-          <<-END
-            describe 'foo' do
-              it 'is an example' do
-                target
-              end
+      include_examples 'context inspection methods'
+    end
+
+    context 'when in #before(:each) block in #describe block in top level' do
+      let(:source) do
+        <<-END
+          describe 'foo' do
+            before(:each) do
+              target
             end
-          END
-        end
 
-        include_examples 'returns expected value'
+            example { }
+          end
+        END
       end
 
-      context 'when in #before block in #describe block in top level' do
-        let(:source) do
-          <<-END
-            describe 'foo' do
-              before do
-                target
-              end
+      include_examples 'context inspection methods'
+    end
 
-              example { }
+    context 'when in #before(:all) block in #describe block in top level' do
+      let(:source) do
+        <<-END
+          describe 'foo' do
+            before(:all) do
+              target
             end
-          END
-        end
 
-        include_examples 'returns expected value'
+            example { }
+          end
+        END
       end
 
-      context 'when in #before(:each) block in #describe block in top level' do
-        let(:source) do
-          <<-END
-            describe 'foo' do
-              before(:each) do
-                target
-              end
+      include_examples 'context inspection methods'
+    end
 
-              example { }
+    context 'when in #after block in #describe block in top level' do
+      let(:source) do
+        <<-END
+          describe 'foo' do
+            after do
+              target
             end
-          END
-        end
 
-        include_examples 'returns expected value'
+            example { }
+          end
+        END
       end
 
-      context 'when in #before(:all) block in #describe block in top level' do
-        let(:source) do
-          <<-END
-            describe 'foo' do
-              before(:all) do
-                target
-              end
+      include_examples 'context inspection methods'
+    end
 
-              example { }
+    context 'when in #after(:each) block in #describe block in top level' do
+      let(:source) do
+        <<-END
+          describe 'foo' do
+            after(:each) do
+              target
             end
-          END
-        end
 
-        include_examples 'returns expected value'
+            example { }
+          end
+        END
       end
 
-      context 'when in #after block in #describe block in top level' do
-        let(:source) do
-          <<-END
-            describe 'foo' do
-              after do
-                target
-              end
+      include_examples 'context inspection methods'
+    end
 
-              example { }
+    context 'when in #after(:all) block in #describe block in top level' do
+      let(:source) do
+        <<-END
+          describe 'foo' do
+            after(:all) do
+              target
             end
-          END
-        end
 
-        include_examples 'returns expected value'
+            example { }
+          end
+        END
       end
 
-      context 'when in #after(:each) block in #describe block in top level' do
-        let(:source) do
-          <<-END
-            describe 'foo' do
-              after(:each) do
-                target
-              end
+      include_examples 'context inspection methods'
+    end
 
-              example { }
+    context 'when in #around block in #describe block in top level' do
+      let(:source) do
+        <<-END
+          describe 'foo' do
+            around do
+              target
             end
-          END
-        end
 
-        include_examples 'returns expected value'
+            example { }
+          end
+        END
       end
 
-      context 'when in #after(:all) block in #describe block in top level' do
-        let(:source) do
-          <<-END
-            describe 'foo' do
-              after(:all) do
-                target
-              end
+      include_examples 'context inspection methods'
+    end
 
-              example { }
+    context 'when in #subject block in #describe block in top level' do
+      let(:source) do
+        <<-END
+          describe 'foo' do
+            subject do
+              target
             end
-          END
-        end
 
-        include_examples 'returns expected value'
+            example { subject }
+          end
+        END
       end
 
-      context 'when in #around block in #describe block in top level' do
-        let(:source) do
-          <<-END
-            describe 'foo' do
-              around do
-                target
-              end
+      include_examples 'context inspection methods'
+    end
 
-              example { }
+    context 'when in #subject! block in #describe block in top level' do
+      let(:source) do
+        <<-END
+          describe 'foo' do
+            subject! do
+              target
             end
-          END
-        end
 
-        include_examples 'returns expected value'
+            example { subject }
+          end
+        END
       end
 
-      context 'when in #subject block in #describe block in top level' do
-        let(:source) do
-          <<-END
-            describe 'foo' do
-              subject do
-                target
-              end
+      include_examples 'context inspection methods'
+    end
 
-              example { subject }
+    context 'when in #let block in #describe block in top level' do
+      let(:source) do
+        <<-END
+          describe 'foo' do
+            let(:something) do
+              target
             end
-          END
-        end
 
-        include_examples 'returns expected value'
+            example { something }
+          end
+        END
       end
 
-      context 'when in #subject! block in #describe block in top level' do
-        let(:source) do
-          <<-END
-            describe 'foo' do
-              subject! do
-                target
-              end
+      include_examples 'context inspection methods'
+    end
 
-              example { subject }
+    context 'when in #let! block in #describe block in top level' do
+      let(:source) do
+        <<-END
+          describe 'foo' do
+            let!(:something) do
+              target
             end
-          END
-        end
 
-        include_examples 'returns expected value'
+            example { something }
+          end
+        END
       end
 
-      context 'when in #let block in #describe block in top level' do
-        let(:source) do
-          <<-END
-            describe 'foo' do
-              let(:something) do
-                target
-              end
+      include_examples 'context inspection methods'
+    end
 
-              example { something }
+    context 'when in any other block in #describe block in top level' do
+      let(:source) do
+        <<-END
+          describe 'foo' do
+            1.times do
+              target
             end
-          END
-        end
 
-        include_examples 'returns expected value'
+            example { }
+          end
+        END
       end
 
-      context 'when in #let! block in #describe block in top level' do
-        let(:source) do
-          <<-END
-            describe 'foo' do
-              let!(:something) do
-                target
-              end
+      include_examples 'context inspection methods'
+    end
 
-              example { something }
-            end
-          END
-        end
-
-        include_examples 'returns expected value'
-      end
-
-      context 'when in any other block in #describe block in top level' do
-        let(:source) do
-          <<-END
-            describe 'foo' do
-              1.times do
-                target
-              end
-
-              example { }
-            end
-          END
-        end
-
-        include_examples 'returns expected value'
-      end
-
-      context 'when in a class in a block in #describe block' do
-         let(:source) do
-          <<-END
-            describe 'foo' do
-              it 'is an example' do
-                class SomeClass
-                  target
-                end
-              end
-            end
-          END
-        end
-
-        include_examples 'returns expected value'
-      end
-
-      context 'when in an instance method in a class in a block in #describe block' do
-         let(:source) do
-          <<-END
-            describe 'foo' do
-              it 'is an example' do
-                class SomeClass
-                  def some_method
-                    target
-                  end
-                end
-
-                SomeClass.new.some_method
-              end
-            end
-          END
-        end
-
-        include_examples 'returns expected value'
-      end
-
-      context 'when in #describe block in a module' do
-        let(:source) do
-          <<-END
-            module SomeModule
-              describe 'foo' do
+    context 'when in a class in a block in #describe block' do
+       let(:source) do
+        <<-END
+          describe 'foo' do
+            it 'is an example' do
+              class SomeClass
                 target
               end
             end
-          END
-        end
-
-        include_examples 'returns expected value'
+          end
+        END
       end
 
-      context 'when in an instance method in #describe block in a module' do
-        let(:source) do
-          <<-END
-            module SomeModule
-              describe 'foo' do
+      include_examples 'context inspection methods'
+    end
+
+    context 'when in an instance method in a class in a block in #describe block' do
+       let(:source) do
+        <<-END
+          describe 'foo' do
+            it 'is an example' do
+              class SomeClass
                 def some_method
                   target
                 end
-
-                example { some_method }
               end
-            end
-          END
-        end
 
-        include_examples 'returns expected value'
+              SomeClass.new.some_method
+            end
+          end
+        END
       end
 
-      context 'when in a block in #describe block in a module' do
-        let(:source) do
-          <<-END
-            module SomeModule
-              describe 'foo' do
-                it 'is an example' do
-                  target
-                end
-              end
-            end
-          END
-        end
+      include_examples 'context inspection methods'
+    end
 
-        include_examples 'returns expected value'
-      end
-
-      context 'when in an instance method in a module' do
-        let(:source) do
-          <<-END
-            module SomeModule
-              def some_method
-                target
-              end
-            end
-
-            describe 'test' do
-              include SomeModule
-              example { some_method }
-            end
-          END
-        end
-
-        # Instance methods of module can be used by `include SomeModule` in #describe block.
-        include_examples 'returns expected value'
-      end
-
-      context 'when in an instance method in a class' do
-        let(:source) do
-          <<-END
-            class SomeClass
-              def some_method
-                target
-              end
-            end
-
-            describe 'test' do
-              example { SomeClass.new.some_method }
-            end
-          END
-        end
-
-        include_examples 'returns expected value'
-      end
-
-      context 'when in RSpec.configure' do
-        let(:source) do
-          <<-END
-            RSpec.configure do |config|
+    context 'when in #describe block in a module' do
+      let(:source) do
+        <<-END
+          module SomeModule
+            describe 'foo' do
               target
             end
-          END
-        end
-
-        include_examples 'returns expected value'
+          end
+        END
       end
 
-      context 'when in #before block in RSpec.configure' do
-        let(:source) do
-          <<-END
-            RSpec.configure do |config|
-              config.before do
-                target
-              end
-            end
+      include_examples 'context inspection methods'
+    end
 
-            describe('test') { example { } }
-          END
-        end
-
-        include_examples 'returns expected value'
-      end
-
-      context 'when in a normal block in RSpec.configure' do
-        let(:source) do
-          <<-END
-            RSpec.configure do |config|
-              1.times do
-                target
-              end
-            end
-          END
-        end
-
-        include_examples 'returns expected value'
-      end
-
-      context 'when in an instance method in RSpec.configure' do
-        let(:source) do
-          <<-END
-            RSpec.configure do |config|
+    context 'when in an instance method in #describe block in a module' do
+      let(:source) do
+        <<-END
+          module SomeModule
+            describe 'foo' do
               def some_method
                 target
               end
+
+              example { some_method }
             end
-
-            describe('test') { example { some_method } }
-          END
-        end
-
-        include_examples 'returns expected value'
+          end
+        END
       end
+
+      include_examples 'context inspection methods'
+    end
+
+    context 'when in a block in #describe block in a module' do
+      let(:source) do
+        <<-END
+          module SomeModule
+            describe 'foo' do
+              it 'is an example' do
+                target
+              end
+            end
+          end
+        END
+      end
+
+      include_examples 'context inspection methods'
+    end
+
+    context 'when in an instance method in a module' do
+      let(:source) do
+        <<-END
+          module SomeModule
+            def some_method
+              target
+            end
+          end
+
+          describe 'test' do
+            include SomeModule
+            example { some_method }
+          end
+        END
+      end
+
+      # Instance methods of module can be used by `include SomeModule` in #describe block.
+      include_examples 'context inspection methods'
+    end
+
+    context 'when in an instance method in a class' do
+      let(:source) do
+        <<-END
+          class SomeClass
+            def some_method
+              target
+            end
+          end
+
+          describe 'test' do
+            example { SomeClass.new.some_method }
+          end
+        END
+      end
+
+      include_examples 'context inspection methods'
+    end
+
+    context 'when in RSpec.configure' do
+      let(:source) do
+        <<-END
+          RSpec.configure do |config|
+            target
+          end
+        END
+      end
+
+      include_examples 'context inspection methods'
+    end
+
+    context 'when in #before block in RSpec.configure' do
+      let(:source) do
+        <<-END
+          RSpec.configure do |config|
+            config.before do
+              target
+            end
+          end
+
+          describe('test') { example { } }
+        END
+      end
+
+      include_examples 'context inspection methods'
+    end
+
+    context 'when in a normal block in RSpec.configure' do
+      let(:source) do
+        <<-END
+          RSpec.configure do |config|
+            1.times do
+              target
+            end
+          end
+        END
+      end
+
+      include_examples 'context inspection methods'
+    end
+
+    context 'when in an instance method in RSpec.configure' do
+      let(:source) do
+        <<-END
+          RSpec.configure do |config|
+            def some_method
+              target
+            end
+          end
+
+          describe('test') { example { some_method } }
+        END
+      end
+
+      include_examples 'context inspection methods'
     end
   end
 end
