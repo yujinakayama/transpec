@@ -5,6 +5,7 @@ require 'transpec/context'
 
 module Transpec
   describe Context do
+    include ::AST::Sexp
     include_context 'parsed objects'
 
     def node_id(node)
@@ -88,81 +89,9 @@ module Transpec
     end
 
     describe '#in_example_group?' do
-      let(:source) do
-        <<-END
-          top
-
-          def some_method
-            imethod_top
-
-            1.times do
-              block_imethod_top
-            end
-          end
-
-          describe 'foo' do
-            describe_top
-
-            def some_method
-              imethod_describe_top
-            end
-
-            it 'is an example' do
-              block_describe_top
-
-              class SomeClass
-                class_block_describe_top
-
-                def some_method
-                  imethod_class_block_describe_top
-                end
-              end
-            end
-          end
-
-          module SomeModule
-            describe 'bar' do
-              describe_module
-
-              def some_method
-                imethod_describe_module
-              end
-
-              it 'is an example' do
-                block_describe_module
-              end
-            end
-          end
-
-          module AnotherModule
-            def some_method
-              imethod_module
-            end
-          end
-
-          class SomeClass
-            def some_method
-              imethod_class
-            end
-          end
-
-          RSpec.configure do |config|
-            rspecconfigure
-
-            def some_method
-              imethod_rspecconfigure
-            end
-
-            config.before do
-              block_rspecconfigure
-            end
-          end
-        END
-      end
-
       let(:context_object) do
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
-          next unless node_id(node) == target_node_id
+          next unless node == s(:send, nil, :target)
           return Context.new(ancestor_nodes)
         end
 
@@ -172,83 +101,225 @@ module Transpec
       subject { context_object.in_example_group? }
 
       context 'when in top level' do
-        let(:target_node_id) { 'send nil :top' }
+        let(:source) do
+          'target'
+        end
+
         it { should be_false }
       end
 
       context 'when in an instance method in top level' do
-        let(:target_node_id) { 'send nil :imethod_top' }
+        let(:source) do
+          <<-END
+            def some_method
+              target
+            end
+          END
+        end
+
         it { should be_true }
       end
 
       context 'when in a block in an instance method in top level' do
-        let(:target_node_id) { 'send nil :block_imethod_top' }
+        let(:source) do
+          <<-END
+            def some_method
+              1.times do
+                target
+              end
+            end
+          END
+        end
+
         it { should be_true }
       end
 
       context 'when in #describe block in top level' do
-        let(:target_node_id) { 'send nil :describe_top' }
+        let(:source) do
+          <<-END
+            describe 'foo' do
+              target
+            end
+          END
+        end
+
         it { should be_false }
       end
 
       context 'when in an instance method in #describe block in top level' do
-        let(:target_node_id) { 'send nil :imethod_describe_top' }
+        let(:source) do
+          <<-END
+            describe 'foo' do
+              def some_method
+                target
+              end
+            end
+          END
+        end
+
         it { should be_true }
       end
 
       context 'when in a block in #describe block in top level' do
-        let(:target_node_id) { 'send nil :block_describe_top' }
+        let(:source) do
+          <<-END
+            describe 'foo' do
+              it 'is an example' do
+                target
+              end
+            end
+          END
+        end
+
         it { should be_true }
       end
 
       context 'when in a class in a block in #describe block' do
-        let(:target_node_id) { 'send nil :class_block_describe_top' }
-        it { should be_false }
+         let(:source) do
+          <<-END
+            describe 'foo' do
+              it 'is an example' do
+                class SomeClass
+                  target
+                end
+              end
+            end
+          END
+        end
+
+       it { should be_false }
       end
 
       context 'when in an instance method in a class in a block in #describe block' do
-        let(:target_node_id) { 'send nil :imethod_class_block_describe_top' }
+         let(:source) do
+          <<-END
+            describe 'foo' do
+              it 'is an example' do
+                class SomeClass
+                  def some_method
+                    target
+                  end
+                end
+              end
+            end
+          END
+        end
+
         it { should be_false }
       end
 
       context 'when in #describe block in a module' do
-        let(:target_node_id) { 'send nil :describe_module' }
+        let(:source) do
+          <<-END
+            module SomeModule
+              describe 'foo' do
+                target
+              end
+            end
+          END
+        end
+
         it { should be_false }
       end
 
       context 'when in an instance method in #describe block in a module' do
-        let(:target_node_id) { 'send nil :imethod_describe_module' }
+        let(:source) do
+          <<-END
+            module SomeModule
+              describe 'foo' do
+                def some_method
+                  target
+                end
+              end
+            end
+          END
+        end
+
         it { should be_true }
       end
 
       context 'when in a block in #describe block in a module' do
-        let(:target_node_id) { 'send nil :block_describe_module' }
+        let(:source) do
+          <<-END
+            module SomeModule
+              describe 'foo' do
+                it 'is an example' do
+                  target
+                end
+              end
+            end
+          END
+        end
+
         it { should be_true }
       end
 
       context 'when in an instance method in a module' do
+        let(:source) do
+          <<-END
+            module SomeModule
+              def some_method
+                target
+              end
+            end
+          END
+        end
+
         # Instance methods of module can be used by `include SomeModule` in #describe block.
-        let(:target_node_id) { 'send nil :imethod_module' }
         it { should be_true }
       end
 
       context 'when in an instance method in a class' do
-        let(:target_node_id) { 'send nil :imethod_class' }
+        let(:source) do
+          <<-END
+            class SomeClass
+              def some_method
+                target
+              end
+            end
+          END
+        end
+
         it { should be_false }
       end
 
       context 'when in RSpec.configure' do
-        let(:target_node_id) { 'send nil :rspecconfigure' }
+        let(:source) do
+          <<-END
+            RSpec.configure do |config|
+              target
+            end
+          END
+        end
+
         it { should be_false }
       end
 
       context 'when in a block in RSpec.configure' do
-        let(:target_node_id) { 'send nil :block_rspecconfigure' }
+        let(:source) do
+          <<-END
+            RSpec.configure do |config|
+              config.before do
+                target
+              end
+            end
+          END
+        end
+
         it { should be_true }
       end
 
       context 'when in an instance method in RSpec.configure' do
-        let(:target_node_id) { 'send nil :imethod_rspecconfigure' }
+        let(:source) do
+          <<-END
+            RSpec.configure do |config|
+              def some_method
+                target
+              end
+            end
+          END
+        end
+
         it { should be_true }
       end
     end
