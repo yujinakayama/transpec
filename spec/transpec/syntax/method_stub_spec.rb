@@ -9,7 +9,7 @@ module Transpec
       include_context 'parsed objects'
 
       subject(:method_stub_object) do
-        AST::Scanner.scan(ast) do |node, ancestor_nodes, in_example_group_context|
+        AST::Scanner.scan(ast) do |node, ancestor_nodes|
           next unless MethodStub.target_node?(node)
           return MethodStub.new(
             node,

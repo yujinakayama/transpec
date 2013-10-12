@@ -9,7 +9,7 @@ module Transpec
       include_context 'parsed objects'
 
       subject(:should_receive_object) do
-        AST::Scanner.scan(ast) do |node, ancestor_nodes, in_example_group_context|
+        AST::Scanner.scan(ast) do |node, ancestor_nodes|
           next unless ShouldReceive.target_node?(node)
           return ShouldReceive.new(
             node,

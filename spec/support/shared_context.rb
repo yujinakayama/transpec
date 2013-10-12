@@ -28,7 +28,7 @@ end
 
 shared_context 'should object' do
   let(:should_object) do
-    Transpec::AST::Scanner.scan(ast) do |node, ancestor_nodes, in_example_group_context|
+    Transpec::AST::Scanner.scan(ast) do |node, ancestor_nodes|
       next unless Transpec::Syntax::Should.target_node?(node)
       return Transpec::Syntax::Should.new(
         node,
