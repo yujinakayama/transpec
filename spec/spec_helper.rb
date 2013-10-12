@@ -13,6 +13,8 @@ RSpec.configure do |config|
   config.color_enabled = true
   config.treat_symbols_as_metadata_keys_with_true_values = true
 
+  config.filter_run_excluding :skip_on_jruby if RUBY_ENGINE == 'jruby'
+
   config.before(:all) do
     require 'rainbow'
     Sickill::Rainbow.enabled = false

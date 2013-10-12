@@ -4,7 +4,7 @@ require 'spec_helper'
 require 'transpec/context'
 
 module Transpec
-  describe Context do
+  describe Context, :skip_on_jruby do
     include ::AST::Sexp
     include_context 'parsed objects'
     include_context 'isolated environment'
