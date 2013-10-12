@@ -2,6 +2,8 @@
 
 ## Master
 
+* Do not touch file if the source does need to be rewritten
+
 ## v0.2.4
 
 * Improve context detection

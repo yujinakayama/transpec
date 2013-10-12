@@ -28,6 +28,7 @@ module Transpec
     def rewrite_file!(file_path)
       source = File.read(file_path)
       rewritten_source = rewrite(source, file_path)
+      return if source == rewritten_source
       File.write(file_path, rewritten_source)
     end
 

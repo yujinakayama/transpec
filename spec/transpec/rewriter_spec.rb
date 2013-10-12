@@ -15,12 +15,24 @@ module Transpec
 
       before do
         File.write(file_path, 'This is a spec')
+        File.utime(0, 0, file_path)
         rewriter.stub(:rewrite).and_return('This is the rewritten spec')
       end
 
       it 'overwrites the passed file path' do
         rewriter.rewrite_file!(file_path)
         File.read(file_path).should == 'This is the rewritten spec'
+      end
+
+      context 'when the source does not need rewrite' do
+        before do
+          rewriter.stub(:rewrite).and_return('This is a spec')
+        end
+
+        it 'does not touch the file' do
+          rewriter.rewrite_file!(file_path)
+          File.mtime(file_path).should == Time.at(0)
+        end
       end
     end
 
