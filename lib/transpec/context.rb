@@ -64,24 +64,14 @@ module Transpec
 
     def non_monkey_patch_expectation_available?
       return @expectation_available if instance_variable_defined?(:@expectation_available)
-
-      return @expectation_available = true if scopes == [:def]
-
-      @expectation_available = NON_MONKEY_PATCH_EXPECTATION_AVAILABLE_CONTEXT.any? do |suffix|
-        scopes.end_with?(suffix)
-      end
+      @expectation_available = match_scopes(NON_MONKEY_PATCH_EXPECTATION_AVAILABLE_CONTEXT)
     end
 
     alias_method :expect_to_matcher_available?, :non_monkey_patch_expectation_available?
 
     def non_monkey_patch_mock_available?
       return @mock_available if instance_variable_defined?(:@mock_available)
-
-      return @mock_available = true if scopes == [:def]
-
-      @mock_available = NON_MONKEY_PATCH_MOCK_AVAILABLE_CONTEXT.any? do |suffix|
-        scopes.end_with?(suffix)
-      end
+      @mock_available = match_scopes(NON_MONKEY_PATCH_MOCK_AVAILABLE_CONTEXT)
     end
 
     alias_method :expect_to_receive_available?, :non_monkey_patch_mock_available?
@@ -138,6 +128,14 @@ module Transpec
       end
 
       :each_before_after
+    end
+
+    def match_scopes(scope_suffixes)
+      return true if scopes == [:def]
+
+      scope_suffixes.any? do |suffix|
+        scopes.end_with?(suffix)
+      end
     end
 
     module ArrayExtension
