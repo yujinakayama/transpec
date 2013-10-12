@@ -8,10 +8,20 @@ module Transpec
 
     SCOPE_TYPES = [:module, :class, :sclass, :def, :defs, :block].freeze
 
-    EXAMPLE_GROUP_METHOD_NAMES = [
+    EXAMPLE_GROUP_METHODS = [
       :describe, :context,
       :shared_examples, :shared_context, :share_examples_for, :shared_examples_for
     ].freeze
+
+    EXAMPLE_METHODS = [
+      :example, :it, :specify,
+      :focus, :focused, :fit,
+      :pending, :xexample, :xit, :xspecify
+    ].freeze
+
+    HOOK_METHODS = [:before, :after, :around].freeze
+
+    HELPER_METHODS = [:subject, :subject!, :let, :let!]
 
     attr_reader :nodes
 
@@ -23,16 +33,22 @@ module Transpec
     def scopes
       @scopes ||= begin
         scopes = @nodes.map { |node| scope_type(node) }
-        scopes.compact
+        scopes.compact!
+        scopes.extend(ArrayExtension)
       end
     end
 
     def in_example_group?
       return @in_example_group if instance_variable_defined?(:@in_example_group)
-      @in_example_group = in_method_or_block_in_example_group?   ||
-                          in_method_or_block_in_rspec_configure? ||
-                          in_method_in_module?                   ||
-                          in_method_in_top_level?
+
+      @in_example_group = scopes == [:def] ||
+                          scopes.end_with?(:example_group, :example) ||
+                          scopes.end_with?(:example_group, :hook) ||
+                          scopes.end_with?(:example_group, :helper) ||
+                          scopes.end_with?(:example_group, :def) ||
+                          scopes.end_with?(:rspec_configure, :hook) ||
+                          scopes.end_with?(:rspec_configure, :def) ||
+                          scopes.end_with?(:module, :def)
     end
 
     private
@@ -46,56 +62,26 @@ module Transpec
 
       if const_name(receiver_node) == 'RSpec' && method_name == :configure
         :rspec_configure
+      elsif HOOK_METHODS.include?(method_name)
+        :hook
       elsif receiver_node
-        node.type
-      elsif EXAMPLE_GROUP_METHOD_NAMES.include?(method_name)
+        nil
+      elsif EXAMPLE_GROUP_METHODS.include?(method_name)
         :example_group
+      elsif EXAMPLE_METHODS.include?(method_name)
+        :example
+      elsif HELPER_METHODS.include?(method_name)
+        :helper
       else
-        node.type
+        nil
       end
     end
 
-    def in_method_or_block_in_example_group?
-      scopes_in_example_group = inner_scopes_of(:example_group)
-      return false unless scopes_in_example_group
-      return false if include_class_scope?(scopes_in_example_group)
-      include_method_or_block_scope?(scopes_in_example_group)
-    end
-
-    def in_method_or_block_in_rspec_configure?
-      scopes_in_rspec_configure = inner_scopes_of(:rspec_configure)
-      return false unless scopes_in_rspec_configure
-      return false if include_class_scope?(scopes_in_rspec_configure)
-      include_method_or_block_scope?(scopes_in_rspec_configure)
-    end
-
-    def in_method_in_module?
-      scopes_in_module = inner_scopes_of(:module)
-      return false unless scopes_in_module
-      return false if include_class_scope?(scopes_in_module)
-      scopes_in_module.include?(:def)
-    end
-
-    def in_method_in_top_level?
-      return false unless scopes.first == :def
-      scopes_in_method = scopes[1..-1]
-      !include_class_scope?(scopes_in_method)
-    end
-
-    def inner_scopes_of(scope_type)
-      index = scopes.rindex(scope_type)
-      return nil unless index
-      scopes[Range.new(index + 1, -1)]
-    end
-
-    def include_class_scope?(scopes)
-      !(scopes & [:class, :sclass]).empty?
-    end
-
-    def include_method_or_block_scope?(scopes)
-      # TODO: Should validate whether the method taking the block is RSpec's
-      #   special method. (e.g. #subject, #let, #before, #after)
-      !(scopes & [:def, :block]).empty?
+    module ArrayExtension
+      def end_with?(*args)
+        tail = args.flatten
+        self[-(tail.size)..-1] == tail
+      end
     end
   end
 end

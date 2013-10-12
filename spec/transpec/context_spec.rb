@@ -20,16 +20,16 @@ module Transpec
     describe '#scopes' do
       let(:source) do
         <<-END
-          some_var = 1
+          top_level
 
           RSpec.configure do |config|
             config.before do
-              prepare_something
+              in_hook
             end
           end
 
           module SomeModule
-            SOME_CONST = 1
+            in_module
 
             describe 'something' do
               def some_method(some_arg)
@@ -37,8 +37,12 @@ module Transpec
               end
 
               it 'is 1' do
-                something.should == 1
+                in_example
               end
+            end
+
+            1.times do
+              in_normal_block
             end
           end
         END
@@ -48,15 +52,15 @@ module Transpec
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
           expected_scopes = begin
             case node_id(node)
-            when 'lvasgn :some_var'
+            when 'send nil :top_level'
               []
-            when 'send nil :prepare_something'
-              [:rspec_configure, :block]
+            when 'send nil :in_hook'
+              [:rspec_configure, :hook]
             when 'module'
               []
             when 'const nil :SomeModule'
               # [:module] # TODO
-            when 'casgn nil :SOME_CONST'
+            when 'send nil :in_module'
               [:module]
             when 'send nil :describe'
               # [:module] # TODO
@@ -70,8 +74,10 @@ module Transpec
               # [:module, :example_group] # TODO
             when 'str "is 1"'
               # [:module, :example_group] # TODO
-            when 'send nil :something'
-              [:module, :example_group, :block]
+            when 'send nil :in_example'
+              [:module, :example_group, :example]
+            when 'send nil :in_normal_block'
+              [:module]
             end
           end
 
@@ -193,13 +199,205 @@ module Transpec
         include_examples 'returns expected value'
       end
 
-      context 'when in a block in #describe block in top level' do
+      context 'when in #it block in #describe block in top level' do
         let(:source) do
           <<-END
             describe 'foo' do
               it 'is an example' do
                 target
               end
+            end
+          END
+        end
+
+        include_examples 'returns expected value'
+      end
+
+      context 'when in #before block in #describe block in top level' do
+        let(:source) do
+          <<-END
+            describe 'foo' do
+              before do
+                target
+              end
+
+              example { }
+            end
+          END
+        end
+
+        include_examples 'returns expected value'
+      end
+
+      context 'when in #before(:each) block in #describe block in top level' do
+        let(:source) do
+          <<-END
+            describe 'foo' do
+              before(:each) do
+                target
+              end
+
+              example { }
+            end
+          END
+        end
+
+        include_examples 'returns expected value'
+      end
+
+      context 'when in #before(:all) block in #describe block in top level' do
+        let(:source) do
+          <<-END
+            describe 'foo' do
+              before(:all) do
+                target
+              end
+
+              example { }
+            end
+          END
+        end
+
+        include_examples 'returns expected value'
+      end
+
+      context 'when in #after block in #describe block in top level' do
+        let(:source) do
+          <<-END
+            describe 'foo' do
+              after do
+                target
+              end
+
+              example { }
+            end
+          END
+        end
+
+        include_examples 'returns expected value'
+      end
+
+      context 'when in #after(:each) block in #describe block in top level' do
+        let(:source) do
+          <<-END
+            describe 'foo' do
+              after(:each) do
+                target
+              end
+
+              example { }
+            end
+          END
+        end
+
+        include_examples 'returns expected value'
+      end
+
+      context 'when in #after(:all) block in #describe block in top level' do
+        let(:source) do
+          <<-END
+            describe 'foo' do
+              after(:all) do
+                target
+              end
+
+              example { }
+            end
+          END
+        end
+
+        include_examples 'returns expected value'
+      end
+
+      context 'when in #around block in #describe block in top level' do
+        let(:source) do
+          <<-END
+            describe 'foo' do
+              around do
+                target
+              end
+
+              example { }
+            end
+          END
+        end
+
+        include_examples 'returns expected value'
+      end
+
+      context 'when in #subject block in #describe block in top level' do
+        let(:source) do
+          <<-END
+            describe 'foo' do
+              subject do
+                target
+              end
+
+              example { subject }
+            end
+          END
+        end
+
+        include_examples 'returns expected value'
+      end
+
+      context 'when in #subject! block in #describe block in top level' do
+        let(:source) do
+          <<-END
+            describe 'foo' do
+              subject! do
+                target
+              end
+
+              example { subject }
+            end
+          END
+        end
+
+        include_examples 'returns expected value'
+      end
+
+      context 'when in #let block in #describe block in top level' do
+        let(:source) do
+          <<-END
+            describe 'foo' do
+              let(:something) do
+                target
+              end
+
+              example { something }
+            end
+          END
+        end
+
+        include_examples 'returns expected value'
+      end
+
+      context 'when in #let! block in #describe block in top level' do
+        let(:source) do
+          <<-END
+            describe 'foo' do
+              let!(:something) do
+                target
+              end
+
+              example { something }
+            end
+          END
+        end
+
+        include_examples 'returns expected value'
+      end
+
+      context 'when in any other block in #describe block in top level' do
+        let(:source) do
+          <<-END
+            describe 'foo' do
+              1.times do
+                target
+              end
+
+              example { }
             end
           END
         end
@@ -341,7 +539,7 @@ module Transpec
         include_examples 'returns expected value'
       end
 
-      context 'when in a block in RSpec.configure' do
+      context 'when in #before block in RSpec.configure' do
         let(:source) do
           <<-END
             RSpec.configure do |config|
@@ -351,6 +549,20 @@ module Transpec
             end
 
             describe('test') { example { } }
+          END
+        end
+
+        include_examples 'returns expected value'
+      end
+
+      context 'when in a normal block in RSpec.configure' do
+        let(:source) do
+          <<-END
+            RSpec.configure do |config|
+              1.times do
+                target
+              end
+            end
           END
         end
 
