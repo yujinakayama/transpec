@@ -25,7 +25,7 @@ module Transpec
 
           RSpec.configure do |config|
             config.before do
-              in_hook
+              in_before
             end
           end
 
@@ -55,8 +55,8 @@ module Transpec
             case node_id(node)
             when 'send nil :top_level'
               []
-            when 'send nil :in_hook'
-              [:rspec_configure, :hook]
+            when 'send nil :in_before'
+              [:rspec_configure, :each_before_after]
             when 'module'
               []
             when 'const nil :SomeModule'
@@ -140,6 +140,16 @@ module Transpec
 
         let(:expected) do
           eval_with_rspec_in_context('respond_to?(:expect)')
+        end
+
+        it { should == expected }
+      end
+
+      describe '#non_monkey_patch_mock_available?' do
+        subject { context_object.non_monkey_patch_mock_available? }
+
+        let(:expected) do
+          eval_with_rspec_in_context('respond_to?(:allow) && respond_to?(:receive)')
         end
 
         it { should == expected }

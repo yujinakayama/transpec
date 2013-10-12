@@ -23,6 +23,30 @@ module Transpec
 
     HELPER_METHODS = [:subject, :subject!, :let, :let!]
 
+    EXAMPLE_GROUP_CONTEXT_SCOPE_SUFFIXES = [
+      [:example_group, :example],
+      [:example_group, :each_before_after],
+      [:example_group, :all_before_after],
+      [:example_group, :around],
+      [:example_group, :helper],
+      [:example_group, :def],
+      [:rspec_configure, :each_before_after],
+      [:rspec_configure, :all_before_after],
+      [:rspec_configure, :around],
+      [:rspec_configure, :def],
+      [:module, :def]
+    ].freeze
+
+    NON_MONKEY_PATCH_MOCK_AVAILABLE_CONTEXT = [
+      [:example_group, :example],
+      [:example_group, :each_before_after],
+      [:example_group, :helper],
+      [:example_group, :def],
+      [:rspec_configure, :each_before_after],
+      [:rspec_configure, :def],
+      [:module, :def]
+    ].freeze
+
     attr_reader :nodes
 
     # @param nodes [Array] An array containing from root node to the target node.
@@ -41,14 +65,11 @@ module Transpec
     def in_example_group?
       return @in_example_group if instance_variable_defined?(:@in_example_group)
 
-      @in_example_group = scopes == [:def] ||
-                          scopes.end_with?(:example_group, :example) ||
-                          scopes.end_with?(:example_group, :hook) ||
-                          scopes.end_with?(:example_group, :helper) ||
-                          scopes.end_with?(:example_group, :def) ||
-                          scopes.end_with?(:rspec_configure, :hook) ||
-                          scopes.end_with?(:rspec_configure, :def) ||
-                          scopes.end_with?(:module, :def)
+      return @in_example_group = true if scopes == [:def]
+
+      @in_example_group = EXAMPLE_GROUP_CONTEXT_SCOPE_SUFFIXES.any? do |suffix|
+        scopes.end_with?(suffix)
+      end
     end
 
     def non_monkey_patch_expectation_available?
@@ -56,6 +77,19 @@ module Transpec
     end
 
     alias_method :expect_to_matcher_available?, :non_monkey_patch_expectation_available?
+
+    def non_monkey_patch_mock_available?
+      return @mock_available if instance_variable_defined?(:@mock_available)
+
+      return @mock_available = true if scopes == [:def]
+
+      @mock_available = NON_MONKEY_PATCH_MOCK_AVAILABLE_CONTEXT.any? do |suffix|
+        scopes.end_with?(suffix)
+      end
+    end
+
+    alias_method :expect_to_receive_available?, :non_monkey_patch_mock_available?
+    alias_method :allow_to_receive_available?, :non_monkey_patch_mock_available?
 
     private
 
@@ -76,7 +110,7 @@ module Transpec
       if const_name(receiver_node) == 'RSpec' && method_name == :configure
         :rspec_configure
       elsif HOOK_METHODS.include?(method_name)
-        :hook
+        hook_type(send_node)
       elsif receiver_node
         nil
       elsif EXAMPLE_GROUP_METHODS.include?(method_name)
@@ -88,6 +122,19 @@ module Transpec
       else
         nil
       end
+    end
+
+    def hook_type(send_node)
+      _, method_name, arg_node, *_ = *send_node
+
+      return :around if method_name == :around
+
+      if arg_node && [:sym, :str].include?(arg_node.type)
+         hook_arg = arg_node.children.first.to_sym
+         return :all_before_after if hook_arg == :all
+      end
+
+      :each_before_after
     end
 
     module ArrayExtension
