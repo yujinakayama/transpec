@@ -55,9 +55,16 @@ module Transpec
 
     def scope_type(node)
       return nil unless SCOPE_TYPES.include?(node.type)
-      return node.type unless node.type == :block
 
-      send_node = node.children.first
+      if node.type == :block
+        special_block_type(node)
+      else
+        node.type
+      end
+    end
+
+    def special_block_type(block_node)
+      send_node = block_node.children.first
       receiver_node, method_name, *_ = *send_node
 
       if const_name(receiver_node) == 'RSpec' && method_name == :configure

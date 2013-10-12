@@ -39,17 +39,9 @@ module Transpec
 
       fail_if_should_not_continue!
 
-      paths = non_option_args
+      base_paths = base_target_paths(non_option_args)
 
-      if paths.empty?
-        if Dir.exists?('spec')
-          paths = ['spec']
-        else
-          fail ArgumentError, 'Specify target files or directories.'
-        end
-      end
-
-      target_files(paths).each do |file_path|
+      target_files(base_paths).each do |file_path|
         process_file(file_path)
       end
 
@@ -175,6 +167,12 @@ module Transpec
     end
 
     private
+
+    def base_target_paths(args)
+      return args unless args.empty?
+      return ['spec'] if Dir.exists?('spec')
+      fail ArgumentError, 'Specify target files or directories.'
+    end
 
     def ruby_files_in_directory(directory_path)
       ruby_file_paths = []

@@ -9,7 +9,7 @@ LineLength:
   Max: 100
 
 MethodLength:
-  Max: 20
+  Max: 17
 
 WordArray:
   Enabled: false
