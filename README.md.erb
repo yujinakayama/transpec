@@ -238,6 +238,44 @@ rewriter.rewrite(parenthesizing_example)
 -%>
 ```
 
+## Troubleshooting
+
+You might see the following warning while conversion:
+
+```
+Cannot convert #should into #expect since #expect is not available in the context.
+spec/awesome_spec.rb:4:      1.should == 1
+```
+
+This message would be shown with specs like this:
+
+```ruby
+describe '#should that cannot be converted to #expect' do
+  class MyAwesomeTestRunner
+    def run
+      1.should == 1
+    end
+  end
+
+  it 'is 1' do
+    test_runner = MyAwesomeTestRunner.new
+    test_runner.run
+  end
+end
+```
+
+### Reason
+
+* `should` is defined on `Kernel` (included by `Object`), so you can use `should` almost everywhere.
+* `expect` is defined on `RSpec::Matchers` (included by `RSpec::Core::ExampleGroup`), so you can use `expect` only where `self` is an instance of `RSpec::Core::ExampleGroup`.
+
+With the above example, in the context of `1.should == 1`, the `self` is an instance of `MyAwesomeTestRunner`.
+So Transpec tracks contexts and skips conversion if the target syntax cannot be converted in a case like this.
+
+### Solution
+
+You need to rewrite the spec by yourself.
+
 ## Supported Conversions
 
 ### Standard expectations
