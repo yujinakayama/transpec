@@ -2,6 +2,8 @@
 
 ## Master
 
+## v0.2.4
+
 * Improve context detection
 
 ## v0.2.3
