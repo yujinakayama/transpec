@@ -15,7 +15,7 @@ module Transpec
       end
 
       def expectize!(negative_form = 'not_to', parenthesize_matcher_arg = true)
-        unless context.in_example_group?
+        unless context.expect_to_matcher_available?
           fail InvalidContextError.new(selector_range, "##{method_name}", '#expect')
         end
 

@@ -92,7 +92,7 @@ module Transpec
 
       describe '#allowize!' do
         before do
-          method_stub_object.context.stub(:in_example_group?).and_return(true)
+          method_stub_object.context.stub(:allow_to_receive_available?).and_return(true)
           method_stub_object.allowize!
         end
 
@@ -389,7 +389,6 @@ module Transpec
 
       describe '#replace_deprecated_method!' do
         before do
-          method_stub_object.context.stub(:in_example_group?).and_return(true)
           method_stub_object.replace_deprecated_method!
         end
 

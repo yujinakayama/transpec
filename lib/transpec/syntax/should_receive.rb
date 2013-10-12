@@ -42,7 +42,7 @@ module Transpec
       private
 
       def convert_to_syntax!(syntax, negative_form)
-        unless context.in_example_group?
+        unless context.non_monkey_patch_mock_available?
           fail InvalidContextError.new(selector_range, "##{method_name}", "##{syntax}")
         end
 

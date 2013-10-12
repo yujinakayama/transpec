@@ -23,7 +23,7 @@ module Transpec
       let(:record) { should_receive_object.report.records.first }
 
       before do
-        should_receive_object.context.stub(:in_example_group?).and_return(true)
+        should_receive_object.context.stub(:non_monkey_patch_mock_available?).and_return(true)
       end
 
       describe '#expectize!' do

@@ -124,17 +124,6 @@ module Transpec
         Marshal.load(File.read(result_path))
       end
 
-      describe '#in_example_group?' do
-        subject { context_object.in_example_group? }
-
-        let(:expected) do
-          class_name = eval_with_rspec_in_context('self.class.name')
-          class_name.start_with?('RSpec::Core::ExampleGroup::')
-        end
-
-        it { should == expected }
-      end
-
       describe '#non_monkey_patch_expectation_available?' do
         subject { context_object.non_monkey_patch_expectation_available? }
 

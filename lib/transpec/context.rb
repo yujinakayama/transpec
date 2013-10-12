@@ -23,7 +23,7 @@ module Transpec
 
     HELPER_METHODS = [:subject, :subject!, :let, :let!]
 
-    EXAMPLE_GROUP_CONTEXT_SCOPE_SUFFIXES = [
+    NON_MONKEY_PATCH_EXPECTATION_AVAILABLE_CONTEXT = [
       [:example_group, :example],
       [:example_group, :each_before_after],
       [:example_group, :all_before_after],
@@ -62,18 +62,14 @@ module Transpec
       end
     end
 
-    def in_example_group?
-      return @in_example_group if instance_variable_defined?(:@in_example_group)
+    def non_monkey_patch_expectation_available?
+      return @expectation_available if instance_variable_defined?(:@expectation_available)
 
-      return @in_example_group = true if scopes == [:def]
+      return @expectation_available = true if scopes == [:def]
 
-      @in_example_group = EXAMPLE_GROUP_CONTEXT_SCOPE_SUFFIXES.any? do |suffix|
+      @expectation_available = NON_MONKEY_PATCH_EXPECTATION_AVAILABLE_CONTEXT.any? do |suffix|
         scopes.end_with?(suffix)
       end
-    end
-
-    def non_monkey_patch_expectation_available?
-      in_example_group?
     end
 
     alias_method :expect_to_matcher_available?, :non_monkey_patch_expectation_available?

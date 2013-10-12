@@ -12,7 +12,7 @@ module Transpec
       let(:record) { should_object.report.records.first }
 
       before do
-        should_object.context.stub(:in_example_group?).and_return(true)
+        should_object.context.stub(:expect_to_matcher_available?).and_return(true)
       end
 
       describe '#matcher_node' do
