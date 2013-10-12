@@ -2,6 +2,8 @@
 
 ## Master
 
+* Improve context detection
+
 ## v0.2.3
 
 * Fix a bug where arguments of positive error expectation with block were removed (e.g. `expect { }.to raise_error(SpecificErrorClass) { |e| ... }` was converted to `expect { }.to raise_error { |e| ... }` unintentionally)
