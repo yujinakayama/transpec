@@ -63,7 +63,7 @@ module Transpec
       @report.invalid_context_errors.concat(rewriter.invalid_context_errors)
 
       rewriter.invalid_context_errors.each do |error|
-        warn_not_in_example_group_context_error(error)
+        warn_invalid_context_error(error)
       end
     rescue Parser::SyntaxError => error
       @report.syntax_errors << error
@@ -227,7 +227,7 @@ module Transpec
       warn "Syntax error at #{error.diagnostic.location}. Skipping the file.".color(:red)
     end
 
-    def warn_not_in_example_group_context_error(error)
+    def warn_invalid_context_error(error)
       message = error.message.color(:yellow) + $RS
       message << highlighted_source(error)
       warn message
