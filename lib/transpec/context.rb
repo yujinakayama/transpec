@@ -51,6 +51,12 @@ module Transpec
                           scopes.end_with?(:module, :def)
     end
 
+    def non_monkey_patch_expectation_available?
+      in_example_group?
+    end
+
+    alias_method :expect_to_matcher_available?, :non_monkey_patch_expectation_available?
+
     private
 
     def scope_type(node)

@@ -134,6 +134,16 @@ module Transpec
 
         it { should == expected }
       end
+
+      describe '#non_monkey_patch_expectation_available?' do
+        subject { context_object.non_monkey_patch_expectation_available? }
+
+        let(:expected) do
+          eval_with_rspec_in_context('respond_to?(:expect)')
+        end
+
+        it { should == expected }
+      end
     end
 
     context 'when in top level' do
