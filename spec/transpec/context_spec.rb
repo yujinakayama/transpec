@@ -417,6 +417,50 @@ module Transpec
       include_examples 'context inspection methods'
     end
 
+    context 'when in #before block in singleton method with self in #describe block in top level' do
+      let(:source) do
+        <<-END
+          describe 'foo' do
+            def self.some_method
+              before do
+                target
+              end
+            end
+
+            some_method
+
+            example { something }
+          end
+        END
+      end
+
+      include_examples 'context inspection methods'
+    end
+
+    context 'when in #before block in singleton method with other object in #describe block in top level' do
+      let(:source) do
+        <<-END
+          describe 'foo' do
+            some_object = 'some object'
+
+            def some_object.before
+              yield
+            end
+
+            def some_object.some_method
+              before do
+                target
+              end
+            end
+
+            some_object.some_method
+          end
+        END
+      end
+
+      include_examples 'context inspection methods'
+    end
+
     context 'when in a class in a block in #describe block' do
        let(:source) do
         <<-END

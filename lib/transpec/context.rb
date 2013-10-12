@@ -92,8 +92,15 @@ module Transpec
     def scope_type(node)
       return nil unless SCOPE_TYPES.include?(node.type)
 
-      if node.type == :block
+      case node.type
+      when :block
         special_block_type(node)
+      when :defs
+        if node.children.first.type == :self
+          nil
+        else
+          node.type
+        end
       else
         node.type
       end
