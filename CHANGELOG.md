@@ -2,6 +2,8 @@
 
 ## Master
 
+## v0.2.5
+
 * Do not touch file if the source does need to be rewritten
 
 ## v0.2.4
