@@ -12,7 +12,9 @@ module Transpec
       let(:source) do
         <<-END
           def some_method(arg_a, arg_b)
-            do_something(arg_a)
+            1.times do
+              do_something(arg_a)
+            end
           end
         END
       end
@@ -21,11 +23,15 @@ module Transpec
       #   (args
       #     (arg :arg_a)
       #     (arg :arg_b))
-      #   (send nil :do_something
-      #     (lvar :arg_a)))
+      #   (block
+      #     (send
+      #       (int 1) :times)
+      #     (args)
+      #     (send nil :do_something
+      #       (lvar :arg_a))))
 
       describe '#each_child_node' do
-        let(:expected_types) { [:args, :send] }
+        let(:expected_types) { [:args, :block] }
 
         context 'when a block is given' do
           it 'yields each child node' do
@@ -64,7 +70,9 @@ module Transpec
       end
 
       describe '#each_descendent_node' do
-        let(:expected_types) { [:args, :arg, :arg, :send, :lvar] }
+        let(:expected_types) do
+          [:args, :arg, :arg, :block, :send, :int, :args, :send, :lvar]
+        end
 
         context 'when a block is given' do
           it 'yields each descendent node with depth first order' do

@@ -2,6 +2,8 @@
 
 ## Master
 
+* Fix a bug where `Node#each_descendent_node` enumerates only within depth 2
+
 ## v0.2.5
 
 * Do not touch file if the source does need to be rewritten

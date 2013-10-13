@@ -25,7 +25,7 @@ module Transpec
 
         each_child_node do |child_node|
           yield child_node
-          child_node.each_child_node(&block)
+          child_node.each_descendent_node(&block)
         end
       end
 
