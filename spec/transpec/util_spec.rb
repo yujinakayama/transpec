@@ -9,17 +9,10 @@ module Transpec
     include ::AST::Sexp
 
     describe '#const_name' do
-      subject { Util.const_name(const_node) }
-
-      let(:const_node) do
-        AST::Scanner.scan(ast) do |node|
-          return node if node.type == :const
-        end
-        fail 'No const node is found!'
-      end
+      subject { Util.const_name(ast) }
 
       context 'when the passed node is not :const type' do
-        let(:const_node) do
+        let(:ast) do
           s(:lvasgn, :foo,
             s(:int, 1))
         end
