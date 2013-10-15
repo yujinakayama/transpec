@@ -1,7 +1,7 @@
 # coding: utf-8
 
+require 'transpec/base_rewriter'
 require 'transpec/report'
-require 'transpec/ast/builder'
 require 'transpec/ast/scanner'
 require 'transpec/configuration'
 require 'transpec/syntax'
@@ -13,10 +13,9 @@ require 'transpec/syntax/raise_error'
 require 'transpec/syntax/rspec_configure'
 require 'transpec/syntax/should'
 require 'transpec/syntax/should_receive'
-require 'parser/current'
 
 module Transpec
-  class Rewriter
+  class Rewriter < BaseRewriter
     attr_reader :report, :invalid_context_errors
 
     def initialize(configuration = Configuration.new, report = Report.new)
@@ -25,49 +24,10 @@ module Transpec
       @invalid_context_errors = []
     end
 
-    def rewrite_file!(file_path)
-      source = File.read(file_path)
-      rewritten_source = rewrite(source, file_path)
-      return if source == rewritten_source
-      File.write(file_path, rewritten_source)
-    end
-
-    def rewrite(source, name = '(string)')
-      source_buffer = create_source_buffer(source, name)
-      ast = parse(source_buffer)
-
-      source_rewriter = Parser::Source::Rewriter.new(source_buffer)
-      failed_overlapping_rewrite = false
-      source_rewriter.diagnostics.consumer = proc do
-        failed_overlapping_rewrite = true
-        fail OverlappedRewriteError
-      end
-
+    def process(ast, source_rewriter)
       AST::Scanner.scan(ast) do |node, ancestor_nodes|
         dispatch_node(node, ancestor_nodes, source_rewriter)
       end
-
-      rewritten_source = source_rewriter.process
-
-      if failed_overlapping_rewrite
-        rewriter = self.class.new(@configuration, @report)
-        rewritten_source = rewriter.rewrite(rewritten_source, name)
-      end
-
-      rewritten_source
-    end
-
-    def create_source_buffer(source, name)
-      source_buffer = Parser::Source::Buffer.new(name)
-      source_buffer.source = source
-      source_buffer
-    end
-
-    def parse(source_buffer)
-      builder = AST::Builder.new
-      parser = Parser::CurrentRuby.new(builder)
-      ast = parser.parse(source_buffer)
-      ast
     end
 
     def dispatch_node(node, ancestor_nodes, source_rewriter)
@@ -164,7 +124,5 @@ module Transpec
     rescue Syntax::RSpecConfigure::UnknownSyntaxError
       false
     end
-
-    class OverlappedRewriteError < StandardError; end
   end
 end
