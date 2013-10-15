@@ -6,6 +6,7 @@ require 'transpec/syntax/matcher'
 module Transpec
   class Syntax
     describe Matcher do
+      include ::AST::Sexp
       include_context 'parsed objects'
       include_context 'should object'
 
@@ -14,6 +15,29 @@ module Transpec
       end
 
       let(:record) { matcher.report.records.first }
+
+      describe '.dynamic_analysis_target_node?' do
+        let(:nodes) do
+          AST::Scanner.scan(ast) do |node, ancestor_nodes|
+            return node, ancestor_nodes if node == s(:send, nil, :foo)
+          end
+          fail 'No target node is found!'
+        end
+
+        context 'when the node is argument of #=~' do
+          let(:source) do
+            <<-END
+              it 'matches to foo' do
+                subject.should =~ foo
+              end
+            END
+          end
+
+          it 'returns true' do
+            Matcher.dynamic_analysis_target_node?(*nodes).should be_true
+          end
+        end
+      end
 
       describe '#method_name' do
         context 'when it is operator matcher' do

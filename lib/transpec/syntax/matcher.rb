@@ -13,6 +13,13 @@ module Transpec
         false
       end
 
+      def self.dynamic_analysis_target_node?(node, ancestor_nodes)
+        parent_node = ancestor_nodes.last
+        return false unless parent_node && parent_node.type == :send
+        _, method_name, arg_node = *parent_node
+        method_name == :=~ && arg_node == node
+      end
+
       def initialize(node, source_rewriter, report = Report.new)
         @node = node
         @source_rewriter = source_rewriter

@@ -30,6 +30,10 @@ module Transpec
       target_method_names.include?(method_name)
     end
 
+    def self.dynamic_analysis_target_node?(node, ancestor_nodes)
+      false
+    end
+
     def initialize(node, ancestor_nodes, source_rewriter, report = Report.new)
       @node = node
       @ancestor_nodes = ancestor_nodes
