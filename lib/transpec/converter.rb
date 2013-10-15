@@ -15,8 +15,11 @@ require 'transpec/syntax/should'
 require 'transpec/syntax/should_receive'
 
 module Transpec
-  class Rewriter < BaseRewriter
+  class Converter < BaseRewriter
     attr_reader :report, :invalid_context_errors
+
+    alias_method :convert_file!, :rewrite_file!
+    alias_method :convert, :rewrite
 
     def initialize(configuration = Configuration.new, report = Report.new)
       @configuration = configuration

@@ -61,7 +61,7 @@ END
 Transpec would convert it to the following form:
 
 ```ruby
-<%= Transpec::Rewriter.new.rewrite(example) -%>
+<%= Transpec::Converter.new.convert(example) -%>
 ```
 
 ### Real Examples
@@ -215,7 +215,7 @@ END
 -%>
 
 <%=
-Transpec::Rewriter.new.rewrite(parenthesizing_example).gsub(
+Transpec::Converter.new.convert(parenthesizing_example).gsub(
   'original spec',
   'converted spec'
 )
@@ -224,8 +224,8 @@ Transpec::Rewriter.new.rewrite(parenthesizing_example).gsub(
 <%=
 configuration = Transpec::Configuration.new
 configuration.parenthesize_matcher_arg = false
-rewriter = Transpec::Rewriter.new(configuration)
-rewriter.rewrite(parenthesizing_example)
+converter = Transpec::Converter.new(configuration)
+converter.convert(parenthesizing_example)
   .gsub(
     'original spec',
     'converted spec with -p/--no-parentheses-matcher-arg option'

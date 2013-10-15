@@ -1,10 +1,10 @@
 # coding: utf-8
 
-require 'transpec/configuration'
 require 'transpec/commit_message'
+require 'transpec/configuration'
+require 'transpec/converter'
 require 'transpec/git'
 require 'transpec/report'
-require 'transpec/rewriter'
 require 'transpec/version'
 require 'optparse'
 require 'find'
@@ -57,12 +57,12 @@ module Transpec
     def process_file(file_path)
       puts "Processing #{file_path}"
 
-      rewriter = Rewriter.new(@configuration, @report)
-      rewriter.rewrite_file!(file_path)
+      converter = Converter.new(@configuration, @report)
+      converter.convert_file!(file_path)
 
-      @report.invalid_context_errors.concat(rewriter.invalid_context_errors)
+      @report.invalid_context_errors.concat(converter.invalid_context_errors)
 
-      rewriter.invalid_context_errors.each do |error|
+      converter.invalid_context_errors.each do |error|
         warn_invalid_context_error(error)
       end
     rescue Parser::SyntaxError => error

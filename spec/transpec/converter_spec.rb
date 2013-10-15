@@ -1,14 +1,14 @@
 # coding: utf-8
 
 require 'spec_helper'
-require 'transpec/rewriter'
+require 'transpec/converter'
 
 module Transpec
-  describe Rewriter do
-    subject(:rewriter) { Rewriter.new(configuration) }
+  describe Converter do
+    subject(:converter) { Converter.new(configuration) }
     let(:configuration) { Configuration.new }
 
-    describe '#rewrite_file!' do
+    describe '#convert_file!' do
       include_context 'isolated environment'
 
       let(:file_path) { 'sample_spec.rb' }
@@ -16,28 +16,28 @@ module Transpec
       before do
         File.write(file_path, 'This is a spec')
         File.utime(0, 0, file_path)
-        rewriter.stub(:rewrite).and_return('This is the rewritten spec')
+        converter.stub(:rewrite).and_return('This is the converted spec')
       end
 
       it 'overwrites the passed file path' do
-        rewriter.rewrite_file!(file_path)
-        File.read(file_path).should == 'This is the rewritten spec'
+        converter.convert_file!(file_path)
+        File.read(file_path).should == 'This is the converted spec'
       end
 
-      context 'when the source does not need rewrite' do
+      context 'when the source does not need convert' do
         before do
-          rewriter.stub(:rewrite).and_return('This is a spec')
+          converter.stub(:rewrite).and_return('This is a spec')
         end
 
         it 'does not touch the file' do
-          rewriter.rewrite_file!(file_path)
+          converter.convert_file!(file_path)
           File.mtime(file_path).should == Time.at(0)
         end
       end
     end
 
-    describe '#rewrite' do
-      subject { rewriter.rewrite(source) }
+    describe '#convert' do
+      subject { converter.convert(source) }
 
       let(:source) do
         <<-END
@@ -51,12 +51,12 @@ module Transpec
       end
 
       it 'dispatches found syntax objects to each handler method' do
-        rewriter.should_receive(:process_should).with(an_instance_of(Syntax::Should))
-        rewriter.should_receive(:process_should_receive).with(an_instance_of(Syntax::ShouldReceive))
-        rewriter.rewrite(source)
+        converter.should_receive(:process_should).with(an_instance_of(Syntax::Should))
+        converter.should_receive(:process_should_receive).with(an_instance_of(Syntax::ShouldReceive))
+        converter.convert(source)
       end
 
-      context 'when the source has overlapped rewrite targets' do
+      context 'when the source has overlapped convert targets' do
         let(:source) do
           <<-END
             describe 'example group' do
@@ -77,20 +77,20 @@ module Transpec
           END
         end
 
-        it 'rewrites all targets properly' do
+        it 'converts all targets properly' do
           should == expected_source
         end
 
         it 'adds records for only completed conversions' do
-          rewriter.rewrite(source)
-          rewriter.report.records.count.should == 2
+          converter.convert(source)
+          converter.report.records.count.should == 2
         end
       end
 
       context 'when the source has a monkey-patched expectation outside of example group context' do
         before do
           configuration.convert_to_expect_to_matcher = true
-          rewriter.stub(:warn)
+          converter.stub(:warn)
         end
 
         let(:source) do
@@ -109,7 +109,7 @@ module Transpec
           END
         end
 
-        it 'does not rewrite the expectation to non-monkey-patch syntax' do
+        it 'does not convert the expectation to non-monkey-patch syntax' do
           should == source
         end
       end
@@ -126,7 +126,7 @@ module Transpec
 
           it 'invokes Should#expectize! with "not_to"' do
             should_object.should_receive(:expectize!).with('not_to', anything)
-            rewriter.process_should(should_object)
+            converter.process_should(should_object)
           end
         end
 
@@ -135,7 +135,7 @@ module Transpec
 
           it 'invokes Should#expectize! with "to_not"' do
             should_object.should_receive(:expectize!).with('to_not', anything)
-            rewriter.process_should(should_object)
+            converter.process_should(should_object)
           end
         end
 
@@ -144,7 +144,7 @@ module Transpec
 
           it 'invokes Should#expectize! with true as second argument' do
             should_object.should_receive(:expectize!).with(anything, true)
-            rewriter.process_should(should_object)
+            converter.process_should(should_object)
           end
         end
 
@@ -153,7 +153,7 @@ module Transpec
 
           it 'invokes Should#expectize! with false as second argument' do
             should_object.should_receive(:expectize!).with(anything, false)
-            rewriter.process_should(should_object)
+            converter.process_should(should_object)
           end
         end
       end
@@ -163,7 +163,7 @@ module Transpec
 
         it 'does not invoke Should#expectize!' do
           should_object.should_not_receive(:expectize!)
-          rewriter.process_should(should_object)
+          converter.process_should(should_object)
         end
       end
     end
@@ -176,7 +176,7 @@ module Transpec
           should_receive_object.should_not_receive(:expectize!)
           should_receive_object.should_not_receive(:allowize_any_number_of_times!)
           should_receive_object.should_not_receive(:stubize_any_number_of_times!)
-          rewriter.process_should_receive(should_receive_object)
+          converter.process_should_receive(should_receive_object)
         end
       end
 
@@ -198,7 +198,7 @@ module Transpec
 
                   it 'invokes ShouldReceive#allowize_useless_expectation! with "not_to"' do
                     should_receive_object.should_receive(:allowize_useless_expectation!).with('not_to')
-                    rewriter.process_should_receive(should_receive_object)
+                    converter.process_should_receive(should_receive_object)
                   end
                 end
 
@@ -207,7 +207,7 @@ module Transpec
 
                   it 'invokes ShouldReceive#allowize_useless_expectation! with "to_not"' do
                     should_receive_object.should_receive(:allowize_useless_expectation!).with('to_not')
-                    rewriter.process_should_receive(should_receive_object)
+                    converter.process_should_receive(should_receive_object)
                   end
                 end
               end
@@ -223,7 +223,7 @@ module Transpec
 
                 it 'invokes ShouldReceive#stubize_useless_expectation!' do
                   should_receive_object.should_receive(:stubize_useless_expectation!)
-                  rewriter.process_should_receive(should_receive_object)
+                  converter.process_should_receive(should_receive_object)
                 end
               end
             end
@@ -245,7 +245,7 @@ module Transpec
 
                   it 'invokes ShouldReceive#expectize! with "not_to"' do
                     should_receive_object.should_receive(:expectize!).with('not_to')
-                    rewriter.process_should_receive(should_receive_object)
+                    converter.process_should_receive(should_receive_object)
                   end
                 end
 
@@ -254,7 +254,7 @@ module Transpec
 
                   it 'invokes ShouldReceive#expectize! with "to_not"' do
                     should_receive_object.should_receive(:expectize!).with('to_not')
-                    rewriter.process_should_receive(should_receive_object)
+                    converter.process_should_receive(should_receive_object)
                   end
                 end
               end
@@ -288,7 +288,7 @@ module Transpec
 
                     it 'invokes ShouldReceive#expectize! with "not_to"' do
                       should_receive_object.should_receive(:expectize!).with('not_to')
-                      rewriter.process_should_receive(should_receive_object)
+                      converter.process_should_receive(should_receive_object)
                     end
                   end
 
@@ -297,7 +297,7 @@ module Transpec
 
                     it 'invokes ShouldReceive#expectize! with "to_not"' do
                       should_receive_object.should_receive(:expectize!).with('to_not')
-                      rewriter.process_should_receive(should_receive_object)
+                      converter.process_should_receive(should_receive_object)
                     end
                   end
                 end
@@ -332,42 +332,42 @@ module Transpec
       shared_examples 'invokes MethodStub#allowize!' do
         it 'invokes MethodStub#allowize!' do
           method_stub_object.should_receive(:allowize!)
-          rewriter.process_method_stub(method_stub_object)
+          converter.process_method_stub(method_stub_object)
         end
       end
 
       shared_examples 'does not invoke MethodStub#allowize!' do
         it 'does not invoke MethodStub#allowize!' do
           method_stub_object.should_not_receive(:allowize!)
-          rewriter.process_method_stub(method_stub_object)
+          converter.process_method_stub(method_stub_object)
         end
       end
 
       shared_examples 'invokes MethodStub#replace_deprecated_method!' do
         it 'invokes MethodStub#replace_deprecated_method!' do
           method_stub_object.should_receive(:replace_deprecated_method!)
-          rewriter.process_method_stub(method_stub_object)
+          converter.process_method_stub(method_stub_object)
         end
       end
 
       shared_examples 'does not invoke MethodStub#replace_deprecated_method!' do
         it 'does not invoke MethodStub#replace_deprecated_method!' do
           method_stub_object.should_not_receive(:replace_deprecated_method!)
-          rewriter.process_method_stub(method_stub_object)
+          converter.process_method_stub(method_stub_object)
         end
       end
 
       shared_examples 'invokes MethodStub#remove_allowance_for_no_message!' do
         it 'invokes MethodStub#remove_allowance_for_no_message!' do
           method_stub_object.should_receive(:remove_allowance_for_no_message!)
-          rewriter.process_method_stub(method_stub_object)
+          converter.process_method_stub(method_stub_object)
         end
       end
 
       shared_examples 'does not invoke MethodStub#remove_allowance_for_no_message!' do
         it 'does not invoke MethodStub#remove_allowance_for_no_message!' do
           method_stub_object.should_not_receive(:remove_allowance_for_no_message!)
-          rewriter.process_method_stub(method_stub_object)
+          converter.process_method_stub(method_stub_object)
         end
       end
 
@@ -420,7 +420,7 @@ module Transpec
 
         it 'invokes Double#convert_to_double!' do
           double_object.should_receive(:convert_to_double!)
-          rewriter.process_double(double_object)
+          converter.process_double(double_object)
         end
       end
 
@@ -429,7 +429,7 @@ module Transpec
 
         it 'does not invoke Double#convert_to_double!' do
           double_object.should_not_receive(:convert_to_double!)
-          rewriter.process_double(double_object)
+          converter.process_double(double_object)
         end
       end
     end
@@ -442,7 +442,7 @@ module Transpec
 
         it 'invokes BeClose#convert_to_be_within!' do
           be_close_object.should_receive(:convert_to_be_within!)
-          rewriter.process_be_close(be_close_object)
+          converter.process_be_close(be_close_object)
         end
       end
 
@@ -451,7 +451,7 @@ module Transpec
 
         it 'does not invoke BeClose#convert_to_be_within!' do
           be_close_object.should_not_receive(:convert_to_be_within!)
-          rewriter.process_be_close(be_close_object)
+          converter.process_be_close(be_close_object)
         end
       end
     end
@@ -464,7 +464,7 @@ module Transpec
 
         it 'invokes RaiseError#remove_error_specification_with_negative_expectation!' do
           raise_error_object.should_receive(:remove_error_specification_with_negative_expectation!)
-          rewriter.process_raise_error(raise_error_object)
+          converter.process_raise_error(raise_error_object)
         end
       end
 
@@ -473,7 +473,7 @@ module Transpec
 
         it 'does not invoke BeClose#convert_to_be_within!' do
           raise_error_object.should_not_receive(:remove_error_specification_with_negative_expectation!)
-          rewriter.process_raise_error(raise_error_object)
+          converter.process_raise_error(raise_error_object)
         end
       end
     end
@@ -483,45 +483,45 @@ module Transpec
 
       context 'when #need_to_modify_expectation_syntax_configuration? returns true' do
         before do
-          rewriter.stub(:need_to_modify_expectation_syntax_configuration?).and_return(true)
+          converter.stub(:need_to_modify_expectation_syntax_configuration?).and_return(true)
         end
 
         it 'invokes RSpecConfigure#modify_expectation_syntaxes! with :expect' do
           rspec_configure.should_receive(:modify_expectation_syntaxes!).with(:expect)
-          rewriter.process_rspec_configure(rspec_configure)
+          converter.process_rspec_configure(rspec_configure)
         end
       end
 
       context 'when #need_to_modify_expectation_syntax_configuration? returns false' do
         before do
-          rewriter.stub(:need_to_modify_expectation_syntax_configuration?).and_return(false)
+          converter.stub(:need_to_modify_expectation_syntax_configuration?).and_return(false)
         end
 
         it 'does not invoke RSpecConfigure#modify_expectation_syntaxes!' do
           rspec_configure.should_not_receive(:modify_expectation_syntaxes!)
-          rewriter.process_rspec_configure(rspec_configure)
+          converter.process_rspec_configure(rspec_configure)
         end
       end
 
       context 'when #need_to_modify_mock_syntax_configuration? returns true' do
         before do
-          rewriter.stub(:need_to_modify_mock_syntax_configuration?).and_return(true)
+          converter.stub(:need_to_modify_mock_syntax_configuration?).and_return(true)
         end
 
         it 'invokes RSpecConfigure#modify_mock_syntaxes! with :expect' do
           rspec_configure.should_receive(:modify_mock_syntaxes!).with(:expect)
-          rewriter.process_rspec_configure(rspec_configure)
+          converter.process_rspec_configure(rspec_configure)
         end
       end
 
       context 'when #need_to_modify_mock_syntax_configuration? returns false' do
         before do
-          rewriter.stub(:need_to_modify_mock_syntax_configuration?).and_return(false)
+          converter.stub(:need_to_modify_mock_syntax_configuration?).and_return(false)
         end
 
         it 'does not invoke RSpecConfigure#modify_mock_syntaxes!' do
           rspec_configure.should_not_receive(:modify_mock_syntaxes!)
-          rewriter.process_rspec_configure(rspec_configure)
+          converter.process_rspec_configure(rspec_configure)
         end
       end
     end
@@ -551,7 +551,7 @@ module Transpec
     end
 
     describe '#need_to_modify_expectation_syntax_configuration?' do
-      subject { rewriter.need_to_modify_expectation_syntax_configuration?(rspec_configure) }
+      subject { converter.need_to_modify_expectation_syntax_configuration?(rspec_configure) }
       let(:rspec_configure) { double('rspec_configure') }
 
       context 'when Configuration#convert_to_expect_to_matcher? is true' do
@@ -578,7 +578,7 @@ module Transpec
     end
 
     describe '#need_to_modify_mock_syntax_configuration?' do
-      subject { rewriter.need_to_modify_mock_syntax_configuration?(rspec_configure) }
+      subject { converter.need_to_modify_mock_syntax_configuration?(rspec_configure) }
       let(:rspec_configure) { double('rspec_configure') }
 
       context 'when Configuration#convert_to_expect_to_receive? is true' do
