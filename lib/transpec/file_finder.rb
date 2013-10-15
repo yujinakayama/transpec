@@ -1,0 +1,33 @@
+# coding: utf-8
+
+require 'find'
+
+module Transpec
+  module FileFinder
+    module_function
+
+    def find(base_paths)
+      base_paths.reduce([]) do |file_paths, path|
+        if File.directory?(path)
+          file_paths.concat(ruby_files_in_directory(path))
+        elsif File.file?(path)
+          file_paths << path
+        elsif !File.exists?(path)
+          fail ArgumentError, "No such file or directory #{path.inspect}"
+        end
+      end
+    end
+
+    def ruby_files_in_directory(directory_path)
+      ruby_file_paths = []
+
+      Find.find(directory_path) do |path|
+        next unless File.file?(path)
+        next unless File.extname(path) == '.rb'
+        ruby_file_paths << path
+      end
+
+      ruby_file_paths
+    end
+  end
+end

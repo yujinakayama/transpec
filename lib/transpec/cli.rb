@@ -3,11 +3,11 @@
 require 'transpec/commit_message'
 require 'transpec/configuration'
 require 'transpec/converter'
+require 'transpec/file_finder'
 require 'transpec/git'
 require 'transpec/report'
 require 'transpec/version'
 require 'optparse'
-require 'find'
 require 'rainbow'
 
 module Transpec
@@ -41,7 +41,7 @@ module Transpec
 
       base_paths = base_target_paths(non_option_args)
 
-      target_files(base_paths).each do |file_path|
+      FileFinder.find(base_paths).each do |file_path|
         process_file(file_path)
       end
 
@@ -154,36 +154,12 @@ module Transpec
     end
     # rubocop:enable MethodLength
 
-    def target_files(paths)
-      paths.reduce([]) do |file_paths, path|
-        if File.directory?(path)
-          file_paths.concat(ruby_files_in_directory(path))
-        elsif File.file?(path)
-          file_paths << path
-        elsif !File.exists?(path)
-          fail ArgumentError, "No such file or directory #{path.inspect}"
-        end
-      end
-    end
-
     private
 
     def base_target_paths(args)
       return args unless args.empty?
       return ['spec'] if Dir.exists?('spec')
       fail ArgumentError, 'Specify target files or directories.'
-    end
-
-    def ruby_files_in_directory(directory_path)
-      ruby_file_paths = []
-
-      Find.find(directory_path) do |path|
-        next unless File.file?(path)
-        next unless File.extname(path) == '.rb'
-        ruby_file_paths << path
-      end
-
-      ruby_file_paths
     end
 
     def fail_if_should_not_continue!
