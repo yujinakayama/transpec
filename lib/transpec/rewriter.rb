@@ -36,18 +36,18 @@ module Transpec
       source_buffer = create_source_buffer(source, name)
       ast = parse(source_buffer)
 
-      @source_rewriter = Parser::Source::Rewriter.new(source_buffer)
+      source_rewriter = Parser::Source::Rewriter.new(source_buffer)
       failed_overlapping_rewrite = false
-      @source_rewriter.diagnostics.consumer = proc do
+      source_rewriter.diagnostics.consumer = proc do
         failed_overlapping_rewrite = true
         fail OverlappedRewriteError
       end
 
       AST::Scanner.scan(ast) do |node, ancestor_nodes|
-        dispatch_node(node, ancestor_nodes)
+        dispatch_node(node, ancestor_nodes, source_rewriter)
       end
 
-      rewritten_source = @source_rewriter.process
+      rewritten_source = source_rewriter.process
 
       if failed_overlapping_rewrite
         rewriter = self.class.new(@configuration, @report)
@@ -70,14 +70,14 @@ module Transpec
       ast
     end
 
-    def dispatch_node(node, ancestor_nodes)
+    def dispatch_node(node, ancestor_nodes, source_rewriter)
       Syntax.all.each do |syntax_class|
         next unless syntax_class.target_node?(node)
 
         syntax = syntax_class.new(
           node,
           ancestor_nodes,
-          @source_rewriter,
+          source_rewriter,
           @report
         )
 
