@@ -65,7 +65,7 @@ class TranspecTest
 
     Dir.chdir(url) do
       Dir.new('.').each do |entry|
-        next if ['.', '..', '.git', 'tmp'].include?(entry)
+        next if ['.', '..', 'tmp'].include?(entry)
         FileUtils.cp_r(entry, project_dir)
       end
     end

@@ -6,7 +6,7 @@ require 'transpec/record'
 
 module Transpec
   class Syntax
-    attr_reader :node, :ancestor_nodes, :source_rewriter, :report
+    attr_reader :node, :ancestor_nodes, :source_rewriter, :runtime_data, :report
 
     def self.all
       @subclasses ||= []
@@ -34,11 +34,12 @@ module Transpec
       false
     end
 
-    def initialize(node, ancestor_nodes, source_rewriter, report = Report.new)
+    def initialize(node, ancestor_nodes, source_rewriter, runtime_data = nil, report = nil)
       @node = node
       @ancestor_nodes = ancestor_nodes
       @source_rewriter = source_rewriter
-      @report = report
+      @runtime_data = runtime_data
+      @report = report || Report.new
     end
 
     def context
@@ -61,6 +62,10 @@ module Transpec
 
     def self.target_method_names
       []
+    end
+
+    def runtime_node_data(node)
+      @runtime_data && @runtime_data[node]
     end
 
     def remove(range)

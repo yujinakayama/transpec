@@ -53,12 +53,13 @@ module Transpec
       before do
         cli.stub(:puts)
         cli.stub(:warn)
+        DynamicAnalyzer.any_instance.stub(:analyze).and_return(DynamicAnalyzer::RuntimeData.new)
         create_file(file_path, file_content)
       end
 
       shared_examples 'rewrites files' do
         it 'rewrites files' do
-          cli.should_receive(:process_file)
+          cli.should_receive(:convert_file)
           cli.run(args)
         end
 
@@ -80,7 +81,7 @@ module Transpec
               before { cli.stub(:forced?).and_return(false) }
 
               it 'aborts processing' do
-                cli.should_not_receive(:process_file)
+                cli.should_not_receive(:convert_file)
                 cli.run(args).should be_false
               end
 
@@ -135,8 +136,8 @@ module Transpec
         end
 
         it 'continues processing files' do
-          cli.should_receive(:puts).with("Processing #{invalid_syntax_file_path}")
-          cli.should_receive(:puts).with("Processing #{valid_syntax_file_path}")
+          cli.should_receive(:puts).with("Converting #{invalid_syntax_file_path}")
+          cli.should_receive(:puts).with("Converting #{valid_syntax_file_path}")
           cli.run(args)
         end
       end
@@ -177,7 +178,7 @@ module Transpec
       end
     end
 
-    describe '#process_file' do
+    describe '#convert_file' do
       include_context 'isolated environment'
 
       let(:file_path) { 'example.rb' }
@@ -210,7 +211,7 @@ module Transpec
             message.should =~ /context/i
           end
 
-          cli.process_file(file_path)
+          cli.convert_file(file_path)
         end
       end
     end

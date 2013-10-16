@@ -3,6 +3,7 @@
 require 'transpec/commit_message'
 require 'transpec/configuration'
 require 'transpec/converter'
+require 'transpec/dynamic_analyzer'
 require 'transpec/file_finder'
 require 'transpec/git'
 require 'transpec/report'
@@ -36,14 +37,10 @@ module Transpec
 
     def run(args)
       non_option_args = parse_options(args)
-
       fail_if_should_not_continue!
-
       base_paths = base_target_paths(non_option_args)
 
-      FileFinder.find(base_paths).each do |file_path|
-        process_file(file_path)
-      end
+      process(base_paths)
 
       display_summary
       generate_commit_message if generates_commit_message?
@@ -54,10 +51,20 @@ module Transpec
       false
     end
 
-    def process_file(file_path)
-      puts "Processing #{file_path}"
+    def process(base_paths)
+      puts 'Running dynamic analysis...'
+      dynamic_analyzer = DynamicAnalyzer.new
+      runtime_data = dynamic_analyzer.analyze
 
-      converter = Converter.new(@configuration, @report)
+      FileFinder.find(base_paths).each do |file_path|
+        convert_file(file_path, runtime_data)
+      end
+    end
+
+    def convert_file(file_path, runtime_data = nil)
+      puts "Converting #{file_path}"
+
+      converter = Converter.new(@configuration, runtime_data, @report)
       converter.convert_file!(file_path)
 
       @report.invalid_context_errors.concat(converter.invalid_context_errors)

@@ -1,9 +1,9 @@
 # coding: utf-8
 
 require 'transpec/base_rewriter'
+require 'transpec/configuration'
 require 'transpec/report'
 require 'transpec/ast/scanner'
-require 'transpec/configuration'
 require 'transpec/syntax'
 require 'transpec/syntax/be_close'
 require 'transpec/syntax/double'
@@ -16,14 +16,15 @@ require 'transpec/syntax/should_receive'
 
 module Transpec
   class Converter < BaseRewriter
-    attr_reader :report, :invalid_context_errors
+    attr_reader :configuration, :runtime_data, :report, :invalid_context_errors
 
     alias_method :convert_file!, :rewrite_file!
     alias_method :convert, :rewrite
 
-    def initialize(configuration = Configuration.new, report = Report.new)
-      @configuration = configuration
-      @report = report
+    def initialize(configuration = nil, runtime_data = nil, report = nil)
+      @configuration = configuration || Configuration.new
+      @runtime_data = runtime_data
+      @report = report || Report.new
       @invalid_context_errors = []
     end
 
@@ -41,6 +42,7 @@ module Transpec
           node,
           ancestor_nodes,
           source_rewriter,
+          @runtime_data,
           @report
         )
 

@@ -33,7 +33,7 @@ module Transpec
       end
 
       def matcher
-        @matcher ||= Matcher.new(matcher_node, @source_rewriter, @report)
+        @matcher ||= Matcher.new(matcher_node, @source_rewriter, @runtime_data, @report)
       end
 
       def matcher_node

@@ -20,10 +20,11 @@ module Transpec
         method_name == :=~ && arg_node == node
       end
 
-      def initialize(node, source_rewriter, report = Report.new)
+      def initialize(node, source_rewriter, runtime_data = nil, report = nil)
         @node = node
         @source_rewriter = source_rewriter
-        @report = report
+        @runtime_data = runtime_data
+        @report = report || Report.new
       end
 
       def correct_operator!(parenthesize_arg = true)

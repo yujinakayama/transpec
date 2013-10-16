@@ -2,6 +2,8 @@
 
 ## Master
 
+* Now Transpec does dynamic code analysis!
+
 ## v0.2.6
 
 * Fix a bug where `Node#each_descendent_node` enumerates only within depth 2
