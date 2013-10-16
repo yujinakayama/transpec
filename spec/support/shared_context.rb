@@ -29,7 +29,7 @@ end
 shared_context 'should object' do
   let(:should_object) do
     Transpec::AST::Scanner.scan(ast) do |node, ancestor_nodes|
-      next unless Transpec::Syntax::Should.target_node?(node)
+      next unless Transpec::Syntax::Should.conversion_target_node?(node)
       return Transpec::Syntax::Should.new(
         node,
         ancestor_nodes,

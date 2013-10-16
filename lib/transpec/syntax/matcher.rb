@@ -9,7 +9,7 @@ module Transpec
     class Matcher < Syntax
       include SendNodeSyntax, Util, ::AST::Sexp
 
-      def self.target_node?(node)
+      def self.conversion_target_node?(node)
         false
       end
 

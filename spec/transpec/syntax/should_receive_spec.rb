@@ -10,7 +10,7 @@ module Transpec
 
       subject(:should_receive_object) do
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
-          next unless ShouldReceive.target_node?(node)
+          next unless ShouldReceive.conversion_target_node?(node)
           return ShouldReceive.new(
             node,
             ancestor_nodes,

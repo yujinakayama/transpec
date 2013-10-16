@@ -83,7 +83,7 @@ module Transpec
         end
       end
 
-      def self.target_node?(node)
+      def self.conversion_target_node?(node)
         return false unless node.type == :block
         send_node = node.children.first
         receiver_node, method_name, *_ = *send_node

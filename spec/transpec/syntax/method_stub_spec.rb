@@ -10,7 +10,7 @@ module Transpec
 
       subject(:method_stub_object) do
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
-          next unless MethodStub.target_node?(node)
+          next unless MethodStub.conversion_target_node?(node)
           return MethodStub.new(
             node,
             ancestor_nodes,
@@ -22,7 +22,7 @@ module Transpec
 
       let(:record) { method_stub_object.report.records.first }
 
-      describe '.target_node?' do
+      describe '.conversion_target_node?' do
         let(:send_node) do
           ast.each_descendent_node do |node|
             next unless node.type == :send
@@ -43,7 +43,7 @@ module Transpec
           end
 
           it 'returns true' do
-            MethodStub.target_node?(send_node).should be_true
+            MethodStub.conversion_target_node?(send_node).should be_true
           end
         end
 
@@ -57,7 +57,7 @@ module Transpec
           end
 
           it 'returns false' do
-            MethodStub.target_node?(send_node).should be_false
+            MethodStub.conversion_target_node?(send_node).should be_false
           end
         end
 
@@ -71,7 +71,7 @@ module Transpec
           end
 
           it 'returns false' do
-            MethodStub.target_node?(send_node).should be_false
+            MethodStub.conversion_target_node?(send_node).should be_false
           end
         end
       end

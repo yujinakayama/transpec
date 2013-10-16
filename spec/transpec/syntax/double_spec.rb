@@ -10,7 +10,7 @@ module Transpec
 
       subject(:double_object) do
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
-          next unless Double.target_node?(node)
+          next unless Double.conversion_target_node?(node)
           return Double.new(
             node,
             ancestor_nodes,
