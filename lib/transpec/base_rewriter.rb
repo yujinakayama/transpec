@@ -26,11 +26,7 @@ module Transpec
       process(ast, source_rewriter)
 
       rewritten_source = source_rewriter.process
-
-      if failed_overlapping_rewrite
-        rewriter = self.class.new(@configuration, @report)
-        rewritten_source = rewriter.rewrite(rewritten_source, name)
-      end
+      rewritten_source = rewrite(rewritten_source, name) if failed_overlapping_rewrite
 
       rewritten_source
     end
