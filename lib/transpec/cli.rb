@@ -154,24 +154,34 @@ module Transpec
     end
     # rubocop:enable MethodLength
 
-    private
-
     def base_target_paths(args)
-      return args unless args.empty?
-      return ['spec'] if Dir.exists?('spec')
-      fail ArgumentError, 'Specify target files or directories.'
+      if args.empty?
+        if Dir.exists?('spec')
+          ['spec']
+        else
+          fail ArgumentError, 'Specify target files or directories.'
+        end
+      else
+        if args.all? { |arg| inside_of_current_working_directory?(arg) }
+          args
+        else
+          fail ArgumentError, 'Target path must be inside of the current working directory.'
+        end
+      end
     end
+
+    private
 
     def fail_if_should_not_continue!
       return if forced?
-
-      # TODO: Check each repository of target files / directories,
-      #   not only the current working directory.
       return unless Git.command_available?
       return unless Git.inside_of_repository?
       return if Git.clean?
-
       fail 'The current Git repository is not clean. Aborting.'
+    end
+
+    def inside_of_current_working_directory?(path)
+      File.expand_path(path).start_with?(Dir.pwd)
     end
 
     def display_summary

@@ -154,27 +154,6 @@ module Transpec
         end
       end
 
-      context 'when no target paths are specified' do
-        let(:args) { [] }
-
-        context 'and there is "spec" directory' do
-          let(:file_path) { 'spec/example_spec.rb' }
-
-          it 'targets files in the "spec" directoy' do
-            FileFinder.should_receive(:find).with(['spec'])
-            cli.run(args)
-          end
-        end
-
-        context 'and there is not "spec" directory' do
-          let(:file_path) { 'example_spec.rb' }
-
-          it 'aborts' do
-            should be_false
-          end
-        end
-      end
-
       context 'when -m/--commit-message option is specified' do
         include_context 'inside of git repository'
 
@@ -368,6 +347,48 @@ module Transpec
         it 'exits' do
           cli.should_receive(:exit)
           cli.parse_options(args)
+        end
+      end
+    end
+
+    describe '#base_target_paths' do
+      include_context 'isolated environment'
+
+      subject { cli.base_target_paths(args) }
+
+      context 'when target paths are specified' do
+        let(:args) { ['foo_spec.rb', 'spec/bar_spec.rb'] }
+
+        it 'returns the passed paths' do
+          should == args
+        end
+      end
+
+      context 'when paths outside of the current working directory are specified' do
+        let(:args) { ['../foo_spec.rb', 'spec/bar_spec.rb'] }
+
+        it 'raises error' do
+          -> { cli.base_target_paths(args) }.should raise_error(ArgumentError)
+        end
+      end
+
+      context 'when no target paths are specified' do
+        let(:args) { [] }
+
+        context 'and there is "spec" directory' do
+          before do
+            Dir.mkdir('spec')
+          end
+
+          it 'returns ["spec"]' do
+            should == ['spec']
+          end
+        end
+
+        context 'and there is not "spec" directory' do
+          it 'raises error' do
+            -> { cli.base_target_paths(args) }.should raise_error(ArgumentError)
+          end
         end
       end
     end
