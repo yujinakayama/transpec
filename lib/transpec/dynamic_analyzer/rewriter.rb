@@ -22,7 +22,7 @@ module Transpec
       def process_node(node, source_rewriter)
         source_range = node.loc.expression
 
-        source_rewriter.insert_before(source_range, 'transpec_analysis(')
+        source_rewriter.insert_before(source_range, "#{ANALYSIS_METHOD}(")
 
         source_rewriter.insert_after(
           source_range,
