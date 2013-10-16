@@ -32,6 +32,7 @@ module Transpec
       @configuration = Configuration.new
       @forced = false
       @generates_commit_message = false
+      @rspec_command = nil
       @report = Report.new
     end
 
@@ -52,8 +53,9 @@ module Transpec
     end
 
     def process(base_paths)
-      puts 'Running dynamic analysis...'
-      dynamic_analyzer = DynamicAnalyzer.new
+      dynamic_analyzer = DynamicAnalyzer.new(nil, @rspec_command)
+
+      puts "Running dynamic analysis with command \"#{dynamic_analyzer.rspec_command}\"..."
       runtime_data = dynamic_analyzer.analyze
 
       FileFinder.find(base_paths).each do |file_path|
@@ -144,6 +146,15 @@ module Transpec
         '  `=~ [1, 2]` to `match_array([1, 2])`'
       ) do
         @configuration.parenthesize_matcher_arg = false
+      end
+
+      parser.on(
+        '-c', '--rspec-command COMMAND',
+        'Specify command to run RSpec that is used',
+        'for dynamic analysis.',
+        'Default: "bundle exec rspec"'
+      ) do |command|
+        @rspec_command = command
       end
 
       parser.on('--no-color', 'Disable color in the output.') do

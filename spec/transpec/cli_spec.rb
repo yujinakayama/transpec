@@ -176,6 +176,17 @@ module Transpec
           end
         end
       end
+
+      context 'when -c/--rspec-command option is specified' do
+        include_context 'inside of git repository'
+
+        let(:args) { ['--force', '--rspec-command', 'rspec --profile'] }
+
+        it 'passes the command to DynamicAnalyzer' do
+          DynamicAnalyzer.should_receive(:new).with(anything, 'rspec --profile')
+          cli.run(args)
+        end
+      end
     end
 
     describe '#convert_file' do

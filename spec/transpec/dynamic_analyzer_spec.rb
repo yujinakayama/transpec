@@ -9,24 +9,35 @@ module Transpec
     include ::AST::Sexp
     include_context 'isolated environment'
 
-    subject(:dynamic_analyzer) { DynamicAnalyzer.new(Dir.pwd, true) }
+    subject(:dynamic_analyzer) { DynamicAnalyzer.new(nil, rspec_command, true) }
+    let(:rspec_command) { nil }
 
     describe '#rspec_command' do
       subject { dynamic_analyzer.rspec_command }
 
-      context 'when there is a Gemfile' do
-        before do
-          create_file('Gemfile', '')
-        end
+      context 'when command is specified' do
+        let(:rspec_command) { 'rspec some_argument' }
 
-        it 'returns "bundle exec rspec"' do
-          should == 'bundle exec rspec'
+        it 'returns the specified command' do
+          should == rspec_command
         end
       end
 
-      context 'when there is no Gemfile' do
-        it 'returns "rspec"' do
-          should == 'rspec'
+      context 'when command is not specified' do
+        context 'and there is a Gemfile' do
+          before do
+            create_file('Gemfile', '')
+          end
+
+          it 'returns "bundle exec rspec"' do
+            should == 'bundle exec rspec'
+          end
+        end
+
+        context 'and there is no Gemfile' do
+          it 'returns "rspec"' do
+            should == 'rspec'
+          end
         end
       end
     end

@@ -50,4 +50,4 @@ IndentationWidth:
 
 # TODO: Shorten to 100.
 ClassLength:
-  Max: 186
+  Max: 192

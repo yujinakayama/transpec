@@ -47,8 +47,9 @@ module Transpec
     attr_reader :project_path, :silent
     alias_method :silent?, :silent
 
-    def initialize(project_path = Dir.pwd, silent = false)
-      @project_path = project_path
+    def initialize(project_path = nil, rspec_command = nil, silent = false)
+      @project_path = project_path || Dir.pwd
+      @rspec_command = rspec_command
       @silent = silent
     end
 
