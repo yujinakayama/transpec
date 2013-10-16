@@ -68,7 +68,7 @@ module Transpec
       def convert_to_match!(parenthesize_arg)
         handle_anterior_of_operator!
 
-        if arg_node.type == :array
+        if array_arg?
           replace(selector_range, 'match_array')
         else
           replace(selector_range, 'match')
@@ -78,7 +78,7 @@ module Transpec
 
         # Need to register record after all source rewrites are done
         # to avoid false record when failed with overlapped rewrite.
-        if arg_node.type == :array
+        if array_arg?
           register_record('=~ [1, 2]', 'match_array([1, 2])')
         else
           register_record('=~ /pattern/', 'match(/pattern/)')
@@ -91,6 +91,12 @@ module Transpec
         elsif range_in_between_receiver_and_selector.source.empty?
           insert_before(selector_range, ' ')
         end
+      end
+
+      def array_arg?
+        return true if arg_node.type == :array
+        node_data = runtime_node_data(arg_node)
+        node_data && node_data[:class_name] == 'Array'
       end
 
       def parenthesize_single_line!(always)

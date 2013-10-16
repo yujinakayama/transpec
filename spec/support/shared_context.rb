@@ -1,5 +1,6 @@
 # coding: utf-8
 
+require 'transpec/dynamic_analyzer'
 require 'transpec/ast/builder'
 require 'transpec/ast/scanner'
 require 'transpec/syntax/should'
@@ -24,6 +25,24 @@ shared_context 'parsed objects' do
   let(:source_rewriter) { Parser::Source::Rewriter.new(source_buffer) }
 
   let(:rewritten_source) { source_rewriter.process }
+end
+
+# This context requires `source` to be defined with #let.
+shared_context 'dynamic analysis objects' do
+  include_context 'isolated environment'
+
+  let(:source_path) { 'spec/example_spec.rb' }
+
+  let(:source_buffer) do
+    buffer = Parser::Source::Buffer.new(source_path)
+    buffer.source = source
+    buffer
+  end
+
+  let(:runtime_data) do
+    FileHelper.create_file(source_path, source)
+    Transpec::DynamicAnalyzer.new(nil, nil, true).analyze
+  end
 end
 
 shared_context 'should object' do

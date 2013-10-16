@@ -11,8 +11,10 @@ module Transpec
       include_context 'should object'
 
       subject(:matcher) do
-        Matcher.new(should_object.matcher_node, source_rewriter)
+        Matcher.new(should_object.matcher_node, source_rewriter, runtime_data)
       end
+
+      let(:runtime_data) { nil }
 
       let(:record) { matcher.report.records.first }
 
@@ -515,6 +517,60 @@ module Transpec
 
           it 'converts into `match_array([1, 2])` form' do
             rewritten_source.should == expected_source
+          end
+        end
+
+        context 'when it is `=~ variable` form' do
+          context 'and runtime type of the variable is array' do
+            include_context 'dynamic analysis objects'
+
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'contains 1 and 2' do
+                    variable = [1, 2]
+                    [2, 1].should =~ variable
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  it 'contains 1 and 2' do
+                    variable = [1, 2]
+                    [2, 1].should match_array(variable)
+                  end
+                end
+              END
+            end
+
+            it 'converts into `match_array(variable)` form' do
+              rewritten_source.should == expected_source
+            end
+          end
+
+          context 'and no runtime type information is provided' do
+            let(:source) do
+              <<-END
+                it 'matches the pattern' do
+                  subject.should =~ variable
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                it 'matches the pattern' do
+                  subject.should match(variable)
+                end
+              END
+            end
+
+            it 'converts into `match(variable)` form' do
+              rewritten_source.should == expected_source
+            end
           end
         end
       end

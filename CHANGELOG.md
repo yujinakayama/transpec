@@ -3,6 +3,7 @@
 ## Master
 
 * Now Transpec does dynamic code analysis!
+* Consider runtime type information when converting `=~` to `match_array`
 
 ## v0.2.6
 
