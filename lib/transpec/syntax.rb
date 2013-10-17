@@ -8,12 +8,20 @@ module Transpec
   class Syntax
     attr_reader :node, :ancestor_nodes, :source_rewriter, :runtime_data, :report
 
-    def self.all
+    def self.inherited(subclass)
+      all_syntaxes << subclass
+    end
+
+    def self.all_syntaxes
       @subclasses ||= []
     end
 
-    def self.inherited(subclass)
-      all << subclass
+    def self.standalone_syntaxes
+      @standalone_syntaxes ||= all_syntaxes.select(&:standalone?)
+    end
+
+    def self.standalone?
+      true
     end
 
     def self.snake_case_name

@@ -2,7 +2,7 @@
 
 require 'transpec/syntax'
 require 'transpec/syntax/expectizable'
-require 'transpec/syntax/matcher'
+require 'transpec/syntax/operator_matcher'
 require 'transpec/util'
 
 module Transpec
@@ -29,11 +29,19 @@ module Transpec
 
         register_record(negative_form)
 
-        matcher.correct_operator!(parenthesize_matcher_arg)
+        operator_matcher.correct_operator!(parenthesize_matcher_arg) if operator_matcher
       end
 
-      def matcher
-        @matcher ||= Matcher.new(matcher_node, @source_rewriter, @runtime_data, @report)
+      def operator_matcher
+        return @operator_matcher if instance_variable_defined?(:@operator_matcher)
+
+        @operator_matcher ||= begin
+          if OperatorMatcher.conversion_target_node?(matcher_node)
+            OperatorMatcher.new(matcher_node, @source_rewriter, @runtime_data, @report)
+          else
+            nil
+          end
+        end
       end
 
       def matcher_node

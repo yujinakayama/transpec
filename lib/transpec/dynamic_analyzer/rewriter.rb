@@ -14,7 +14,7 @@ module Transpec
       end
 
       def target_node?(node, ancestor_nodes)
-        Syntax.all.any? do |syntax_class|
+        Syntax.all_syntaxes.any? do |syntax_class|
           syntax_class.dynamic_analysis_target_node?(node, ancestor_nodes)
         end
       end

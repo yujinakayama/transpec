@@ -6,10 +6,12 @@ require 'transpec/util'
 
 module Transpec
   class Syntax
-    class Matcher < Syntax
+    class OperatorMatcher < Syntax
       include SendNodeSyntax, Util, ::AST::Sexp
 
-      def self.conversion_target_node?(node)
+      OPERATORS = [:==, :===, :<, :<=, :>, :>=, :=~].freeze
+
+      def self.standalone?
         false
       end
 
@@ -51,6 +53,14 @@ module Transpec
       end
 
       private
+
+      def self.target_receiver_node?(node)
+        !node.nil?
+      end
+
+      def self.target_method_names
+        OPERATORS
+      end
 
       def convert_to_eq!(parenthesize_arg)
         handle_anterior_of_operator!

@@ -1,17 +1,17 @@
 # coding: utf-8
 
 require 'spec_helper'
-require 'transpec/syntax/matcher'
+require 'transpec/syntax/operator_matcher'
 
 module Transpec
   class Syntax
-    describe Matcher do
+    describe OperatorMatcher do
       include ::AST::Sexp
       include_context 'parsed objects'
       include_context 'should object'
 
       subject(:matcher) do
-        Matcher.new(should_object.matcher_node, source_rewriter, runtime_data)
+        OperatorMatcher.new(should_object.matcher_node, source_rewriter, runtime_data)
       end
 
       let(:runtime_data) { nil }
@@ -36,7 +36,7 @@ module Transpec
           end
 
           it 'returns true' do
-            Matcher.dynamic_analysis_target_node?(*nodes).should be_true
+            OperatorMatcher.dynamic_analysis_target_node?(*nodes).should be_true
           end
         end
       end

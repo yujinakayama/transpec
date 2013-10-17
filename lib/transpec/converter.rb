@@ -7,7 +7,6 @@ require 'transpec/ast/scanner'
 require 'transpec/syntax'
 require 'transpec/syntax/be_close'
 require 'transpec/syntax/double'
-require 'transpec/syntax/matcher'
 require 'transpec/syntax/method_stub'
 require 'transpec/syntax/raise_error'
 require 'transpec/syntax/rspec_configure'
@@ -35,7 +34,7 @@ module Transpec
     end
 
     def dispatch_node(node, ancestor_nodes, source_rewriter)
-      Syntax.all.each do |syntax_class|
+      Syntax.standalone_syntaxes.each do |syntax_class|
         next unless syntax_class.conversion_target_node?(node)
 
         syntax = syntax_class.new(

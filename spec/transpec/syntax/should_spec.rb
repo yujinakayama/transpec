@@ -88,6 +88,38 @@ module Transpec
         end
       end
 
+      describe '#operator_matcher' do
+        subject { should_object.operator_matcher }
+
+        context 'when it is taking operator matcher' do
+          let(:source) do
+            <<-END
+              it 'is 1' do
+                subject.should == 1
+              end
+            END
+          end
+
+          it 'returns an instance of OperatorMatcher' do
+            should be_an(OperatorMatcher)
+          end
+        end
+
+        context 'when it is taking non-operator matcher' do
+          let(:source) do
+            <<-END
+              it 'is empty' do
+                subject.should be_empty
+              end
+            END
+          end
+
+          it 'returns nil' do
+            should be_nil
+          end
+        end
+      end
+
       describe '#expectize!' do
         let(:source) do
           <<-END
@@ -97,8 +129,8 @@ module Transpec
           END
         end
 
-        it 'invokes Matcher#correct_operator!' do
-          should_object.matcher.should_receive(:correct_operator!)
+        it 'invokes OperatorMatcher#correct_operator!' do
+          should_object.operator_matcher.should_receive(:correct_operator!)
           should_object.expectize!
         end
 
