@@ -35,7 +35,7 @@ module Transpec
     end
 
     def self.conversion_target_node?(node)
-      return false unless node.type == :send
+      return false unless node && node.type == :send
       receiver_node, method_name, *_ = *node
       return false unless target_receiver_node?(receiver_node)
       target_method_names.include?(method_name)

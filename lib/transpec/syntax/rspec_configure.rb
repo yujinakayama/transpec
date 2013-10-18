@@ -9,7 +9,7 @@ module Transpec
       extend Util
 
       def self.conversion_target_node?(node)
-        return false unless node.type == :block
+        return false unless node && node.type == :block
         send_node = node.children.first
         receiver_node, method_name, *_ = *send_node
         const_name(receiver_node) == 'RSpec' && method_name == :configure
