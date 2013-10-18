@@ -1,14 +1,23 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/mixin/monkey_patch'
 require 'transpec/syntax/mixin/expectizable'
+require 'transpec/syntax/mixin/have_matcher'
 require 'transpec/util'
 require 'transpec/syntax/operator_matcher'
 
 module Transpec
   class Syntax
     class Should < Syntax
-      include Mixin::Expectizable, Util
+      include Mixin::MonkeyPatch, Mixin::Expectizable, Mixin::HaveMatcher, Util
+
+      attr_reader :current_syntax_type
+
+      def initialize(node, ancestor_nodes, source_rewriter, runtime_data = nil, report = nil)
+        super
+        @current_syntax_type = :should
+      end
 
       def positive?
         method_name == :should
@@ -27,6 +36,7 @@ module Transpec
 
         replace(should_range, positive? ? 'to' : negative_form)
 
+        @current_syntax_type = :expect
         register_record(negative_form)
 
         operator_matcher.correct_operator!(parenthesize_matcher_arg) if operator_matcher

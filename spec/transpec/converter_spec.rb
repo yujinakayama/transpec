@@ -166,6 +166,56 @@ module Transpec
           converter.process_should(should_object)
         end
       end
+
+      context 'when Configuration#convert_have_items? is true' do
+        before { configuration.convert_have_items = true }
+
+        it 'invokes Have#convert_to_standard_expectation!' do
+          should_object.have_matcher.should_receive(:convert_to_standard_expectation!)
+          converter.process_should(should_object)
+        end
+
+        context 'and Configuration#convert_to_expect_to_matcher? is true' do
+          before { configuration.convert_to_expect_to_matcher = true }
+
+          it 'invokes Should#expectize! then Have#convert_to_standard_expectation!' do
+            should_object.should_receive(:expectize!).ordered
+            should_object.have_matcher.should_receive(:convert_to_standard_expectation!).ordered
+            converter.process_should(should_object)
+          end
+        end
+      end
+
+      context 'when Configuration#convert_have_items? is false' do
+        before { configuration.convert_have_items = false }
+
+        it 'does not invoke Have#convert_to_standard_expectation!' do
+          should_object.have_matcher.should_not_receive(:convert_to_standard_expectation!)
+          converter.process_should(should_object)
+        end
+      end
+    end
+
+    describe '#process_expect' do
+      let(:expect_object) { double('expect_object').as_null_object }
+
+      context 'when Configuration#convert_have_items? is true' do
+        before { configuration.convert_have_items = true }
+
+        it 'invokes Have#convert_to_standard_expectation!' do
+          expect_object.have_matcher.should_receive(:convert_to_standard_expectation!)
+          converter.process_expect(expect_object)
+        end
+      end
+
+      context 'when Configuration#convert_have_items? is false' do
+        before { configuration.convert_have_items = false }
+
+        it 'does not invoke Have#convert_to_standard_expectation!' do
+          expect_object.have_matcher.should_not_receive(:convert_to_standard_expectation!)
+          converter.process_expect(expect_object)
+        end
+      end
     end
 
     describe '#process_should_receive' do

@@ -120,6 +120,52 @@ module Transpec
         end
       end
 
+      describe '#have_matcher' do
+        subject { should_object.have_matcher }
+
+        context 'when it is taking #have matcher' do
+          let(:source) do
+            <<-END
+              it 'has 2 items' do
+                subject.should have(2).items
+              end
+            END
+          end
+
+          it 'returns an instance of Have' do
+            should be_an(Have)
+          end
+        end
+
+        context 'when it is taking operator matcher' do
+          let(:source) do
+            <<-END
+              it 'is 1' do
+                subject.should == 1
+              end
+            END
+          end
+
+          it 'returns nil' do
+            should be_nil
+          end
+        end
+
+        context 'when it is taking any other non-operator matcher' do
+          let(:source) do
+            <<-END
+              it 'is empty' do
+                subject.should be_empty
+              end
+            END
+          end
+
+          it 'returns nil' do
+            should be_nil
+          end
+        end
+      end
+
       describe '#expectize!' do
         let(:source) do
           <<-END

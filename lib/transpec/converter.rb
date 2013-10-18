@@ -7,6 +7,7 @@ require 'transpec/ast/scanner'
 require 'transpec/syntax'
 require 'transpec/syntax/be_close'
 require 'transpec/syntax/double'
+require 'transpec/syntax/expect'
 require 'transpec/syntax/method_stub'
 require 'transpec/syntax/raise_error'
 require 'transpec/syntax/rspec_configure'
@@ -61,6 +62,16 @@ module Transpec
           @configuration.negative_form_of_to,
           @configuration.parenthesize_matcher_arg?
         )
+      end
+
+      if should.have_matcher && @configuration.convert_have_items?
+        should.have_matcher.convert_to_standard_expectation!
+      end
+    end
+
+    def process_expect(expect)
+      if expect.have_matcher && @configuration.convert_have_items?
+        expect.have_matcher.convert_to_standard_expectation!
       end
     end
 

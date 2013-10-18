@@ -4,6 +4,7 @@ require 'transpec/dynamic_analyzer'
 require 'transpec/ast/builder'
 require 'transpec/ast/scanner'
 require 'transpec/syntax/should'
+require 'transpec/syntax/expect'
 require 'parser'
 require 'parser/current'
 require 'tmpdir'
@@ -59,6 +60,21 @@ shared_context 'should object' do
     end
 
     fail 'No should node is found!'
+  end
+end
+
+shared_context 'expect object' do
+  let(:expect_object) do
+    Transpec::AST::Scanner.scan(ast) do |node, ancestor_nodes|
+      next unless Transpec::Syntax::Expect.conversion_target_node?(node)
+      return Transpec::Syntax::Expect.new(
+        node,
+        ancestor_nodes,
+        source_rewriter
+      )
+    end
+
+    fail 'No expect node is found!'
   end
 end
 

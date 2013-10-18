@@ -275,6 +275,7 @@ module Transpec
           ['expect_to_matcher', :convert_to_expect_to_matcher?],
           ['expect_to_receive', :convert_to_expect_to_receive?],
           ['allow_to_receive',  :convert_to_allow_to_receive?],
+          ['have_items',        :convert_have_items],
           ['deprecated',        :replace_deprecated_method?]
         ].each do |cli_type, config_attr|
           context "when #{cli_type.inspect} is specified" do
@@ -401,6 +402,61 @@ module Transpec
           it 'raises error' do
             -> { cli.base_target_paths(args) }.should raise_error(ArgumentError)
           end
+        end
+      end
+    end
+
+    describe '-h/--help option' do
+      around do |example|
+        original_stdout = $stdout
+        $stdout = stdout
+
+        begin
+          example.run
+        ensure
+          $stdout = original_stdout
+        end
+      end
+
+      let(:stdout) { StringIO.new }
+
+      let(:help_text) do
+        begin
+          CLI.run(['--help'])
+        rescue SystemExit # rubocop:disable HandleExceptions
+        end
+        stdout.string
+      end
+
+      it 'shows help text' do
+        help_text.should include('Usage:')
+      end
+
+      it 'exits' do
+        -> { CLI.run(['--help']) }.should raise_error(SystemExit)
+      end
+
+      describe 'help text' do
+        it 'does not exceed 80 characters in each line' do
+          help_text.each_line do |line|
+            line.chomp.length.should <= 80
+          end
+        end
+
+        it 'describes all conversion types for -d/--disable option' do
+          option_sections = help_text.lines.slice_before(/^\s*-/)
+
+          disable_section = option_sections.find do |lines|
+            lines.first =~ /^\s*-d/
+          end
+
+          conversion_types = disable_section.reduce([]) do |types, line|
+            match = line.match(/^[ ]{39}([a-z_]+)/)
+            next types unless match
+            types << match.captures.first
+          end
+
+          conversion_types.should =~ CLI::CONFIG_ATTRS_FOR_CLI_TYPES.keys.map(&:to_s)
         end
       end
     end

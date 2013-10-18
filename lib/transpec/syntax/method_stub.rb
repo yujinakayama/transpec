@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/mixin/monkey_patch'
 require 'transpec/syntax/mixin/allow_no_message'
 require 'transpec/syntax/mixin/any_instance'
 require 'transpec/util'
@@ -9,7 +10,7 @@ require 'English'
 module Transpec
   class Syntax
     class MethodStub < Syntax
-      include Mixin::AllowNoMessage, Mixin::AnyInstance, Util
+      include Mixin::MonkeyPatch, Mixin::AllowNoMessage, Mixin::AnyInstance, Util
 
       CLASSES_DEFINING_OWN_STUB_METHOD = [
         'Typhoeus', # https://github.com/typhoeus/typhoeus/blob/6a59c62/lib/typhoeus.rb#L66-L85

@@ -188,6 +188,7 @@ Conversion Type     | Target Syntax                    | Converted Syntax
 `expect_to_matcher` | `obj.should matcher`             | `expect(obj).to matcher`
 `expect_to_receive` | `obj.should_receive`             | `expect(obj).to receive`
 `allow_to_receive`  | `obj.stub`                       | `allow(obj).to receive`
+`have_items`        | `expect(obj).to have(x).items`   | `expect(obj.size).to eq(x)`
 `deprecated`        | `obj.stub!`, `mock('foo')`, etc. | `obj.stub`, `double('foo')`
 
 ### `-n/--negative-form`

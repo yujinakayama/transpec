@@ -17,6 +17,7 @@ module Transpec
       expect_to_matcher: :convert_to_expect_to_matcher=,
       expect_to_receive: :convert_to_expect_to_receive=,
        allow_to_receive: :convert_to_allow_to_receive=,
+             have_items: :convert_have_items=,
              deprecated: :replace_deprecated_method=
     }
 
@@ -108,10 +109,11 @@ module Transpec
         '-d', '--disable TYPE[,TYPE...]',
         'Disable specific conversions.',
         'Available conversion types:',
-        '  expect_to_matcher (from `should`)',
-        '  expect_to_receive (from `should_receive`)',
-        '  allow_to_receive  (from `stub`)',
-        '  deprecated (e.g. from `stub!` to `stub`)',
+        '  expect_to_matcher (from should)',
+        '  expect_to_receive (from should_receive)',
+        '  allow_to_receive  (from stub)',
+        '  have_items (to expect(obj.size).to eq(x))',
+        '  deprecated (e.g. from stub! to stub)',
         'These are all enabled by default.'
       ) do |types|
         types.split(',').each do |type|

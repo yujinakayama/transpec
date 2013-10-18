@@ -12,6 +12,7 @@ module Transpec
         :convert_to_expect_to_matcher?,
         :convert_to_expect_to_receive?,
         :convert_to_allow_to_receive?,
+        :convert_have_items?,
         :replace_deprecated_method?,
         :parenthesize_matcher_arg?
       ].each do |attribute|
