@@ -1,14 +1,14 @@
 # coding: utf-8
 
 require 'transpec/syntax'
-require 'transpec/syntax/expectizable'
-require 'transpec/syntax/able_to_allow_no_message'
-require 'transpec/syntax/able_to_target_any_instance'
+require 'transpec/syntax/mixin/expectizable'
+require 'transpec/syntax/mixin/allow_no_message'
+require 'transpec/syntax/mixin/any_instance'
 
 module Transpec
   class Syntax
     class ShouldReceive < Syntax
-      include Expectizable, AbleToAllowNoMessage, AbleToTargetAnyInstance
+      include Mixin::Expectizable, Mixin::AllowNoMessage, Mixin::AnyInstance
 
       alias_method :useless_expectation?, :allow_no_message?
 

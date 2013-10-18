@@ -2,16 +2,17 @@
 
 require 'transpec/syntax'
 require 'transpec/util'
-require 'transpec/ast/scanner'
 
 module Transpec
   class Syntax
     class RSpecConfigure < Syntax
+      extend Util
+
       def self.conversion_target_node?(node)
         return false unless node.type == :block
         send_node = node.children.first
         receiver_node, method_name, *_ = *send_node
-        Util.const_name(receiver_node) == 'RSpec' && method_name == :configure
+        const_name(receiver_node) == 'RSpec' && method_name == :configure
       end
 
       def self.add_framework_configuration(type, config_method_name)

@@ -1,11 +1,14 @@
 # coding: utf-8
 
+require 'transpec/syntax/mixin/send'
 require 'transpec/context'
 require 'transpec/report'
 require 'transpec/record'
 
 module Transpec
   class Syntax
+    include Mixin::Send
+
     attr_reader :node, :ancestor_nodes, :source_rewriter, :runtime_data, :report
 
     def self.inherited(subclass)

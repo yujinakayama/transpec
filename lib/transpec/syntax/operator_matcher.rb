@@ -1,13 +1,12 @@
 # coding: utf-8
 
 require 'transpec/syntax'
-require 'transpec/syntax/send_node_syntax'
 require 'transpec/util'
 
 module Transpec
   class Syntax
     class OperatorMatcher < Syntax
-      include SendNodeSyntax, Util, ::AST::Sexp
+      include Util, ::AST::Sexp
 
       OPERATORS = [:==, :===, :<, :<=, :>, :>=, :=~].freeze
 

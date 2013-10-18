@@ -1,14 +1,14 @@
 # coding: utf-8
 
 require 'transpec/syntax'
-require 'transpec/syntax/expectizable'
-require 'transpec/syntax/operator_matcher'
+require 'transpec/syntax/mixin/expectizable'
 require 'transpec/util'
+require 'transpec/syntax/operator_matcher'
 
 module Transpec
   class Syntax
     class Should < Syntax
-      include Expectizable, Util
+      include Mixin::Expectizable, Util
 
       def positive?
         method_name == :should

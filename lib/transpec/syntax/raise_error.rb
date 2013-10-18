@@ -1,13 +1,10 @@
 # coding: utf-8
 
 require 'transpec/syntax'
-require 'transpec/syntax/send_node_syntax'
 
 module Transpec
   class Syntax
     class RaiseError < Syntax
-      include SendNodeSyntax
-
       def remove_error_specification_with_negative_expectation!
         return if positive?
 
