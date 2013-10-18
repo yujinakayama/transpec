@@ -6,6 +6,7 @@ require 'transpec/dynamic_analyzer'
 module Transpec
   describe DynamicAnalyzer do
     include FileHelper
+    include CacheHelper
     include ::AST::Sexp
     include_context 'isolated environment'
 
@@ -61,13 +62,17 @@ module Transpec
         create_file(file_path, source)
       end
 
+      subject(:runtime_data) do
+        with_cache(file_path + source) do
+          dynamic_analyzer.analyze
+        end
+      end
+
       it 'returns an instance of DynamicAnalyzer::RuntimeData' do
-        dynamic_analyzer.analyze.should be_an(DynamicAnalyzer::RuntimeData)
+        runtime_data.should be_an(DynamicAnalyzer::RuntimeData)
       end
 
       describe 'its element' do
-        let(:data) { dynamic_analyzer.analyze }
-
         let(:ast) do
           source_buffer = Parser::Source::Buffer.new(file_path)
           source_buffer.source = source
@@ -84,7 +89,7 @@ module Transpec
           end
         end
 
-        subject(:element) { data[target_node] }
+        subject(:element) { runtime_data[target_node] }
 
         it 'is a hash' do
           should be_a(Hash)

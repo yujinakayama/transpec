@@ -5,6 +5,7 @@ require 'transpec/context'
 
 module Transpec
   describe Context, :skip_on_jruby do
+    include CacheHelper
     include ::AST::Sexp
     include_context 'parsed objects'
     include_context 'isolated environment'
@@ -105,7 +106,7 @@ module Transpec
         fail 'Target node not found!'
       end
 
-      def eval_with_rspec_in_context(eval_source)
+      def eval_with_rspec_in_context(eval_source, spec_source)
         # Clear SPEC_OPTS environment variable so that this spec does not fail
         # with dynamic analysis in self-testing.
         original_spec_opts = ENV['SPEC_OPTS']
@@ -123,7 +124,7 @@ module Transpec
 
         source_path = 'spec.rb'
 
-        File.write(source_path, helper_source + source)
+        File.write(source_path, helper_source + spec_source)
 
         `rspec #{source_path}`
 
@@ -136,7 +137,10 @@ module Transpec
         subject { context_object.non_monkey_patch_expectation_available? }
 
         let(:expected) do
-          eval_with_rspec_in_context('respond_to?(:expect)')
+          eval_source = 'respond_to?(:expect)'
+          with_cache(eval_source + source) do
+            eval_with_rspec_in_context(eval_source, source)
+          end
         end
 
         it { should == expected }
@@ -146,7 +150,10 @@ module Transpec
         subject { context_object.non_monkey_patch_mock_available? }
 
         let(:expected) do
-          eval_with_rspec_in_context('respond_to?(:allow) && respond_to?(:receive)')
+          eval_source = 'respond_to?(:allow) && respond_to?(:receive)'
+          with_cache(eval_source + source) do
+            eval_with_rspec_in_context(eval_source, source)
+          end
         end
 
         it { should == expected }
