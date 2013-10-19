@@ -4,6 +4,7 @@
 
 * Now Transpec does dynamic code analysis!
 * Consider runtime type information when converting `=~` to `match_array`
+* Rename `--commit-message` option to `--generate-commit-message`
 
 ## v0.2.6
 

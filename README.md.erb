@@ -86,11 +86,11 @@ Before converting your specs:
 * Run `rspec` and check if all the specs pass.
 * Ensure the Git repository is clean. (You don't want to mix up your changes and Transpec's changes, right?)
 
-Then, run `transpec` (using `--commit-message` is recommended) in the project root directory:
+Then, run `transpec` (using `--generate-commit-message` is recommended) in the project root directory:
 
 ```bash
 $ cd some-project
-$ transpec --commit-message
+$ transpec --generate-commit-message
 Processing spec/spec_helper.rb
 Processing spec/spec_spec.rb
 Processing spec/support/file_helper.rb
@@ -135,7 +135,7 @@ Processing spec/spec_spec.rb
 Processing spec/support/file_helper.rb
 ```
 
-### `-m/--commit-message`
+### `-m/--generate-commit-message`
 
 Generate commit message that describes conversion summary.
 Currently only Git is supported.

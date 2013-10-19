@@ -155,10 +155,10 @@ module Transpec
         end
       end
 
-      context 'when -m/--commit-message option is specified' do
+      context 'when -m/--generate-commit-message option is specified' do
         include_context 'inside of git repository'
 
-        let(:args) { ['--force', '--commit-message', file_path] }
+        let(:args) { ['--force', '--generate-commit-message', file_path] }
 
         context 'and any conversion is done' do
           it 'writes commit message to .git/COMMIT_EDITMSG' do
@@ -249,10 +249,10 @@ module Transpec
         end
       end
 
-      describe '-m/--commit-message option' do
+      describe '-m/--generate-commit-message option' do
         include_context 'isolated environment'
 
-        let(:args) { ['--commit-message'] }
+        let(:args) { ['--generate-commit-message'] }
 
         context 'when inside of git repository' do
           include_context 'inside of git repository'

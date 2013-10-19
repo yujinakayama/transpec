@@ -9,7 +9,7 @@ module Transpec
   describe CommitMessage do
     subject(:commit_message) { CommitMessage.new(report, cli_args) }
     let(:report) { Report.new }
-    let(:cli_args) { %w(--force --commit-message) }
+    let(:cli_args) { %w(--force --generate-commit-message) }
 
     before do
       report.records << Record.new('obj.stub(:message)', 'allow(obj).to receive(:message)')
@@ -40,7 +40,7 @@ module Transpec
         body_lines[0].chomp
           .should match(/^This conversion is done by Transpec \d+\.\d+\.\d+ with the following command:$/)
         body_lines[1].chomp
-          .should ==     '    transpec --force --commit-message'
+          .should ==     '    transpec --force --generate-commit-message'
       end
 
       it 'has blank line after the preface in the body' do

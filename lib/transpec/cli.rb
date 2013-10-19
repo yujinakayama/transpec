@@ -94,12 +94,12 @@ module Transpec
       end
 
       parser.on(
-        '-m', '--commit-message',
+        '-m', '--generate-commit-message',
         'Generate commit message that describes',
         'conversion summary. Only Git is supported.'
       ) do
         unless Git.inside_of_repository?
-          fail '-m/--commit-message option is specified but not in a Git repository'
+          fail '-m/--generate-commit-message option is specified but not in a Git repository'
         end
 
         @generates_commit_message = true
