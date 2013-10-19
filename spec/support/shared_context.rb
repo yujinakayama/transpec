@@ -60,12 +60,15 @@ shared_context 'should object' do
       return Transpec::Syntax::Should.new(
         node,
         ancestor_nodes,
-        source_rewriter
+        source_rewriter,
+        runtime_data
       )
     end
 
     fail 'No should node is found!'
   end
+
+  let(:runtime_data) { nil }
 end
 
 shared_context 'expect object' do
@@ -75,12 +78,15 @@ shared_context 'expect object' do
       return Transpec::Syntax::Expect.new(
         node,
         ancestor_nodes,
-        source_rewriter
+        source_rewriter,
+        runtime_data
       )
     end
 
     fail 'No expect node is found!'
   end
+
+  let(:runtime_data) { nil }
 end
 
 shared_context 'isolated environment' do

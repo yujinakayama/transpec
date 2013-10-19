@@ -29,9 +29,16 @@ module Transpec
         @report = report || Report.new
       end
 
+      def register_request_for_dynamic_analysis(rewriter)
+        node = @expectation.subject_node
+        key = :owner_of_collection?
+        code = "respond_to?(#{items_name.inspect})"
+        rewriter.register_request(node, key, code)
+      end
+
       def convert_to_standard_expectation!
         query_method = DEFAULT_QUERY_METHOD
-        replace(@expectation.subject_range, "#{@expectation.subject_range.source}.#{query_method}")
+        replace(@expectation.subject_range, replacement_subject_source(query_method))
         replace(expression_range, replacement_matcher_source(size_source))
         register_record(query_method)
       end
@@ -50,7 +57,22 @@ module Transpec
         have_node.children[1]
       end
 
+      def items_name
+        items_node.children[1]
+      end
+
+      def subject_is_owner_of_collection?
+        node_data = runtime_node_data(@expectation.subject_node)
+        node_data && node_data[:owner_of_collection?]
+      end
+
       private
+
+      def replacement_subject_source(query_method)
+        source = @expectation.subject_range.source
+        source << ".#{items_name}" if subject_is_owner_of_collection?
+        source << ".#{query_method}"
+      end
 
       def replacement_matcher_source(size_source)
         case @expectation.current_syntax_type
@@ -83,22 +105,36 @@ module Transpec
       end
 
       def original_syntax
+        if subject_is_owner_of_collection?
+          subject = 'obj'
+          items = items_name
+        else
+          subject = 'collection'
+          items = 'items'
+        end
+
         syntax = case @expectation
                  when Should
-                   'collection.should'
+                   "#{subject}.should"
                  when Expect
-                   'expect(collection).to'
+                   "expect(#{subject}).to"
                  end
 
-        syntax << " #{have_method_name}(x).items"
+        syntax << " #{have_method_name}(x).#{items}"
       end
 
       def converted_syntax(query_method)
+        subject = if subject_is_owner_of_collection?
+                    "obj.#{items_name}.#{query_method}"
+                  else
+                    "collection.#{query_method}"
+                  end
+
         syntax = case @expectation.current_syntax_type
                  when :should
-                   "collection.#{query_method}.should"
+                   "#{subject}.should"
                  when :expect
-                   "expect(collection.#{query_method}).to"
+                   "expect(#{subject}).to"
                  end
 
         syntax << " #{replacement_matcher_source('x')}"
