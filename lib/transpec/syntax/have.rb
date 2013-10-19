@@ -145,7 +145,7 @@ module Transpec
                    "expect(#{subject}).to"
                  end
 
-        syntax << " #{have_method_name}(x).#{items}"
+        syntax << " #{have_method_name}(n).#{items}"
       end
 
       def converted_syntax
@@ -162,7 +162,7 @@ module Transpec
                    "expect(#{subject}).to"
                  end
 
-        syntax << " #{replacement_matcher_source('x')}"
+        syntax << " #{replacement_matcher_source('n')}"
       end
     end
   end
