@@ -104,13 +104,20 @@ module Transpec
         ENV['SPEC_OPTS'] = ['-r', "./#{HELPER_FILE}"].shelljoin
 
         if silent?
-          `#{rspec_command}`
+          rspec_output = `#{rspec_command}`
         else
           system(rspec_command)
         end
-      end
 
-      fail 'Dynamic analysis failed!' unless $CHILD_STATUS.exitstatus == 0
+        unless $CHILD_STATUS.exitstatus == 0
+          message = 'Dynamic analysis failed!'
+          if silent?
+            message << "\n"
+            message << rspec_output
+          end
+          fail message
+        end
+      end
     end
 
     def with_bundler_clean_env
