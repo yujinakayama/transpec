@@ -74,7 +74,11 @@ module Transpec
         rewriter = Rewriter.new
 
         FileFinder.find(paths).each do |file_path|
-          rewriter.rewrite_file!(file_path)
+          begin
+            rewriter.rewrite_file!(file_path)
+          rescue Parser::SyntaxError # rubocop:disable HandleExceptions
+            # Syntax errors will be reported in CLI with Converter.
+          end
         end
 
         File.write(HELPER_FILE, HELPER_SOURCE)

@@ -79,6 +79,16 @@ module Transpec
         end
       end
 
+      context 'when there is invalid syntax source file' do
+        before do
+          create_file('spec/fixtures/invalid.rb', 'This is invalid syntax <')
+        end
+
+        it 'does not raise error' do
+          -> { dynamic_analyzer.analyze }.should_not raise_error
+        end
+      end
+
       runtime_data_cache = {}
 
       subject(:runtime_data) do
