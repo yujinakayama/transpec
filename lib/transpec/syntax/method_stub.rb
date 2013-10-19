@@ -18,7 +18,7 @@ module Transpec
         'Excon'     # https://github.com/geemus/excon/blob/6af4f9c/lib/excon.rb#L143-L178
       ]
 
-      def self.conversion_target_method?(receiver_node, method_name)
+      def self.target_method?(receiver_node, method_name)
         return false if receiver_node.nil?
         const_name = Util.const_name(receiver_node)
         return false if CLASSES_DEFINING_OWN_STUB_METHOD.include?(const_name)

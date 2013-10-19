@@ -10,7 +10,7 @@ module Transpec
 
       subject(:be_close_object) do
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
-          next unless BeClose.conversion_target_node?(node)
+          next unless BeClose.target_node?(node)
           return BeClose.new(
             node,
             ancestor_nodes,

@@ -15,7 +15,7 @@ module Transpec
 
       attr_reader :current_syntax_type
 
-      def self.conversion_target_method?(receiver_node, method_name)
+      def self.target_method?(receiver_node, method_name)
         !receiver_node.nil? && [:should, :should_not].include?(method_name)
       end
 
@@ -56,7 +56,7 @@ module Transpec
         return @operator_matcher if instance_variable_defined?(:@operator_matcher)
 
         @operator_matcher ||= begin
-          if OperatorMatcher.conversion_target_node?(matcher_node)
+          if OperatorMatcher.target_node?(matcher_node)
             OperatorMatcher.new(matcher_node, @source_rewriter, @runtime_data, @report)
           else
             nil

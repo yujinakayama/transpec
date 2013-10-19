@@ -15,7 +15,7 @@ module Transpec
         false
       end
 
-      def self.conversion_target_method?(receiver_node, method_name)
+      def self.target_method?(receiver_node, method_name)
         !receiver_node.nil? && OPERATORS.include?(method_name)
       end
 

@@ -14,7 +14,7 @@ module Transpec
         false
       end
 
-      def self.conversion_target_method?(have_node, items_method_name)
+      def self.target_method?(have_node, items_method_name)
         return false unless have_node
         have_receiver_node, have_method_name, *_ = *have_node
         return false if have_receiver_node

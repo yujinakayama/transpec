@@ -9,13 +9,13 @@ module Transpec
         end
 
         module ClassMethods
-          def conversion_target_node?(node)
+          def target_node?(node)
             return false unless node && node.type == :send
             receiver_node, method_name, *_ = *node
-            conversion_target_method?(receiver_node, method_name)
+            target_method?(receiver_node, method_name)
           end
 
-          def conversion_target_method?(receiver_node, method_name)
+          def target_method?(receiver_node, method_name)
             false
           end
         end

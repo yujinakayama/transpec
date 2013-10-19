@@ -18,7 +18,7 @@ module Transpec
 
       alias_method :useless_expectation?, :allow_no_message?
 
-      def self.conversion_target_method?(receiver_node, method_name)
+      def self.target_method?(receiver_node, method_name)
         !receiver_node.nil? && [:should_receive, :should_not_receive].include?(method_name)
       end
 

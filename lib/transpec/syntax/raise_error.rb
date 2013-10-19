@@ -8,7 +8,7 @@ module Transpec
     class RaiseError < Syntax
       include Mixin::Send
 
-      def self.conversion_target_method?(receiver_node, method_name)
+      def self.target_method?(receiver_node, method_name)
         receiver_node.nil? && method_name == :raise_error
       end
 

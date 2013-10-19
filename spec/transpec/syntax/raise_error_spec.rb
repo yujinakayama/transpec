@@ -10,7 +10,7 @@ module Transpec
 
       subject(:raise_error_object) do
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
-          next unless RaiseError.conversion_target_node?(node)
+          next unless RaiseError.target_node?(node)
           return RaiseError.new(
             node,
             ancestor_nodes,

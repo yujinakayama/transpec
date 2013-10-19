@@ -36,7 +36,7 @@ module Transpec
 
     def dispatch_node(node, ancestor_nodes, source_rewriter)
       Syntax.standalone_syntaxes.each do |syntax_class|
-        next unless syntax_class.conversion_target_node?(node)
+        next unless syntax_class.target_node?(node)
 
         syntax = syntax_class.new(
           node,

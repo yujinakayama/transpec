@@ -9,7 +9,7 @@ module Transpec
     class Expect < Syntax
       include Mixin::Send, Mixin::HaveMatcher
 
-      def self.conversion_target_method?(receiver_node, method_name)
+      def self.target_method?(receiver_node, method_name)
         receiver_node.nil? && method_name == :expect
       end
 

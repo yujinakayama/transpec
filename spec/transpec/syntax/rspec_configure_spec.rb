@@ -10,7 +10,7 @@ module Transpec
 
       subject(:rspec_configure) do
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
-          next unless RSpecConfigure.conversion_target_node?(node)
+          next unless RSpecConfigure.target_node?(node)
           return RSpecConfigure.new(
             node,
             ancestor_nodes,

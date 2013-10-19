@@ -31,7 +31,7 @@ module Transpec
       end
     end
 
-    def self.conversion_target_node?(node)
+    def self.target_node?(node)
       false
     end
 
