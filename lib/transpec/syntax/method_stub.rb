@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/mixin/send'
 require 'transpec/syntax/mixin/monkey_patch'
 require 'transpec/syntax/mixin/allow_no_message'
 require 'transpec/syntax/mixin/any_instance'
@@ -10,12 +11,19 @@ require 'English'
 module Transpec
   class Syntax
     class MethodStub < Syntax
-      include Mixin::MonkeyPatch, Mixin::AllowNoMessage, Mixin::AnyInstance, Util
+      include Mixin::Send, Mixin::MonkeyPatch, Mixin::AllowNoMessage, Mixin::AnyInstance, Util
 
       CLASSES_DEFINING_OWN_STUB_METHOD = [
         'Typhoeus', # https://github.com/typhoeus/typhoeus/blob/6a59c62/lib/typhoeus.rb#L66-L85
         'Excon'     # https://github.com/geemus/excon/blob/6af4f9c/lib/excon.rb#L143-L178
       ]
+
+      def self.conversion_target_method?(receiver_node, method_name)
+        return false if receiver_node.nil?
+        const_name = Util.const_name(receiver_node)
+        return false if CLASSES_DEFINING_OWN_STUB_METHOD.include?(const_name)
+        [:stub, :unstub, :stub!, :unstub!].include?(method_name)
+      end
 
       def allowize!
         # There's no way of unstubbing in #allow syntax.
@@ -53,16 +61,6 @@ module Transpec
       end
 
       private
-
-      def self.target_receiver_node?(node)
-        return false if node.nil?
-        const_name = Util.const_name(node)
-        !CLASSES_DEFINING_OWN_STUB_METHOD.include?(const_name)
-      end
-
-      def self.target_method_names
-        [:stub, :unstub, :stub!, :unstub!]
-      end
 
       def build_allow_expressions_from_hash_node(hash_node)
         expressions = []

@@ -1,14 +1,11 @@
 # coding: utf-8
 
-require 'transpec/syntax/mixin/send'
 require 'transpec/context'
 require 'transpec/report'
 require 'transpec/record'
 
 module Transpec
   class Syntax
-    include Mixin::Send
-
     attr_reader :node, :ancestor_nodes, :source_rewriter, :runtime_data, :report
 
     def self.inherited(subclass)
@@ -35,10 +32,7 @@ module Transpec
     end
 
     def self.conversion_target_node?(node)
-      return false unless node && node.type == :send
-      receiver_node, method_name, *_ = *node
-      return false unless target_receiver_node?(receiver_node)
-      target_method_names.include?(method_name)
+      false
     end
 
     def self.dynamic_analysis_target_node?(node, ancestor_nodes)
@@ -66,14 +60,6 @@ module Transpec
     end
 
     private
-
-    def self.target_receiver_node?(node)
-      false
-    end
-
-    def self.target_method_names
-      []
-    end
 
     def runtime_node_data(node)
       @runtime_data && @runtime_data[node]

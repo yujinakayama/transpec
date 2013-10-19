@@ -4,6 +4,22 @@ module Transpec
   class Syntax
     module Mixin
       module Send
+        def self.included(klass)
+          klass.extend(ClassMethods)
+        end
+
+        module ClassMethods
+          def conversion_target_node?(node)
+            return false unless node && node.type == :send
+            receiver_node, method_name, *_ = *node
+            conversion_target_method?(receiver_node, method_name)
+          end
+
+          def conversion_target_method?(receiver_node, method_name)
+            false
+          end
+        end
+
         def receiver_node
           @node.children[0]
         end

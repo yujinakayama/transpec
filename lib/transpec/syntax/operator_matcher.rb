@@ -1,17 +1,22 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/mixin/send'
 require 'transpec/util'
 
 module Transpec
   class Syntax
     class OperatorMatcher < Syntax
-      include Util, ::AST::Sexp
+      include Mixin::Send, Util, ::AST::Sexp
 
       OPERATORS = [:==, :===, :<, :<=, :>, :>=, :=~].freeze
 
       def self.standalone?
         false
+      end
+
+      def self.conversion_target_method?(receiver_node, method_name)
+        !receiver_node.nil? && OPERATORS.include?(method_name)
       end
 
       def self.dynamic_analysis_target_node?(node, ancestor_nodes)
@@ -52,14 +57,6 @@ module Transpec
       end
 
       private
-
-      def self.target_receiver_node?(node)
-        !node.nil?
-      end
-
-      def self.target_method_names
-        OPERATORS
-      end
 
       def convert_to_eq!(parenthesize_arg)
         handle_anterior_of_operator!

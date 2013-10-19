@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/mixin/send'
 require 'transpec/syntax/mixin/monkey_patch'
 require 'transpec/syntax/mixin/expectizable'
 require 'transpec/syntax/mixin/allow_no_message'
@@ -9,9 +10,17 @@ require 'transpec/syntax/mixin/any_instance'
 module Transpec
   class Syntax
     class ShouldReceive < Syntax
-      include Mixin::MonkeyPatch, Mixin::Expectizable, Mixin::AllowNoMessage, Mixin::AnyInstance
+      include Mixin::Send
+      include Mixin::MonkeyPatch
+      include Mixin::Expectizable
+      include Mixin::AllowNoMessage
+      include Mixin::AnyInstance
 
       alias_method :useless_expectation?, :allow_no_message?
+
+      def self.conversion_target_method?(receiver_node, method_name)
+        !receiver_node.nil? && [:should_receive, :should_not_receive].include?(method_name)
+      end
 
       def positive?
         method_name == :should_receive
@@ -67,14 +76,6 @@ module Transpec
           replace(map.begin, '{')
           replace(map.end, '}')
         end
-      end
-
-      def self.target_receiver_node?(node)
-        !node.nil?
-      end
-
-      def self.target_method_names
-        [:should_receive, :should_not_receive]
       end
 
       def wrap_class_with_any_instance_of!(syntax)

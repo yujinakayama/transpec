@@ -1,12 +1,17 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/mixin/send'
 require 'transpec/syntax/mixin/have_matcher'
 
 module Transpec
   class Syntax
     class Expect < Syntax
-      include Mixin::HaveMatcher
+      include Mixin::Send, Mixin::HaveMatcher
+
+      def self.conversion_target_method?(receiver_node, method_name)
+        receiver_node.nil? && method_name == :expect
+      end
 
       def current_syntax_type
         :expect
@@ -20,16 +25,6 @@ module Transpec
 
       def subject_range
         subject_node.loc.expression
-      end
-
-      private
-
-      def self.target_receiver_node?(node)
-        node.nil?
-      end
-
-      def self.target_method_names
-        [:expect]
       end
     end
   end

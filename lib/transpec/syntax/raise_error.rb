@@ -1,10 +1,17 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/mixin/send'
 
 module Transpec
   class Syntax
     class RaiseError < Syntax
+      include Mixin::Send
+
+      def self.conversion_target_method?(receiver_node, method_name)
+        receiver_node.nil? && method_name == :raise_error
+      end
+
       def remove_error_specification_with_negative_expectation!
         return if positive?
 
@@ -27,14 +34,6 @@ module Transpec
       end
 
       private
-
-      def self.target_receiver_node?(node)
-        node.nil?
-      end
-
-      def self.target_method_names
-        [:raise_error]
-      end
 
       def register_record
         original_syntax = 'expect { }.not_to raise_error('

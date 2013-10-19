@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/mixin/send'
 require 'transpec/syntax/mixin/monkey_patch'
 require 'transpec/syntax/mixin/expectizable'
 require 'transpec/syntax/mixin/have_matcher'
@@ -10,9 +11,13 @@ require 'transpec/syntax/operator_matcher'
 module Transpec
   class Syntax
     class Should < Syntax
-      include Mixin::MonkeyPatch, Mixin::Expectizable, Mixin::HaveMatcher, Util
+      include Mixin::Send, Mixin::MonkeyPatch, Mixin::Expectizable, Mixin::HaveMatcher, Util
 
       attr_reader :current_syntax_type
+
+      def self.conversion_target_method?(receiver_node, method_name)
+        !receiver_node.nil? && [:should, :should_not].include?(method_name)
+      end
 
       def initialize(node, ancestor_nodes, source_rewriter, runtime_data = nil, report = nil)
         super
@@ -59,14 +64,6 @@ module Transpec
       end
 
       private
-
-      def self.target_receiver_node?(node)
-        !node.nil?
-      end
-
-      def self.target_method_names
-        [:should, :should_not]
-      end
 
       def replace_proc_selector_with_expect!
         send_node = subject_node.children.first

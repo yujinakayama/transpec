@@ -1,10 +1,17 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/mixin/send'
 
 module Transpec
   class Syntax
     class BeClose < Syntax
+      include Mixin::Send
+
+      def self.conversion_target_method?(receiver_node, method_name)
+        receiver_node.nil? && method_name == :be_close
+      end
+
       def convert_to_be_within!
         _receiver_node, _method_name, expected_node, delta_node = *node
 
@@ -20,14 +27,6 @@ module Transpec
       end
 
       private
-
-      def self.target_receiver_node?(node)
-        node.nil?
-      end
-
-      def self.target_method_names
-        [:be_close]
-      end
 
       def register_record
         @report.records << Record.new('be_close(expected, delta)', 'be_within(delta).of(expected)')

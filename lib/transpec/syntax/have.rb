@@ -1,23 +1,24 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/mixin/send'
 
 module Transpec
   class Syntax
     class Have < Syntax
+      include Mixin::Send
+
       DEFAULT_QUERY_METHOD = 'size'.freeze
 
       def self.standalone?
         false
       end
 
-      def self.conversion_target_node?(node)
-        return false unless node && node.type == :send
-        have_node = *node.children.first
+      def self.conversion_target_method?(have_node, items_method_name)
         return false unless have_node
-        receiver_node, method_name, *_ = *have_node
-        return false if receiver_node
-        [:have, :have_exactly, :have_at_least, :have_at_most].include?(method_name)
+        have_receiver_node, have_method_name, *_ = *have_node
+        return false if have_receiver_node
+        [:have, :have_exactly, :have_at_least, :have_at_most].include?(have_method_name)
       end
 
       def initialize(node, expectation, source_rewriter, runtime_data = nil, report = nil)
