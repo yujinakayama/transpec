@@ -173,22 +173,6 @@ module Transpec
     end
     # rubocop:enable MethodLength
 
-    def base_target_paths(args)
-      if args.empty?
-        if Dir.exists?('spec')
-          ['spec']
-        else
-          fail ArgumentError, 'Specify target files or directories.'
-        end
-      else
-        if args.all? { |arg| inside_of_current_working_directory?(arg) }
-          args
-        else
-          fail ArgumentError, 'Target path must be inside of the current working directory.'
-        end
-      end
-    end
-
     private
 
     def fail_if_should_not_continue!
