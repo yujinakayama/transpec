@@ -47,7 +47,7 @@ shared_context 'dynamic analysis objects' do
       runtime_data_cache[source]
     else
       FileHelper.create_file(source_path, source)
-      dynamic_analyzer = Transpec::DynamicAnalyzer.new(nil, nil, true)
+      dynamic_analyzer = Transpec::DynamicAnalyzer.new(silent: true)
       runtime_data_cache[source] = dynamic_analyzer.analyze
     end
   end

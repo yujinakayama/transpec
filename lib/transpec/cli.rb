@@ -54,7 +54,7 @@ module Transpec
     end
 
     def process(base_paths)
-      dynamic_analyzer = DynamicAnalyzer.new(nil, @rspec_command)
+      dynamic_analyzer = DynamicAnalyzer.new(rspec_command: @rspec_command)
 
       puts "Running dynamic analysis with command \"#{dynamic_analyzer.rspec_command}\"..."
       runtime_data = dynamic_analyzer.analyze

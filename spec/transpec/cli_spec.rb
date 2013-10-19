@@ -183,7 +183,9 @@ module Transpec
         let(:args) { ['--force', '--rspec-command', 'rspec --profile'] }
 
         it 'passes the command to DynamicAnalyzer' do
-          DynamicAnalyzer.should_receive(:new).with(anything, 'rspec --profile')
+          DynamicAnalyzer.should_receive(:new) do |arg|
+            arg[:rspec_command].should == 'rspec --profile'
+          end
           cli.run(args)
         end
       end

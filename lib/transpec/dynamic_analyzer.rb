@@ -50,21 +50,21 @@ module Transpec
       end
     END
 
-    attr_reader :project_path, :silent
+    attr_reader :project_path, :rspec_command, :silent
     alias_method :silent?, :silent
 
-    def initialize(project_path = nil, rspec_command = nil, silent = false)
-      @project_path = project_path || Dir.pwd
-      @rspec_command = rspec_command
-      @silent = silent
+    def initialize(options = {})
+      @project_path = options[:project_path] || Dir.pwd
+      @rspec_command = options[:rspec_command] || default_rspec_command
+      @silent = options[:silent] || false
     end
 
-    def rspec_command
-      @rspec_command ||= if File.exist?('Gemfile')
-                           'bundle exec rspec'
-                         else
-                           'rspec'
-                         end
+    def default_rspec_command
+      if File.exist?('Gemfile')
+        'bundle exec rspec'
+      else
+        'rspec'
+      end
     end
 
     def analyze

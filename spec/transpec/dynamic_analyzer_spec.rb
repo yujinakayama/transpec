@@ -9,7 +9,7 @@ module Transpec
     include ::AST::Sexp
     include_context 'isolated environment'
 
-    subject(:dynamic_analyzer) { DynamicAnalyzer.new(nil, rspec_command, true) }
+    subject(:dynamic_analyzer) { DynamicAnalyzer.new(rspec_command: rspec_command, silent: true) }
     let(:rspec_command) { nil }
 
     describe '#rspec_command' do
