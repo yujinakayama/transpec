@@ -44,14 +44,24 @@ module Transpec
       map.begin.source.start_with?('<<')
     end
 
+    def contain_here_document?(node)
+      here_document?(node) || node.each_descendent_node.any? { |n| here_document?(n) }
+    end
+
     def in_parentheses?(node)
       return false unless node.type == :begin
       source = node.loc.expression.source
       source[0] == '(' && source[-1] == ')'
     end
 
-    def indentation_of_line(node)
-      line = node.loc.expression.source_line
+    def indentation_of_line(arg)
+      range = case arg
+              when AST::Node             then arg.loc.expression
+              when Parser::Source::Range then arg
+              else fail ArgumentError, "Invalid argument #{arg}"
+              end
+
+      line = range.source_line
       /^(?<indentation>\s*)\S/ =~ line
       indentation
     end

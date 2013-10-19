@@ -32,6 +32,33 @@ module Transpec
         it 'wraps target object with analysis helper method' do
           should == expected_source
         end
+
+        context 'when the target includes here document' do
+          let(:source) do
+            <<-END
+              it 'matches to foo' do
+                subject.should =~ <<-HEREDOC.gsub('foo', 'bar')
+                foo
+                HEREDOC
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              it 'matches to foo' do
+                subject.should =~ transpec_analysis((<<-HEREDOC.gsub('foo', 'bar')
+                foo
+                HEREDOC
+                ), { :class_name => "self.class.name" }, self, __FILE__, 2, 34)
+              end
+            END
+          end
+
+          it 'wraps the here document properly' do
+            should == expected_source
+          end
+        end
       end
 
       describe '#register_request' do

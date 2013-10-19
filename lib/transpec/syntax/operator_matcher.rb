@@ -43,7 +43,7 @@ module Transpec
       end
 
       def parenthesize!(always = true)
-        return if argument_is_here_document?
+        return if contain_here_document?(arg_node)
 
         left_of_arg_source = range_in_between_selector_and_arg.source
 
@@ -136,11 +136,6 @@ module Transpec
         else
           nil
         end
-      end
-
-      def argument_is_here_document?
-        here_document?(arg_node) ||
-          arg_node.each_descendent_node.any? { |n| here_document?(n) }
       end
 
       def register_record(original_syntax, converted_syntax)

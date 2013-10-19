@@ -1,11 +1,14 @@
 # coding: utf-8
 
 require 'transpec/base_rewriter'
+require 'transpec/util'
 require 'transpec/ast/scanner'
 
 module Transpec
   class DynamicAnalyzer
     class Rewriter < BaseRewriter
+      include Util
+
       def process(ast, source_rewriter)
         # TODO: Currently multitheading is not considered...
         clear_requests!
@@ -50,15 +53,19 @@ module Transpec
       def inject_analysis_method(node, analysis_codes, source_rewriter)
         source_range = node.loc.expression
 
-        source_rewriter.insert_before(source_range, "#{ANALYSIS_METHOD}(")
-
-        source_rewriter.insert_after(
-          source_range,
-          format(
-            ', %s, self, __FILE__, %d, %d)',
-            hash_literal(analysis_codes), source_range.line, source_range.column
-          )
+        front = "#{ANALYSIS_METHOD}("
+        rear = format(
+          ', %s, self, __FILE__, %d, %d)',
+          hash_literal(analysis_codes), source_range.line, source_range.column
         )
+
+        if contain_here_document?(node)
+          front << '('
+          rear = "\n" + indentation_of_line(node.loc.expression.end) + ')' + rear
+        end
+
+        source_rewriter.insert_before(source_range, front)
+        source_rewriter.insert_after(source_range, rear)
       rescue OverlappedRewriteError # rubocop:disable HandleExceptions
       end
 
