@@ -109,11 +109,11 @@ module Transpec
         '-d', '--disable TYPE[,TYPE...]',
         'Disable specific conversions.',
         'Available conversion types:',
-        '  expect_to_matcher (from should)',
-        '  expect_to_receive (from should_receive)',
-        '  allow_to_receive  (from stub)',
-        '  have_items (to expect(obj.size).to eq(x))',
-        '  deprecated (e.g. from stub! to stub)',
+        "  #{'expect_to_matcher'.bright} (from #{'should'.underline})",
+        "  #{'expect_to_receive'.bright} (from #{'should_receive'.underline})",
+        "  #{'allow_to_receive'.bright}  (from #{'stub'.underline})",
+        "  #{'have_items'.bright} (to #{'expect(obj.size).to eq(x)'.underline})",
+        "  #{'deprecated'.bright} (e.g. from #{'mock'.underline} to #{'double'.underline})",
         'These are all enabled by default.'
       ) do |types|
         types.split(',').each do |type|
@@ -125,10 +125,10 @@ module Transpec
 
       parser.on(
         '-n', '--negative-form FORM',
-        'Specify negative form of `to` that is used',
-        'in `expect(...).to` syntax.',
-        'Either `not_to` or `to_not`.',
-        'Default: not_to'
+        "Specify negative form of #{'to'.underline} that is used",
+        "in #{'expect(...).to'.underline} syntax.",
+        "Either #{'not_to'.bright} or #{'to_not'.bright}.",
+        "Default: #{'not_to'.bright}"
       ) do |form|
         @configuration.negative_form_of_to = form
       end
@@ -137,15 +137,15 @@ module Transpec
         '-p', '--no-parentheses-matcher-arg',
         'Suppress parenthesizing argument of matcher',
         'when converting operator to non-operator',
-        'in `expect` syntax. Note that it will be',
+        "in #{'expect'.underline} syntax. Note that it will be",
         'parenthesized even if this option is',
         'specified when parentheses are necessary to',
         'keep the meaning of the expression.',
         'By default, arguments of the following',
         'operator matchers will be parenthesized.',
-        '  `== 10` to `eq(10)`',
-        '  `=~ /pattern/` to `match(/pattern/)`',
-        '  `=~ [1, 2]` to `match_array([1, 2])`'
+        "  #{'== 10'.underline} to #{'eq(10)'.underline}",
+        "  #{'=~ /pattern/'.underline} to #{'match(/pattern/)'.underline}",
+        "  #{'=~ [1, 2]'.underline} to #{'match_array([1, 2])'.underline}"
       ) do
         @configuration.parenthesize_matcher_arg = false
       end
