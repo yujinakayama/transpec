@@ -6,7 +6,6 @@ require 'transpec/dynamic_analyzer'
 module Transpec
   describe DynamicAnalyzer do
     include FileHelper
-    include CacheHelper
     include ::AST::Sexp
     include_context 'isolated environment'
 
@@ -62,9 +61,13 @@ module Transpec
         create_file(file_path, source)
       end
 
+      runtime_data_cache = {}
+
       subject(:runtime_data) do
-        with_cache(file_path + source) do
-          dynamic_analyzer.analyze
+        if runtime_data_cache[source]
+          runtime_data_cache[source]
+        else
+          runtime_data_cache[source] = dynamic_analyzer.analyze
         end
       end
 

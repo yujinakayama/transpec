@@ -40,10 +40,15 @@ shared_context 'dynamic analysis objects' do
     buffer
   end
 
+  runtime_data_cache = {}
+
   let(:runtime_data) do
-    CacheHelper.with_cache(source_path + source) do
+    if runtime_data_cache[source]
+      runtime_data_cache[source]
+    else
       FileHelper.create_file(source_path, source)
-      Transpec::DynamicAnalyzer.new(nil, nil, true).analyze
+      dynamic_analyzer = Transpec::DynamicAnalyzer.new(nil, nil, true)
+      runtime_data_cache[source] = dynamic_analyzer.analyze
     end
   end
 end
