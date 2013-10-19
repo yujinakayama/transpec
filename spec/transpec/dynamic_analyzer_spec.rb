@@ -61,6 +61,24 @@ module Transpec
         create_file(file_path, source)
       end
 
+      context 'when no path is passed' do
+        it 'rewrites all files in the "spec" directory' do
+          DynamicAnalyzer::Rewriter.any_instance.should_receive(:rewrite_file!).with(file_path)
+          dynamic_analyzer.analyze
+        end
+      end
+
+      context 'when some paths are passed' do
+        before do
+          create_file('spec/another_spec.rb', '')
+        end
+
+        it 'rewrites only files in the passed paths' do
+          DynamicAnalyzer::Rewriter.any_instance.should_receive(:rewrite_file!).with(file_path)
+          dynamic_analyzer.analyze([file_path])
+        end
+      end
+
       runtime_data_cache = {}
 
       subject(:runtime_data) do

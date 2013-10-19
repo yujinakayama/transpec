@@ -6,8 +6,8 @@ module Transpec
   module FileFinder
     module_function
 
-    def find(base_paths)
-      base_paths.reduce([]) do |file_paths, path|
+    def find(paths)
+      base_paths(paths).reduce([]) do |file_paths, path|
         if File.directory?(path)
           file_paths.concat(ruby_files_in_directory(path))
         elsif File.file?(path)
@@ -16,6 +16,26 @@ module Transpec
           fail ArgumentError, "No such file or directory #{path.inspect}"
         end
       end
+    end
+
+    def base_paths(paths)
+      if paths.empty?
+        if Dir.exists?('spec')
+          ['spec']
+        else
+          fail ArgumentError, 'Specify target files or directories.'
+        end
+      else
+        if paths.all? { |path| inside_of_current_working_directory?(path) }
+          paths
+        else
+          fail ArgumentError, 'Target path must be inside of the current working directory.'
+        end
+      end
+    end
+
+    def inside_of_current_working_directory?(path)
+      File.expand_path(path).start_with?(Dir.pwd)
     end
 
     def ruby_files_in_directory(directory_path)

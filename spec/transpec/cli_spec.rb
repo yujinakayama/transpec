@@ -366,48 +366,6 @@ module Transpec
       end
     end
 
-    describe '#base_target_paths' do
-      include_context 'isolated environment'
-
-      subject { cli.base_target_paths(args) }
-
-      context 'when target paths are specified' do
-        let(:args) { ['foo_spec.rb', 'spec/bar_spec.rb'] }
-
-        it 'returns the passed paths' do
-          should == args
-        end
-      end
-
-      context 'when paths outside of the current working directory are specified' do
-        let(:args) { ['../foo_spec.rb', 'spec/bar_spec.rb'] }
-
-        it 'raises error' do
-          -> { cli.base_target_paths(args) }.should raise_error(ArgumentError)
-        end
-      end
-
-      context 'when no target paths are specified' do
-        let(:args) { [] }
-
-        context 'and there is "spec" directory' do
-          before do
-            Dir.mkdir('spec')
-          end
-
-          it 'returns ["spec"]' do
-            should == ['spec']
-          end
-        end
-
-        context 'and there is not "spec" directory' do
-          it 'raises error' do
-            -> { cli.base_target_paths(args) }.should raise_error(ArgumentError)
-          end
-        end
-      end
-    end
-
     describe '-h/--help option' do
       around do |example|
         original_stdout = $stdout

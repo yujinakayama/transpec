@@ -67,19 +67,19 @@ module Transpec
       end
     end
 
-    def analyze
+    def analyze(paths = [])
       hash = nil
 
       in_copied_project do
         rewriter = Rewriter.new
 
-        FileFinder.find(['spec']).each do |file_path|
+        FileFinder.find(paths).each do |file_path|
           rewriter.rewrite_file!(file_path)
         end
 
         File.write(HELPER_FILE, HELPER_SOURCE)
 
-        run_rspec
+        run_rspec(paths)
 
         File.open(RESULT_FILE) do |file|
           hash = Marshal.load(file)
@@ -99,14 +99,16 @@ module Transpec
       end
     end
 
-    def run_rspec
+    def run_rspec(paths)
       with_bundler_clean_env do
         ENV['SPEC_OPTS'] = ['-r', "./#{HELPER_FILE}"].shelljoin
 
+        command = "#{rspec_command} #{paths.shelljoin}"
+
         if silent?
-          rspec_output = `#{rspec_command}`
+          rspec_output = `#{command}`
         else
-          system(rspec_command)
+          system(command)
         end
 
         unless $CHILD_STATUS.exitstatus == 0

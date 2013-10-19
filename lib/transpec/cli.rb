@@ -38,11 +38,10 @@ module Transpec
     end
 
     def run(args)
-      non_option_args = parse_options(args)
+      paths = parse_options(args)
       fail_if_should_not_continue!
-      base_paths = base_target_paths(non_option_args)
 
-      process(base_paths)
+      process(paths)
 
       display_summary
       generate_commit_message if generates_commit_message?
@@ -53,13 +52,13 @@ module Transpec
       false
     end
 
-    def process(base_paths)
+    def process(paths)
       dynamic_analyzer = DynamicAnalyzer.new(rspec_command: @rspec_command)
 
       puts "Running dynamic analysis with command \"#{dynamic_analyzer.rspec_command}\"..."
-      runtime_data = dynamic_analyzer.analyze
+      runtime_data = dynamic_analyzer.analyze(paths)
 
-      FileFinder.find(base_paths).each do |file_path|
+      FileFinder.find(paths).each do |file_path|
         convert_file(file_path, runtime_data)
       end
     end
@@ -198,10 +197,6 @@ module Transpec
       return unless Git.inside_of_repository?
       return if Git.clean?
       fail 'The current Git repository is not clean. Aborting.'
-    end
-
-    def inside_of_current_working_directory?(path)
-      File.expand_path(path).start_with?(Dir.pwd)
     end
 
     def display_summary
