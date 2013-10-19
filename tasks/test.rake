@@ -14,9 +14,13 @@ namespace :test do
   tests = [
     TranspecTest.new(File.expand_path('.'), nil, ['--quiet']),
     TranspecTest.new('https://github.com/sferik/twitter.git', 'v4.1.0', bundler_args),
-    TranspecTest.new('https://github.com/yujinakayama/guard.git', 'transpec-test', bundler_args + %w(--without development)),
     TranspecTest.new('https://github.com/yujinakayama/mail.git', 'transpec-test', bundler_args)
   ]
+
+  # Sometimes Guard fails with JRuby randomly.
+  unless RUBY_ENGINE == 'jruby'
+    tests << TranspecTest.new('https://github.com/yujinakayama/guard.git', 'transpec-test', bundler_args + %w(--without development))
+  end
   # rubocop:enable LineLength
 
   desc 'Test Transpec on all projects'
