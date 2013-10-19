@@ -7,28 +7,76 @@ module Transpec
   class DynamicAnalyzer
     class Rewriter < BaseRewriter
       def process(ast, source_rewriter)
+        # TODO: Currently multitheading is not considered...
+        clear_requests!
+        collect_requests(ast)
+        process_requests(source_rewriter)
+      end
+
+      def requests
+        @requests ||= {}
+      end
+
+      def clear_requests!
+        @requests = nil
+      end
+
+      def register_request(node, key, instance_eval_string)
+        if requests.key?(node)
+          requests[node][key] = instance_eval_string
+        else
+          requests[node] = { key => instance_eval_string }
+        end
+      end
+
+      private
+
+      def collect_requests(ast)
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
-          next unless target_node?(node, ancestor_nodes)
-          process_node(node, source_rewriter)
+          Syntax.standalone_syntaxes.each do |syntax_class|
+            next unless syntax_class.conversion_target_node?(node)
+            syntax = syntax_class.new(node, ancestor_nodes)
+            syntax.register_request_for_dynamic_analysis(self)
+          end
         end
       end
 
-      def target_node?(node, ancestor_nodes)
-        Syntax.all_syntaxes.any? do |syntax_class|
-          syntax_class.dynamic_analysis_target_node?(node, ancestor_nodes)
+      def process_requests(source_rewriter)
+        requests.each do |node, analysis_codes|
+          inject_analysis_method(node, analysis_codes, source_rewriter)
         end
       end
 
-      def process_node(node, source_rewriter)
+      def inject_analysis_method(node, analysis_codes, source_rewriter)
         source_range = node.loc.expression
 
         source_rewriter.insert_before(source_range, "#{ANALYSIS_METHOD}(")
 
         source_rewriter.insert_after(
           source_range,
-          format(', self, __FILE__, %d, %d)', source_range.line, source_range.column)
+          format(
+            ', %s, self, __FILE__, %d, %d)',
+            hash_literal(analysis_codes), source_range.line, source_range.column
+          )
         )
       rescue OverlappedRewriteError # rubocop:disable HandleExceptions
+      end
+
+      # Hash#inspect generates invalid literal with following example:
+      #
+      # > eval({ :predicate? => 1 }.inspect)
+      # SyntaxError: (eval):1: syntax error, unexpected =>
+      # {:predicate?=>1}
+      #               ^
+      def hash_literal(hash)
+        literal = '{ '
+
+        hash.each_with_index do |(key, value), index|
+          literal << ', ' unless index == 0
+          literal << "#{key.inspect} => #{value.inspect}"
+        end
+
+        literal << ' }'
       end
     end
   end

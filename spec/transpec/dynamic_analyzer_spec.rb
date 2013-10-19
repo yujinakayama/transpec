@@ -98,16 +98,12 @@ module Transpec
           should be_a(Hash)
         end
 
-        it 'has class name of the target object' do
+        it 'has result of requested analysis' do
           element[:class_name].should == 'Array'
         end
 
-        it 'has methods of the target object' do
-          element[:methods].should include(:each, :should)
-        end
-
         it 'has class name of the context' do
-          element[:context].should start_with('RSpec::Core::ExampleGroup::Nested_')
+          element[:context_class_name].should start_with('RSpec::Core::ExampleGroup::Nested_')
         end
       end
     end

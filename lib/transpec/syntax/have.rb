@@ -21,7 +21,7 @@ module Transpec
         [:have, :have_exactly, :have_at_least, :have_at_most].include?(have_method_name)
       end
 
-      def initialize(node, expectation, source_rewriter, runtime_data = nil, report = nil)
+      def initialize(node, expectation, source_rewriter = nil, runtime_data = nil, report = nil)
         @node = node
         @expectation = expectation
         @source_rewriter = source_rewriter

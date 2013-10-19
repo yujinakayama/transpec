@@ -19,18 +19,16 @@ module Transpec
         !receiver_node.nil? && OPERATORS.include?(method_name)
       end
 
-      def self.dynamic_analysis_target_node?(node, ancestor_nodes)
-        parent_node = ancestor_nodes.last
-        return false unless parent_node && parent_node.type == :send
-        _, method_name, arg_node = *parent_node
-        method_name == :=~ && arg_node == node
-      end
-
-      def initialize(node, source_rewriter, runtime_data = nil, report = nil)
+      def initialize(node, source_rewriter = nil, runtime_data = nil, report = nil)
         @node = node
         @source_rewriter = source_rewriter
         @runtime_data = runtime_data
         @report = report || Report.new
+      end
+
+      def register_request_for_dynamic_analysis(rewriter)
+        return unless method_name == :=~
+        rewriter.register_request(arg_node, :class_name, 'self.class.name')
       end
 
       def correct_operator!(parenthesize_arg = true)

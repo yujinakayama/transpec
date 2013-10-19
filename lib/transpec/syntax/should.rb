@@ -19,9 +19,14 @@ module Transpec
         !receiver_node.nil? && [:should, :should_not].include?(method_name)
       end
 
-      def initialize(node, ancestor_nodes, source_rewriter, runtime_data = nil, report = nil)
+      def initialize(node, ancestor_nodes, source_rewriter = nil, runtime_data = nil, report = nil)
         super
         @current_syntax_type = :should
+      end
+
+      def register_request_for_dynamic_analysis(rewriter)
+        operator_matcher.register_request_for_dynamic_analysis(rewriter) if operator_matcher
+        have_matcher.register_request_for_dynamic_analysis(rewriter) if have_matcher
       end
 
       def positive?

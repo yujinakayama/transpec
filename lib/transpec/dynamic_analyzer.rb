@@ -21,6 +21,12 @@ module Transpec
           @data ||= {}
         end
 
+        def self.node_id(filename, line, column)
+          absolute_path = File.expand_path(filename)
+          relative_path = Pathname.new(absolute_path).relative_path_from(Pathname.pwd).to_s
+          [relative_path, line, column].join('_')
+        end
+
         at_exit do
           File.open('#{RESULT_FILE}', 'w') do |file|
             Marshal.dump(data, file)
@@ -28,17 +34,17 @@ module Transpec
         end
       end
 
-      def #{ANALYSIS_METHOD}(object, context, filename, line, column)
-        absolute_path = File.expand_path(filename)
-        relative_path = Pathname.new(absolute_path).relative_path_from(Pathname.pwd).to_s
+      def #{ANALYSIS_METHOD}(object, analysis_codes, context, filename, line, column)
+        pair_array = analysis_codes.map do |key, code|
+          [key, object.instance_eval(code)]
+        end
 
-        id = [relative_path, line, column].join('_')
+        object_data = Hash[pair_array]
 
-        TranspecAnalysis.data[id] = {
-          class_name: object.class.name,
-          methods: object.methods,
-          context: context.class.name
-        }
+        object_data[:context_class_name] = context.class.name
+
+        id = TranspecAnalysis.node_id(filename, line, column)
+        TranspecAnalysis.data[id] = object_data
 
         object
       end

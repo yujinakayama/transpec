@@ -35,16 +35,15 @@ module Transpec
       false
     end
 
-    def self.dynamic_analysis_target_node?(node, ancestor_nodes)
-      false
-    end
-
-    def initialize(node, ancestor_nodes, source_rewriter, runtime_data = nil, report = nil)
+    def initialize(node, ancestor_nodes, source_rewriter = nil, runtime_data = nil, report = nil)
       @node = node
       @ancestor_nodes = ancestor_nodes
       @source_rewriter = source_rewriter
       @runtime_data = runtime_data
       @report = report || Report.new
+    end
+
+    def register_request_for_dynamic_analysis(rewriter)
     end
 
     def context

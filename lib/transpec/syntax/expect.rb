@@ -13,6 +13,10 @@ module Transpec
         receiver_node.nil? && method_name == :expect
       end
 
+      def register_request_for_dynamic_analysis(rewriter)
+        have_matcher.register_request_for_dynamic_analysis(rewriter) if have_matcher
+      end
+
       def current_syntax_type
         :expect
       end
