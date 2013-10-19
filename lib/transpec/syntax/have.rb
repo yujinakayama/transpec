@@ -8,7 +8,14 @@ module Transpec
     class Have < Syntax
       include Mixin::Send
 
-      DEFAULT_QUERY_METHOD = 'size'.freeze
+      # String#count is not query method, and there's no way to determine
+      # whether a method is query method.
+      # Method#arity and Method#parameters return same results
+      # for Array#count (0+ args) and String#count (1+ args).
+      #
+      # So I make #size a priority over #count so that #count won't be chosen
+      # for String (String responds to #size).
+      QUERY_METHOD_PRIORITIES = [:size, :count, :length].freeze
 
       def self.standalone?
         false
@@ -31,16 +38,21 @@ module Transpec
 
       def register_request_for_dynamic_analysis(rewriter)
         node = @expectation.subject_node
+
         key = :owner_of_collection?
         code = "respond_to?(#{items_name.inspect})"
+        rewriter.register_request(node, key, code)
+
+        key = :available_query_methods
+        code =  "target = #{code} ? #{items_name} : self; "
+        code << "target.methods & #{QUERY_METHOD_PRIORITIES.inspect}"
         rewriter.register_request(node, key, code)
       end
 
       def convert_to_standard_expectation!
-        query_method = DEFAULT_QUERY_METHOD
-        replace(@expectation.subject_range, replacement_subject_source(query_method))
+        replace(@expectation.subject_range, replacement_subject_source)
         replace(expression_range, replacement_matcher_source(size_source))
-        register_record(query_method)
+        register_record
       end
 
       def have_node
@@ -66,9 +78,22 @@ module Transpec
         node_data && node_data[:owner_of_collection?]
       end
 
+      def query_method
+        node_data = runtime_node_data(@expectation.subject_node)
+        if node_data
+          (QUERY_METHOD_PRIORITIES & node_data[:available_query_methods]).first
+        else
+          default_query_method
+        end
+      end
+
       private
 
-      def replacement_subject_source(query_method)
+      def default_query_method
+        QUERY_METHOD_PRIORITIES.first
+      end
+
+      def replacement_subject_source
         source = @expectation.subject_range.source
         source << ".#{items_name}" if subject_is_owner_of_collection?
         source << ".#{query_method}"
@@ -100,8 +125,8 @@ module Transpec
         map.dot.join(map.selector)
       end
 
-      def register_record(query_method)
-        @report.records << Record.new(original_syntax, converted_syntax(query_method))
+      def register_record
+        @report.records << Record.new(original_syntax, converted_syntax)
       end
 
       def original_syntax
@@ -123,11 +148,11 @@ module Transpec
         syntax << " #{have_method_name}(x).#{items}"
       end
 
-      def converted_syntax(query_method)
+      def converted_syntax
         subject = if subject_is_owner_of_collection?
                     "obj.#{items_name}.#{query_method}"
                   else
-                    "collection.#{query_method}"
+                    "collection.#{default_query_method}"
                   end
 
         syntax = case @expectation.current_syntax_type

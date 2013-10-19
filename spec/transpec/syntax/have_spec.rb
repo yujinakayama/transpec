@@ -212,6 +212,55 @@ module Transpec
             record.original_syntax.should  == 'expect(collection).to have(x).items'
             record.converted_syntax.should == 'expect(collection.size).to eq(x)'
           end
+
+          context 'with runtime information' do
+            include_context 'dynamic analysis objects'
+
+            context 'when the collection responds to only #count' do
+              let(:source) do
+                <<-END
+                  class SomeCollection
+                    def count
+                      2
+                    end
+                  end
+
+                  describe SomeCollection do
+                    it 'has 2 items' do
+                      expect(subject).to have(2).items
+                    end
+                  end
+                END
+              end
+
+              let(:expected_source) do
+                <<-END
+                  class SomeCollection
+                    def count
+                      2
+                    end
+                  end
+
+                  describe SomeCollection do
+                    it 'has 2 items' do
+                      expect(subject.count).to eq(2)
+                    end
+                  end
+                END
+              end
+
+              it 'converts into `expect(collection.count).to eq(2)` form' do
+                have_object.convert_to_standard_expectation!
+                rewritten_source.should == expected_source
+              end
+
+              it 'adds record "`expect(collection).to have(x).items` -> `expect(collection.size).to eq(x)`"' do
+                have_object.convert_to_standard_expectation!
+                record.original_syntax.should  == 'expect(collection).to have(x).items'
+                record.converted_syntax.should == 'expect(collection.size).to eq(x)'
+              end
+            end
+          end
         end
 
         context 'when it is `expect(collection).to have_at_least(2).items` form' do
@@ -283,47 +332,106 @@ module Transpec
             include_context 'dynamic analysis objects'
 
             context 'when the subject responds to #words' do
-              let(:source) do
-                <<-END
-                  class String
-                    def words
-                      split(' ')
+              context 'and #words responds to #size' do
+                let(:source) do
+                  <<-END
+                    class String
+                      def words
+                        split(' ')
+                      end
                     end
-                  end
 
-                  describe 'a string' do
-                    it 'has 2 words' do
-                      expect(subject).to have(2).words
+                    describe 'a string' do
+                      it 'has 2 words' do
+                        expect(subject).to have(2).words
+                      end
                     end
-                  end
-                END
+                  END
+                end
+
+                let(:expected_source) do
+                  <<-END
+                    class String
+                      def words
+                        split(' ')
+                      end
+                    end
+
+                    describe 'a string' do
+                      it 'has 2 words' do
+                        expect(subject.words.size).to eq(2)
+                      end
+                    end
+                  END
+                end
+
+                it 'converts into `expect(subject.words.size).to eq(2)` form' do
+                  have_object.convert_to_standard_expectation!
+                  rewritten_source.should == expected_source
+                end
+
+                it 'adds record "`expect(obj).to have(x).words` -> `expect(obj.words.size).to eq(x)`"' do
+                  have_object.convert_to_standard_expectation!
+                  record.original_syntax.should  == 'expect(obj).to have(x).words'
+                  record.converted_syntax.should == 'expect(obj.words.size).to eq(x)'
+                end
               end
 
-              let(:expected_source) do
-                <<-END
-                  class String
-                    def words
-                      split(' ')
+              context 'and #words responds to only #count' do
+                let(:source) do
+                  <<-END
+                    class String
+                      def words
+                        Words.new
+                      end
                     end
-                  end
 
-                  describe 'a string' do
-                    it 'has 2 words' do
-                      expect(subject.words.size).to eq(2)
+                    class Words
+                      def count
+                        2
+                      end
                     end
-                  end
-                END
-              end
 
-              it 'converts into `expect(subject.words.size).to eq(2)` form' do
-                have_object.convert_to_standard_expectation!
-                rewritten_source.should == expected_source
-              end
+                    describe 'a string' do
+                      it 'has 2 words' do
+                        expect(subject).to have(2).words
+                      end
+                    end
+                  END
+                end
 
-              it 'adds record "`expect(obj).to have(x).words` -> `expect(obj.words.size).to eq(x)`"' do
-                have_object.convert_to_standard_expectation!
-                record.original_syntax.should  == 'expect(obj).to have(x).words'
-                record.converted_syntax.should == 'expect(obj.words.size).to eq(x)'
+                let(:expected_source) do
+                  <<-END
+                    class String
+                      def words
+                        Words.new
+                      end
+                    end
+
+                    class Words
+                      def count
+                        2
+                      end
+                    end
+
+                    describe 'a string' do
+                      it 'has 2 words' do
+                        expect(subject.words.count).to eq(2)
+                      end
+                    end
+                  END
+                end
+
+                it 'converts into `expect(subject.words.count).to eq(2)` form' do
+                  have_object.convert_to_standard_expectation!
+                  rewritten_source.should == expected_source
+                end
+
+                it 'adds record "`expect(obj).to have(x).words` -> `expect(obj.words.count).to eq(x)`"' do
+                  have_object.convert_to_standard_expectation!
+                  record.original_syntax.should  == 'expect(obj).to have(x).words'
+                  record.converted_syntax.should == 'expect(obj.words.count).to eq(x)'
+                end
               end
             end
 
