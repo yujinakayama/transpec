@@ -15,12 +15,6 @@ module Transpec
         end
       end
 
-      def assign_properties(properties)
-        super
-        @properties.merge!(properties)
-        nil
-      end
-
       def parent_node
         @properties[:parent_node]
       end
@@ -28,6 +22,8 @@ module Transpec
       def parent_node=(node)
         @properties[:parent_node] = node
       end
+
+      protected :parent_node=
 
       def each_ancestor_node(&block)
         return to_enum(__method__) unless block_given?
