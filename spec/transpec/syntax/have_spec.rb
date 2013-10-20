@@ -436,35 +436,84 @@ module Transpec
             end
 
             context 'when the subject does not respond to #words' do
-              let(:source) do
-                <<-END
-                  describe ['an', 'array'] do
-                    it 'has 2 words' do
-                      expect(subject).to have(2).words
+              context 'and the subject responds to any of #size, #count, #length' do
+                let(:source) do
+                  <<-END
+                    describe ['an', 'array'] do
+                      it 'has 2 words' do
+                        expect(subject).to have(2).words
+                      end
                     end
-                  end
-                END
-              end
+                  END
+                end
 
-              let(:expected_source) do
-                <<-END
-                  describe ['an', 'array'] do
-                    it 'has 2 words' do
-                      expect(subject.size).to eq(2)
+                let(:expected_source) do
+                  <<-END
+                    describe ['an', 'array'] do
+                      it 'has 2 words' do
+                        expect(subject.size).to eq(2)
+                      end
                     end
-                  end
-                END
+                  END
+                end
+
+                it 'converts into `expect(subject.size).to eq(2)` form' do
+                  have_object.convert_to_standard_expectation!
+                  rewritten_source.should == expected_source
+                end
+
+                it 'adds record "`expect(collection).to have(n).items` -> `expect(collection.size).to eq(n)`"' do
+                  have_object.convert_to_standard_expectation!
+                  record.original_syntax.should  == 'expect(collection).to have(n).items'
+                  record.converted_syntax.should == 'expect(collection.size).to eq(n)'
+                end
               end
 
-              it 'converts into `expect(subject.size).to eq(2)` form' do
-                have_object.convert_to_standard_expectation!
-                rewritten_source.should == expected_source
-              end
+              context 'and the subject responds to none of #size, #count, #length' do
+                let(:source) do
+                  <<-END
+                    class Sentence
+                      private
+                      def words
+                        [1, 2]
+                      end
+                    end
 
-              it 'adds record "`expect(collection).to have(n).items` -> `expect(collection.size).to eq(n)`"' do
-                have_object.convert_to_standard_expectation!
-                record.original_syntax.should  == 'expect(collection).to have(n).items'
-                record.converted_syntax.should == 'expect(collection.size).to eq(n)'
+                    describe Sentence do
+                      it 'has 2 words' do
+                        expect(subject).to have(2).words
+                      end
+                    end
+                  END
+                end
+
+                let(:expected_source) do
+                  <<-END
+                    class Sentence
+                      private
+                      def words
+                        [1, 2]
+                      end
+                    end
+
+                    describe Sentence do
+                      it 'has 2 words' do
+                        expect(subject.send(:words).size).to eq(2)
+                      end
+                    end
+                  END
+                end
+
+                it 'converts into `expect(subject.send(:words).size).to eq(2)` form' do
+                  have_object.convert_to_standard_expectation!
+                  rewritten_source.should == expected_source
+                end
+
+                it 'adds record "`expect(obj).to have(n).words` -> `expect(obj.send(:words).size).to eq(n)`"' do
+                  have_object.convert_to_standard_expectation!
+                  record.original_syntax.should  == 'expect(obj).to have(n).words'
+                  record.converted_syntax.should == 'expect(obj.send(:words).size).to eq(n)'
+                end
               end
             end
           end

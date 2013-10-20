@@ -39,13 +39,24 @@ module Transpec
       def register_request_for_dynamic_analysis(rewriter)
         node = @expectation.subject_node
 
-        key = :owner_of_collection?
-        code = "respond_to?(#{items_name.inspect})"
+        # `expect(owner).to have(n).things` invokes private owner#things with Object#__send__
+        # if the owner does not respond to any of #size, #count and #length.
+        #
+        # rubocop:disable LineLength
+        # https://github.com/rspec/rspec-expectations/blob/v2.14.3/lib/rspec/matchers/built_in/have.rb#L48-L58
+        # rubocop:enable LineLength
+        key = :subject_is_owner_of_collection?
+        code = "respond_to?(#{items_name.inspect}) || " +
+               "(methods & #{QUERY_METHOD_PRIORITIES.inspect}).empty?"
         rewriter.register_request(node, key, code)
 
         key = :available_query_methods
-        code =  "target = #{code} ? #{items_name} : self; "
-        code << "target.methods & #{QUERY_METHOD_PRIORITIES.inspect}"
+        code = "target = #{code} ? #{items_name} : self; " +
+               "target.methods & #{QUERY_METHOD_PRIORITIES.inspect}"
+        rewriter.register_request(node, key, code)
+
+        key = :collection_accessor_is_private?
+        code = "private_methods.include?(#{items_name.inspect})"
         rewriter.register_request(node, key, code)
       end
 
@@ -75,7 +86,12 @@ module Transpec
 
       def subject_is_owner_of_collection?
         node_data = runtime_node_data(@expectation.subject_node)
-        node_data && node_data[:owner_of_collection?]
+        node_data && node_data[:subject_is_owner_of_collection?]
+      end
+
+      def collection_accessor_is_private?
+        node_data = runtime_node_data(@expectation.subject_node)
+        node_data && node_data[:collection_accessor_is_private?]
       end
 
       def query_method
@@ -95,7 +111,13 @@ module Transpec
 
       def replacement_subject_source
         source = @expectation.subject_range.source
-        source << ".#{items_name}" if subject_is_owner_of_collection?
+        if subject_is_owner_of_collection?
+          if collection_accessor_is_private?
+            source << ".send(#{items_name.inspect})"
+          else
+            source << ".#{items_name}"
+          end
+        end
         source << ".#{query_method}"
       end
 
@@ -150,7 +172,11 @@ module Transpec
 
       def converted_syntax
         subject = if subject_is_owner_of_collection?
-                    "obj.#{items_name}.#{query_method}"
+                    if collection_accessor_is_private?
+                      "obj.send(#{items_name.inspect}).#{query_method}"
+                    else
+                      "obj.#{items_name}.#{query_method}"
+                    end
                   else
                     "collection.#{default_query_method}"
                   end
