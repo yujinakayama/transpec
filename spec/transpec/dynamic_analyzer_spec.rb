@@ -129,10 +129,6 @@ module Transpec
         it 'has result of requested analysis' do
           element[:class_name].should == 'Array'
         end
-
-        it 'has class name of the context' do
-          element[:context_class_name].should start_with('RSpec::Core::ExampleGroup::Nested_')
-        end
       end
     end
   end

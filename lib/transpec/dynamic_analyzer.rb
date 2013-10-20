@@ -10,6 +10,7 @@ require 'English'
 
 module Transpec
   class DynamicAnalyzer
+    EVAL_TARGET_TYPES = [:object, :context]
     ANALYSIS_METHOD = 'transpec_analysis'
     HELPER_FILE = 'transpec_analysis_helper.rb'
     RESULT_FILE = 'transpec_analysis_result.dump'
@@ -34,14 +35,16 @@ module Transpec
         end
       end
 
-      def #{ANALYSIS_METHOD}(object, analysis_codes, context, filename, begin_pos, end_pos)
-        pair_array = analysis_codes.map do |key, code|
-          [key, object.instance_eval(code)]
+      def #{ANALYSIS_METHOD}(object, context, analysis_codes, filename, begin_pos, end_pos)
+        pair_array = analysis_codes.map do |key, (target_type, code)|
+          target = case target_type
+                   when :object  then object
+                   when :context then context
+                   end
+          [key, target.instance_eval(code)]
         end
 
         object_data = Hash[pair_array]
-
-        object_data[:context_class_name] = context.class.name
 
         id = TranspecAnalysis.node_id(filename, begin_pos, end_pos)
         TranspecAnalysis.data[id] = object_data

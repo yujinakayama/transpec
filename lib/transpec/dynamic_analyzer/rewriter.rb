@@ -24,12 +24,13 @@ module Transpec
         @requests = nil
       end
 
-      def register_request(node, key, instance_eval_string)
-        if requests.key?(node)
-          requests[node][key] = instance_eval_string
-        else
-          requests[node] = { key => instance_eval_string }
+      def register_request(node, key, instance_eval_string, eval_target_type = :object)
+        unless EVAL_TARGET_TYPES.include?(eval_target_type)
+          fail "Target type must be any of #{EVAL_TARGET_TYPES}"
         end
+
+        requests[node] ||= {}
+        requests[node][key] = [eval_target_type, instance_eval_string]
       end
 
       private
@@ -56,7 +57,7 @@ module Transpec
 
         front = "#{ANALYSIS_METHOD}("
         rear = format(
-          ', %s, self, __FILE__, %d, %d)',
+          ', self, %s, __FILE__, %d, %d)',
           hash_literal(analysis_codes), source_range.begin_pos, source_range.end_pos
         )
 

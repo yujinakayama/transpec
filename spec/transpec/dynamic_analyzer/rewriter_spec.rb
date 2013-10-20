@@ -25,7 +25,7 @@ module Transpec
         let(:expected_source) do
           <<-END
             it 'matches to foo' do
-              transpec_analysis(subject, { :should_source_location => "method(:should).source_location" }, self, __FILE__, 49, 56).should =~ transpec_analysis(foo, { :class_name => "self.class.name" }, self, __FILE__, 67, 70)
+              transpec_analysis(subject, self, { :should_source_location => [:object, "method(:should).source_location"] }, __FILE__, 49, 56).should =~ transpec_analysis(foo, self, { :class_name => [:object, "self.class.name"] }, __FILE__, 67, 70)
             end
           END
         end
@@ -50,10 +50,10 @@ module Transpec
           let(:expected_source) do
             <<-END
               it 'matches to foo' do
-                transpec_analysis(subject, { :should_source_location => "method(:should).source_location" }, self, __FILE__, 53, 60).should =~ transpec_analysis((<<-HEREDOC.gsub('foo', 'bar')
+                transpec_analysis(subject, self, { :should_source_location => [:object, "method(:should).source_location"] }, __FILE__, 53, 60).should =~ transpec_analysis((<<-HEREDOC.gsub('foo', 'bar')
                 foo
                 HEREDOC
-                ), { :class_name => "self.class.name" }, self, __FILE__, 71, 144)
+                ), self, { :class_name => [:object, "self.class.name"] }, __FILE__, 71, 144)
               end
             END
           end
@@ -70,19 +70,19 @@ module Transpec
         let(:another_node) { s(:int, 2) }
 
         it 'stores requests for each node' do
-          rewriter.register_request(some_node, :odd, 'odd?')
-          rewriter.register_request(another_node, :even, 'even?')
+          rewriter.register_request(some_node, :odd, 'odd?', :object)
+          rewriter.register_request(another_node, :even, 'even?', :object)
           rewriter.requests.should == {
-            some_node    => { odd: 'odd?' },
-            another_node => { even: 'even?' }
+            some_node    => { odd: [:object, 'odd?'] },
+            another_node => { even: [:object, 'even?'] }
           }
         end
 
         it 'merges multiple requests for same node' do
-          rewriter.register_request(some_node, :odd, 'odd?')
-          rewriter.register_request(some_node, :even, 'even?')
+          rewriter.register_request(some_node, :odd, 'odd?', :object)
+          rewriter.register_request(some_node, :even, 'even?', :object)
           rewriter.requests.should == {
-            some_node => { odd: 'odd?', even: 'even?' }
+            some_node => { odd: [:object, 'odd?'], even: [:object, 'even?'] }
           }
         end
       end
