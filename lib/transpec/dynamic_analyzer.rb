@@ -18,13 +18,15 @@ module Transpec
       require 'pathname'
 
       module TranspecAnalysis
+        @base_pathname = Pathname.pwd
+
         def self.data
           @data ||= {}
         end
 
         def self.node_id(filename, begin_pos, end_pos)
           absolute_path = File.expand_path(filename)
-          relative_path = Pathname.new(absolute_path).relative_path_from(Pathname.pwd).to_s
+          relative_path = Pathname.new(absolute_path).relative_path_from(@base_pathname).to_s
           [relative_path, begin_pos, end_pos].join('_')
         end
 
