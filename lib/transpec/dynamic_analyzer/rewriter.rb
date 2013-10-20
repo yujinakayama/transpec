@@ -63,7 +63,13 @@ module Transpec
 
         if contain_here_document?(node)
           front << '('
-          rear = "\n" + indentation_of_line(node.loc.expression.end) + ')' + rear
+          rear = "\n" + indentation_of_line(source_range.end) + ')' + rear
+        end
+
+        parent_node = node.parent_node
+
+        if parent_node && parent_node.type == :block && parent_node.children.first.equal?(node)
+          source_range = node.parent_node.loc.expression
         end
 
         source_rewriter.insert_before(source_range, front)

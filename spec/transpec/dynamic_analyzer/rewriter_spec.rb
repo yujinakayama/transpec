@@ -63,6 +63,54 @@ module Transpec
             should == expected_source
           end
         end
+
+        context 'when the target takes block' do
+          let(:source) do
+            <<-END
+              it 'raises error' do
+                expect { do_something }.to throw_symbol
+              end
+            END
+          end
+
+          # rubocop:disable LineLength
+          let(:expected_source) do
+            <<-END
+              it 'raises error' do
+                transpec_analysis(expect { do_something }, self, { :expect_source_location => [:context, "method(:expect).source_location"] }, __FILE__, 51, 57).to throw_symbol
+              end
+            END
+          end
+          # rubocop:enable LineLength
+
+          it 'wraps the block properly' do
+            should == expected_source
+          end
+        end
+
+        context 'when the target is only the expression in a block' do
+          let(:source) do
+            <<-END
+              it 'raises error' do
+                expect
+              end
+            END
+          end
+
+          # rubocop:disable LineLength
+          let(:expected_source) do
+            <<-END
+              it 'raises error' do
+                transpec_analysis(expect, self, { :expect_source_location => [:context, "method(:expect).source_location"] }, __FILE__, 51, 57)
+              end
+            END
+          end
+          # rubocop:enable LineLength
+
+          it 'wraps the target properly' do
+            should == expected_source
+          end
+        end
       end
 
       describe '#register_request' do
