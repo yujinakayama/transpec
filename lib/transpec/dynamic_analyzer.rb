@@ -21,10 +21,10 @@ module Transpec
           @data ||= {}
         end
 
-        def self.node_id(filename, line, column)
+        def self.node_id(filename, begin_pos, end_pos)
           absolute_path = File.expand_path(filename)
           relative_path = Pathname.new(absolute_path).relative_path_from(Pathname.pwd).to_s
-          [relative_path, line, column].join('_')
+          [relative_path, begin_pos, end_pos].join('_')
         end
 
         at_exit do
@@ -34,7 +34,7 @@ module Transpec
         end
       end
 
-      def #{ANALYSIS_METHOD}(object, analysis_codes, context, filename, line, column)
+      def #{ANALYSIS_METHOD}(object, analysis_codes, context, filename, begin_pos, end_pos)
         pair_array = analysis_codes.map do |key, code|
           [key, object.instance_eval(code)]
         end
@@ -43,7 +43,7 @@ module Transpec
 
         object_data[:context_class_name] = context.class.name
 
-        id = TranspecAnalysis.node_id(filename, line, column)
+        id = TranspecAnalysis.node_id(filename, begin_pos, end_pos)
         TranspecAnalysis.data[id] = object_data
 
         object

@@ -56,7 +56,7 @@ module Transpec
         front = "#{ANALYSIS_METHOD}("
         rear = format(
           ', %s, self, __FILE__, %d, %d)',
-          hash_literal(analysis_codes), source_range.line, source_range.column
+          hash_literal(analysis_codes), source_range.begin_pos, source_range.end_pos
         )
 
         if contain_here_document?(node)

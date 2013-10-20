@@ -24,7 +24,7 @@ module Transpec
         let(:expected_source) do
           <<-END
             it 'matches to foo' do
-              subject.should =~ transpec_analysis(foo, { :class_name => "self.class.name" }, self, __FILE__, 2, 32)
+              subject.should =~ transpec_analysis(foo, { :class_name => "self.class.name" }, self, __FILE__, 67, 70)
             end
           END
         end
@@ -50,7 +50,7 @@ module Transpec
                 subject.should =~ transpec_analysis((<<-HEREDOC.gsub('foo', 'bar')
                 foo
                 HEREDOC
-                ), { :class_name => "self.class.name" }, self, __FILE__, 2, 34)
+                ), { :class_name => "self.class.name" }, self, __FILE__, 71, 144)
               end
             END
           end
