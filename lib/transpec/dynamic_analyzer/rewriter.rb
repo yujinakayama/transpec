@@ -37,6 +37,7 @@ module Transpec
       def collect_requests(ast)
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
           Syntax.standalone_syntaxes.each do |syntax_class|
+            syntax_class.register_request_for_dynamic_analysis(node, self)
             next unless syntax_class.target_node?(node)
             syntax = syntax_class.new(node, ancestor_nodes)
             syntax.register_request_for_dynamic_analysis(self)

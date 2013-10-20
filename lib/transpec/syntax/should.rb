@@ -56,7 +56,7 @@ module Transpec
         return @operator_matcher if instance_variable_defined?(:@operator_matcher)
 
         @operator_matcher ||= begin
-          if OperatorMatcher.target_node?(matcher_node)
+          if OperatorMatcher.target_node?(matcher_node, @runtime_data)
             OperatorMatcher.new(matcher_node, @source_rewriter, @runtime_data, @report)
           else
             nil

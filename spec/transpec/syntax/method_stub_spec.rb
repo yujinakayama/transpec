@@ -47,31 +47,44 @@ module Transpec
           end
         end
 
-        context 'when #stub node with Typhoeus receiver is passed' do
-          let(:source) do
-            <<-END
-              it "is not RSpec's #stub" do
-                ::Typhoeus.stub(url, :method => method).and_return(response)
-              end
-            END
+        context 'with runtime information' do
+          include_context 'dynamic analysis objects'
+
+          context "when RSpec's #stub node is passed" do
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'responds to #foo' do
+                    subject.stub(:foo)
+                  end
+                end
+              END
+            end
+
+            it 'returns true' do
+              MethodStub.target_node?(send_node, runtime_data).should be_true
+            end
           end
 
-          it 'returns false' do
-            MethodStub.target_node?(send_node).should be_false
-          end
-        end
+          context 'when another #stub node is passed' do
+            let(:source) do
+              <<-END
+                module AnotherStubProvider
+                  def self.stub(*args)
+                  end
+                end
 
-        context 'when #stub node with Excon receiver is passed' do
-          let(:source) do
-            <<-END
-              it "is not RSpec's #stub" do
-                ::Excon.stub({}, {:body => 'body', :status => 200})
-              end
-            END
-          end
+                describe 'example' do
+                  it "is not RSpec's #stub" do
+                    AnotherStubProvider.stub(:something)
+                  end
+                end
+              END
+            end
 
-          it 'returns false' do
-            MethodStub.target_node?(send_node).should be_false
+            it 'returns false' do
+              MethodStub.target_node?(send_node, runtime_data).should be_false
+            end
           end
         end
       end

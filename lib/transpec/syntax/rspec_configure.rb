@@ -8,7 +8,7 @@ module Transpec
     class RSpecConfigure < Syntax
       extend Util
 
-      def self.target_node?(node)
+      def self.target_node?(node, runtime_data = nil)
         return false unless node && node.type == :block
         send_node = node.children.first
         receiver_node, method_name, *_ = *send_node

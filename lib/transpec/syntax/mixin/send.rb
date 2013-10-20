@@ -9,14 +9,44 @@ module Transpec
         end
 
         module ClassMethods
-          def target_node?(node)
+          def register_request_for_dynamic_analysis(node, rewriter)
+            return unless target_node?(node)
+            receiver_node, method_name, *_ = *node
+            return unless receiver_node
+
+            key = source_location_key(method_name)
+            code = "method(#{method_name.inspect}).source_location"
+            rewriter.register_request(receiver_node, key, code)
+          end
+
+          def target_node?(node, runtime_data = nil)
+            check_target_node_statically(node) && check_target_node_dynamically(node, runtime_data)
+          end
+
+          def target_method?(receiver_node, method_name)
+            false
+          end
+
+          def check_target_node_statically(node)
             return false unless node && node.type == :send
             receiver_node, method_name, *_ = *node
             target_method?(receiver_node, method_name)
           end
 
-          def target_method?(receiver_node, method_name)
-            false
+          def check_target_node_dynamically(node, runtime_data)
+            receiver_node, method_name, *_ = *node
+            # TODO: Support method invocation for implicit self (no receiver node).
+            return true unless runtime_data && receiver_node
+            node_data = runtime_data[receiver_node]
+            return true unless node_data
+            source_location = node_data[source_location_key(method_name)]
+            return true unless source_location
+            file_path = source_location.first
+            !file_path.match(%r{/gems/rspec\-[^/]+/lib/rspec/}).nil?
+          end
+
+          def source_location_key(method_name)
+            "#{method_name}_source_location".to_sym
           end
         end
 

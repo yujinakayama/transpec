@@ -10,7 +10,7 @@ module Transpec
           return @have_matcher if instance_variable_defined?(:@have_matcher)
 
           @have_matcher ||= begin
-            if Have.target_node?(matcher_node)
+            if Have.target_node?(matcher_node, @runtime_data)
               Have.new(matcher_node, self, @source_rewriter, @runtime_data, @report)
             else
               nil

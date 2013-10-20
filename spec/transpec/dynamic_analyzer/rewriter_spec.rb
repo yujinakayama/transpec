@@ -21,13 +21,15 @@ module Transpec
           END
         end
 
+        # rubocop:disable LineLength
         let(:expected_source) do
           <<-END
             it 'matches to foo' do
-              subject.should =~ transpec_analysis(foo, { :class_name => "self.class.name" }, self, __FILE__, 67, 70)
+              transpec_analysis(subject, { :should_source_location => "method(:should).source_location" }, self, __FILE__, 49, 56).should =~ transpec_analysis(foo, { :class_name => "self.class.name" }, self, __FILE__, 67, 70)
             end
           END
         end
+        # rubocop:enable LineLength
 
         it 'wraps target object with analysis helper method' do
           should == expected_source
@@ -44,16 +46,18 @@ module Transpec
             END
           end
 
+          # rubocop:disable LineLength
           let(:expected_source) do
             <<-END
               it 'matches to foo' do
-                subject.should =~ transpec_analysis((<<-HEREDOC.gsub('foo', 'bar')
+                transpec_analysis(subject, { :should_source_location => "method(:should).source_location" }, self, __FILE__, 53, 60).should =~ transpec_analysis((<<-HEREDOC.gsub('foo', 'bar')
                 foo
                 HEREDOC
                 ), { :class_name => "self.class.name" }, self, __FILE__, 71, 144)
               end
             END
           end
+          # rubocop:enable LineLength
 
           it 'wraps the here document properly' do
             should == expected_source
