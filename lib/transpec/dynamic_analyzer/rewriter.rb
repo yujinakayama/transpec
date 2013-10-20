@@ -55,16 +55,12 @@ module Transpec
       def inject_analysis_method(node, analysis_codes, source_rewriter)
         source_range = node.loc.expression
 
-        front = "#{ANALYSIS_METHOD}("
+        front = "#{ANALYSIS_METHOD}(("
         rear = format(
-          ', self, %s, __FILE__, %d, %d)',
+          '), self, %s, __FILE__, %d, %d)',
           hash_literal(analysis_codes), source_range.begin_pos, source_range.end_pos
         )
-
-        if contain_here_document?(node)
-          front << '('
-          rear = "\n" + indentation_of_line(source_range.end) + ')' + rear
-        end
+        rear = "\n" + indentation_of_line(source_range.end) + rear if contain_here_document?(node)
 
         parent_node = node.parent_node
 
