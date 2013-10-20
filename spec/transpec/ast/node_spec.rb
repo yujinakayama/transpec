@@ -30,6 +30,71 @@ module Transpec
       #     (send nil :do_something
       #       (lvar :arg_a))))
 
+      describe '#parent_node' do
+        context 'when the node has parent' do
+          let(:target_node) do
+            ast.each_descendent_node do |node|
+              return node if node == s(:args)
+            end
+          end
+
+          it 'returns the parent node' do
+            target_node.parent_node.type.should == :block
+          end
+        end
+
+        context 'when the node has parent' do
+          it 'returns nil' do
+            ast.parent_node.should be_nil
+          end
+        end
+      end
+
+      describe '#each_ancestor_node' do
+        let(:target_node) do
+          ast.each_descendent_node do |node|
+            return node if node == s(:args)
+          end
+        end
+
+        let(:expected_types) { [:block, :def] }
+
+        context 'when a block is given' do
+          it 'yields each ancestor node' do
+            index = 0
+
+            target_node.each_ancestor_node do |node|
+              expected_type = expected_types[index]
+              node.type.should == expected_type
+              index += 1
+            end
+
+            index.should_not == 0
+          end
+
+          it 'returns itself' do
+            returned_value = target_node.each_ancestor_node { }
+            returned_value.should be(target_node)
+          end
+        end
+
+        context 'when no block is given' do
+          it 'returns enumerator' do
+            target_node.each_ancestor_node.should be_a(Enumerator)
+          end
+
+          describe 'the returned enumerator' do
+            it 'enumerates the ancestor nodes' do
+              enumerator = target_node.each_ancestor_node
+
+              expected_types.each do |expected_type|
+                enumerator.next.type.should == expected_type
+              end
+            end
+          end
+        end
+      end
+
       describe '#each_child_node' do
         let(:expected_types) { [:args, :block] }
 

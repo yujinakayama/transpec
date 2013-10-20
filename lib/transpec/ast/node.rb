@@ -5,6 +5,45 @@ require 'parser'
 module Transpec
   module AST
     class Node < Parser::AST::Node
+      def initialize(type, children = [], properties = {})
+        @properties = {}
+
+        super
+
+        each_child_node do |child_node|
+          child_node.parent_node = self
+        end
+      end
+
+      def assign_properties(properties)
+        super
+        @properties.merge!(properties)
+        nil
+      end
+
+      def parent_node
+        @properties[:parent_node]
+      end
+
+      def parent_node=(node)
+        @properties[:parent_node] = node
+      end
+
+      def each_ancestor_node(&block)
+        return to_enum(__method__) unless block_given?
+
+        if parent_node
+          yield parent_node
+          parent_node.each_ancestor_node(&block)
+        end
+
+        self
+      end
+
+      def ancestor_nodes
+        each_ancestor_node.to_a
+      end
+
       def each_child_node
         return to_enum(__method__) unless block_given?
 
@@ -31,6 +70,12 @@ module Transpec
 
       def descendent_nodes
         each_descendent_node.to_a
+      end
+
+      private
+
+      def properties
+        @properties ||= {}
       end
     end
   end
