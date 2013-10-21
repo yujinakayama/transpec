@@ -36,8 +36,10 @@ module Transpec
         context 'when #stub node is passed' do
           let(:source) do
             <<-END
-              it 'responds to #foo' do
-                subject.stub(:foo)
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.stub(:foo)
+                end
               end
             END
           end
@@ -92,8 +94,10 @@ module Transpec
       describe '#method_name' do
         let(:source) do
           <<-END
-            it 'responds to #foo' do
-              subject.stub(:foo)
+            describe 'example' do
+              it 'responds to #foo' do
+                subject.stub(:foo)
+              end
             end
           END
         end
@@ -105,7 +109,6 @@ module Transpec
 
       describe '#allowize!' do
         before do
-          method_stub_object.context.stub(:allow_to_receive_available?).and_return(true)
           method_stub_object.allowize!
         end
 
@@ -113,16 +116,20 @@ module Transpec
           context "when it is `subject.#{method}(:method)` form" do
             let(:source) do
               <<-END
-                it 'responds to #foo' do
-                  subject.#{method}(:foo)
+                describe 'example' do
+                  it 'responds to #foo' do
+                    subject.#{method}(:foo)
+                  end
                 end
               END
             end
 
             let(:expected_source) do
               <<-END
-                it 'responds to #foo' do
-                  allow(subject).to receive(:foo)
+                describe 'example' do
+                  it 'responds to #foo' do
+                    allow(subject).to receive(:foo)
+                  end
                 end
               END
             end
@@ -140,16 +147,20 @@ module Transpec
           context "when it is `subject.#{method}(:method).and_return(value)` form" do
             let(:source) do
               <<-END
-                it 'responds to #foo and returns 1' do
-                  subject.#{method}(:foo).and_return(1)
+                describe 'example' do
+                  it 'responds to #foo and returns 1' do
+                    subject.#{method}(:foo).and_return(1)
+                  end
                 end
               END
             end
 
             let(:expected_source) do
               <<-END
-                it 'responds to #foo and returns 1' do
-                  allow(subject).to receive(:foo).and_return(1)
+                describe 'example' do
+                  it 'responds to #foo and returns 1' do
+                    allow(subject).to receive(:foo).and_return(1)
+                  end
                 end
               END
             end
@@ -162,16 +173,20 @@ module Transpec
           context "when it is `subject.#{method}(:method).and_raise(RuntimeError)` form" do
             let(:source) do
               <<-END
-                it 'responds to #foo and raises RuntimeError' do
-                  subject.#{method}(:foo).and_raise(RuntimeError)
+                describe 'example' do
+                  it 'responds to #foo and raises RuntimeError' do
+                    subject.#{method}(:foo).and_raise(RuntimeError)
+                  end
                 end
               END
             end
 
             let(:expected_source) do
               <<-END
-                it 'responds to #foo and raises RuntimeError' do
-                  allow(subject).to receive(:foo).and_raise(RuntimeError)
+                describe 'example' do
+                  it 'responds to #foo and raises RuntimeError' do
+                    allow(subject).to receive(:foo).and_raise(RuntimeError)
+                  end
                 end
               END
             end
@@ -184,26 +199,30 @@ module Transpec
           context 'when the statement continues over multi lines' do
             let(:source) do
               <<-END
-                it 'responds to #foo and returns 1' do
-                  subject.#{method}(
-                      :foo
-                    ).
-                    and_return(
-                      1
-                    )
+                describe 'example' do
+                  it 'responds to #foo and returns 1' do
+                    subject.#{method}(
+                        :foo
+                      ).
+                      and_return(
+                        1
+                      )
+                  end
                 end
               END
             end
 
             let(:expected_source) do
               <<-END
-                it 'responds to #foo and returns 1' do
-                  allow(subject).to receive(
-                      :foo
-                    ).
-                    and_return(
-                      1
-                    )
+                describe 'example' do
+                  it 'responds to #foo and returns 1' do
+                    allow(subject).to receive(
+                        :foo
+                      ).
+                      and_return(
+                        1
+                      )
+                  end
                 end
               END
             end
@@ -216,16 +235,20 @@ module Transpec
           context "when it is `subject.#{method}(:method => value)` form" do
             let(:source) do
               <<-END
-                it 'responds to #foo and returns 1' do
-                  subject.#{method}(:foo => 1)
+                describe 'example' do
+                  it 'responds to #foo and returns 1' do
+                    subject.#{method}(:foo => 1)
+                  end
                 end
               END
             end
 
             let(:expected_source) do
               <<-END
-                it 'responds to #foo and returns 1' do
-                  allow(subject).to receive(:foo).and_return(1)
+                describe 'example' do
+                  it 'responds to #foo and returns 1' do
+                    allow(subject).to receive(:foo).and_return(1)
+                  end
                 end
               END
             end
@@ -244,16 +267,20 @@ module Transpec
           context "when it is `subject.#{method}(method: value)` form" do
             let(:source) do
               <<-END
-                it 'responds to #foo and returns 1' do
-                  subject.#{method}(foo: 1)
+                describe 'example' do
+                  it 'responds to #foo and returns 1' do
+                    subject.#{method}(foo: 1)
+                  end
                 end
               END
             end
 
             let(:expected_source) do
               <<-END
-                it 'responds to #foo and returns 1' do
-                  allow(subject).to receive(:foo).and_return(1)
+                describe 'example' do
+                  it 'responds to #foo and returns 1' do
+                    allow(subject).to receive(:foo).and_return(1)
+                  end
                 end
               END
             end
@@ -272,17 +299,21 @@ module Transpec
           context "when it is `subject.#{method}(:a_method => a_value, b_method => b_value)` form" do
             let(:source) do
               <<-END
-                it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
-                  subject.#{method}(:foo => 1, :bar => 2)
+                describe 'example' do
+                  it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
+                    subject.#{method}(:foo => 1, :bar => 2)
+                  end
                 end
               END
             end
 
             let(:expected_source) do
               <<-END
-                it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
-                  allow(subject).to receive(:foo).and_return(1)
-                  allow(subject).to receive(:bar).and_return(2)
+                describe 'example' do
+                  it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
+                    allow(subject).to receive(:foo).and_return(1)
+                    allow(subject).to receive(:bar).and_return(2)
+                  end
                 end
               END
             end
@@ -301,23 +332,27 @@ module Transpec
             context 'when the statement continues over multi lines' do
               let(:source) do
                 <<-END
-                  it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
-                    subject
-                      .#{method}(
-                        :foo => 1,
-                        :bar => 2
-                      )
+                  describe 'example' do
+                    it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
+                      subject
+                        .#{method}(
+                          :foo => 1,
+                          :bar => 2
+                        )
+                    end
                   end
                 END
               end
 
               let(:expected_source) do
                 <<-END
-                  it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
-                    allow(subject)
-                      .to receive(:foo).and_return(1)
-                    allow(subject)
-                      .to receive(:bar).and_return(2)
+                  describe 'example' do
+                    it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
+                      allow(subject)
+                        .to receive(:foo).and_return(1)
+                      allow(subject)
+                        .to receive(:bar).and_return(2)
+                    end
                   end
                 END
               end
@@ -333,8 +368,10 @@ module Transpec
           context "when it is `subject.#{method}(:method)` form" do
             let(:source) do
               <<-END
-                it 'does not respond to #foo' do
-                  subject.#{method}(:foo)
+                describe 'example' do
+                  it 'does not respond to #foo' do
+                    subject.#{method}(:foo)
+                  end
                 end
               END
             end
@@ -353,16 +390,20 @@ module Transpec
           context "when it is `SomeClass.any_instance.#{method}(:method)` form" do
             let(:source) do
               <<-END
-                it 'responds to #foo' do
-                  SomeClass.any_instance.#{method}(:foo)
+                describe 'example' do
+                  it 'responds to #foo' do
+                    SomeClass.any_instance.#{method}(:foo)
+                  end
                 end
               END
             end
 
             let(:expected_source) do
               <<-END
-                it 'responds to #foo' do
-                  allow_any_instance_of(SomeClass).to receive(:foo)
+                describe 'example' do
+                  it 'responds to #foo' do
+                    allow_any_instance_of(SomeClass).to receive(:foo)
+                  end
                 end
               END
             end
@@ -383,8 +424,10 @@ module Transpec
           context "when it is `SomeClass.any_instance.#{method}(:method)` form" do
             let(:source) do
               <<-END
-                it 'does not respond to #foo' do
-                  SomeClass.any_instance.#{method}(:foo)
+                describe 'example' do
+                  it 'does not respond to #foo' do
+                    SomeClass.any_instance.#{method}(:foo)
+                  end
                 end
               END
             end
@@ -412,16 +455,20 @@ module Transpec
           context "when it is ##{method}" do
             let(:source) do
               <<-END
-                it '#{description} #foo' do
-                  subject.#{method}(:foo)
+                describe 'example' do
+                  it '#{description} #foo' do
+                    subject.#{method}(:foo)
+                  end
                 end
               END
             end
 
             let(:expected_source) do
               <<-END
-                it '#{description} #foo' do
-                  subject.#{replacement_method}(:foo)
+                describe 'example' do
+                  it '#{description} #foo' do
+                    subject.#{replacement_method}(:foo)
+                  end
                 end
               END
             end
@@ -445,8 +492,10 @@ module Transpec
           context "when it is ##{method}" do
             let(:source) do
               <<-END
-                it '#{description} #foo' do
-                  subject.#{method}(:foo)
+                describe 'example' do
+                  it '#{description} #foo' do
+                    subject.#{method}(:foo)
+                  end
                 end
               END
             end
@@ -468,8 +517,10 @@ module Transpec
         context 'when it is `subject.stub(:method).any_number_of_times` form' do
           let(:source) do
             <<-END
-              it 'responds to #foo' do
-                subject.stub(:foo).any_number_of_times
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.stub(:foo).any_number_of_times
+                end
               end
             END
           end
@@ -480,8 +531,10 @@ module Transpec
         context 'when it is `subject.stub(:method).with(arg).any_number_of_times` form' do
           let(:source) do
             <<-END
-              it 'responds to #foo with 1' do
-                subject.stub(:foo).with(1).any_number_of_times
+              describe 'example' do
+                it 'responds to #foo with 1' do
+                  subject.stub(:foo).with(1).any_number_of_times
+                end
               end
             END
           end
@@ -492,8 +545,10 @@ module Transpec
         context 'when it is `subject.stub(:method).at_least(0)` form' do
           let(:source) do
             <<-END
-              it 'responds to #foo' do
-                subject.stub(:foo).at_least(0)
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.stub(:foo).at_least(0)
+                end
               end
             END
           end
@@ -504,8 +559,10 @@ module Transpec
         context 'when it is `subject.stub(:method)` form' do
           let(:source) do
             <<-END
-              it 'responds to #foo' do
-                subject.stub(:foo)
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.stub(:foo)
+                end
               end
             END
           end
@@ -522,16 +579,20 @@ module Transpec
         context 'when it is `subject.stub(:method).any_number_of_times` form' do
           let(:source) do
             <<-END
-              it 'responds to #foo' do
-                subject.stub(:foo).any_number_of_times
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.stub(:foo).any_number_of_times
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'responds to #foo' do
-                subject.stub(:foo)
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.stub(:foo)
+                end
               end
             END
           end
@@ -544,16 +605,20 @@ module Transpec
         context 'when it is `subject.stub(:method).at_least(0)` form' do
           let(:source) do
             <<-END
-              it 'responds to #foo' do
-                subject.stub(:foo).at_least(0)
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.stub(:foo).at_least(0)
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'responds to #foo' do
-                subject.stub(:foo)
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.stub(:foo)
+                end
               end
             END
           end
@@ -566,8 +631,10 @@ module Transpec
         context 'when it is `subject.stub(:method)` form' do
           let(:source) do
             <<-END
-              it 'responds to #foo' do
-                subject.stub(:foo)
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.stub(:foo)
+                end
               end
             END
           end

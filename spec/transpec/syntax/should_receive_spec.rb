@@ -22,24 +22,24 @@ module Transpec
 
       let(:record) { should_receive_object.report.records.first }
 
-      before do
-        should_receive_object.context.stub(:non_monkey_patch_mock_available?).and_return(true)
-      end
-
       describe '#expectize!' do
         context 'when it is `subject.should_receive(:method)` form' do
           let(:source) do
             <<-END
-              it 'receives #foo' do
-                subject.should_receive(:foo)
+              describe 'example' do
+                it 'receives #foo' do
+                  subject.should_receive(:foo)
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'receives #foo' do
-                expect(subject).to receive(:foo)
+              describe 'example' do
+                it 'receives #foo' do
+                  expect(subject).to receive(:foo)
+                end
               end
             END
           end
@@ -59,16 +59,20 @@ module Transpec
         context 'when it is `subject.should_not_receive(:method)` form' do
           let(:source) do
             <<-END
-              it 'does not receive #foo' do
-                subject.should_not_receive(:foo)
+              describe 'example' do
+                it 'does not receive #foo' do
+                  subject.should_not_receive(:foo)
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'does not receive #foo' do
-                expect(subject).not_to receive(:foo)
+              describe 'example' do
+                it 'does not receive #foo' do
+                  expect(subject).not_to receive(:foo)
+                end
               end
             END
           end
@@ -88,8 +92,10 @@ module Transpec
           context 'and "to_not" is passed as negative form' do
             let(:expected_source) do
             <<-END
-              it 'does not receive #foo' do
-                expect(subject).to_not receive(:foo)
+              describe 'example' do
+                it 'does not receive #foo' do
+                  expect(subject).to_not receive(:foo)
+                end
               end
             END
             end
@@ -139,22 +145,26 @@ module Transpec
         context 'when it is `subject.should_receive(:method).with do .. end` form' do
           let(:source) do
             <<-END
-              it 'receives #foo with 1' do
-                subject.should_receive(:foo).with do |arg|
-                  arg == 1
+              describe 'example' do
+                it 'receives #foo with 1' do
+                  subject.should_receive(:foo).with do |arg|
+                    arg == 1
+                  end
+                  subject.foo(1)
                 end
-                subject.foo(1)
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'receives #foo with 1' do
-                expect(subject).to receive(:foo).with { |arg|
-                  arg == 1
-                }
-                subject.foo(1)
+              describe 'example' do
+                it 'receives #foo with 1' do
+                  expect(subject).to receive(:foo).with { |arg|
+                    arg == 1
+                  }
+                  subject.foo(1)
+                end
               end
             END
           end
@@ -169,22 +179,26 @@ module Transpec
         context 'when it is `subject.should_receive(:method).with(arg) do .. end` form' do
           let(:source) do
             <<-END
-              it 'receives #foo with 1' do
-                subject.should_receive(:foo).with(1) do |arg|
-                  do_some_substitute_implementation
+              describe 'example' do
+                it 'receives #foo with 1' do
+                  subject.should_receive(:foo).with(1) do |arg|
+                    do_some_substitute_implementation
+                  end
+                  subject.foo(1)
                 end
-                subject.foo(1)
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'receives #foo with 1' do
-                expect(subject).to receive(:foo).with(1) do |arg|
-                  do_some_substitute_implementation
+              describe 'example' do
+                it 'receives #foo with 1' do
+                  expect(subject).to receive(:foo).with(1) do |arg|
+                    do_some_substitute_implementation
+                  end
+                  subject.foo(1)
                 end
-                subject.foo(1)
               end
             END
           end
@@ -226,22 +240,26 @@ module Transpec
         context 'when it is `subject.should_receive(:method) do .. end.once` form' do
           let(:source) do
             <<-END
-              it 'receives #foo with 1' do
-                subject.should_receive(:foo) do |arg|
-                  arg == 1
-                end.once
-                subject.foo(1)
+              describe 'example' do
+                it 'receives #foo with 1' do
+                  subject.should_receive(:foo) do |arg|
+                    arg == 1
+                  end.once
+                  subject.foo(1)
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'receives #foo with 1' do
-                expect(subject).to receive(:foo) { |arg|
-                  arg == 1
-                }.once
-                subject.foo(1)
+              describe 'example' do
+                it 'receives #foo with 1' do
+                  expect(subject).to receive(:foo) { |arg|
+                    arg == 1
+                  }.once
+                  subject.foo(1)
+                end
               end
             END
           end
@@ -256,22 +274,26 @@ module Transpec
         context 'when it is `subject.should_receive(:method) do .. end` form' do
           let(:source) do
             <<-END
-              it 'receives #foo with 1' do
-                subject.should_receive(:foo) do |arg|
-                  expect(arg).to eq(1)
+              describe 'example' do
+                it 'receives #foo with 1' do
+                  subject.should_receive(:foo) do |arg|
+                    expect(arg).to eq(1)
+                  end
+                  subject.foo(1)
                 end
-                subject.foo(1)
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'receives #foo with 1' do
-                expect(subject).to receive(:foo) do |arg|
-                  expect(arg).to eq(1)
+              describe 'example' do
+                it 'receives #foo with 1' do
+                  expect(subject).to receive(:foo) do |arg|
+                    expect(arg).to eq(1)
+                  end
+                  subject.foo(1)
                 end
-                subject.foo(1)
               end
             END
           end
@@ -285,16 +307,20 @@ module Transpec
         context 'when it is `SomeClass.any_instance.should_receive(:method)` form' do
           let(:source) do
             <<-END
-              it 'receives #foo' do
-                SomeClass.any_instance.should_receive(:foo)
+              describe 'example' do
+                it 'receives #foo' do
+                  SomeClass.any_instance.should_receive(:foo)
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'receives #foo' do
-                expect_any_instance_of(SomeClass).to receive(:foo)
+              describe 'example' do
+                it 'receives #foo' do
+                  expect_any_instance_of(SomeClass).to receive(:foo)
+                end
               end
             END
           end
@@ -319,8 +345,10 @@ module Transpec
         context 'when it is `subject.should_receive(:method).any_number_of_times` form' do
           let(:source) do
             <<-END
-              it 'responds to #foo' do
-                subject.should_receive(:foo).any_number_of_times
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.should_receive(:foo).any_number_of_times
+                end
               end
             END
           end
@@ -331,8 +359,10 @@ module Transpec
         context 'when it is `subject.should_receive(:method).with(arg).any_number_of_times` form' do
           let(:source) do
             <<-END
-              it 'responds to #foo with 1' do
-                subject.should_receive(:foo).with(1).any_number_of_times
+              describe 'example' do
+                it 'responds to #foo with 1' do
+                  subject.should_receive(:foo).with(1).any_number_of_times
+                end
               end
             END
           end
@@ -343,8 +373,10 @@ module Transpec
         context 'when it is `subject.should_receive(:method).at_least(0)` form' do
           let(:source) do
             <<-END
-              it 'responds to #foo' do
-                subject.should_receive(:foo).at_least(0)
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.should_receive(:foo).at_least(0)
+                end
               end
             END
           end
@@ -355,8 +387,10 @@ module Transpec
         context 'when it is `subject.should_receive(:method).at_least(1)` form' do
           let(:source) do
             <<-END
-              it 'receives #foo at least once' do
-                subject.should_receive(:foo).with(1).at_least(1)
+              describe 'example' do
+                it 'receives #foo at least once' do
+                  subject.should_receive(:foo).with(1).at_least(1)
+                end
               end
             END
           end
@@ -367,8 +401,10 @@ module Transpec
         context 'when it is `subject.should_receive(:method)` form' do
           let(:source) do
             <<-END
-              it 'receives to #foo' do
-                subject.should_receive(:foo)
+              describe 'example' do
+                it 'receives to #foo' do
+                  subject.should_receive(:foo)
+                end
               end
             END
           end
@@ -385,16 +421,20 @@ module Transpec
         context 'when it is `subject.should_receive(:method).any_number_of_times` form' do
           let(:source) do
             <<-END
-              it 'responds to #foo' do
-                subject.should_receive(:foo).any_number_of_times
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.should_receive(:foo).any_number_of_times
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'responds to #foo' do
-                allow(subject).to receive(:foo)
+              describe 'example' do
+                it 'responds to #foo' do
+                  allow(subject).to receive(:foo)
+                end
               end
             END
           end
@@ -413,16 +453,20 @@ module Transpec
         context 'when it is `SomeClass.any_instance.should_receive(:method).any_number_of_times` form' do
           let(:source) do
             <<-END
-              it 'responds to #foo' do
-                SomeClass.any_instance.should_receive(:foo).any_number_of_times
+              describe 'example' do
+                it 'responds to #foo' do
+                  SomeClass.any_instance.should_receive(:foo).any_number_of_times
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'responds to #foo' do
-                allow_any_instance_of(SomeClass).to receive(:foo)
+              describe 'example' do
+                it 'responds to #foo' do
+                  allow_any_instance_of(SomeClass).to receive(:foo)
+                end
               end
             END
           end
@@ -441,16 +485,20 @@ module Transpec
         context 'when it is `subject.should_receive(:method).at_least(0)` form' do
           let(:source) do
             <<-END
-              it 'responds to #foo' do
-                subject.should_receive(:foo).at_least(0)
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.should_receive(:foo).at_least(0)
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'responds to #foo' do
-                allow(subject).to receive(:foo)
+              describe 'example' do
+                it 'responds to #foo' do
+                  allow(subject).to receive(:foo)
+                end
               end
             END
           end
@@ -469,16 +517,20 @@ module Transpec
         context 'when it is `SomeClass.any_instance.should_receive(:method).at_least(0)` form' do
           let(:source) do
             <<-END
-              it 'responds to #foo' do
-                SomeClass.any_instance.should_receive(:foo).at_least(0)
+              describe 'example' do
+                it 'responds to #foo' do
+                  SomeClass.any_instance.should_receive(:foo).at_least(0)
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'responds to #foo' do
-                allow_any_instance_of(SomeClass).to receive(:foo)
+              describe 'example' do
+                it 'responds to #foo' do
+                  allow_any_instance_of(SomeClass).to receive(:foo)
+                end
               end
             END
           end
@@ -497,8 +549,10 @@ module Transpec
         context 'when it is `subject.should_receive(:method)` form' do
           let(:source) do
             <<-END
-              it 'receives to #foo' do
-                subject.should_receive(:foo)
+              describe 'example' do
+                it 'receives to #foo' do
+                  subject.should_receive(:foo)
+                end
               end
             END
           end
@@ -517,16 +571,20 @@ module Transpec
         context 'when it is `subject.should_receive(:method).any_number_of_times` form' do
           let(:source) do
             <<-END
-              it 'responds to #foo' do
-                subject.should_receive(:foo).any_number_of_times
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.should_receive(:foo).any_number_of_times
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'responds to #foo' do
-                subject.stub(:foo)
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.stub(:foo)
+                end
               end
             END
           end
@@ -545,8 +603,10 @@ module Transpec
         context 'when it is `subject.should_receive(:method)` form' do
           let(:source) do
             <<-END
-              it 'receives to #foo' do
-                subject.should_receive(:foo)
+              describe 'example' do
+                it 'receives to #foo' do
+                  subject.should_receive(:foo)
+                end
               end
             END
           end

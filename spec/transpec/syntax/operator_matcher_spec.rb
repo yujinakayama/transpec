@@ -22,8 +22,10 @@ module Transpec
         context 'when it is operator matcher' do
           let(:source) do
             <<-END
-              it 'is 1' do
-                subject.should == 1
+              describe 'example' do
+                it 'is 1' do
+                  subject.should == 1
+                end
               end
             END
           end
@@ -45,8 +47,10 @@ module Transpec
         context 'when it is non-operator matcher' do
           let(:source) do
             <<-END
-              it 'is 1' do
-                subject.should eq(1)
+              describe 'example' do
+                it 'is 1' do
+                  subject.should eq(1)
+                end
               end
             END
           end
@@ -76,16 +80,20 @@ module Transpec
         context 'when it is `== 1` form' do
           let(:source) do
             <<-END
-              it 'is 1' do
-                subject.should == 1
+              describe 'example' do
+                it 'is 1' do
+                  subject.should == 1
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'is 1' do
-                subject.should eq(1)
+              describe 'example' do
+                it 'is 1' do
+                  subject.should eq(1)
+                end
               end
             END
           end
@@ -110,19 +118,23 @@ module Transpec
           context 'and its argument is in the next line' do
             let(:source) do
               <<-END
-                it 'is 1' do
-                  subject.should ==
-                    1
+                describe 'example' do
+                  it 'is 1' do
+                    subject.should ==
+                      1
+                  end
                 end
               END
             end
 
             let(:expected_source) do
               <<-END
-                it 'is 1' do
-                  subject.should eq(
-                    1
-                  )
+                describe 'example' do
+                  it 'is 1' do
+                    subject.should eq(
+                      1
+                    )
+                  end
                 end
               END
             end
@@ -144,16 +156,20 @@ module Transpec
         context 'when it is `==1` form' do
           let(:source) do
             <<-END
-              it 'is 1' do
-                subject.should==1
+              describe 'example' do
+                it 'is 1' do
+                  subject.should==1
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'is 1' do
-                subject.should eq(1)
+              describe 'example' do
+                it 'is 1' do
+                  subject.should eq(1)
+                end
               end
             END
           end
@@ -167,8 +183,10 @@ module Transpec
 
             let(:expected_source) do
             <<-END
-              it 'is 1' do
-                subject.should eq 1
+              describe 'example' do
+                it 'is 1' do
+                  subject.should eq 1
+                end
               end
             END
             end
@@ -182,16 +200,20 @@ module Transpec
         context 'when it is `be == 1` form' do
           let(:source) do
             <<-END
-              it 'is 1' do
-                subject.should be == 1
+              describe 'example' do
+                it 'is 1' do
+                  subject.should be == 1
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'is 1' do
-                subject.should eq(1)
+              describe 'example' do
+                it 'is 1' do
+                  subject.should eq(1)
+                end
               end
             END
           end
@@ -209,16 +231,20 @@ module Transpec
         context 'when it is `be.==(1)` form' do
           let(:source) do
             <<-END
-              it 'is 1' do
-                subject.should be.==(1)
+              describe 'example' do
+                it 'is 1' do
+                  subject.should be.==(1)
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'is 1' do
-                subject.should eq(1)
+              describe 'example' do
+                it 'is 1' do
+                  subject.should eq(1)
+                end
               end
             END
           end
@@ -231,16 +257,20 @@ module Transpec
         context 'when it is `== (2 - 1)` form' do
           let(:source) do
             <<-END
-              it 'is 1' do
-                subject.should == (2 - 1)
+              describe 'example' do
+                it 'is 1' do
+                  subject.should == (2 - 1)
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'is 1' do
-                subject.should eq(2 - 1)
+              describe 'example' do
+                it 'is 1' do
+                  subject.should eq(2 - 1)
+                end
               end
             END
           end
@@ -253,16 +283,20 @@ module Transpec
         context 'when it is `== (5 - 3) / (4 - 2)` form' do
           let(:source) do
             <<-END
-              it 'is 1' do
-                subject.should == (5 - 3) / (4 - 2)
+              describe 'example' do
+                it 'is 1' do
+                  subject.should == (5 - 3) / (4 - 2)
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'is 1' do
-                subject.should eq((5 - 3) / (4 - 2))
+              describe 'example' do
+                it 'is 1' do
+                  subject.should eq((5 - 3) / (4 - 2))
+                end
               end
             END
           end
@@ -275,16 +309,20 @@ module Transpec
         context "when it is `== { 'key' => 'value' }` form" do
           let(:source) do
             <<-END
-              it 'is the hash' do
-                subject.should == { 'key' => 'value' }
+              describe 'example' do
+                it 'is the hash' do
+                  subject.should == { 'key' => 'value' }
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'is the hash' do
-                subject.should eq({ 'key' => 'value' })
+              describe 'example' do
+                it 'is the hash' do
+                  subject.should eq({ 'key' => 'value' })
+                end
               end
             END
           end
@@ -312,16 +350,20 @@ module Transpec
           context "when it is `#{operator} 1` form" do
             let(:source) do
               <<-END
-                it '#{description} 1' do
-                  subject.should #{operator} 1
+                describe 'example' do
+                  it '#{description} 1' do
+                    subject.should #{operator} 1
+                  end
                 end
               END
             end
 
             let(:expected_source) do
               <<-END
-                it '#{description} 1' do
-                  subject.should be #{operator} 1
+                describe 'example' do
+                  it '#{description} 1' do
+                    subject.should be #{operator} 1
+                  end
                 end
               END
             end
@@ -339,8 +381,10 @@ module Transpec
           context "when it is `be #{operator} 1` form" do
             let(:source) do
               <<-END
-                it '#{description} 1' do
-                  subject.should be #{operator} 1
+                describe 'example' do
+                  it '#{description} 1' do
+                    subject.should be #{operator} 1
+                  end
                 end
               END
             end
@@ -358,16 +402,20 @@ module Transpec
         context 'when it is `=~ /pattern/` form' do
           let(:source) do
             <<-END
-              it 'matches the pattern' do
-                subject.should =~ /pattern/
+              describe 'example' do
+                it 'matches the pattern' do
+                  subject.should =~ /pattern/
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'matches the pattern' do
-                subject.should match(/pattern/)
+              describe 'example' do
+                it 'matches the pattern' do
+                  subject.should match(/pattern/)
+                end
               end
             END
           end
@@ -385,16 +433,20 @@ module Transpec
         context 'when it is `=~/pattern/` form' do
           let(:source) do
             <<-END
-              it 'matches the pattern' do
-                subject.should=~/pattern/
+              describe 'example' do
+                it 'matches the pattern' do
+                  subject.should=~/pattern/
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'matches the pattern' do
-                subject.should match(/pattern/)
+              describe 'example' do
+                it 'matches the pattern' do
+                  subject.should match(/pattern/)
+                end
               end
             END
           end
@@ -407,16 +459,20 @@ module Transpec
         context 'when it is `be =~ /pattern/` form' do
           let(:source) do
             <<-END
-              it 'matches the pattern' do
-                subject.should be =~ /pattern/
+              describe 'example' do
+                it 'matches the pattern' do
+                  subject.should be =~ /pattern/
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'matches the pattern' do
-                subject.should match(/pattern/)
+              describe 'example' do
+                it 'matches the pattern' do
+                  subject.should match(/pattern/)
+                end
               end
             END
           end
@@ -429,16 +485,20 @@ module Transpec
         context 'when it is `=~ [1, 2]` form' do
           let(:source) do
             <<-END
-              it 'contains 1 and 2' do
-                subject.should =~ [1, 2]
+              describe 'example' do
+                it 'contains 1 and 2' do
+                  subject.should =~ [1, 2]
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'contains 1 and 2' do
-                subject.should match_array([1, 2])
+              describe 'example' do
+                it 'contains 1 and 2' do
+                  subject.should match_array([1, 2])
+                end
               end
             END
           end
@@ -456,16 +516,20 @@ module Transpec
         context 'when it is `=~[1, 2]` form' do
           let(:source) do
             <<-END
-              it 'contains 1 and 2' do
-                subject.should=~[1, 2]
+              describe 'example' do
+                it 'contains 1 and 2' do
+                  subject.should=~[1, 2]
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'contains 1 and 2' do
-                subject.should match_array([1, 2])
+              describe 'example' do
+                it 'contains 1 and 2' do
+                  subject.should match_array([1, 2])
+                end
               end
             END
           end
@@ -478,16 +542,20 @@ module Transpec
         context 'when it is `be =~ [1, 2]` form' do
           let(:source) do
             <<-END
-              it 'contains 1 and 2' do
-                subject.should be =~ [1, 2]
+              describe 'example' do
+                it 'contains 1 and 2' do
+                  subject.should be =~ [1, 2]
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'contains 1 and 2' do
-                subject.should match_array([1, 2])
+              describe 'example' do
+                it 'contains 1 and 2' do
+                  subject.should match_array([1, 2])
+                end
               end
             END
           end
@@ -531,16 +599,20 @@ module Transpec
           context 'and no runtime type information is provided' do
             let(:source) do
               <<-END
-                it 'matches the pattern' do
-                  subject.should =~ variable
+                describe 'example' do
+                  it 'matches the pattern' do
+                    subject.should =~ variable
+                  end
                 end
               END
             end
 
             let(:expected_source) do
               <<-END
-                it 'matches the pattern' do
-                  subject.should match(variable)
+                describe 'example' do
+                  it 'matches the pattern' do
+                    subject.should match(variable)
+                  end
                 end
               END
             end
@@ -562,8 +634,10 @@ module Transpec
         context 'when its argument is already in parentheses' do
           let(:source) do
             <<-END
-              it 'is 1' do
-                subject.should eq(1)
+              describe 'example' do
+                it 'is 1' do
+                  subject.should eq(1)
+                end
               end
             END
           end
@@ -576,8 +650,10 @@ module Transpec
         context 'when its argument is not in parentheses' do
           let(:source) do
             <<-END
-              it 'is 1' do
-                subject.should eq 1
+              describe 'example' do
+                it 'is 1' do
+                  subject.should eq 1
+                end
               end
             END
           end
@@ -587,8 +663,10 @@ module Transpec
 
             let(:expected_source) do
             <<-END
-              it 'is 1' do
-                subject.should eq(1)
+              describe 'example' do
+                it 'is 1' do
+                  subject.should eq(1)
+                end
               end
             END
             end
@@ -603,8 +681,10 @@ module Transpec
 
             let(:expected_source) do
             <<-END
-              it 'is 1' do
-                subject.should eq 1
+              describe 'example' do
+                it 'is 1' do
+                  subject.should eq 1
+                end
               end
             END
             end
@@ -618,16 +698,20 @@ module Transpec
         context 'when its multiple arguments are not in parentheses' do
           let(:source) do
             <<-END
-              it 'contains 1 and 2' do
-                subject.should include 1, 2
+              describe 'example' do
+                it 'contains 1 and 2' do
+                  subject.should include 1, 2
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'contains 1 and 2' do
-                subject.should include(1, 2)
+              describe 'example' do
+                it 'contains 1 and 2' do
+                  subject.should include(1, 2)
+                end
               end
             END
           end
@@ -640,16 +724,20 @@ module Transpec
         context 'when its argument is a string literal' do
           let(:source) do
             <<-END
-              it "is 'string'" do
-                subject.should eq 'string'
+              describe 'example' do
+                it "is 'string'" do
+                  subject.should eq 'string'
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it "is 'string'" do
-                subject.should eq('string')
+              describe 'example' do
+                it "is 'string'" do
+                  subject.should eq('string')
+                end
               end
             END
           end
@@ -662,10 +750,12 @@ module Transpec
         context 'when its argument is a here document' do
           let(:source) do
             <<-END
-              it 'returns the document' do
-                subject.should eq <<-HEREDOC
-                foo
-                HEREDOC
+              describe 'example' do
+                it 'returns the document' do
+                  subject.should eq <<-HEREDOC
+                  foo
+                  HEREDOC
+                end
               end
             END
           end
@@ -687,10 +777,12 @@ module Transpec
         context 'when its argument is a here document with chained method' do
           let(:source) do
             <<-END
-              it 'returns the document' do
-                subject.should eq <<-HEREDOC.gsub('foo', 'bar')
-                foo
-                HEREDOC
+              describe 'example' do
+                it 'returns the document' do
+                  subject.should eq <<-HEREDOC.gsub('foo', 'bar')
+                  foo
+                  HEREDOC
+                end
               end
             END
           end

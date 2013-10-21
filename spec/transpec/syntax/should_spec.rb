@@ -11,16 +11,14 @@ module Transpec
 
       let(:record) { should_object.report.records.first }
 
-      before do
-        should_object.context.stub(:expect_to_matcher_available?).and_return(true)
-      end
-
       describe '#matcher_node' do
         context 'when it is taking operator matcher' do
           let(:source) do
             <<-END
-              it 'is 1' do
-                subject.should == 1
+              describe 'example' do
+                it 'is 1' do
+                  subject.should == 1
+                end
               end
             END
           end
@@ -43,8 +41,10 @@ module Transpec
         context 'when it is taking non-operator matcher without argument' do
           let(:source) do
             <<-END
-              it 'is empty' do
-                subject.should be_empty
+              describe 'example' do
+                it 'is empty' do
+                  subject.should be_empty
+                end
               end
             END
           end
@@ -66,8 +66,10 @@ module Transpec
         context 'when it is taking non-operator matcher with argument' do
           let(:source) do
             <<-END
-              it 'is 1' do
-                subject.should eq(1)
+              describe 'example' do
+                it 'is 1' do
+                  subject.should eq(1)
+                end
               end
             END
           end
@@ -94,8 +96,10 @@ module Transpec
         context 'when it is taking operator matcher' do
           let(:source) do
             <<-END
-              it 'is 1' do
-                subject.should == 1
+              describe 'example' do
+                it 'is 1' do
+                  subject.should == 1
+                end
               end
             END
           end
@@ -108,8 +112,10 @@ module Transpec
         context 'when it is taking non-operator matcher' do
           let(:source) do
             <<-END
-              it 'is empty' do
-                subject.should be_empty
+              describe 'example' do
+                it 'is empty' do
+                  subject.should be_empty
+                end
               end
             END
           end
@@ -126,8 +132,10 @@ module Transpec
         context 'when it is taking #have matcher' do
           let(:source) do
             <<-END
-              it 'has 2 items' do
-                subject.should have(2).items
+              describe 'example' do
+                it 'has 2 items' do
+                  subject.should have(2).items
+                end
               end
             END
           end
@@ -140,8 +148,10 @@ module Transpec
         context 'when it is taking operator matcher' do
           let(:source) do
             <<-END
-              it 'is 1' do
-                subject.should == 1
+              describe 'example' do
+                it 'is 1' do
+                  subject.should == 1
+                end
               end
             END
           end
@@ -154,8 +164,10 @@ module Transpec
         context 'when it is taking any other non-operator matcher' do
           let(:source) do
             <<-END
-              it 'is empty' do
-                subject.should be_empty
+              describe 'example' do
+                it 'is empty' do
+                  subject.should be_empty
+                end
               end
             END
           end
@@ -169,8 +181,10 @@ module Transpec
       describe '#expectize!' do
         let(:source) do
           <<-END
-            it 'is 1' do
-              subject.should == 1
+            describe 'example' do
+              it 'is 1' do
+                subject.should == 1
+              end
             end
           END
         end
@@ -183,16 +197,20 @@ module Transpec
         context 'when it is `subject.should` form' do
           let(:source) do
             <<-END
-              it 'is 1' do
-                subject.should eq(1)
+              describe 'example' do
+                it 'is 1' do
+                  subject.should eq(1)
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'is 1' do
-                expect(subject).to eq(1)
+              describe 'example' do
+                it 'is 1' do
+                  expect(subject).to eq(1)
+                end
               end
             END
           end
@@ -212,16 +230,20 @@ module Transpec
         context 'when it is `subject.should_not` form' do
           let(:source) do
             <<-END
-              it 'is not 1' do
-                subject.should_not eq(1)
+              describe 'example' do
+                it 'is not 1' do
+                  subject.should_not eq(1)
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'is not 1' do
-                expect(subject).not_to eq(1)
+              describe 'example' do
+                it 'is not 1' do
+                  expect(subject).not_to eq(1)
+                end
               end
             END
           end
@@ -240,8 +262,10 @@ module Transpec
           context 'and "to_not" is passed as negative form' do
             let(:expected_source) do
             <<-END
-              it 'is not 1' do
-                expect(subject).to_not eq(1)
+              describe 'example' do
+                it 'is not 1' do
+                  expect(subject).to_not eq(1)
+                end
               end
             END
             end
@@ -262,16 +286,20 @@ module Transpec
         context 'when it is `(subject).should` form' do
           let(:source) do
             <<-END
-              it 'is true' do
-                (1 == 1).should be_true
+              describe 'example' do
+                it 'is true' do
+                  (1 == 1).should be_true
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'is true' do
-                expect(1 == 1).to be_true
+              describe 'example' do
+                it 'is true' do
+                  expect(1 == 1).to be_true
+                end
               end
             END
           end
@@ -285,16 +313,20 @@ module Transpec
         context 'when it is `subject.should() == 1` form' do
           let(:source) do
             <<-END
-              it 'is 1' do
-                subject.should() == 1
+              describe 'example' do
+                it 'is 1' do
+                  subject.should() == 1
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'is 1' do
-                expect(subject).to eq(1)
+              describe 'example' do
+                it 'is 1' do
+                  expect(subject).to eq(1)
+                end
               end
             END
           end
@@ -314,16 +346,20 @@ module Transpec
           context "when it is `#{method} { ... }.should` form" do
             let(:source) do
               <<-END
-                it 'raises error' do
-                  #{method} { fail }.should raise_error
+                describe 'example' do
+                  it 'raises error' do
+                    #{method} { fail }.should raise_error
+                  end
                 end
               END
             end
 
             let(:expected_source) do
               <<-END
-                it 'raises error' do
-                  expect { fail }.to raise_error
+                describe 'example' do
+                  it 'raises error' do
+                    expect { fail }.to raise_error
+                  end
                 end
               END
             end
@@ -345,16 +381,20 @@ module Transpec
           context "when it is `#{method} { ... }.should` form" do
             let(:source) do
               <<-END
-                it 'is 1' do
-                  #{method} { fail }.should eq(1)
+                describe 'example' do
+                  it 'is 1' do
+                    #{method} { fail }.should eq(1)
+                  end
                 end
               END
             end
 
             let(:expected_source) do
               <<-END
-                it 'is 1' do
-                  expect(#{method} { fail }).to eq(1)
+                describe 'example' do
+                  it 'is 1' do
+                    expect(#{method} { fail }).to eq(1)
+                  end
                 end
               END
             end
@@ -369,16 +409,20 @@ module Transpec
         context 'when it is `method { ... }.should` form but the subject value is not proc' do
           let(:source) do
             <<-END
-              it 'increments all elements' do
-                [1, 2].map { |i| i + 1 }.should eq([2, 3])
+              describe 'example' do
+                it 'increments all elements' do
+                  [1, 2].map { |i| i + 1 }.should eq([2, 3])
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'increments all elements' do
-                expect([1, 2].map { |i| i + 1 }).to eq([2, 3])
+              describe 'example' do
+                it 'increments all elements' do
+                  expect([1, 2].map { |i| i + 1 }).to eq([2, 3])
+                end
               end
             END
           end

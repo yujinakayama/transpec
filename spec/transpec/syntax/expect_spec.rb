@@ -12,8 +12,10 @@ module Transpec
       describe '#subject_node' do
         let(:source) do
           <<-END
-            it 'is empty' do
-              expect(subject).to be_empty
+            describe 'example' do
+              it 'is empty' do
+                expect(subject).to be_empty
+              end
             end
           END
         end
@@ -27,8 +29,10 @@ module Transpec
       describe '#matcher_node' do
         let(:source) do
           <<-END
-            it 'is empty' do
-              expect(subject).to be_empty
+            describe 'example' do
+              it 'is empty' do
+                expect(subject).to be_empty
+              end
             end
           END
         end
@@ -45,8 +49,10 @@ module Transpec
         context 'when it is taking #have matcher' do
           let(:source) do
             <<-END
-              it 'has 2 items' do
-                expect(subject).to have(2).items
+              describe 'example' do
+                it 'has 2 items' do
+                  expect(subject).to have(2).items
+                end
               end
             END
           end
@@ -59,8 +65,10 @@ module Transpec
         context 'when it is taking any other matcher' do
           let(:source) do
             <<-END
-              it 'is empty' do
-                expect(subject).to be_empty
+              describe 'example' do
+                it 'is empty' do
+                  expect(subject).to be_empty
+                end
               end
             END
           end

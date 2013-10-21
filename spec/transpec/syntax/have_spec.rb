@@ -14,8 +14,10 @@ module Transpec
       describe '#have_node' do
         let(:source) do
           <<-END
-            it 'has 2 items' do
-              subject.should have(2).items
+            describe 'example' do
+              it 'has 2 items' do
+                subject.should have(2).items
+              end
             end
           END
         end
@@ -31,8 +33,10 @@ module Transpec
       describe '#size_node' do
         let(:source) do
           <<-END
-            it 'has 2 items' do
-              subject.should have(2).items
+            describe 'example' do
+              it 'has 2 items' do
+                subject.should have(2).items
+              end
             end
           END
         end
@@ -47,8 +51,10 @@ module Transpec
       describe '#items_node' do
         let(:source) do
           <<-END
-            it 'has 2 items' do
-              subject.should have(2).items
+            describe 'example' do
+              it 'has 2 items' do
+                subject.should have(2).items
+              end
             end
           END
         end
@@ -67,16 +73,20 @@ module Transpec
         context 'when it is `collection.should have(2).items` form' do
           let(:source) do
             <<-END
-              it 'has 2 items' do
-                collection.should have(2).items
+              describe 'example' do
+                it 'has 2 items' do
+                  collection.should have(2).items
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'has 2 items' do
-                collection.size.should == 2
+              describe 'example' do
+                it 'has 2 items' do
+                  collection.size.should == 2
+                end
               end
             END
           end
@@ -97,15 +107,15 @@ module Transpec
           context 'and Should#expectize! is invoked before it' do
             let(:expected_source) do
             <<-END
-              it 'has 2 items' do
-                expect(collection.size).to eq(2)
+              describe 'example' do
+                it 'has 2 items' do
+                  expect(collection.size).to eq(2)
+                end
               end
             END
             end
 
             before do
-              should_object.context.stub(:expect_to_matcher_available?).and_return(true)
-
               should_object.expectize!
               should_object.have_matcher.convert_to_standard_expectation!
             end
@@ -124,16 +134,20 @@ module Transpec
         context 'when it is `collection.should have_at_least(2).items` form' do
           let(:source) do
             <<-END
-              it 'has 2 items' do
-                collection.should have_at_least(2).items
+              describe 'example' do
+                it 'has 2 items' do
+                  collection.should have_at_least(2).items
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'has 2 items' do
-                collection.size.should >= 2
+              describe 'example' do
+                it 'has 2 items' do
+                  collection.size.should >= 2
+                end
               end
             END
           end
@@ -155,16 +169,20 @@ module Transpec
         context 'when it is `collection.should have_at_most(2).items` form' do
           let(:source) do
             <<-END
-              it 'has 2 items' do
-                collection.should have_at_most(2).items
+              describe 'example' do
+                it 'has 2 items' do
+                  collection.should have_at_most(2).items
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'has 2 items' do
-                collection.size.should <= 2
+              describe 'example' do
+                it 'has 2 items' do
+                  collection.size.should <= 2
+                end
               end
             END
           end
@@ -186,16 +204,20 @@ module Transpec
         context 'when it is `expect(collection).to have(2).items` form' do
           let(:source) do
             <<-END
-              it 'has 2 items' do
-                expect(collection).to have(2).items
+              describe 'example' do
+                it 'has 2 items' do
+                  expect(collection).to have(2).items
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'has 2 items' do
-                expect(collection.size).to eq(2)
+              describe 'example' do
+                it 'has 2 items' do
+                  expect(collection.size).to eq(2)
+                end
               end
             END
           end
@@ -266,16 +288,20 @@ module Transpec
         context 'when it is `expect(collection).to have_at_least(2).items` form' do
           let(:source) do
             <<-END
-              it 'has 2 items' do
-                expect(collection).to have_at_least(2).items
+              describe 'example' do
+                it 'has 2 items' do
+                  expect(collection).to have_at_least(2).items
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'has 2 items' do
-                expect(collection.size).to be >= 2
+              describe 'example' do
+                it 'has 2 items' do
+                  expect(collection.size).to be >= 2
+                end
               end
             END
           end
@@ -297,16 +323,20 @@ module Transpec
         context 'when it is `expect(collection).to have_at_most(2).items` form' do
           let(:source) do
             <<-END
-              it 'has 2 items' do
-                expect(collection).to have_at_most(2).items
+              describe 'example' do
+                it 'has 2 items' do
+                  expect(collection).to have_at_most(2).items
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'has 2 items' do
-                expect(collection.size).to be <= 2
+              describe 'example' do
+                it 'has 2 items' do
+                  expect(collection.size).to be <= 2
+                end
               end
             END
           end

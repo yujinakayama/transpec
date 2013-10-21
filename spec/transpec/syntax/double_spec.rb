@@ -34,9 +34,11 @@ module Transpec
         context 'when #double node is passed' do
           let(:source) do
             <<-END
-              it 'includes something' do
-                something = double('something')
-                [1, something].should include(something)
+              describe 'example' do
+                it 'includes something' do
+                  something = double('something')
+                  [1, something].should include(something)
+                end
               end
             END
           end
@@ -106,9 +108,11 @@ module Transpec
       describe '#method_name' do
         let(:source) do
           <<-END
-            it 'includes something' do
-              something = double('something')
-              [1, something].should include(something)
+            describe 'example' do
+              it 'includes something' do
+                something = double('something')
+                [1, something].should include(something)
+              end
             end
           END
         end
@@ -127,18 +131,22 @@ module Transpec
           context "when it is ##{method}" do
             let(:source) do
               <<-END
-                it 'includes something' do
-                  something = #{method}('something')
-                  [1, something].should include(something)
+                describe 'example' do
+                  it 'includes something' do
+                    something = #{method}('something')
+                    [1, something].should include(something)
+                  end
                 end
               END
             end
 
             let(:expected_source) do
               <<-END
-                it 'includes something' do
-                  something = double('something')
-                  [1, something].should include(something)
+                describe 'example' do
+                  it 'includes something' do
+                    something = double('something')
+                    [1, something].should include(something)
+                  end
                 end
               END
             end
@@ -158,9 +166,11 @@ module Transpec
         context 'when it is #double' do
           let(:source) do
             <<-END
-              it 'includes something' do
-                something = double('something')
-                [1, something].should include(something)
+              describe 'example' do
+                it 'includes something' do
+                  something = double('something')
+                  [1, something].should include(something)
+                end
               end
             END
           end

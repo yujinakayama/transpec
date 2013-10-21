@@ -28,16 +28,20 @@ module Transpec
         context 'when it is `be_close(expected, delta)` form' do
           let(:source) do
             <<-END
-              it 'is close to 0.333' do
-                (1.0 / 3.0).should be_close(0.333, 0.001)
+              describe 'example' do
+                it 'is close to 0.333' do
+                  (1.0 / 3.0).should be_close(0.333, 0.001)
+                end
               end
             END
           end
 
           let(:expected_source) do
             <<-END
-              it 'is close to 0.333' do
-                (1.0 / 3.0).should be_within(0.001).of(0.333)
+              describe 'example' do
+                it 'is close to 0.333' do
+                  (1.0 / 3.0).should be_within(0.001).of(0.333)
+                end
               end
             END
           end
