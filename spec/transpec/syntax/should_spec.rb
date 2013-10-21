@@ -225,6 +225,70 @@ module Transpec
             record.original_syntax.should  == 'obj.should'
             record.converted_syntax.should == 'expect(obj).to'
           end
+
+          context 'and #expect is not available in the context' do
+            context 'and the context is determinable statically' do
+              let(:source) do
+                <<-END
+                  describe 'example' do
+                    class TestRunner
+                      def run
+                        1.should == 1
+                      end
+                    end
+
+                    it 'is 1' do
+                      TestRunner.new.run
+                    end
+                  end
+                END
+              end
+
+              context 'with runtime information' do
+                include_context 'dynamic analysis objects'
+
+                it 'raises InvalidContextError' do
+                  -> { should_object.expectize! }.should raise_error(InvalidContextError)
+                end
+              end
+
+              context 'without runtime information' do
+                it 'raises InvalidContextError' do
+                  -> { should_object.expectize! }.should raise_error(InvalidContextError)
+                end
+              end
+            end
+
+            context 'and the context is not determinable statically' do
+              let(:source) do
+                <<-END
+                  def my_eval(&block)
+                    Object.new.instance_eval(&block)
+                  end
+
+                  describe 'example' do
+                    it 'responds to #foo' do
+                      my_eval { 1.should == 1 }
+                    end
+                  end
+                END
+              end
+
+              context 'with runtime information' do
+                include_context 'dynamic analysis objects'
+
+                it 'raises InvalidContextError' do
+                  -> { should_object.expectize! }.should raise_error(InvalidContextError)
+                end
+              end
+
+              context 'without runtime information' do
+                it 'does not raise InvalidContextError' do
+                  -> { should_object.expectize! }.should_not raise_error
+                end
+              end
+            end
+          end
         end
 
         context 'when it is `subject.should_not` form' do

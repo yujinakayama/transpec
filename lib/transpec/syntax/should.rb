@@ -25,8 +25,18 @@ module Transpec
       end
 
       def register_request_for_dynamic_analysis(rewriter)
+        register_request_of_syntax_availability_inspection(
+          rewriter,
+          :expect_available?,
+          [:expect]
+        )
+
         operator_matcher.register_request_for_dynamic_analysis(rewriter) if operator_matcher
         have_matcher.register_request_for_dynamic_analysis(rewriter) if have_matcher
+      end
+
+      def expect_available?
+        check_syntax_availability(__method__)
       end
 
       def positive?
@@ -34,7 +44,7 @@ module Transpec
       end
 
       def expectize!(negative_form = 'not_to', parenthesize_matcher_arg = true)
-        unless context.expect_to_matcher_available?
+        unless expect_available?
           fail InvalidContextError.new(selector_range, "##{method_name}", '#expect')
         end
 

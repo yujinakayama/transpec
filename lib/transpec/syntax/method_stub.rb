@@ -17,11 +17,23 @@ module Transpec
         !receiver_node.nil? && [:stub, :unstub, :stub!, :unstub!].include?(method_name)
       end
 
+      def register_request_for_dynamic_analysis(rewriter)
+        register_request_of_syntax_availability_inspection(
+          rewriter,
+          :allow_to_receive_available?,
+          [:allow, :receive]
+        )
+      end
+
+      def allow_to_receive_available?
+        check_syntax_availability(__method__)
+      end
+
       def allowize!
         # There's no way of unstubbing in #allow syntax.
         return unless [:stub, :stub!].include?(method_name)
 
-        unless context.allow_to_receive_available?
+        unless allow_to_receive_available?
           fail InvalidContextError.new(selector_range, "##{method_name}", '#allow')
         end
 

@@ -22,17 +22,47 @@ module Transpec
         !receiver_node.nil? && [:should_receive, :should_not_receive].include?(method_name)
       end
 
+      def register_request_for_dynamic_analysis(rewriter)
+        register_request_of_syntax_availability_inspection(
+          rewriter,
+          :expect_to_receive_available?,
+          [:expect, :receive]
+        )
+
+        register_request_of_syntax_availability_inspection(
+          rewriter,
+          :allow_to_receive_available?,
+          [:allow, :receive]
+        )
+      end
+
+      def expect_to_receive_available?
+        check_syntax_availability(__method__)
+      end
+
+      def allow_to_receive_available?
+        check_syntax_availability(__method__)
+      end
+
       def positive?
         method_name == :should_receive
       end
 
       def expectize!(negative_form = 'not_to')
+        unless expect_to_receive_available?
+          fail InvalidContextError.new(selector_range, "##{method_name}", '#expect')
+        end
+
         convert_to_syntax!('expect', negative_form)
         register_record(:expect, negative_form)
       end
 
       def allowize_useless_expectation!(negative_form = 'not_to')
         return unless useless_expectation?
+
+        unless allow_to_receive_available?
+          fail InvalidContextError.new(selector_range, "##{method_name}", '#allow')
+        end
 
         convert_to_syntax!('allow', negative_form)
         remove_allowance_for_no_message!
@@ -52,10 +82,6 @@ module Transpec
       private
 
       def convert_to_syntax!(syntax, negative_form)
-        unless context.non_monkey_patch_mock_available?
-          fail InvalidContextError.new(selector_range, "##{method_name}", "##{syntax}")
-        end
-
         if any_instance?
           wrap_class_with_any_instance_of!(syntax)
         else

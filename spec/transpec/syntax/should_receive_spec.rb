@@ -14,11 +14,14 @@ module Transpec
           return ShouldReceive.new(
             node,
             ancestor_nodes,
-            source_rewriter
+            source_rewriter,
+            runtime_data
           )
         end
         fail 'No should_receive node is found!'
       end
+
+      let(:runtime_data) { nil }
 
       let(:record) { should_receive_object.report.records.first }
 
@@ -53,6 +56,76 @@ module Transpec
             should_receive_object.expectize!
             record.original_syntax.should  == 'obj.should_receive(:message)'
             record.converted_syntax.should == 'expect(obj).to receive(:message)'
+          end
+
+          context 'and #expect and #receive are not available in the context' do
+            context 'and the context is determinable statically' do
+              let(:source) do
+                <<-END
+                  describe 'example' do
+                    class TestRunner
+                      def run
+                        something = 'something'
+                        something.should_receive(:foo)
+                        something.foo
+                      end
+                    end
+
+                    it 'receives #foo' do
+                      TestRunner.new.run
+                    end
+                  end
+                END
+              end
+
+              context 'with runtime information' do
+                include_context 'dynamic analysis objects'
+
+                it 'raises InvalidContextError' do
+                  -> { should_receive_object.expectize! }.should raise_error(InvalidContextError)
+                end
+              end
+
+              context 'without runtime information' do
+                it 'raises InvalidContextError' do
+                  -> { should_receive_object.expectize! }.should raise_error(InvalidContextError)
+                end
+              end
+            end
+
+            context 'and the context is not determinable statically' do
+              let(:source) do
+                <<-END
+                  def my_eval(&block)
+                    Object.new.instance_eval(&block)
+                  end
+
+                  describe 'example' do
+                    it 'receives #foo' do
+                      my_eval do
+                        something = 'something'
+                        something.should_receive(:foo)
+                        something.foo
+                      end
+                    end
+                  end
+                END
+              end
+
+              context 'with runtime information' do
+                include_context 'dynamic analysis objects'
+
+                it 'raises InvalidContextError' do
+                  -> { should_receive_object.expectize! }.should raise_error(InvalidContextError)
+                end
+              end
+
+              context 'without runtime information' do
+                it 'does not raise InvalidContextError' do
+                  -> { should_receive_object.expectize! }.should_not raise_error
+                end
+              end
+            end
           end
         end
 
@@ -414,10 +487,6 @@ module Transpec
       end
 
       describe '#allowize_useless_expectation!' do
-        before do
-          should_receive_object.allowize_useless_expectation!
-        end
-
         context 'when it is `subject.should_receive(:method).any_number_of_times` form' do
           let(:source) do
             <<-END
@@ -440,13 +509,83 @@ module Transpec
           end
 
           it 'converts into `allow(subject).to receive(:method)` form' do
+            should_receive_object.allowize_useless_expectation!
             rewritten_source.should == expected_source
           end
 
           it 'adds record ' +
              '"`obj.should_receive(:message).any_number_of_times` -> `allow(obj).to receive(:message)`"' do
+            should_receive_object.allowize_useless_expectation!
             record.original_syntax.should  == 'obj.should_receive(:message).any_number_of_times'
             record.converted_syntax.should == 'allow(obj).to receive(:message)'
+          end
+
+          context 'and #allow and #receive are not available in the context' do
+            context 'and the context is determinable statically' do
+              let(:source) do
+                <<-END
+                  describe 'example' do
+                    class TestRunner
+                      def run
+                        'something'.should_receive(:foo).any_number_of_times
+                      end
+                    end
+
+                    it 'responds to #foo' do
+                      TestRunner.new.run
+                    end
+                  end
+                END
+              end
+
+              context 'with runtime information' do
+                include_context 'dynamic analysis objects'
+
+                it 'raises InvalidContextError' do
+                  -> { should_receive_object.allowize_useless_expectation! }
+                    .should raise_error(InvalidContextError)
+                end
+              end
+
+              context 'without runtime information' do
+                it 'raises InvalidContextError' do
+                  -> { should_receive_object.allowize_useless_expectation! }
+                    .should raise_error(InvalidContextError)
+                end
+              end
+            end
+
+            context 'and the context is not determinable statically' do
+              let(:source) do
+                <<-END
+                  def my_eval(&block)
+                    Object.new.instance_eval(&block)
+                  end
+
+                  describe 'example' do
+                    it 'responds to #foo' do
+                      my_eval { 'something'.should_receive(:foo).any_number_of_times }
+                    end
+                  end
+                END
+              end
+
+              context 'with runtime information' do
+                include_context 'dynamic analysis objects'
+
+                it 'raises InvalidContextError' do
+                  -> { should_receive_object.allowize_useless_expectation! }
+                    .should raise_error(InvalidContextError)
+                end
+              end
+
+              context 'without runtime information' do
+                it 'does not raise InvalidContextError' do
+                  -> { should_receive_object.allowize_useless_expectation! }
+                    .should_not raise_error
+                end
+              end
+            end
           end
         end
 
@@ -472,11 +611,13 @@ module Transpec
           end
 
           it 'converts into `allow_any_instance_of(subject).to receive(:method)` form' do
+            should_receive_object.allowize_useless_expectation!
             rewritten_source.should == expected_source
           end
 
           it 'adds record "`SomeClass.any_instance.should_receive(:message).any_number_of_times` ' +
              '-> `allow_any_instance_of(SomeClass).to receive(:message)`"' do
+            should_receive_object.allowize_useless_expectation!
             record.original_syntax.should  == 'SomeClass.any_instance.should_receive(:message).any_number_of_times'
             record.converted_syntax.should == 'allow_any_instance_of(SomeClass).to receive(:message)'
           end
@@ -504,11 +645,13 @@ module Transpec
           end
 
           it 'converts into `allow(subject).to receive(:method)` form' do
+            should_receive_object.allowize_useless_expectation!
             rewritten_source.should == expected_source
           end
 
           it 'adds record ' +
              '"`obj.should_receive(:message).at_least(0)` -> `allow(obj).to receive(:message)`"' do
+            should_receive_object.allowize_useless_expectation!
             record.original_syntax.should  == 'obj.should_receive(:message).at_least(0)'
             record.converted_syntax.should == 'allow(obj).to receive(:message)'
           end
@@ -536,11 +679,13 @@ module Transpec
           end
 
           it 'converts into `allow_any_instance_of(subject).to receive(:method)` form' do
+            should_receive_object.allowize_useless_expectation!
             rewritten_source.should == expected_source
           end
 
           it 'adds record "`SomeClass.any_instance.should_receive(:message).at_least(0)` ' +
              '-> `allow_any_instance_of(SomeClass).to receive(:message)`"' do
+            should_receive_object.allowize_useless_expectation!
             record.original_syntax.should  == 'SomeClass.any_instance.should_receive(:message).at_least(0)'
             record.converted_syntax.should == 'allow_any_instance_of(SomeClass).to receive(:message)'
           end
@@ -558,6 +703,7 @@ module Transpec
           end
 
           it 'does nothing' do
+            should_receive_object.allowize_useless_expectation!
             rewritten_source.should == source
           end
         end

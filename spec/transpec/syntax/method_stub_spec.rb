@@ -14,11 +14,14 @@ module Transpec
           return MethodStub.new(
             node,
             ancestor_nodes,
-            source_rewriter
+            source_rewriter,
+            runtime_data
           )
         end
         fail 'No method stub node is found!'
       end
+
+      let(:runtime_data) { nil }
 
       let(:record) { method_stub_object.report.records.first }
 
@@ -108,10 +111,6 @@ module Transpec
       end
 
       describe '#allowize!' do
-        before do
-          method_stub_object.allowize!
-        end
-
         [:stub, :stub!].each do |method|
           context "when it is `subject.#{method}(:method)` form" do
             let(:source) do
@@ -135,12 +134,78 @@ module Transpec
             end
 
             it 'converts into `allow(subject).to receive(:method)` form' do
+              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
 
             it "adds record \"`obj.#{method}(:message)` -> `allow(obj).to receive(:message)`\"" do
+              method_stub_object.allowize!
               record.original_syntax.should  == "obj.#{method}(:message)"
               record.converted_syntax.should == 'allow(obj).to receive(:message)'
+            end
+
+            context 'and #allow and #receive are not available in the context' do
+              context 'and the context is determinable statically' do
+                let(:source) do
+                  <<-END
+                    describe 'example' do
+                      class TestRunner
+                        def run
+                          'something'.#{method}(:foo)
+                        end
+                      end
+
+                      it 'responds to #foo' do
+                        TestRunner.new.run
+                      end
+                    end
+                  END
+                end
+
+                context 'with runtime information' do
+                  include_context 'dynamic analysis objects'
+
+                  it 'raises InvalidContextError' do
+                    -> { method_stub_object.allowize! }.should raise_error(InvalidContextError)
+                  end
+                end
+
+                context 'without runtime information' do
+                  it 'raises InvalidContextError' do
+                    -> { method_stub_object.allowize! }.should raise_error(InvalidContextError)
+                  end
+                end
+              end
+
+              context 'and the context is not determinable statically' do
+                let(:source) do
+                  <<-END
+                    def my_eval(&block)
+                      Object.new.instance_eval(&block)
+                    end
+
+                    describe 'example' do
+                      it 'responds to #foo' do
+                        my_eval { 'something'.#{method}(:foo) }
+                      end
+                    end
+                  END
+                end
+
+                context 'with runtime information' do
+                  include_context 'dynamic analysis objects'
+
+                  it 'raises InvalidContextError' do
+                    -> { method_stub_object.allowize! }.should raise_error(InvalidContextError)
+                  end
+                end
+
+                context 'without runtime information' do
+                  it 'does not raise InvalidContextError' do
+                    -> { method_stub_object.allowize! }.should_not raise_error
+                  end
+                end
+              end
             end
           end
 
@@ -166,6 +231,7 @@ module Transpec
             end
 
             it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
+              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
           end
@@ -192,6 +258,7 @@ module Transpec
             end
 
             it 'converts into `allow(subject).to receive(:method).and_raise(RuntimeError)` form' do
+              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
           end
@@ -228,6 +295,7 @@ module Transpec
             end
 
             it 'keeps the style as far as possible' do
+              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
           end
@@ -254,11 +322,13 @@ module Transpec
             end
 
             it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
+              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
 
             it 'adds record ' +
                "\"`obj.#{method}(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
+              method_stub_object.allowize!
               record.original_syntax.should  == "obj.#{method}(:message => value)"
               record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
             end
@@ -286,11 +356,13 @@ module Transpec
             end
 
             it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
+              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
 
             it 'adds record ' +
                "\"`obj.#{method}(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
+              method_stub_object.allowize!
               record.original_syntax.should  == "obj.#{method}(:message => value)"
               record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
             end
@@ -320,11 +392,13 @@ module Transpec
 
             it 'converts into `allow(subject).to receive(:a_method).and_return(a_value)` ' +
                'and `allow(subject).to receive(:b_method).and_return(b_value)` form' do
+              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
 
             it 'adds record ' +
                "\"`obj.#{method}(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
+              method_stub_object.allowize!
               record.original_syntax.should  == "obj.#{method}(:message => value)"
               record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
             end
@@ -358,6 +432,7 @@ module Transpec
               end
 
               it 'keeps the style except around the hash' do
+                method_stub_object.allowize!
                 rewritten_source.should == expected_source
               end
             end
@@ -377,10 +452,12 @@ module Transpec
             end
 
             it 'does nothing' do
+              method_stub_object.allowize!
               rewritten_source.should == source
             end
 
             it 'reports nothing' do
+              method_stub_object.allowize!
               method_stub_object.report.records.should be_empty
             end
           end
@@ -409,11 +486,13 @@ module Transpec
             end
 
             it 'converts into `allow_any_instance_of(SomeClass).to receive(:method)` form' do
+              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
 
             it "adds record \"`SomeClass.any_instance.#{method}(:message)` " +
                '-> `allow_any_instance_of(obj).to receive(:message)`"' do
+              method_stub_object.allowize!
               record.original_syntax.should  == "SomeClass.any_instance.#{method}(:message)"
               record.converted_syntax.should == 'allow_any_instance_of(SomeClass).to receive(:message)'
             end
@@ -433,10 +512,12 @@ module Transpec
             end
 
             it 'does nothing' do
+              method_stub_object.allowize!
               rewritten_source.should == source
             end
 
             it 'reports nothing' do
+              method_stub_object.allowize!
               method_stub_object.report.records.should be_empty
             end
           end
