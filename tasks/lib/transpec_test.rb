@@ -144,5 +144,7 @@ class TranspecTest
   def prepare_env
     # Disable Coveralls.
     ENV['CI'] = ENV['JENKINS_URL'] = ENV['COVERALLS_RUN_LOCALLY'] = nil
+
+    ENV['TRANSPEC_TEST'] = 'true'
   end
 end
