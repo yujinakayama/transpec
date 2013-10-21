@@ -115,7 +115,7 @@ module Transpec
         command = "#{rspec_command} #{paths.shelljoin}"
 
         if silent?
-          rspec_output = `#{command}`
+          rspec_output = `#{command} 2> /dev/null`
         else
           system(command)
         end
