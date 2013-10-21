@@ -20,7 +20,7 @@ module Transpec
           if node_data
             node_data[key]
           else
-            context.send(key)
+            static_context_inspector.send(key)
           end
         end
 

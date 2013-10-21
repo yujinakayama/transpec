@@ -3,7 +3,7 @@
 require 'transpec/util'
 
 module Transpec
-  class Context
+  class StaticContextInspector
     include Util
 
     SCOPE_TYPES = [:module, :class, :sclass, :def, :defs, :block].freeze

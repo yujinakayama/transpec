@@ -1,10 +1,10 @@
 # coding: utf-8
 
 require 'spec_helper'
-require 'transpec/context'
+require 'transpec/static_context_inspector'
 
 module Transpec
-  describe Context, :skip_on_jruby do
+  describe StaticContextInspector, :skip_on_jruby do
     include CacheHelper
     include ::AST::Sexp
     include_context 'parsed objects'
@@ -90,17 +90,17 @@ module Transpec
 
           next unless expected_scopes
 
-          context_object = Context.new(ancestor_nodes)
-          context_object.scopes.should == expected_scopes
+          context_inspector = StaticContextInspector.new(ancestor_nodes)
+          context_inspector.scopes.should == expected_scopes
         end
       end
     end
 
     shared_examples 'context inspection methods' do
-      let(:context_object) do
+      let(:context_inspector) do
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
           next unless node == s(:send, nil, :target)
-          return Context.new(ancestor_nodes)
+          return StaticContextInspector.new(ancestor_nodes)
         end
 
         fail 'Target node not found!'
@@ -134,7 +134,7 @@ module Transpec
       end
 
       describe '#non_monkey_patch_expectation_available?' do
-        subject { context_object.non_monkey_patch_expectation_available? }
+        subject { context_inspector.non_monkey_patch_expectation_available? }
 
         let(:expected) do
           eval_source = 'respond_to?(:expect)'
@@ -147,7 +147,7 @@ module Transpec
       end
 
       describe '#non_monkey_patch_mock_available?' do
-        subject { context_object.non_monkey_patch_mock_available? }
+        subject { context_inspector.non_monkey_patch_mock_available? }
 
         let(:expected) do
           eval_source = 'respond_to?(:allow) && respond_to?(:receive)'

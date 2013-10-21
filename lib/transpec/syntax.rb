@@ -1,6 +1,6 @@
 # coding: utf-8
 
-require 'transpec/context'
+require 'transpec/static_context_inspector'
 require 'transpec/report'
 require 'transpec/record'
 
@@ -49,8 +49,8 @@ module Transpec
     def register_request_for_dynamic_analysis(rewriter)
     end
 
-    def context
-      @context ||= Context.new(@ancestor_nodes)
+    def static_context_inspector
+      @static_context_inspector ||= StaticContextInspector.new(@ancestor_nodes)
     end
 
     def parent_node
