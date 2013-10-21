@@ -28,7 +28,7 @@ module Transpec
 
       def register_request_for_dynamic_analysis(rewriter)
         return unless method_name == :=~
-        rewriter.register_request(arg_node, :class_name, 'self.class.name')
+        rewriter.register_request(arg_node, :arg_is_enumerable?, 'is_a?(Enumerable)')
       end
 
       def correct_operator!(parenthesize_arg = true)
@@ -72,7 +72,7 @@ module Transpec
       def convert_to_match!(parenthesize_arg)
         handle_anterior_of_operator!
 
-        if array_arg?
+        if arg_is_enumerable?
           replace(selector_range, 'match_array')
         else
           replace(selector_range, 'match')
@@ -82,7 +82,7 @@ module Transpec
 
         # Need to register record after all source rewrites are done
         # to avoid false record when failed with overlapped rewrite.
-        if array_arg?
+        if arg_is_enumerable?
           register_record('=~ [1, 2]', 'match_array([1, 2])')
         else
           register_record('=~ /pattern/', 'match(/pattern/)')
@@ -97,10 +97,10 @@ module Transpec
         end
       end
 
-      def array_arg?
+      def arg_is_enumerable?
         return true if arg_node.type == :array
         node_data = runtime_node_data(arg_node)
-        node_data && node_data[:class_name] == 'Array'
+        node_data && node_data[:arg_is_enumerable?]
       end
 
       def parenthesize_single_line!(always)
