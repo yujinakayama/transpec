@@ -21,8 +21,6 @@ module Transpec
         # There's no way of unstubbing in #allow syntax.
         return unless [:stub, :stub!].include?(method_name)
 
-        fail 'Already replaced deprecated method, cannot allowize.' if @replaced_deprecated_method
-
         unless context.allow_to_receive_available?
           fail InvalidContextError.new(selector_range, "##{method_name}", '#allow')
         end
@@ -36,20 +34,14 @@ module Transpec
         end
 
         register_record(:allow)
-
-        @allowized = true
       end
 
       def replace_deprecated_method!
         return unless replacement_method_for_deprecated_method
 
-        fail 'Already allowized, cannot replace deprecated method.' if @allowized
-
         replace(selector_range, replacement_method_for_deprecated_method)
 
         register_record(:deprecated)
-
-        @replaced_deprecated_method = true
       end
 
       private
