@@ -16,8 +16,8 @@ module Transpec
         let(:source) do
           <<-END
             describe 'example' do
-              it 'matches to foo' do
-                subject.should =~ foo
+              it 'is foo' do
+                subject.should be(foo)
               end
             end
           END
@@ -27,8 +27,8 @@ module Transpec
         let(:expected_source) do
           <<-END
             describe 'example' do
-              it 'matches to foo' do
-                transpec_analysis((transpec_analysis((subject), self, { :should_source_location => [:object, "method(:should).source_location"] }, __FILE__, 87, 94).should), self, { :expect_available? => [:context, "self.class.name.start_with?('RSpec::') && respond_to?(:expect)"] }, __FILE__, 87, 101) =~ transpec_analysis((foo), self, { :class_name => [:object, "self.class.name"] }, __FILE__, 105, 108)
+              it 'is foo' do
+                transpec_analysis((transpec_analysis((subject), self, { :should_source_location => [:object, "method(:should).source_location"] }, __FILE__, 79, 86).should be(foo)), self, { :expect_available? => [:context, "self.class.name.start_with?('RSpec::') && respond_to?(:expect)"] }, __FILE__, 79, 101)
               end
             end
           END
@@ -60,7 +60,7 @@ module Transpec
                   transpec_analysis((transpec_analysis((subject), self, { :should_source_location => [:object, "method(:should).source_location"] }, __FILE__, 93, 100).should), self, { :expect_available? => [:context, "self.class.name.start_with?('RSpec::') && respond_to?(:expect)"] }, __FILE__, 93, 107) =~ transpec_analysis((<<-HEREDOC.gsub('foo', 'bar')
                   foo
                   HEREDOC
-                  ), self, { :class_name => [:object, "self.class.name"] }, __FILE__, 111, 188)
+                  ), self, { :arg_is_enumerable? => [:object, "is_a?(Enumerable)"] }, __FILE__, 111, 188)
                 end
               end
             END

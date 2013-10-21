@@ -46,10 +46,8 @@ module Transpec
       let(:source) do
         <<-END
           describe [1, 2] do
-            let(:foo) { [2, 1] }
-
-            it 'matches to foo' do
-              subject.should =~ foo
+            it 'has 2 items' do
+              expect(subject).to have(2).items
             end
           end
         END
@@ -116,7 +114,7 @@ module Transpec
 
         let(:target_node) do
           ast.each_descendent_node do |node|
-            return node if node == s(:send, nil, :foo)
+            return node if node == s(:send, nil, :subject)
           end
         end
 
@@ -127,7 +125,7 @@ module Transpec
         end
 
         it 'has result of requested analysis' do
-          element[:class_name].should == 'Array'
+          element[:available_query_methods].should =~ [:size, :count, :length]
         end
       end
     end
