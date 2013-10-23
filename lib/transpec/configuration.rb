@@ -5,24 +5,26 @@ module Transpec
     NEGATIVE_FORMS_OF_TO = ['not_to', 'to_not'].freeze
 
     PREDICATES = [
-      :convert_to_expect_to_matcher,
-      :convert_to_expect_to_receive,
-      :convert_to_allow_to_receive,
-      :convert_have_items,
-      :replace_deprecated_method,
-      :parenthesize_matcher_arg
+      [:convert_to_expect_to_matcher, true],
+      [:convert_to_expect_to_receive, true],
+      [:convert_to_allow_to_receive,  true],
+      [:convert_have_items,           true],
+      [:replace_deprecated_method,    true],
+      [:parenthesize_matcher_arg,     true],
+      [:forced,                       false],
+      [:generate_commit_message,      false]
     ].freeze
 
-    PREDICATES.each do |predicate|
+    PREDICATES.each do |predicate, _|
       attr_accessor predicate
       alias_method predicate.to_s + '?', predicate
     end
 
-    attr_accessor :negative_form_of_to
+    attr_accessor :negative_form_of_to, :rspec_command
 
     def initialize
-      PREDICATES.each do |predicate|
-        instance_variable_set('@' + predicate.to_s, true)
+      PREDICATES.each do |predicate, default_value|
+        instance_variable_set('@' + predicate.to_s, default_value)
       end
 
       self.negative_form_of_to = 'not_to'
