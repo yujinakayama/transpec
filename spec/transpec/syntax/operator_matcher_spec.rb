@@ -596,6 +596,36 @@ module Transpec
             end
           end
 
+          context 'and runtime type of the variable is regular expression' do
+            include_context 'dynamic analysis objects'
+
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'matches to the pattern' do
+                    variable = /^str/
+                    'string'.should =~ variable
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  it 'matches to the pattern' do
+                    variable = /^str/
+                    'string'.should match(variable)
+                  end
+                end
+              END
+            end
+
+            it 'converts into `match(variable)` form' do
+              rewritten_source.should == expected_source
+            end
+          end
+
           context 'and no runtime type information is provided' do
             let(:source) do
               <<-END

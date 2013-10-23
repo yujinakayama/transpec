@@ -100,7 +100,7 @@ module Transpec
       def arg_is_enumerable?
         return true if arg_node.type == :array
         node_data = runtime_node_data(arg_node)
-        node_data && node_data[:arg_is_enumerable?]
+        node_data && node_data[:arg_is_enumerable?].result
       end
 
       def parenthesize_single_line!(always)
