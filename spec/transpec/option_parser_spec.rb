@@ -147,7 +147,7 @@ module Transpec
 
     describe 'help text' do
       subject(:help_text) do
-        parser.parser.help
+        parser.help
       end
 
       it 'does not exceed 80 characters in each line' do
@@ -169,7 +169,7 @@ module Transpec
           types << match.captures.first
         end
 
-        conversion_types.should =~ OptionParser::CONFIG_ATTRS_FOR_CLI_TYPES.keys.map(&:to_s)
+        conversion_types.should =~ OptionParser.available_conversion_types.map(&:to_s)
       end
     end
   end

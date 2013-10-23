@@ -172,7 +172,7 @@ types_in_readme = conversion_type_table.lines.map do |line|
   first_column.gsub(/[^\w]/, '').to_sym
 end.sort
 
-types_in_code = Transpec::CLI::CONFIG_ATTRS_FOR_CLI_TYPES.keys.sort
+types_in_code = Transpec::OptionParser.available_conversion_types.sort
 
 unless types_in_readme == types_in_code
   types_missing_description = types_in_code - types_in_readme
