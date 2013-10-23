@@ -48,6 +48,14 @@ module Transpec
         @configuration.forced = true
       end
 
+      define_option('-s', '--skip-dynamic-analysis') do
+        @configuration.skip_dynamic_analysis = true
+      end
+
+      define_option('-c', '--rspec-command COMMAND') do |command|
+        @configuration.rspec_command = command
+      end
+
       define_option('-m', '--generate-commit-message') do
         unless Git.inside_of_repository?
           fail '-m/--generate-commit-message option is specified but not in a Git repository'
@@ -72,10 +80,6 @@ module Transpec
         @configuration.parenthesize_matcher_arg = false
       end
 
-      define_option('-c', '--rspec-command COMMAND') do |command|
-        @configuration.rspec_command = command
-      end
-
       define_option('--no-color') do
         Sickill::Rainbow.enabled = false
       end
@@ -98,6 +102,16 @@ module Transpec
         '-f' => [
           'Force processing even if the current Git',
           'repository is not clean.'
+        ],
+        '-s' => [
+          'Skip dynamic analysis. Note that',
+          'specifying this option decreases the',
+          'conversion accuracy.'
+        ],
+        '-c' => [
+          'Specify command to run RSpec that is used',
+          'for dynamic analysis.',
+          'Default: "bundle exec rspec"'
         ],
         '-m' => [
           'Generate commit message that describes',
@@ -131,11 +145,6 @@ module Transpec
           "  #{'== 10'.underline} to #{'eq(10)'.underline}",
           "  #{'=~ /pattern/'.underline} to #{'match(/pattern/)'.underline}",
           "  #{'=~ [1, 2]'.underline} to #{'match_array([1, 2])'.underline}"
-        ],
-        '-c' => [
-          'Specify command to run RSpec that is used',
-          'for dynamic analysis.',
-          'Default: "bundle exec rspec"'
         ],
         '--no-color' => [
           'Disable color in the output.'

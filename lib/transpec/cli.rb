@@ -41,10 +41,11 @@ module Transpec
     end
 
     def process(paths)
-      dynamic_analyzer = DynamicAnalyzer.new(rspec_command: @rspec_command)
-
-      puts "Running dynamic analysis with command \"#{dynamic_analyzer.rspec_command}\"..."
-      runtime_data = dynamic_analyzer.analyze(paths)
+      unless @configuration.skip_dynamic_analysis?
+        dynamic_analyzer = DynamicAnalyzer.new(rspec_command: @rspec_command)
+        puts "Running dynamic analysis with command \"#{dynamic_analyzer.rspec_command}\"..."
+        runtime_data = dynamic_analyzer.analyze(paths)
+      end
 
       FileFinder.find(paths).each do |file_path|
         convert_file(file_path, runtime_data)

@@ -137,6 +137,16 @@ module Transpec
         end
       end
 
+      context 'when -s/--skip-dynamic-analysis option is specified' do
+        let(:args) { ['--skip-dynamic-analysis', file_path] }
+
+        it 'skips dynamic analysis' do
+          DynamicAnalyzer.any_instance.should_not_receive(:analysis)
+          cli.should_receive(:convert_file)
+          cli.run(args)
+        end
+      end
+
       context 'when -m/--generate-commit-message option is specified' do
         include_context 'inside of git repository'
 

@@ -12,6 +12,7 @@ module Transpec
       [:replace_deprecated_method,    true],
       [:parenthesize_matcher_arg,     true],
       [:forced,                       false],
+      [:skip_dynamic_analysis,        false],
       [:generate_commit_message,      false]
     ].freeze
 

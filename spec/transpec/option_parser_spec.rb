@@ -30,6 +30,15 @@ module Transpec
         end
       end
 
+      describe '-s/--skip-dynamic-analysis option' do
+        let(:args) { ['--skip-dynamic-analysis'] }
+
+        it 'sets Configuration#skip_dynamic_analysis? true' do
+          parser.parse(args)
+          configuration.skip_dynamic_analysis?.should be_true
+        end
+      end
+
       describe '-m/--generate-commit-message option' do
         include_context 'isolated environment'
 
