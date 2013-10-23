@@ -243,7 +243,7 @@ describe 'converted spec with -p/--no-parentheses-matcher-arg option' do
 end
 ```
 
-## Troubleshooting
+## Inconvertible Specs
 
 You might see the following warning while conversion:
 
@@ -271,11 +271,11 @@ end
 
 ### Reason
 
-* `should` is defined on `Kernel` (included by `Object`), so you can use `should` almost everywhere.
-* `expect` is defined on `RSpec::Matchers` (included by `RSpec::Core::ExampleGroup`), so you can use `expect` only where `self` is an instance of `RSpec::Core::ExampleGroup`.
+* `should` is defined on `Kernel` module that is included by `Object` class, so you can use `should` almost everywhere.
+* `expect` is defined on `RSpec::Matchers` module that is included by `RSpec::Core::ExampleGroup` class, so you can use `expect` only where `self` is an instance of `RSpec::Core::ExampleGroup` (i.e. in `it` blocks, `:each` hook blocks or included methods).
 
 With the above example, in the context of `1.should == 1`, the `self` is an instance of `MyAwesomeTestRunner`.
-So Transpec tracks contexts and skips conversion if the target syntax cannot be converted in a case like this.
+Transpec tracks contexts and skips conversion if the target syntax cannot be converted in a case like this.
 
 ### Solution
 
