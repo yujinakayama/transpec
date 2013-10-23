@@ -36,13 +36,9 @@ class TranspecTest
 
   def run
     require 'transpec'
-
     puts " Testing on #{name} Project ".center(80, '=')
-
-    [%w(--force), %w(--force --no-parentheses-matcher-arg)].each do |args|
-      prepare_project
-      run_test(args)
-    end
+    prepare_project
+    run_test(%w(--force))
   end
 
   private
