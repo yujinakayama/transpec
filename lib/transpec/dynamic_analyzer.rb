@@ -5,6 +5,7 @@ require 'transpec/dynamic_analyzer/runtime_data'
 require 'transpec/dynamic_analyzer/rewriter'
 require 'tmpdir'
 require 'fileutils'
+require 'ostruct'
 require 'shellwords'
 require 'English'
 
@@ -15,6 +16,7 @@ module Transpec
     HELPER_FILE = 'transpec_analysis_helper.rb'
     RESULT_FILE = 'transpec_analysis_result.dump'
     HELPER_SOURCE = <<-END
+      require 'ostruct'
       require 'pathname'
 
       module TranspecAnalysis
@@ -43,7 +45,16 @@ module Transpec
                    when :object  then object
                    when :context then context
                    end
-          [key, target.instance_eval(code)]
+
+          eval_data = OpenStruct.new
+
+          begin
+            eval_data.result = target.instance_eval(code)
+          rescue Exception => error
+            eval_data.error = error
+          end
+
+          [key, eval_data]
         end
 
         object_data = Hash[pair_array]

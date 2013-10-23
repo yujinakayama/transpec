@@ -125,7 +125,7 @@ module Transpec
         end
 
         it 'has result of requested analysis' do
-          element[:available_query_methods].should =~ [:size, :count, :length]
+          element[:available_query_methods].result.should =~ [:size, :count, :length]
         end
       end
     end

@@ -45,10 +45,11 @@ module Transpec
             return true unless runtime_data
 
             receiver_node, method_name, *_ = *node
-
             target_node = receiver_node ? receiver_node : node
+
             return true unless (node_data = runtime_data[target_node])
-            return true unless (source_location = node_data[source_location_key(method_name)])
+            return true unless (eval_data = node_data[source_location_key(method_name)])
+            return true unless (source_location = eval_data.result)
 
             file_path = source_location.first
             !file_path.match(%r{/gems/rspec\-[^/]+/lib/rspec/}).nil?

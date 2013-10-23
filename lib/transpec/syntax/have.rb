@@ -86,18 +86,18 @@ module Transpec
 
       def subject_is_owner_of_collection?
         node_data = runtime_node_data(@expectation.subject_node)
-        node_data && node_data[:subject_is_owner_of_collection?]
+        node_data && node_data[:subject_is_owner_of_collection?].result
       end
 
       def collection_accessor_is_private?
         node_data = runtime_node_data(@expectation.subject_node)
-        node_data && node_data[:collection_accessor_is_private?]
+        node_data && node_data[:collection_accessor_is_private?].result
       end
 
       def query_method
         node_data = runtime_node_data(@expectation.subject_node)
         if node_data
-          (QUERY_METHOD_PRIORITIES & node_data[:available_query_methods]).first
+          (QUERY_METHOD_PRIORITIES & node_data[:available_query_methods].result).first
         else
           default_query_method
         end
