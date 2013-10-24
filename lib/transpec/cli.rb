@@ -38,6 +38,7 @@ module Transpec
 
       display_summary
       generate_commit_message if @configuration.generate_commit_message?
+      display_final_guide
 
       true
     end
@@ -108,6 +109,11 @@ module Transpec
       puts 'Commit message was generated to .git/COMMIT_EDITMSG.'.color(:cyan)
       puts 'Use the following command for the next commit:'.color(:cyan)
       puts '    git commit -eF .git/COMMIT_EDITMSG'
+    end
+
+    def display_final_guide
+      puts
+      puts "Done! Now run #{'rspec'.bright} and check if all the converted specs pass."
     end
 
     def warn_syntax_error(error)
