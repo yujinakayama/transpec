@@ -524,9 +524,9 @@ module Transpec
         end
       end
 
-      describe '#replace_deprecated_method!' do
+      describe '#convert_deprecated_method!' do
         before do
-          method_stub_object.replace_deprecated_method!
+          method_stub_object.convert_deprecated_method!
         end
 
         [

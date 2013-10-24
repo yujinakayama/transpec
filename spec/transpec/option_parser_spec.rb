@@ -66,7 +66,7 @@ module Transpec
           ['expect_to_receive', :convert_to_expect_to_receive?],
           ['allow_to_receive',  :convert_to_allow_to_receive?],
           ['have_items',        :convert_have_items],
-          ['deprecated',        :replace_deprecated_method?]
+          ['deprecated',        :convert_deprecated_method?]
         ].each do |cli_type, config_attr|
           context "when #{cli_type.inspect} is specified" do
             let(:args) { ['--disable', cli_type] }
@@ -84,7 +84,7 @@ module Transpec
           it 'handles all of them' do
             parser.parse(args)
             configuration.convert_to_allow_to_receive?.should be_false
-            configuration.replace_deprecated_method?.should be_false
+            configuration.convert_deprecated_method?.should be_false
           end
         end
 

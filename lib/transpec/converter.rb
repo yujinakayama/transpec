@@ -77,7 +77,7 @@ module Transpec
 
     def process_should_receive(should_receive)
       if should_receive.useless_expectation?
-        if @configuration.replace_deprecated_method?
+        if @configuration.convert_deprecated_method?
           if @configuration.convert_to_allow_to_receive?
             should_receive.allowize_useless_expectation!(@configuration.negative_form_of_to)
           else
@@ -92,25 +92,25 @@ module Transpec
     end
 
     def process_double(double)
-      double.convert_to_double! if @configuration.replace_deprecated_method?
+      double.convert_to_double! if @configuration.convert_deprecated_method?
     end
 
     def process_method_stub(method_stub)
       if @configuration.convert_to_allow_to_receive?
         method_stub.allowize!
-      elsif @configuration.replace_deprecated_method?
-        method_stub.replace_deprecated_method!
+      elsif @configuration.convert_deprecated_method?
+        method_stub.convert_deprecated_method!
       end
 
-      method_stub.remove_allowance_for_no_message! if @configuration.replace_deprecated_method?
+      method_stub.remove_allowance_for_no_message! if @configuration.convert_deprecated_method?
     end
 
     def process_be_close(be_close)
-      be_close.convert_to_be_within! if @configuration.replace_deprecated_method?
+      be_close.convert_to_be_within! if @configuration.convert_deprecated_method?
     end
 
     def process_raise_error(raise_error)
-      if @configuration.replace_deprecated_method?
+      if @configuration.convert_deprecated_method?
         raise_error.remove_error_specification_with_negative_expectation!
       end
     end

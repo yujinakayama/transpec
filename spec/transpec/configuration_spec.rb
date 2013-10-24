@@ -13,7 +13,7 @@ module Transpec
         [:convert_to_expect_to_receive?, true],
         [:convert_to_allow_to_receive?,  true],
         [:convert_have_items?,           true],
-        [:replace_deprecated_method?,    true],
+        [:convert_deprecated_method?,    true],
         [:parenthesize_matcher_arg?,     true],
         [:forced?,                       false],
         [:skip_dynamic_analysis?,        false],

@@ -48,7 +48,7 @@ module Transpec
         register_record(:allow)
       end
 
-      def replace_deprecated_method!
+      def convert_deprecated_method!
         return unless replacement_method_for_deprecated_method
 
         replace(selector_range, replacement_method_for_deprecated_method)

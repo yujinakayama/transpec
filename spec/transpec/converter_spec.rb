@@ -233,8 +233,8 @@ module Transpec
       context 'when ShouldReceive#useless_expectation? returns true' do
         before { should_receive_object.stub(:useless_expectation?).and_return(true) }
 
-        context 'and Configuration#replace_deprecated_method? is true' do
-          before { configuration.replace_deprecated_method = true }
+        context 'and Configuration#convert_deprecated_method? is true' do
+          before { configuration.convert_deprecated_method = true }
 
           context 'and Configuration#convert_to_allow_to_receive? is true' do
             before { configuration.convert_to_allow_to_receive = true }
@@ -280,8 +280,8 @@ module Transpec
           end
         end
 
-        context 'and Configuration#replace_deprecated_method? is false' do
-          before { configuration.replace_deprecated_method = false }
+        context 'and Configuration#convert_deprecated_method? is false' do
+          before { configuration.convert_deprecated_method = false }
 
           [true, false].each do |convert_to_allow_to_receive|
             context "and Configuration#convert_to_allow_to_receive? is #{convert_to_allow_to_receive}" do
@@ -325,9 +325,9 @@ module Transpec
         context 'and Configuration#convert_to_expect_to_receive? is true' do
           before { configuration.convert_to_expect_to_receive = true }
 
-          [true, false].each do |replace_deprecated_method|
-            context "and Configuration#replace_deprecated_method? is #{replace_deprecated_method}" do
-              before { configuration.replace_deprecated_method = replace_deprecated_method }
+          [true, false].each do |convert_deprecated_method|
+            context "and Configuration#convert_deprecated_method? is #{convert_deprecated_method}" do
+              before { configuration.convert_deprecated_method = convert_deprecated_method }
 
               [true, false].each do |convert_to_allow_to_receive|
                 context "and Configuration#convert_to_allow_to_receive? is #{convert_to_allow_to_receive}" do
@@ -359,9 +359,9 @@ module Transpec
         context 'and Configuration#convert_to_expect_to_receive? is false' do
           before { configuration.convert_to_expect_to_receive = false }
 
-          [true, false].each do |replace_deprecated_method|
-            context "and Configuration#replace_deprecated_method? is #{replace_deprecated_method}" do
-              before { configuration.replace_deprecated_method = replace_deprecated_method }
+          [true, false].each do |convert_deprecated_method|
+            context "and Configuration#convert_deprecated_method? is #{convert_deprecated_method}" do
+              before { configuration.convert_deprecated_method = convert_deprecated_method }
 
               [true, false].each do |convert_to_allow_to_receive|
                 context "and Configuration#convert_to_allow_to_receive? is #{convert_to_allow_to_receive}" do
@@ -393,16 +393,16 @@ module Transpec
         end
       end
 
-      shared_examples 'invokes MethodStub#replace_deprecated_method!' do
-        it 'invokes MethodStub#replace_deprecated_method!' do
-          method_stub_object.should_receive(:replace_deprecated_method!)
+      shared_examples 'invokes MethodStub#convert_deprecated_method!' do
+        it 'invokes MethodStub#convert_deprecated_method!' do
+          method_stub_object.should_receive(:convert_deprecated_method!)
           converter.process_method_stub(method_stub_object)
         end
       end
 
-      shared_examples 'does not invoke MethodStub#replace_deprecated_method!' do
-        it 'does not invoke MethodStub#replace_deprecated_method!' do
-          method_stub_object.should_not_receive(:replace_deprecated_method!)
+      shared_examples 'does not invoke MethodStub#convert_deprecated_method!' do
+        it 'does not invoke MethodStub#convert_deprecated_method!' do
+          method_stub_object.should_not_receive(:convert_deprecated_method!)
           converter.process_method_stub(method_stub_object)
         end
       end
@@ -424,19 +424,19 @@ module Transpec
       context 'when Configuration#convert_to_allow_to_receive? is true' do
         before { configuration.convert_to_allow_to_receive = true }
 
-        context 'and Configuration#replace_deprecated_method? is true' do
-          before { configuration.replace_deprecated_method = true }
+        context 'and Configuration#convert_deprecated_method? is true' do
+          before { configuration.convert_deprecated_method = true }
 
           include_examples 'invokes MethodStub#allowize!'
-          include_examples 'does not invoke MethodStub#replace_deprecated_method!'
+          include_examples 'does not invoke MethodStub#convert_deprecated_method!'
           include_examples 'invokes MethodStub#remove_allowance_for_no_message!'
         end
 
-        context 'and Configuration#replace_deprecated_method? is false' do
-          before { configuration.replace_deprecated_method = false }
+        context 'and Configuration#convert_deprecated_method? is false' do
+          before { configuration.convert_deprecated_method = false }
 
           include_examples 'invokes MethodStub#allowize!'
-          include_examples 'does not invoke MethodStub#replace_deprecated_method!'
+          include_examples 'does not invoke MethodStub#convert_deprecated_method!'
           include_examples 'does not invoke MethodStub#remove_allowance_for_no_message!'
         end
       end
@@ -444,19 +444,19 @@ module Transpec
       context 'when Configuration#convert_to_allow_to_receive? is false' do
         before { configuration.convert_to_allow_to_receive = false }
 
-        context 'and Configuration#replace_deprecated_method? is true' do
-          before { configuration.replace_deprecated_method = true }
+        context 'and Configuration#convert_deprecated_method? is true' do
+          before { configuration.convert_deprecated_method = true }
 
           include_examples 'does not invoke MethodStub#allowize!'
-          include_examples 'invokes MethodStub#replace_deprecated_method!'
+          include_examples 'invokes MethodStub#convert_deprecated_method!'
           include_examples 'invokes MethodStub#remove_allowance_for_no_message!'
         end
 
-        context 'and Configuration#replace_deprecated_method? is false' do
-          before { configuration.replace_deprecated_method = false }
+        context 'and Configuration#convert_deprecated_method? is false' do
+          before { configuration.convert_deprecated_method = false }
 
           include_examples 'does not invoke MethodStub#allowize!'
-          include_examples 'does not invoke MethodStub#replace_deprecated_method!'
+          include_examples 'does not invoke MethodStub#convert_deprecated_method!'
           include_examples 'does not invoke MethodStub#remove_allowance_for_no_message!'
         end
       end
@@ -465,8 +465,8 @@ module Transpec
     describe '#process_double' do
       let(:double_object) { double('double_object').as_null_object }
 
-      context 'when Configuration#replace_deprecated_method? is true' do
-        before { configuration.replace_deprecated_method = true }
+      context 'when Configuration#convert_deprecated_method? is true' do
+        before { configuration.convert_deprecated_method = true }
 
         it 'invokes Double#convert_to_double!' do
           double_object.should_receive(:convert_to_double!)
@@ -474,8 +474,8 @@ module Transpec
         end
       end
 
-      context 'when Configuration#replace_deprecated_method? is false' do
-        before { configuration.replace_deprecated_method = false }
+      context 'when Configuration#convert_deprecated_method? is false' do
+        before { configuration.convert_deprecated_method = false }
 
         it 'does not invoke Double#convert_to_double!' do
           double_object.should_not_receive(:convert_to_double!)
@@ -487,8 +487,8 @@ module Transpec
     describe '#process_be_close' do
       let(:be_close_object) { double('be_close_object').as_null_object }
 
-      context 'when Configuration#replace_deprecated_method? is true' do
-        before { configuration.replace_deprecated_method = true }
+      context 'when Configuration#convert_deprecated_method? is true' do
+        before { configuration.convert_deprecated_method = true }
 
         it 'invokes BeClose#convert_to_be_within!' do
           be_close_object.should_receive(:convert_to_be_within!)
@@ -496,8 +496,8 @@ module Transpec
         end
       end
 
-      context 'when Configuration#replace_deprecated_method? is true' do
-        before { configuration.replace_deprecated_method = false }
+      context 'when Configuration#convert_deprecated_method? is true' do
+        before { configuration.convert_deprecated_method = false }
 
         it 'does not invoke BeClose#convert_to_be_within!' do
           be_close_object.should_not_receive(:convert_to_be_within!)
@@ -509,8 +509,8 @@ module Transpec
     describe '#process_raise_error' do
       let(:raise_error_object) { double('raise_error_object').as_null_object }
 
-      context 'when Configuration#replace_deprecated_method? is true' do
-        before { configuration.replace_deprecated_method = true }
+      context 'when Configuration#convert_deprecated_method? is true' do
+        before { configuration.convert_deprecated_method = true }
 
         it 'invokes RaiseError#remove_error_specification_with_negative_expectation!' do
           raise_error_object.should_receive(:remove_error_specification_with_negative_expectation!)
@@ -518,8 +518,8 @@ module Transpec
         end
       end
 
-      context 'when Configuration#replace_deprecated_method? is true' do
-        before { configuration.replace_deprecated_method = false }
+      context 'when Configuration#convert_deprecated_method? is true' do
+        before { configuration.convert_deprecated_method = false }
 
         it 'does not invoke BeClose#convert_to_be_within!' do
           raise_error_object.should_not_receive(:remove_error_specification_with_negative_expectation!)

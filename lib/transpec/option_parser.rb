@@ -13,7 +13,7 @@ module Transpec
       expect_to_receive: :convert_to_expect_to_receive=,
        allow_to_receive: :convert_to_allow_to_receive=,
              have_items: :convert_have_items=,
-             deprecated: :replace_deprecated_method=
+             deprecated: :convert_deprecated_method=
     }
 
     attr_reader :configuration
