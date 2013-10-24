@@ -12,6 +12,28 @@ module Transpec
     subject(:dynamic_analyzer) { DynamicAnalyzer.new(rspec_command: rspec_command, silent: true) }
     let(:rspec_command) { nil }
 
+    describe '.new' do
+      context 'when when block is passed' do
+        it 'yields instance' do
+          yielded = false
+
+          DynamicAnalyzer.new(silent: true) do |analyzer|
+            yielded = true
+            analyzer.should be_a(DynamicAnalyzer)
+          end
+
+          yielded.should be_true
+        end
+
+        it 'changes working directory to copied project directory' do
+          initial_directory = Dir.pwd
+          DynamicAnalyzer.new(silent: true) do |analyzer|
+            Dir.pwd.should_not == initial_directory
+          end
+        end
+      end
+    end
+
     describe '#rspec_command' do
       subject { dynamic_analyzer.rspec_command }
 
@@ -57,6 +79,15 @@ module Transpec
 
       before do
         create_file(file_path, source)
+      end
+
+      context 'when already in copied project directory' do
+        it 'does not change working directory' do
+          DynamicAnalyzer.new(silent: true) do |analyzer|
+            Dir.should_not_receive(:chdir)
+            analyzer.analyze
+          end
+        end
       end
 
       context 'when no path is passed' do

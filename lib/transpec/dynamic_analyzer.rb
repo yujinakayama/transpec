@@ -73,6 +73,12 @@ module Transpec
       @project_path = options[:project_path] || Dir.pwd
       @rspec_command = options[:rspec_command] || default_rspec_command
       @silent = options[:silent] || false
+
+      if block_given?
+        in_copied_project do
+          yield self
+        end
+      end
     end
 
     def default_rspec_command
@@ -84,8 +90,6 @@ module Transpec
     end
 
     def analyze(paths = [])
-      hash = nil
-
       in_copied_project do
         rewriter = Rewriter.new
 
@@ -103,20 +107,25 @@ module Transpec
 
         File.open(RESULT_FILE) do |file|
           hash = Marshal.load(file)
+          RuntimeData.new(hash)
         end
       end
-
-      RuntimeData.new(hash)
     end
 
     def in_copied_project
+      return yield if @in_copied_project
+
+      @in_copied_project = true
+
       Dir.mktmpdir do |tmpdir|
         FileUtils.cp_r(@project_path, tmpdir)
-        copied_project_path = File.join(tmpdir, File.basename(@project_path))
-        Dir.chdir(copied_project_path) do
+        @copied_project_path = File.join(tmpdir, File.basename(@project_path))
+        Dir.chdir(@copied_project_path) do
           yield
         end
       end
+    ensure
+      @in_copied_project = false
     end
 
     def run_rspec(paths)

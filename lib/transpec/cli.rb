@@ -43,10 +43,15 @@ module Transpec
     end
 
     def process(paths)
+      runtime_data = nil
+
       unless @configuration.skip_dynamic_analysis?
-        dynamic_analyzer = DynamicAnalyzer.new(rspec_command: @configuration.rspec_command)
-        puts "Running dynamic analysis with command \"#{dynamic_analyzer.rspec_command}\"..."
-        runtime_data = dynamic_analyzer.analyze(paths)
+        puts 'Copying project for dynamic analysis...'
+        DynamicAnalyzer.new(rspec_command: @configuration.rspec_command) do |analyzer|
+          puts "Running dynamic analysis with command \"#{analyzer.rspec_command}\"..."
+          runtime_data = analyzer.analyze(paths)
+        end
+        puts
       end
 
       FileFinder.find(paths).each do |file_path|
