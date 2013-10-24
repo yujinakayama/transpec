@@ -127,13 +127,8 @@ module Transpec
       context 'when any other error is raised while running' do
         let(:args) { ['non-existent-file'] }
 
-        it 'return false' do
-          should be_false
-        end
-
-        it 'prints message of the exception' do
-          cli.should_receive(:warn).with(/No such file or directory/)
-          cli.run(args)
+        it 'does not catch the error' do
+          -> { cli.run(args) }.should raise_error
         end
       end
 

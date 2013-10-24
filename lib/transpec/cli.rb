@@ -26,8 +26,13 @@ module Transpec
     end
 
     def run(args)
-      paths = OptionParser.new(@configuration).parse(args)
-      fail_if_should_not_continue!
+      begin
+        paths = OptionParser.new(@configuration).parse(args)
+        fail_if_should_not_continue!
+      rescue => error
+        warn error.message
+        return false
+      end
 
       process(paths)
 
@@ -35,9 +40,6 @@ module Transpec
       generate_commit_message if @configuration.generate_commit_message?
 
       true
-    rescue => error
-      warn error.message
-      false
     end
 
     def process(paths)
