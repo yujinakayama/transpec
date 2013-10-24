@@ -44,7 +44,7 @@ module Transpec
 
     def process(paths)
       unless @configuration.skip_dynamic_analysis?
-        dynamic_analyzer = DynamicAnalyzer.new(rspec_command: @rspec_command)
+        dynamic_analyzer = DynamicAnalyzer.new(rspec_command: @configuration.rspec_command)
         puts "Running dynamic analysis with command \"#{dynamic_analyzer.rspec_command}\"..."
         runtime_data = dynamic_analyzer.analyze(paths)
       end
