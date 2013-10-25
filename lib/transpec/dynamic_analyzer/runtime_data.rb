@@ -1,7 +1,5 @@
 # coding: utf-8
 
-require 'transpec/base_rewriter'
-require 'transpec/ast/scanner'
 require 'pathname'
 
 module Transpec

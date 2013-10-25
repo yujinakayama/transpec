@@ -1,8 +1,8 @@
 # coding: utf-8
 
 require 'transpec/static_context_inspector'
-require 'transpec/report'
 require 'transpec/record'
+require 'transpec/report'
 
 module Transpec
   class Syntax

@@ -5,11 +5,8 @@ require 'transpec/configuration'
 require 'transpec/converter'
 require 'transpec/dynamic_analyzer'
 require 'transpec/file_finder'
-require 'transpec/git'
 require 'transpec/option_parser'
 require 'transpec/report'
-require 'transpec/version'
-require 'optparse'
 require 'rainbow'
 
 module Transpec

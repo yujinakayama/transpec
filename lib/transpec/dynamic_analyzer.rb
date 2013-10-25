@@ -1,8 +1,8 @@
 # coding: utf-8
 
 require 'transpec/file_finder'
-require 'transpec/dynamic_analyzer/runtime_data'
 require 'transpec/dynamic_analyzer/rewriter'
+require 'transpec/dynamic_analyzer/runtime_data'
 require 'tmpdir'
 require 'fileutils'
 require 'ostruct'
