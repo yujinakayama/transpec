@@ -6,6 +6,8 @@
 * Support conversion of `have(n).items` matcher ([#5](https://github.com/yujinakayama/transpec/issues/5))
 * Add `-s/--skip-dynamic-analysis` option that allows to skip dynamic analysis and convert with only static analysis
 * Add `-c/--rspec-command` option that allows to specify command to run RSpec that is used for dynamic analysis
+* Check contexts correctly with runtime information
+* Detect same name but non-RSpec methods with runtime information ([#4](https://github.com/yujinakayama/transpec/issues/4))
 * Consider runtime type information when converting `=~` to `match_array`
 * Rename `--commit-message` option to `--generate-commit-message`
 
