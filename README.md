@@ -167,6 +167,10 @@ Processing spec/spec_spec.rb
 Processing spec/support/file_helper.rb
 ```
 
+### `-s/--skip-dynamic-analysis`
+
+Skip dynamic analysis and convert with only static analysis. Note that specifying this option decreases the conversion accuracy.
+
 ### `-m/--generate-commit-message`
 
 Generate commit message that describes conversion summary.

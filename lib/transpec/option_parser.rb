@@ -104,9 +104,9 @@ module Transpec
           'repository is not clean.'
         ],
         '-s' => [
-          'Skip dynamic analysis. Note that',
-          'specifying this option decreases the',
-          'conversion accuracy.'
+          'Skip dynamic analysis and convert with only',
+          'static analysis. Note that specifying this',
+          'option decreases the conversion accuracy.'
         ],
         '-c' => [
           'Specify command to run RSpec that is used',
