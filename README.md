@@ -332,6 +332,39 @@ expect([1, 2, 3]).to match_array([2, 1, 3])
 * Disabled by: `--disable deprecated`
 * Related Information: [New be within matcher and RSpec.deprecate fix · rspec/rspec-expectations](https://github.com/rspec/rspec-expectations/pull/32)
 
+### `have(n).items` matcher
+
+```ruby
+# Targets
+expect(collection).to have(3).items
+expect(collection).to have_exactly(3).items
+expect(collection).to have_at_least(3).items
+expect(collection).to have_at_most(3).items
+collection.should have(3).items
+
+expect(team).to have(3).players
+
+# Assume #players is a private method.
+expect(team).to have(3).players
+
+# Converted
+expect(collection.size).to eq(3)
+expect(collection.size).to be >= 3
+expect(collection.size).to be <= 3
+collection.size.should == 3  # with `--disable expect_to_matcher`
+
+expect(team.players.size).to eq(3)
+
+# have(n).items matcher invokes #players even if it's a private method.
+expect(team.send(:players).size).to eq(3)
+```
+
+You have the option to continue using `have(n).items` matcher with [rspec-collection_matchers](https://github.com/rspec/rspec-collection_matchers) that is an external gem extracted from `rspec-expectations`.
+If you choose so, disable this conversion with `--disable have_items`.
+
+* Disabled by: `--disable have_items`
+* Related Information: [Myron Marston » The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#expectations__matchers_will_be_moved_into_an_external_gem)
+
 ### Expectations on Proc
 
 ```ruby

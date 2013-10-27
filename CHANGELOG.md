@@ -3,6 +3,7 @@
 ## Master
 
 * Now Transpec does dynamic code analysis!
+* Support conversion of `have(n).items` matcher ([#5](https://github.com/yujinakayama/transpec/issues/5))
 * Consider runtime type information when converting `=~` to `match_array`
 * Rename `--commit-message` option to `--generate-commit-message`
 
