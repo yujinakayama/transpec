@@ -173,7 +173,7 @@ module Transpec
         end
 
         conversion_types = disable_section.reduce([]) do |types, line|
-          match = line.match(/^[ ]{39}([a-z_]+)/)
+          match = line.match(/^[ ]{37}([a-z_]+)/)
           next types unless match
           types << match.captures.first
         end

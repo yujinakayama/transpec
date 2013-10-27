@@ -23,7 +23,6 @@ module Transpec
     end
 
     def initialize(configuration = Configuration.new)
-      @parser = ::OptionParser.new
       @configuration = configuration
       setup_parser
     end
@@ -42,7 +41,7 @@ module Transpec
 
     # rubocop:disable MethodLength
     def setup_parser
-      @parser.banner = "Usage: transpec [options] [files or directories]\n\n"
+      @parser = create_parser
 
       define_option('-f', '--force') do
         @configuration.forced = true
@@ -91,6 +90,13 @@ module Transpec
     end
     # rubocop:enable MethodLength
 
+    def create_parser
+      banner = "Usage: transpec [options] [files or directories]\n\n"
+      summary_width = 32 # Default
+      indentation = ' ' * 2
+      ::OptionParser.new(banner, summary_width, indentation)
+    end
+
     def define_option(*options, &block)
       description_lines = descriptions[options.first]
       @parser.on(*options, *description_lines, &block)
@@ -109,8 +115,8 @@ module Transpec
           'option decreases the conversion accuracy.'
         ],
         '-c' => [
-          'Specify command to run RSpec that is used',
-          'for dynamic analysis.',
+          'Specify command to run RSpec that is used for',
+          'dynamic analysis.',
           'Default: "bundle exec rspec"'
         ],
         '-m' => [
@@ -128,15 +134,15 @@ module Transpec
           'These are all enabled by default.'
         ],
         '-n' => [
-          "Specify negative form of #{'to'.underline} that is used",
-          "in #{'expect(...).to'.underline} syntax.",
+          "Specify negative form of #{'to'.underline} that is used in",
+          "#{'expect(...).to'.underline} syntax.",
           "Either #{'not_to'.bright} or #{'to_not'.bright}.",
           "Default: #{'not_to'.bright}"
         ],
         '-p' => [
           'Suppress parenthesizing argument of matcher',
-          'when converting operator to non-operator',
-          "in #{'expect'.underline} syntax. Note that it will be",
+          'when converting operator to non-operator in',
+          "#{'expect'.underline} syntax. Note that it will be",
           'parenthesized even if this option is',
           'specified when parentheses are necessary to',
           'keep the meaning of the expression.',
