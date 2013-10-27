@@ -91,9 +91,9 @@ describe Account do
 end
 ```
 
-### Real Examples
+### Actual Examples
 
-You can see real conversion examples below:
+You can see actual conversion examples below:
 
 * https://github.com/yujinakayama/guard/commit/transpec-demo
 * https://github.com/yujinakayama/mail/commit/transpec-demo
