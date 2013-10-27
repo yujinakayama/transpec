@@ -91,22 +91,27 @@ Then, run `transpec` (using `--generate-commit-message` is recommended) in the p
 ```bash
 $ cd some-project
 $ transpec --generate-commit-message
-Processing spec/spec_helper.rb
-Processing spec/spec_spec.rb
-Processing spec/support/file_helper.rb
-Processing spec/support/shared_context.rb
-Processing spec/transpec/ast/scanner_spec.rb
-Processing spec/transpec/ast/scope_stack_spec.rb
+Copying project for dynamic analysis...
+Running dynamic analysis with command "bundle exec rspec"...
+...............................................................................
+...................
+
+Finished in 13.07 seconds
+100 examples, 0 failures
+
+Converting spec/spec_helper.rb
+Converting spec/support/cache_helper.rb
+Converting spec/support/file_helper.rb
+Converting spec/support/shared_context.rb
+Converting spec/transpec/ast/node_spec.rb
 ```
 
-This will convert and overwrite all spec files in the `spec` directory.
+This will run your specs, convert them, and overwrite all spec files in the `spec` directory.
 
 After the conversion, run `rspec` again and check whether all pass:
 
 ```bash
 $ bundle exec rspec
-# ...
-843 examples, 0 failures
 ```
 
 If all pass, commit the changes with auto-generated message:
