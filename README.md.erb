@@ -2,7 +2,7 @@
 
 # Transpec
 
-**Transpec** automatically converts your specs into latest [RSpec](http://rspec.info/) syntax with static analysis.
+**Transpec** automatically converts your specs into latest [RSpec](http://rspec.info/) syntax with static and dynamic code analysis.
 
 This aims to facilitate smooth transition to RSpec 3.
 
@@ -64,9 +64,9 @@ Transpec would convert it to the following form:
 <%= Transpec::Converter.new.convert(example) -%>
 ```
 
-### Real Examples
+### Actual Examples
 
-You can see real conversion examples below:
+You can see actual conversion examples below:
 
 * https://github.com/yujinakayama/guard/commit/transpec-demo
 * https://github.com/yujinakayama/mail/commit/transpec-demo
@@ -91,22 +91,27 @@ Then, run `transpec` (using `--generate-commit-message` is recommended) in the p
 ```bash
 $ cd some-project
 $ transpec --generate-commit-message
-Processing spec/spec_helper.rb
-Processing spec/spec_spec.rb
-Processing spec/support/file_helper.rb
-Processing spec/support/shared_context.rb
-Processing spec/transpec/ast/scanner_spec.rb
-Processing spec/transpec/ast/scope_stack_spec.rb
+Copying project for dynamic analysis...
+Running dynamic analysis with command "bundle exec rspec"...
+...............................................................................
+...................
+
+Finished in 13.07 seconds
+100 examples, 0 failures
+
+Converting spec/spec_helper.rb
+Converting spec/support/cache_helper.rb
+Converting spec/support/file_helper.rb
+Converting spec/support/shared_context.rb
+Converting spec/transpec/ast/node_spec.rb
 ```
 
-This will convert and overwrite all spec files in the `spec` directory.
+This will run your specs, convert them, and overwrite all spec files in the `spec` directory.
 
 After the conversion, run `rspec` again and check whether all pass:
 
 ```bash
 $ bundle exec rspec
-# ...
-843 examples, 0 failures
 ```
 
 If all pass, commit the changes with auto-generated message:
@@ -133,6 +138,22 @@ $ transpec --force
 Processing spec/spec_helper.rb
 Processing spec/spec_spec.rb
 Processing spec/support/file_helper.rb
+```
+
+### `-s/--skip-dynamic-analysis`
+
+Skip dynamic analysis and convert with only static analysis. Note that specifying this option decreases the conversion accuracy.
+
+### `-c/--rspec-command`
+
+Specify command to run RSpec that is used for dynamic analysis.
+
+Transpec needs to run your specs in copied project directory for dynamic analysis.
+If your project requires some special setup or commands to run specs, use this option.
+`bundle exec rspec` is used by default.
+
+```bash
+$ transpec --rspec-command "./some_special_setup.sh && bundle exec rspec"
 ```
 
 ### `-m/--generate-commit-message`
@@ -293,7 +314,7 @@ expect(obj).to_not matcher # with `--negative-form to_not`
 ```
 
 * Disabled by: `--disable expect_to_matcher`
-* Related Information: [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax)
+* See also: [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax)
 
 ### Operator matchers
 
@@ -313,7 +334,7 @@ expect('string').to match(/^str/)
 expect([1, 2, 3]).to match_array([2, 1, 3])
 ```
 
-* Related Information: [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#almost_all_matchers_are_supported)
+* See also: [(Almost) All Matchers Are Supported - RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#almost_all_matchers_are_supported)
 
 ### `be_close` matcher
 
@@ -326,9 +347,42 @@ expect([1, 2, 3]).to match_array([2, 1, 3])
 ```
 
 * Disabled by: `--disable deprecated`
-* Related Information: [New be within matcher and RSpec.deprecate fix · rspec/rspec-expectations](https://github.com/rspec/rspec-expectations/pull/32)
+* See also: [New be within matcher and RSpec.deprecate fix · rspec/rspec-expectations](https://github.com/rspec/rspec-expectations/pull/32)
 
-### Expectations on Proc
+### `have(n).items` matcher
+
+```ruby
+# Targets
+expect(collection).to have(3).items
+expect(collection).to have_exactly(3).items
+expect(collection).to have_at_least(3).items
+expect(collection).to have_at_most(3).items
+collection.should have(3).items
+
+expect(team).to have(3).players
+
+# Assume #players is a private method.
+expect(team).to have(3).players
+
+# Converted
+expect(collection.size).to eq(3)
+expect(collection.size).to be >= 3
+expect(collection.size).to be <= 3
+collection.size.should == 3  # with `--disable expect_to_matcher`
+
+expect(team.players.size).to eq(3)
+
+# have(n).items matcher invokes #players even if it's a private method.
+expect(team.send(:players).size).to eq(3)
+```
+
+You have the option to continue using `have(n).items` matcher with [rspec-collection_matchers](https://github.com/rspec/rspec-collection_matchers) that is an external gem extracted from `rspec-expectations`.
+If you choose so, disable this conversion with `--disable have_items`.
+
+* Disabled by: `--disable have_items`
+* See also: [Expectations: have(x).items matchers will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#expectations__matchers_will_be_moved_into_an_external_gem)
+
+### Expectations on Block
 
 ```ruby
 # Targets
@@ -341,7 +395,7 @@ expect { do_something }.to raise_error
 ```
 
 * Disabled by: `--disable expect_to_matcher`
-* Related Information: [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#unification_of_block_vs_value_syntaxes)
+* See also: [Unification of Block vs. Value Syntaxes - RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#unification_of_block_vs_value_syntaxes)
 
 ### Negative error expectations with specific error
 
@@ -358,7 +412,7 @@ lambda { do_something }.should_not raise_error # with `--disable expect_to_match
 ```
 
 * Disabled by: `--disable deprecated`
-* Related Information: [Consider deprecating `expect { }.not_to raise_error(SpecificErrorClass)` · rspec/rspec-expectations](https://github.com/rspec/rspec-expectations/issues/231)
+* See also: [Consider deprecating `expect { }.not_to raise_error(SpecificErrorClass)` · rspec/rspec-expectations](https://github.com/rspec/rspec-expectations/issues/231)
 
 ### Message expectations
 
@@ -373,7 +427,7 @@ expect_any_instance_of(SomeClass).to receive(:foo)
 ```
 
 * Disabled by: `--disable expect_to_receive`
-* Related Information: [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
+* See also: [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
 
 ### Message expectations that are actually method stubs
 
@@ -394,7 +448,7 @@ SomeClass.any_instance.stub(:foo) # with `--disable allow_to_receive`
 ```
 
 * Disabled by: `--disable deprecated`
-* Related Information: [Don't allow at_least(0) · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/133)
+* See also: [Don't allow at_least(0) · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/133)
 
 ### Method stubs
 
@@ -420,7 +474,7 @@ allow_any_instance_of(SomeClass).to receive(:foo)
 ```
 
 * Disabled by: `--disable allow_to_receive`
-* Related Information: [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
+* See also: [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
 
 ### Deprecated method stub aliases
 
@@ -435,7 +489,7 @@ obj.unstub(:foo)
 ```
 
 * Disabled by: `--disable deprecated`
-* Related Information: [Consider deprecating and/or removing #stub! and #unstub! at some point · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/122)
+* See also: [Consider deprecating and/or removing #stub! and #unstub! at some point · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/122)
 
 ### Method stubs with deprecated specification of number of times
 
@@ -450,7 +504,7 @@ obj.stub(:foo) # with `--disable allow_to_receive`
 ```
 
 * Disabled by: `--disable deprecated`
-* Related Information: [Don't allow at_least(0) · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/133)
+* See also: [Don't allow at_least(0) · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/133)
 
 ### Deprecated test double aliases
 
@@ -464,7 +518,7 @@ double('something')
 ```
 
 * Disabled by: `--disable deprecated`
-* Related Information: [Deprecate "stub" for doubles · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/214)
+* See also: [Deprecate "stub" for doubles · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/214)
 
 ## Compatibility
 
