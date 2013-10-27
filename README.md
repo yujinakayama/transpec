@@ -171,6 +171,18 @@ Processing spec/support/file_helper.rb
 
 Skip dynamic analysis and convert with only static analysis. Note that specifying this option decreases the conversion accuracy.
 
+### `-c/--rspec-command`
+
+Specify command to run RSpec that is used for dynamic analysis.
+
+Transpec needs to run your specs in copied project directory for dynamic analysis.
+If your project requires some special setup or commands to run specs, use this option.
+`bundle exec rspec` is used by default.
+
+```bash
+$ transpec --rspec-command "./some_special_setup.sh && bundle exec rspec"
+```
+
 ### `-m/--generate-commit-message`
 
 Generate commit message that describes conversion summary.
