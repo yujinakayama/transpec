@@ -2,6 +2,9 @@
 
 ## Master
 
+
+## v1.0.0
+
 * Now Transpec does dynamic code analysis!
 * Support conversion of `have(n).items` matcher ([#5](https://github.com/yujinakayama/transpec/issues/5))
 * Add `-s/--skip-dynamic-analysis` option that allows to skip dynamic analysis and convert with only static analysis
