@@ -9,11 +9,11 @@ require 'rainbow'
 module Transpec
   class OptionParser
     CONFIG_ATTRS_FOR_CLI_TYPES = {
-      expect_to_matcher: :convert_to_expect_to_matcher=,
-      expect_to_receive: :convert_to_expect_to_receive=,
-       allow_to_receive: :convert_to_allow_to_receive=,
-             have_items: :convert_have_items=,
-             deprecated: :convert_deprecated_method=
+              should: :convert_should=,
+      should_receive: :convert_should_receive=,
+                stub: :convert_stub=,
+          have_items: :convert_have_items=,
+          deprecated: :convert_deprecated_method=
     }
 
     attr_reader :configuration
@@ -63,10 +63,10 @@ module Transpec
         @configuration.generate_commit_message = true
       end
 
-      define_option('-d', '--disable TYPE[,TYPE...]') do |types|
+      define_option('-k', '--keep TYPE[,TYPE...]') do |types|
         types.split(',').each do |type|
           config_attr = CONFIG_ATTRS_FOR_CLI_TYPES[type.to_sym]
-          fail ArgumentError, "Unknown conversion type #{type.inspect}" unless config_attr
+          fail ArgumentError, "Unknown syntax type #{type.inspect}" unless config_attr
           @configuration.send(config_attr, false)
         end
       end
@@ -123,15 +123,16 @@ module Transpec
           'Generate commit message that describes',
           'conversion summary. Only Git is supported.'
         ],
-        '-d' => [
-          'Disable specific conversions.',
-          'Available conversion types:',
-          "  #{'expect_to_matcher'.bright} (from #{'should'.underline})",
-          "  #{'expect_to_receive'.bright} (from #{'should_receive'.underline})",
-          "  #{'allow_to_receive'.bright}  (from #{'stub'.underline})",
+        '-k' => [
+          'Keep specific syntaxes by disabling',
+          'conversions.',
+          'Available syntax types:',
+          "  #{'should'.bright} (to #{'expect(obj).to'.underline})",
+          "  #{'should_receive'.bright} (to #{'expect(obj).to receive'.underline})",
+          "  #{'stub'.bright}  (to #{'allow(obj).to receive'.underline})",
           "  #{'have_items'.bright} (to #{'expect(obj.size).to eq(x)'.underline})",
           "  #{'deprecated'.bright} (e.g. from #{'mock'.underline} to #{'double'.underline})",
-          'These are all enabled by default.'
+          'These are all converted by default.'
         ],
         '-n' => [
           "Specify negative form of #{'to'.underline} that is used in",

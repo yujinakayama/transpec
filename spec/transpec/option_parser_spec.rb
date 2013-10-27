@@ -60,16 +60,16 @@ module Transpec
         end
       end
 
-      describe '-d/--disable option' do
+      describe '-k/--keep option' do
         [
-          ['expect_to_matcher', :convert_to_expect_to_matcher?],
-          ['expect_to_receive', :convert_to_expect_to_receive?],
-          ['allow_to_receive',  :convert_to_allow_to_receive?],
-          ['have_items',        :convert_have_items],
-          ['deprecated',        :convert_deprecated_method?]
+          ['should',         :convert_should?],
+          ['should_receive', :convert_should_receive?],
+          ['stub',           :convert_stub?],
+          ['have_items',     :convert_have_items],
+          ['deprecated',     :convert_deprecated_method?]
         ].each do |cli_type, config_attr|
           context "when #{cli_type.inspect} is specified" do
-            let(:args) { ['--disable', cli_type] }
+            let(:args) { ['--keep', cli_type] }
 
             it "sets Configuration##{config_attr} false" do
               parser.parse(args)
@@ -79,21 +79,21 @@ module Transpec
         end
 
         context 'when multiple types are specified with comma' do
-          let(:args) { ['--disable', 'allow_to_receive,deprecated'] }
+          let(:args) { ['--keep', 'should_receive,deprecated'] }
 
           it 'handles all of them' do
             parser.parse(args)
-            configuration.convert_to_allow_to_receive?.should be_false
+            configuration.convert_should_receive?.should be_false
             configuration.convert_deprecated_method?.should be_false
           end
         end
 
         context 'when unknown type is specified' do
-          let(:args) { ['--disable', 'unknown'] }
+          let(:args) { ['--keep', 'unknown'] }
 
           it 'raises error' do
             -> { parser.parse(args) }.should raise_error(ArgumentError) { |error|
-              error.message.should == 'Unknown conversion type "unknown"'
+              error.message.should == 'Unknown syntax type "unknown"'
             }
           end
         end
@@ -165,14 +165,14 @@ module Transpec
         end
       end
 
-      it 'describes all conversion types for -d/--disable option' do
+      it 'describes all conversion types for -k/--keep option' do
         option_sections = help_text.lines.slice_before(/^\s*-/)
 
-        disable_section = option_sections.find do |lines|
-          lines.first =~ /^\s*-d/
+        keep_section = option_sections.find do |lines|
+          lines.first =~ /^\s*-k/
         end
 
-        conversion_types = disable_section.reduce([]) do |types, line|
+        conversion_types = keep_section.reduce([]) do |types, line|
           match = line.match(/^[ ]{37}([a-z_]+)/)
           next types unless match
           types << match.captures.first

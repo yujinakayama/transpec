@@ -9,15 +9,15 @@ module Transpec
 
     context 'by default' do
       [
-        [:convert_to_expect_to_matcher?, true],
-        [:convert_to_expect_to_receive?, true],
-        [:convert_to_allow_to_receive?,  true],
-        [:convert_have_items?,           true],
-        [:convert_deprecated_method?,    true],
-        [:parenthesize_matcher_arg?,     true],
-        [:forced?,                       false],
-        [:skip_dynamic_analysis?,        false],
-        [:generate_commit_message?,      false]
+        [:convert_should?,            true],
+        [:convert_should_receive?,    true],
+        [:convert_stub?,              true],
+        [:convert_have_items?,        true],
+        [:convert_deprecated_method?, true],
+        [:parenthesize_matcher_arg?,  true],
+        [:forced?,                    false],
+        [:skip_dynamic_analysis?,     false],
+        [:generate_commit_message?,   false]
       ].each do |attribute, value|
         describe "##{attribute}" do
           subject { configuration.send(attribute) }

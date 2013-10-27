@@ -9,6 +9,7 @@
 * Check contexts correctly with runtime information
 * Detect same name but non-RSpec methods with runtime information ([#4](https://github.com/yujinakayama/transpec/issues/4))
 * Consider runtime type information when converting `=~` to `match_array`
+* Rename `-d/--disable` option to `-k/--keep` and change its syntax types
 * Rename `--commit-message` option to `--generate-commit-message`
 
 ## v0.2.6

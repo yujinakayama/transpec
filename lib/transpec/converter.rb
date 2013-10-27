@@ -57,7 +57,7 @@ module Transpec
     end
 
     def process_should(should)
-      if @configuration.convert_to_expect_to_matcher?
+      if @configuration.convert_should?
         should.expectize!(
           @configuration.negative_form_of_to,
           @configuration.parenthesize_matcher_arg?
@@ -78,15 +78,15 @@ module Transpec
     def process_should_receive(should_receive)
       if should_receive.useless_expectation?
         if @configuration.convert_deprecated_method?
-          if @configuration.convert_to_allow_to_receive?
+          if @configuration.convert_stub?
             should_receive.allowize_useless_expectation!(@configuration.negative_form_of_to)
           else
             should_receive.stubize_useless_expectation!
           end
-        elsif @configuration.convert_to_expect_to_receive?
+        elsif @configuration.convert_should_receive?
           should_receive.expectize!(@configuration.negative_form_of_to)
         end
-      elsif @configuration.convert_to_expect_to_receive?
+      elsif @configuration.convert_should_receive?
         should_receive.expectize!(@configuration.negative_form_of_to)
       end
     end
@@ -96,7 +96,7 @@ module Transpec
     end
 
     def process_method_stub(method_stub)
-      if @configuration.convert_to_allow_to_receive?
+      if @configuration.convert_stub?
         method_stub.allowize!
       elsif @configuration.convert_deprecated_method?
         method_stub.convert_deprecated_method!
@@ -126,15 +126,15 @@ module Transpec
     end
 
     def need_to_modify_expectation_syntax_configuration?(rspec_configure)
-      return false unless @configuration.convert_to_expect_to_matcher?
+      return false unless @configuration.convert_should?
       rspec_configure.expectation_syntaxes == [:should]
     rescue Syntax::RSpecConfigure::UnknownSyntaxError
       false
     end
 
     def need_to_modify_mock_syntax_configuration?(rspec_configure)
-      return false if !@configuration.convert_to_expect_to_receive? &&
-                      !@configuration.convert_to_allow_to_receive?
+      return false if !@configuration.convert_should_receive? &&
+                      !@configuration.convert_stub?
       rspec_configure.mock_syntaxes == [:should]
     rescue Syntax::RSpecConfigure::UnknownSyntaxError
       false
