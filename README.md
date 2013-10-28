@@ -162,9 +162,8 @@ $ git status --short
 $ transpec
 The current Git repository is not clean. Aborting.
 $ transpec --force
-Processing spec/spec_helper.rb
-Processing spec/spec_spec.rb
-Processing spec/support/file_helper.rb
+Copying project for dynamic analysis...
+Running dynamic analysis with command "bundle exec rspec"...
 ```
 
 ### `-s/--skip-dynamic-analysis`
