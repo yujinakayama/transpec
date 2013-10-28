@@ -210,6 +210,7 @@ Type             | Target Syntax                    | Converted Syntax
 `should_receive` | `obj.should_receive`             | `expect(obj).to receive`
 `stub`           | `obj.stub`                       | `allow(obj).to receive`
 `have_items`     | `expect(obj).to have(x).items`   | `expect(obj.size).to eq(x)`
+`its`            | `its(:attr) { }`                 | `describe { subject { } it { } }`
 `deprecated`     | `obj.stub!`, `mock('foo')`, etc. | `obj.stub`, `double('foo')`
 
 ### `-n/--negative-form`
@@ -523,6 +524,47 @@ double('something')
 
 * Disabled by: `--keep deprecated`
 * See also: [Deprecate "stub" for doubles · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/214)
+
+### Expectations on attribute of subject with `its`
+
+```ruby
+# Targets
+describe 'example' do
+  subject { { foo: 1, bar: 2 } }
+  its(:size) { should == 2 }
+  its([:foo]) { should == 1 }
+  its('keys.first') { should == :foo }
+end
+
+# Converted
+describe 'example' do
+  subject { { foo: 1, bar: 2 } }
+
+  describe '#size' do
+    subject { super().size }
+    it { should == 2 }
+  end
+
+  describe '[:foo]' do
+    subject { super()[:foo] }
+    it { should == 1 }
+  end
+
+  describe '#keys' do
+    subject { super().keys }
+    describe '#first' do
+      subject { super().first }
+      it { should == :foo }
+    end
+  end
+end
+```
+
+You have the option to continue using `its` with [rspec-its](https://github.com/rspec/rspec-its) that is an external gem extracted from `rspec-core`.
+If you choose so, disable this conversion with `--keep its`.
+
+* Disabled by: `--keep its`
+* See also: [Core: its will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#core__will_be_moved_into_an_external_gem)
 
 ## Compatibility
 

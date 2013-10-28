@@ -2,6 +2,7 @@
 
 ## Master
 
+* Support conversion of `its` (#9)
 
 ## v1.0.0
 

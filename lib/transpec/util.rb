@@ -2,6 +2,12 @@
 
 module Transpec
   module Util
+    LITERAL_TYPES = %w(
+      true false nil
+      int float
+      str sym regexp
+    ).map(&:to_sym).freeze
+
     module_function
 
     def proc_literal?(node)
@@ -55,15 +61,30 @@ module Transpec
     end
 
     def indentation_of_line(arg)
-      range = case arg
-              when AST::Node             then arg.loc.expression
-              when Parser::Source::Range then arg
-              else fail ArgumentError, "Invalid argument #{arg}"
-              end
+      line = case arg
+             when AST::Node             then arg.loc.expression.source_line
+             when Parser::Source::Range then arg.source_line
+             when String                then arg
+             else fail ArgumentError, "Invalid argument #{arg}"
+            end
 
-      line = range.source_line
       /^(?<indentation>\s*)\S/ =~ line
       indentation
+    end
+
+    def literal?(node)
+      case node.type
+      when *LITERAL_TYPES
+        true
+      when :array, :irange, :erange
+        node.children.all? { |n| literal?(n) }
+      when :hash
+        node.children.all? do |pair_node|
+          pair_node.children.all? { |n| literal?(n) }
+        end
+      else
+        false
+      end
     end
   end
 end

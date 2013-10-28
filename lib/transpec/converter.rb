@@ -8,6 +8,7 @@ require 'transpec/syntax'
 require 'transpec/syntax/be_close'
 require 'transpec/syntax/double'
 require 'transpec/syntax/expect'
+require 'transpec/syntax/its'
 require 'transpec/syntax/method_stub'
 require 'transpec/syntax/raise_error'
 require 'transpec/syntax/rspec_configure'
@@ -113,6 +114,10 @@ module Transpec
       if @configuration.convert_deprecated_method?
         raise_error.remove_error_specification_with_negative_expectation!
       end
+    end
+
+    def process_its(its)
+      its.convert_to_describe_subject_it! if @configuration.convert_its?
     end
 
     def process_rspec_configure(rspec_configure)

@@ -528,6 +528,28 @@ module Transpec
       end
     end
 
+    describe '#process_its' do
+      let(:its_object) { double('its_object').as_null_object }
+
+      context 'when Configuration#convert_its? is true' do
+        before { configuration.convert_its = true }
+
+        it 'invokes Its#convert_to_describe_subject_it!' do
+          its_object.should_receive(:convert_to_describe_subject_it!)
+          converter.process_its(its_object)
+        end
+      end
+
+      context 'when Configuration#convert_its? is true' do
+        before { configuration.convert_its = false }
+
+        it 'does not invoke Its#convert_to_describe_subject_it!' do
+          its_object.should_not_receive(:convert_to_describe_subject_it!)
+          converter.process_its(its_object)
+        end
+      end
+    end
+
     describe '#process_rspec_configure' do
       let(:rspec_configure) { double('rspec_configure').as_null_object }
 

@@ -185,6 +185,7 @@ conversion_type_table = <<END
 `should_receive` | `obj.should_receive`             | `expect(obj).to receive`
 `stub`           | `obj.stub`                       | `allow(obj).to receive`
 `have_items`     | `expect(obj).to have(x).items`   | `expect(obj.size).to eq(x)`
+`its`            | `its(:attr) { }`                 | `describe { subject { } it { } }`
 `deprecated`     | `obj.stub!`, `mock('foo')`, etc. | `obj.stub`, `double('foo')`
 END
 
@@ -519,6 +520,31 @@ double('something')
 
 * Disabled by: `--keep deprecated`
 * See also: [Deprecate "stub" for doubles · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/214)
+
+### Expectations on attribute of subject with `its`
+
+```ruby
+# Targets
+<%=
+its_target = <<END
+describe 'example' do
+  subject { { foo: 1, bar: 2 } }
+  its(:size) { should == 2 }
+  its([:foo]) { should == 1 }
+  its('keys.first') { should == :foo }
+end
+END
+-%>
+
+# Converted
+<%= Transpec::Converter.new.convert(its_target) -%>
+```
+
+You have the option to continue using `its` with [rspec-its](https://github.com/rspec/rspec-its) that is an external gem extracted from `rspec-core`.
+If you choose so, disable this conversion with `--keep its`.
+
+* Disabled by: `--keep its`
+* See also: [Core: its will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#core__will_be_moved_into_an_external_gem)
 
 ## Compatibility
 
