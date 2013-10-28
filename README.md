@@ -292,7 +292,7 @@ end
 
 ### Reason
 
-* `should` is defined on `Kernel` module that is included by `Object` class, so you can use `should` almost everywhere.
+* `should` is defined on `BasicObject` class, so you can use `should` everywhere.
 * `expect` is defined on `RSpec::Matchers` module that is included by `RSpec::Core::ExampleGroup` class, so you can use `expect` only where `self` is an instance of `RSpec::Core::ExampleGroup` (i.e. in `it` blocks, `:each` hook blocks or included methods).
 
 With the above example, in the context of `1.should == 1`, the `self` is an instance of `MyAwesomeTestRunner`.
