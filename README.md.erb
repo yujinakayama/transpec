@@ -106,7 +106,7 @@ Converting spec/support/shared_context.rb
 Converting spec/transpec/ast/node_spec.rb
 ```
 
-This will run your specs, convert them, and overwrite all spec files in the `spec` directory.
+This will run the specs, convert them, and overwrite all spec files in the `spec` directory.
 
 After the conversion, run `rspec` again and check whether all pass:
 
@@ -377,7 +377,7 @@ expect(team.players.size).to eq(3)
 expect(team.send(:players).size).to eq(3)
 ```
 
-You have the option to continue using `have(n).items` matcher with [rspec-collection_matchers](https://github.com/rspec/rspec-collection_matchers) that is an external gem extracted from `rspec-expectations`.
+There's the option to continue using `have(n).items` matcher with [rspec-collection_matchers](https://github.com/rspec/rspec-collection_matchers) that is an external gem extracted from `rspec-expectations`.
 If you choose so, disable this conversion with `--keep have_items`.
 
 * Disabled by: `--keep have_items`
@@ -540,7 +540,7 @@ END
 <%= Transpec::Converter.new.convert(its_target) -%>
 ```
 
-You have the option to continue using `its` with [rspec-its](https://github.com/rspec/rspec-its) that is an external gem extracted from `rspec-core`.
+There's the option to continue using `its` with [rspec-its](https://github.com/rspec/rspec-its) that is an external gem extracted from `rspec-core`.
 If you choose so, disable this conversion with `--keep its`.
 
 * Disabled by: `--keep its`
