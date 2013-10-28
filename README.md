@@ -212,6 +212,8 @@ Type             | Target Syntax                    | Converted Syntax
 `its`            | `its(:attr) { }`                 | `describe { subject { } it { } }`
 `deprecated`     | `obj.stub!`, `mock('foo')`, etc. | `obj.stub`, `double('foo')`
 
+See [Supported Conversions](#supported-conversions) for more details.
+
 ### `-n/--negative-form`
 
 Specify negative form of `to` that is used in `expect` syntax.
