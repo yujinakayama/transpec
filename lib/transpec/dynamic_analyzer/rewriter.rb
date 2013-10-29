@@ -53,24 +53,31 @@ module Transpec
       end
 
       def inject_analysis_method(node, analysis_codes, source_rewriter)
+        front, rear = build_wrapper_codes(node, analysis_codes)
+
+        source_range = if taking_block?(node)
+                         node.parent_node.loc.expression
+                       else
+                         node.loc.expression
+                       end
+
+        source_rewriter.insert_before(source_range, front)
+        source_rewriter.insert_after(source_range, rear)
+      rescue OverlappedRewriteError # rubocop:disable HandleExceptions
+      end
+
+      def build_wrapper_codes(node, analysis_codes)
         source_range = node.loc.expression
 
         front = "#{ANALYSIS_METHOD}(("
+
         rear = format(
           '), self, %s, __FILE__, %d, %d)',
           hash_literal(analysis_codes), source_range.begin_pos, source_range.end_pos
         )
         rear = "\n" + indentation_of_line(source_range.end) + rear if contain_here_document?(node)
 
-        parent_node = node.parent_node
-
-        if parent_node && parent_node.type == :block && parent_node.children.first.equal?(node)
-          source_range = node.parent_node.loc.expression
-        end
-
-        source_rewriter.insert_before(source_range, front)
-        source_rewriter.insert_after(source_range, rear)
-      rescue OverlappedRewriteError # rubocop:disable HandleExceptions
+        [front, rear]
       end
 
       # Hash#inspect generates invalid literal with following example:
@@ -88,6 +95,11 @@ module Transpec
         end
 
         literal << ' }'
+      end
+
+      def taking_block?(node)
+        parent_node = node.parent_node
+        parent_node && parent_node.type == :block && parent_node.children.first.equal?(node)
       end
     end
   end
