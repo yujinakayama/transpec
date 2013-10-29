@@ -484,6 +484,28 @@ module Transpec
       end
     end
 
+    describe '#process_be_boolean' do
+      let(:be_boolean_object) { double('be_boolean_object').as_null_object }
+
+      context 'when Configuration#convert_deprecated_method? is true' do
+        before { configuration.convert_deprecated_method = true }
+
+        it 'invokes BeBoolean#convert_to_conditional_matcher!' do
+          be_boolean_object.should_receive(:convert_to_conditional_matcher!)
+          converter.process_be_boolean(be_boolean_object)
+        end
+      end
+
+      context 'when Configuration#convert_deprecated_method? is false' do
+        before { configuration.convert_deprecated_method = false }
+
+        it 'does not invoke BeBoolean#convert_to_conditional_matcher!' do
+          be_boolean_object.should_not_receive(:convert_to_conditional_matcher!)
+          converter.process_be_boolean(be_boolean_object)
+        end
+      end
+    end
+
     describe '#process_be_close' do
       let(:be_close_object) { double('be_close_object').as_null_object }
 
@@ -496,7 +518,7 @@ module Transpec
         end
       end
 
-      context 'when Configuration#convert_deprecated_method? is true' do
+      context 'when Configuration#convert_deprecated_method? is false' do
         before { configuration.convert_deprecated_method = false }
 
         it 'does not invoke BeClose#convert_to_be_within!' do
@@ -518,7 +540,7 @@ module Transpec
         end
       end
 
-      context 'when Configuration#convert_deprecated_method? is true' do
+      context 'when Configuration#convert_deprecated_method? is false' do
         before { configuration.convert_deprecated_method = false }
 
         it 'does not invoke BeClose#convert_to_be_within!' do
@@ -540,7 +562,7 @@ module Transpec
         end
       end
 
-      context 'when Configuration#convert_its? is true' do
+      context 'when Configuration#convert_its? is false' do
         before { configuration.convert_its = false }
 
         it 'does not invoke Its#convert_to_describe_subject_it!' do

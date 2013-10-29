@@ -1,6 +1,8 @@
 # Changelog
 
-## Master
+## Development
+
+* Support conversion to `be_truthy` / `be_falsey` ([#8](https://github.com/yujinakayama/transpec/issues/8))
 
 ## v1.1.2
 
@@ -12,7 +14,7 @@
 
 ## v1.1.0
 
-* Support conversion of `its` (#9)
+* Support conversion of `its` ([#9](https://github.com/yujinakayama/transpec/issues/9))
 
 ## v1.0.0
 

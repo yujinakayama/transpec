@@ -4,6 +4,7 @@ require 'transpec/base_rewriter'
 require 'transpec/configuration'
 require 'transpec/report'
 require 'transpec/syntax'
+require 'transpec/syntax/be_boolean'
 require 'transpec/syntax/be_close'
 require 'transpec/syntax/double'
 require 'transpec/syntax/expect'
@@ -98,6 +99,10 @@ module Transpec
       end
 
       method_stub.remove_allowance_for_no_message! if @configuration.convert_deprecated_method?
+    end
+
+    def process_be_boolean(be_boolean)
+      be_boolean.convert_to_conditional_matcher! if @configuration.convert_deprecated_method?
     end
 
     def process_be_close(be_close)
