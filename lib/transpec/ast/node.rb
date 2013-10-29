@@ -67,12 +67,6 @@ module Transpec
       def descendent_nodes
         each_descendent_node.to_a
       end
-
-      private
-
-      def properties
-        @properties ||= {}
-      end
     end
   end
 end

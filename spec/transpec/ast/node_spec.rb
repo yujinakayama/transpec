@@ -50,7 +50,7 @@ module Transpec
         end
       end
 
-      describe '#each_ancestor_node' do
+      shared_context 'ancestor nodes' do
         let(:target_node) do
           ast.each_descendent_node do |node|
             return node if node == s(:args)
@@ -58,6 +58,10 @@ module Transpec
         end
 
         let(:expected_types) { [:block, :def] }
+      end
+
+      describe '#each_ancestor_node' do
+        include_context 'ancestor nodes'
 
         context 'when a block is given' do
           it 'yields each ancestor node' do
@@ -95,8 +99,25 @@ module Transpec
         end
       end
 
-      describe '#each_child_node' do
+      describe '#ancestor_nodes' do
+        include_context 'ancestor nodes'
+
+        it 'returns an array' do
+          target_node.ancestor_nodes.should be_an(Array)
+        end
+
+        it 'returns same nodes as #each_ancestor_node' do
+          types = target_node.ancestor_nodes.map(&:type)
+          types.should == expected_types
+        end
+      end
+
+      shared_context 'child nodes' do
         let(:expected_types) { [:args, :block] }
+      end
+
+      describe '#each_child_node' do
+        include_context 'child nodes'
 
         context 'when a block is given' do
           it 'yields each child node' do
@@ -134,10 +155,27 @@ module Transpec
         end
       end
 
-      describe '#each_descendent_node' do
+      describe '#child_nodes' do
+        include_context 'child nodes'
+
+        it 'returns an array' do
+          ast.child_nodes.should be_an(Array)
+        end
+
+        it 'returns same nodes as #each_child_node' do
+          types = ast.child_nodes.map(&:type)
+          types.should == expected_types
+        end
+      end
+
+      shared_context 'descendent nodes' do
         let(:expected_types) do
           [:args, :arg, :arg, :block, :send, :int, :args, :send, :lvar]
         end
+      end
+
+      describe '#each_descendent_node' do
+        include_context 'descendent nodes'
 
         context 'when a block is given' do
           it 'yields each descendent node with depth first order' do
@@ -172,6 +210,19 @@ module Transpec
               end
             end
           end
+        end
+      end
+
+      describe '#descendent_nodes' do
+        include_context 'descendent nodes'
+
+        it 'returns an array' do
+          ast.descendent_nodes.should be_an(Array)
+        end
+
+        it 'returns same nodes as #each_descendent_node' do
+          types = ast.descendent_nodes.map(&:type)
+          types.should == expected_types
         end
       end
     end
