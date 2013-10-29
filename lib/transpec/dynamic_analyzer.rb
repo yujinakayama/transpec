@@ -82,11 +82,15 @@ module Transpec
     end
 
     def default_rspec_command
-      if File.exist?('Gemfile')
+      if project_requires_bundler?
         'bundle exec rspec'
       else
         'rspec'
       end
+    end
+
+    def project_requires_bundler?
+      File.exist?('Gemfile')
     end
 
     def analyze(paths = [])
@@ -152,7 +156,7 @@ module Transpec
     end
 
     def with_bundler_clean_env
-      if defined?(Bundler)
+      if defined?(Bundler) && project_requires_bundler?
         Bundler.with_clean_env do
           # Bundler.with_clean_env cleans environment variables
           # which are set after bundler is loaded.
