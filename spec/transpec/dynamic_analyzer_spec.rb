@@ -118,6 +118,14 @@ module Transpec
         end
       end
 
+      context 'when rspec exited with non-0 status' do
+        let(:source) { 'This is invalid syntax <' }
+
+        it 'raises error' do
+          -> { dynamic_analyzer.analyze }.should raise_error(/Dynamic analysis failed/)
+        end
+      end
+
       runtime_data_cache = {}
 
       subject(:runtime_data) do
