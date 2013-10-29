@@ -4,7 +4,7 @@ require 'spec_helper'
 require 'transpec/static_context_inspector'
 
 module Transpec
-  describe StaticContextInspector, :skip_on_jruby do
+  describe StaticContextInspector do
     include CacheHelper
     include ::AST::Sexp
     include_context 'parsed objects'
