@@ -346,10 +346,10 @@ expect([1, 2, 3]).to match_array([2, 1, 3])
 
 ```ruby
 # Targets
-(1.0 / 3.0).should be_close(0.333, 0.001)
+expect(1.0 / 3.0).to be_close(0.333, 0.001)
 
 # Converted
-(1.0 / 3.0).should be_within(0.001).of(0.333)
+expect(1.0 / 3.0).to be_within(0.001).of(0.333)
 ```
 
 * Disabled by: `--keep deprecated`
