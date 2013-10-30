@@ -12,8 +12,8 @@ See the following pages for the new RSpec syntax and the plan for RSpec 3:
 * [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
 * [Myron Marston » The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3)
 
-Note that Transpec does not yet support all conversions for the RSpec changes,
-and also the changes for RSpec 3 is not fixed and may vary in the future.
+Transpec now supports almost all conversions for the RSpec changes,
+but the changes for RSpec 3 is not fixed and may vary in the future.
 So it's recommended to follow updates of both RSpec and Transpec.
 
 ## Examples
