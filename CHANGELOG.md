@@ -3,6 +3,7 @@
 ## Development
 
 * Support conversion to `be_truthy` / `be_falsey` ([#8](https://github.com/yujinakayama/transpec/issues/8))
+* Add `-b/--boolean-matcher` option that allows to specify matcher type that `be_true` and `be_false` will be converted to
 
 ## v1.1.2
 

@@ -16,8 +16,8 @@ module Transpec
         method_name == :be_true
       end
 
-      def convert_to_conditional_matcher!
-        replacement = be_true? ? 'be_truthy' : 'be_falsey'
+      def convert_to_conditional_matcher!(form_of_be_falsey = 'be_falsey')
+        replacement = be_true? ? 'be_truthy' : form_of_be_falsey
         replace(expression_range, replacement)
         register_record(replacement)
       end

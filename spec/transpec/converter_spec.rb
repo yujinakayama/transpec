@@ -490,17 +490,44 @@ module Transpec
       context 'when Configuration#convert_deprecated_method? is true' do
         before { configuration.convert_deprecated_method = true }
 
-        it 'invokes BeBoolean#convert_to_conditional_matcher!' do
-          be_boolean_object.should_receive(:convert_to_conditional_matcher!)
-          converter.process_be_boolean(be_boolean_object)
+        context 'and Configuration#boolean_matcher_type is :conditional' do
+          before { configuration.boolean_matcher_type = :conditional }
+
+          context 'and Configuration#form_of_be_falsey is "be_falsey"' do
+            before { configuration.form_of_be_falsey = 'be_falsey' }
+
+            it 'invokes BeBoolean#convert_to_conditional_matcher! with "be_falsey"' do
+              be_boolean_object.should_receive(:convert_to_conditional_matcher!).with('be_falsey')
+              converter.process_be_boolean(be_boolean_object)
+            end
+          end
+
+          context 'and Configuration#form_of_be_falsey is "be_falsy"' do
+            before { configuration.form_of_be_falsey = 'be_falsy' }
+
+            it 'invokes BeBoolean#convert_to_conditional_matcher! with "be_falsy"' do
+              be_boolean_object.should_receive(:convert_to_conditional_matcher!).with('be_falsy')
+              converter.process_be_boolean(be_boolean_object)
+            end
+          end
+        end
+
+        context 'and Configuration#boolean_matcher_type is :exact' do
+          before { configuration.boolean_matcher_type = :exact }
+
+          it 'invokes BeBoolean#convert_to_exact_matcher!' do
+            be_boolean_object.should_receive(:convert_to_exact_matcher!)
+            converter.process_be_boolean(be_boolean_object)
+          end
         end
       end
 
       context 'when Configuration#convert_deprecated_method? is false' do
         before { configuration.convert_deprecated_method = false }
 
-        it 'does not invoke BeBoolean#convert_to_conditional_matcher!' do
+        it 'does nothing' do
           be_boolean_object.should_not_receive(:convert_to_conditional_matcher!)
+          be_boolean_object.should_not_receive(:convert_to_exact_matcher!)
           converter.process_be_boolean(be_boolean_object)
         end
       end

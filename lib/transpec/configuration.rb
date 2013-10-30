@@ -3,6 +3,8 @@
 module Transpec
   class Configuration
     NEGATIVE_FORMS_OF_TO = ['not_to', 'to_not'].freeze
+    FORMS_OF_BE_FALSEY = ['be_falsey', 'be_falsy'].freeze
+    BOOLEAN_MATCHER_TYPES = [:conditional, :exact].freeze
 
     PREDICATES = [
       [:convert_should,            true],
@@ -22,7 +24,7 @@ module Transpec
       alias_method predicate.to_s + '?', predicate
     end
 
-    attr_accessor :negative_form_of_to, :rspec_command
+    attr_accessor :negative_form_of_to, :boolean_matcher_type, :form_of_be_falsey, :rspec_command
 
     def initialize
       PREDICATES.each do |predicate, default_value|
@@ -30,16 +32,32 @@ module Transpec
       end
 
       self.negative_form_of_to = 'not_to'
+      self.boolean_matcher_type = :conditional
+      self.form_of_be_falsey = 'be_falsey'
     end
 
     def negative_form_of_to=(form)
-      unless NEGATIVE_FORMS_OF_TO.include?(form.to_s)
-        message = 'Negative form of "to" must be either '
-        message << NEGATIVE_FORMS_OF_TO.map(&:inspect).join(' or ')
-        fail ArgumentError, message
-      end
-
+      validate!(form.to_s, NEGATIVE_FORMS_OF_TO, 'Negative form of "to"')
       @negative_form_of_to = form.to_s.freeze
+    end
+
+    def boolean_matcher_type=(type)
+      validate!(type.to_sym, BOOLEAN_MATCHER_TYPES, 'Boolean matcher type')
+      @boolean_matcher_type = type.to_sym
+    end
+
+    def form_of_be_falsey=(form)
+      validate!(form.to_s, FORMS_OF_BE_FALSEY, 'Form of "be_falsey"')
+      @form_of_be_falsey = form.to_s.freeze
+    end
+
+    private
+
+    def validate!(arg, valid_values, subject)
+      return if valid_values.include?(arg)
+      message = "#{subject} must be either "
+      message << valid_values.map(&:inspect).join(' or ')
+      fail ArgumentError, message
     end
   end
 end

@@ -18,20 +18,17 @@ module Transpec
         [:parenthesize_matcher_arg?,  true],
         [:forced?,                    false],
         [:skip_dynamic_analysis?,     false],
-        [:generate_commit_message?,   false]
+        [:generate_commit_message?,   false],
+        [:negative_form_of_to,        'not_to'],
+        [:boolean_matcher_type,       :conditional],
+        [:form_of_be_falsey,          'be_falsey']
       ].each do |attribute, value|
         describe "##{attribute}" do
           subject { configuration.send(attribute) }
 
-          it "is #{value}" do
+          it "is #{value.inspect}" do
             should == value
           end
-        end
-      end
-
-      describe '#negative_form_of_to' do
-        it 'is "not_to"' do
-          configuration.negative_form_of_to.should == 'not_to'
         end
       end
     end
@@ -50,6 +47,44 @@ module Transpec
         it 'raises error' do
           lambda do
             configuration.negative_form_of_to = 'foo'
+          end.should raise_error(ArgumentError)
+        end
+      end
+    end
+
+    describe '#boolean_matcher_type=' do
+      [:conditional, :exact] .each do |type|
+        context "when #{type.inspect} is passed" do
+          it "sets #{type.inspect}" do
+            configuration.boolean_matcher_type = type
+            configuration.boolean_matcher_type.should == type
+          end
+        end
+      end
+
+      context 'when a type other than :conditional or :exact is passed' do
+        it 'raises error' do
+          lambda do
+            configuration.boolean_matcher_type = :foo
+          end.should raise_error(ArgumentError)
+        end
+      end
+    end
+
+    describe '#form_of_be_falsey=' do
+      ['be_falsey', 'be_falsy'] .each do |form|
+        context "when #{form.inspect} is passed" do
+          it "sets #{form.inspect}" do
+            configuration.form_of_be_falsey = form
+            configuration.form_of_be_falsey.should == form
+          end
+        end
+      end
+
+      context 'when a form other than "be_falsey" or "be_falsy" is passed' do
+        it 'raises error' do
+          lambda do
+            configuration.form_of_be_falsey = 'foo'
           end.should raise_error(ArgumentError)
         end
       end

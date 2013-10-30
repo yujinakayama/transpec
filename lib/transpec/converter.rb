@@ -102,7 +102,14 @@ module Transpec
     end
 
     def process_be_boolean(be_boolean)
-      be_boolean.convert_to_conditional_matcher! if @configuration.convert_deprecated_method?
+      return unless @configuration.convert_deprecated_method?
+
+      case @configuration.boolean_matcher_type
+      when :conditional
+        be_boolean.convert_to_conditional_matcher!(@configuration.form_of_be_falsey)
+      when :exact
+        be_boolean.convert_to_exact_matcher!
+      end
     end
 
     def process_be_close(be_close)

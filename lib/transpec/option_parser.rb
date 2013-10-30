@@ -8,7 +8,7 @@ require 'rainbow'
 
 module Transpec
   class OptionParser
-    CONFIG_ATTRS_FOR_CLI_TYPES = {
+    CONFIG_ATTRS_FOR_KEEP_TYPES = {
               should: :convert_should=,
       should_receive: :convert_should_receive=,
                 stub: :convert_stub=,
@@ -17,10 +17,12 @@ module Transpec
           deprecated: :convert_deprecated_method=
     }
 
+    VALID_BOOLEAN_MATCHER_TYPES = %w(truthy,falsey truthy,falsy true,false)
+
     attr_reader :configuration
 
     def self.available_conversion_types
-      CONFIG_ATTRS_FOR_CLI_TYPES.keys
+      CONFIG_ATTRS_FOR_KEEP_TYPES.keys
     end
 
     def initialize(configuration = Configuration.new)
@@ -66,7 +68,7 @@ module Transpec
 
       define_option('-k', '--keep TYPE[,TYPE...]') do |types|
         types.split(',').each do |type|
-          config_attr = CONFIG_ATTRS_FOR_CLI_TYPES[type.to_sym]
+          config_attr = CONFIG_ATTRS_FOR_KEEP_TYPES[type.to_sym]
           fail ArgumentError, "Unknown syntax type #{type.inspect}" unless config_attr
           @configuration.send(config_attr, false)
         end
@@ -74,6 +76,15 @@ module Transpec
 
       define_option('-n', '--negative-form FORM') do |form|
         @configuration.negative_form_of_to = form
+      end
+
+      define_option('-b', '--boolean-matcher TYPE') do |type|
+        unless VALID_BOOLEAN_MATCHER_TYPES.include?(type)
+          types = VALID_BOOLEAN_MATCHER_TYPES.map(&:inspect).join(', ')
+          fail ArgumentError, "Boolean matcher type must be any of #{types}"
+        end
+        @configuration.boolean_matcher_type = type.include?('truthy') ? :conditional : :exact
+        @configuration.form_of_be_falsey = type.include?('falsy') ? 'be_falsy' : 'be_falsey'
       end
 
       define_option('-p', '--no-parentheses-matcher-arg') do
@@ -141,6 +152,14 @@ module Transpec
           "#{'expect(...).to'.underline} syntax.",
           "Either #{'not_to'.bright} or #{'to_not'.bright}.",
           "Default: #{'not_to'.bright}"
+        ],
+        '-b' => [
+          "Specify matcher type that #{'be_true'.underline} and",
+          "#{'be_false'.underline} will be converted to.",
+          "  #{'truthy,falsey'.bright} (conditional semantics)",
+          "  #{'truthy,falsy'.bright}  (alias of #{'falsey'.underline})",
+          "  #{'true,false'.bright}    (exact equality)",
+          "Default: #{'truthy,falsey'.bright}"
         ],
         '-p' => [
           'Suppress parenthesizing argument of matcher',

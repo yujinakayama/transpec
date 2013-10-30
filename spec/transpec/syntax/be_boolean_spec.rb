@@ -20,8 +20,10 @@ module Transpec
 
       describe '#convert_to_conditional_matcher!' do
         before do
-          be_boolean_object.convert_to_conditional_matcher!
+          be_boolean_object.convert_to_conditional_matcher!(arg)
         end
+
+        let(:arg) { 'be_falsey' }
 
         context 'when it is `be_true`' do
           let(:source) do
@@ -82,6 +84,29 @@ module Transpec
           it 'adds record "`be_false` -> `be_falsey`"' do
             record.original_syntax.should  == 'be_false'
             record.converted_syntax.should == 'be_falsey'
+          end
+
+          context 'and "be_falsy" is passed' do
+            let(:arg) { 'be_falsy' }
+
+            let(:expected_source) do
+              <<-END
+              describe 'example' do
+                it 'is falsey' do
+                  nil.should be_falsy
+                end
+              end
+              END
+            end
+
+            it 'converts into `be_falsy`' do
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record "`be_false` -> `be_falsy`"' do
+              record.original_syntax.should  == 'be_false'
+              record.converted_syntax.should == 'be_falsy'
+            end
           end
         end
       end
