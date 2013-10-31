@@ -10,7 +10,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Yuji Nakayama']
   spec.email         = ['nkymyj@gmail.com']
   spec.summary       = 'RSpec syntax converter'
-  spec.description   = 'Transpec automatically converts your specs into latest RSpec syntax with static analysis.'
+  spec.description   = 'Transpec automatically converts your specs into latest RSpec syntax ' +
+                       'with static and dynamic code analysis.'
   spec.homepage      = 'https://github.com/yujinakayama/transpec'
   spec.license       = 'MIT'
 
