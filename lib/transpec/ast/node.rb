@@ -67,6 +67,12 @@ module Transpec
       def descendent_nodes
         each_descendent_node.to_a
       end
+
+      def each_node(&block)
+        return to_enum(__method__) unless block_given?
+        yield self
+        each_descendent_node(&block)
+      end
     end
   end
 end

@@ -225,6 +225,47 @@ module Transpec
           types.should == expected_types
         end
       end
+
+      describe '#each_node' do
+        let(:expected_types) do
+          [:def, :args, :arg, :arg, :block, :send, :int, :args, :send, :lvar]
+        end
+
+        context 'when a block is given' do
+          it 'yields itself and each descendent node with depth first order' do
+            index = 0
+
+            ast.each_node do |node|
+              expected_type = expected_types[index]
+              node.type.should == expected_type
+              index += 1
+            end
+
+            index.should_not == 0
+          end
+
+          it 'returns itself' do
+            returned_value = ast.each_node { }
+            returned_value.should be(ast)
+          end
+        end
+
+        context 'when no block is given' do
+          it 'returns enumerator' do
+            ast.each_node.should be_a(Enumerator)
+          end
+
+          describe 'the returned enumerator' do
+            it 'enumerates the child nodes' do
+              enumerator = ast.each_node
+
+              expected_types.each do |expected_type|
+                enumerator.next.type.should == expected_type
+              end
+            end
+          end
+        end
+      end
     end
   end
 end
