@@ -91,7 +91,7 @@ describe Account do
 end
 ```
 
-### Actual Examples
+### Actual examples
 
 You can see actual conversion examples below:
 
@@ -388,7 +388,7 @@ If you choose so, disable this conversion with `--keep have_items`.
 * Disabled by: `--keep have_items`
 * See also: [Expectations: have(x).items matchers will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#expectations__matchers_will_be_moved_into_an_external_gem)
 
-### Expectations on Block
+### Expectations on block
 
 ```ruby
 # Targets
