@@ -30,22 +30,16 @@ module Transpec
     end
 
     def process(ast, source_rewriter)
-      AST::Scanner.scan(ast) do |node, ancestor_nodes|
-        dispatch_node(node, ancestor_nodes, source_rewriter)
+      AST::Scanner.scan(ast) do |node|
+        dispatch_node(node, source_rewriter)
       end
     end
 
-    def dispatch_node(node, ancestor_nodes, source_rewriter)
+    def dispatch_node(node, source_rewriter)
       Syntax.standalone_syntaxes.each do |syntax_class|
         next unless syntax_class.target_node?(node, @runtime_data)
 
-        syntax = syntax_class.new(
-          node,
-          ancestor_nodes,
-          source_rewriter,
-          @runtime_data,
-          @report
-        )
+        syntax = syntax_class.new(node, source_rewriter, @runtime_data, @report)
 
         handler_name = "process_#{syntax_class.snake_case_name}"
         send(handler_name, syntax)

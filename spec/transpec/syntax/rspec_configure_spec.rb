@@ -11,11 +11,7 @@ module Transpec
       subject(:rspec_configure) do
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
           next unless RSpecConfigure.target_node?(node)
-          return RSpecConfigure.new(
-            node,
-            ancestor_nodes,
-            source_rewriter
-          )
+          return RSpecConfigure.new(node, source_rewriter)
         end
         fail 'No RSpec.configure node is found!'
       end

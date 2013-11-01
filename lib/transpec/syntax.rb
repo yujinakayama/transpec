@@ -6,7 +6,7 @@ require 'transpec/report'
 
 module Transpec
   class Syntax
-    attr_reader :node, :ancestor_nodes, :source_rewriter, :runtime_data, :report
+    attr_reader :node, :source_rewriter, :runtime_data, :report
 
     def self.inherited(subclass)
       all_syntaxes << subclass
@@ -38,9 +38,8 @@ module Transpec
       false
     end
 
-    def initialize(node, ancestor_nodes, source_rewriter = nil, runtime_data = nil, report = nil)
+    def initialize(node, source_rewriter = nil, runtime_data = nil, report = nil)
       @node = node
-      @ancestor_nodes = ancestor_nodes
       @source_rewriter = source_rewriter
       @runtime_data = runtime_data
       @report = report || Report.new
@@ -50,11 +49,11 @@ module Transpec
     end
 
     def static_context_inspector
-      @static_context_inspector ||= StaticContextInspector.new(@ancestor_nodes)
+      @static_context_inspector ||= StaticContextInspector.new(@node)
     end
 
     def parent_node
-      @ancestor_nodes.last
+      @node.parent_node
     end
 
     def expression_range

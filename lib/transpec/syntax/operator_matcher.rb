@@ -19,13 +19,6 @@ module Transpec
         !receiver_node.nil? && OPERATORS.include?(method_name)
       end
 
-      def initialize(node, source_rewriter = nil, runtime_data = nil, report = nil)
-        @node = node
-        @source_rewriter = source_rewriter
-        @runtime_data = runtime_data
-        @report = report || Report.new
-      end
-
       def register_request_for_dynamic_analysis(rewriter)
         return unless method_name == :=~
         rewriter.register_request(arg_node, :arg_is_enumerable?, 'is_a?(Enumerable)')

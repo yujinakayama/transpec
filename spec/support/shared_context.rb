@@ -57,12 +57,7 @@ shared_context 'should object' do
   let(:should_object) do
     Transpec::AST::Scanner.scan(ast) do |node, ancestor_nodes|
       next unless Transpec::Syntax::Should.target_node?(node)
-      return Transpec::Syntax::Should.new(
-        node,
-        ancestor_nodes,
-        source_rewriter,
-        runtime_data
-      )
+      return Transpec::Syntax::Should.new(node, source_rewriter, runtime_data)
     end
 
     fail 'No should node is found!'
@@ -75,12 +70,7 @@ shared_context 'expect object' do
   let(:expect_object) do
     Transpec::AST::Scanner.scan(ast) do |node, ancestor_nodes|
       next unless Transpec::Syntax::Expect.target_node?(node)
-      return Transpec::Syntax::Expect.new(
-        node,
-        ancestor_nodes,
-        source_rewriter,
-        runtime_data
-      )
+      return Transpec::Syntax::Expect.new(node, source_rewriter, runtime_data)
     end
 
     fail 'No expect node is found!'

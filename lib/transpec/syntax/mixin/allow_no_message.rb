@@ -59,7 +59,7 @@ module Transpec
         def each_following_chained_method_node
           return to_enum(__method__) unless block_given?
 
-          @ancestor_nodes.reverse.reduce(@node) do |child_node, parent_node|
+          @node.each_ancestor_node.reduce(@node) do |child_node, parent_node|
             return unless [:send, :block].include?(parent_node.type)
             return unless parent_node.children.first == child_node
             yield parent_node, child_node

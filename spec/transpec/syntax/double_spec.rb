@@ -11,11 +11,7 @@ module Transpec
       subject(:double_object) do
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
           next unless Double.target_node?(node)
-          return Double.new(
-            node,
-            ancestor_nodes,
-            source_rewriter
-          )
+          return Double.new(node, source_rewriter)
         end
         fail 'No double node is found!'
       end

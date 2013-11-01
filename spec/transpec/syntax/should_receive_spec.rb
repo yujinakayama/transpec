@@ -11,12 +11,7 @@ module Transpec
       subject(:should_receive_object) do
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
           next unless ShouldReceive.target_node?(node)
-          return ShouldReceive.new(
-            node,
-            ancestor_nodes,
-            source_rewriter,
-            runtime_data
-          )
+          return ShouldReceive.new(node, source_rewriter, runtime_data)
         end
         fail 'No should_receive node is found!'
       end

@@ -11,11 +11,7 @@ module Transpec
       subject(:its_object) do
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
           next unless Its.target_node?(node)
-          return Its.new(
-            node,
-            ancestor_nodes,
-            source_rewriter
-          )
+          return Its.new(node, source_rewriter)
         end
         fail 'No #its node is found!'
       end

@@ -24,7 +24,7 @@ module Transpec
       end
 
       def positive?
-        ancestor_nodes.reverse_each do |ancestor_node|
+        @node.each_ancestor_node do |ancestor_node|
           next unless ancestor_node.type == :send
           expectation_method_name = ancestor_node.children[1]
           return [:should, :to].include?(expectation_method_name)

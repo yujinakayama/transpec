@@ -90,7 +90,7 @@ module Transpec
 
           next unless expected_scopes
 
-          context_inspector = StaticContextInspector.new(ancestor_nodes)
+          context_inspector = StaticContextInspector.new(node)
           context_inspector.scopes.should == expected_scopes
         end
       end
@@ -100,7 +100,7 @@ module Transpec
       let(:context_inspector) do
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
           next unless node == s(:send, nil, :target)
-          return StaticContextInspector.new(ancestor_nodes)
+          return StaticContextInspector.new(node)
         end
 
         fail 'Target node not found!'

@@ -19,7 +19,7 @@ module Transpec
         !receiver_node.nil? && [:should, :should_not].include?(method_name)
       end
 
-      def initialize(node, ancestor_nodes, source_rewriter = nil, runtime_data = nil, report = nil)
+      def initialize(node, source_rewriter = nil, runtime_data = nil, report = nil)
         super
         @current_syntax_type = :should
       end

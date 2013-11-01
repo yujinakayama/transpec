@@ -11,11 +11,7 @@ module Transpec
       subject(:raise_error_object) do
         AST::Scanner.scan(ast) do |node, ancestor_nodes|
           next unless RaiseError.target_node?(node)
-          return RaiseError.new(
-            node,
-            ancestor_nodes,
-            source_rewriter
-          )
+          return RaiseError.new(node, source_rewriter)
         end
         fail 'No raise_error node is found!'
       end

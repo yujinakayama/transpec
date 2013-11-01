@@ -47,16 +47,15 @@ module Transpec
       [:module, :def]
     ].freeze
 
-    attr_reader :nodes
+    attr_reader :node
 
-    # @param nodes [Array] An array containing from root node to the target node.
-    def initialize(nodes)
-      @nodes = nodes
+    def initialize(node)
+      @node = node
     end
 
     def scopes
       @scopes ||= begin
-        scopes = @nodes.map { |node| scope_type(node) }
+        scopes = @node.each_ancestor_node.reverse_each.map { |node| scope_type(node) }
         scopes.compact!
         scopes.extend(ArrayExtension)
       end
