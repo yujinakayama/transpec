@@ -2,7 +2,6 @@
 
 require 'transpec/base_rewriter'
 require 'transpec/util'
-require 'transpec/ast/scanner'
 
 module Transpec
   class DynamicAnalyzer
@@ -36,7 +35,9 @@ module Transpec
       private
 
       def collect_requests(ast)
-        AST::Scanner.scan(ast) do |node|
+        return unless ast
+
+        ast.each_node do |node|
           Syntax.standalone_syntaxes.each do |syntax_class|
             syntax_class.register_request_for_dynamic_analysis(node, self)
             next unless syntax_class.target_node?(node)

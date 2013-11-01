@@ -9,7 +9,7 @@ module Transpec
       include_context 'parsed objects'
 
       subject(:be_close_object) do
-        AST::Scanner.scan(ast) do |node, ancestor_nodes|
+        ast.each_node do |node|
           next unless BeClose.target_node?(node)
           return BeClose.new(node, source_rewriter)
         end

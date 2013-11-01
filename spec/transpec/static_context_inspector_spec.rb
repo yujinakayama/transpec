@@ -51,7 +51,7 @@ module Transpec
       end
 
       it 'returns scope stack' do
-        AST::Scanner.scan(ast) do |node, ancestor_nodes|
+        ast.each_node do |node|
           expected_scopes = begin
             case node_id(node)
             when 'send nil :top_level'
@@ -98,7 +98,7 @@ module Transpec
 
     shared_examples 'context inspection methods' do
       let(:context_inspector) do
-        AST::Scanner.scan(ast) do |node, ancestor_nodes|
+        ast.each_node do |node|
           next unless node == s(:send, nil, :target)
           return StaticContextInspector.new(node)
         end

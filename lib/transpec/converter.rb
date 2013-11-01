@@ -3,7 +3,6 @@
 require 'transpec/base_rewriter'
 require 'transpec/configuration'
 require 'transpec/report'
-require 'transpec/ast/scanner'
 require 'transpec/syntax'
 require 'transpec/syntax/be_close'
 require 'transpec/syntax/double'
@@ -30,7 +29,8 @@ module Transpec
     end
 
     def process(ast, source_rewriter)
-      AST::Scanner.scan(ast) do |node|
+      return unless ast
+      ast.each_node do |node|
         dispatch_node(node, source_rewriter)
       end
     end

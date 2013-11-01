@@ -2,7 +2,6 @@
 
 require 'transpec/dynamic_analyzer'
 require 'transpec/ast/builder'
-require 'transpec/ast/scanner'
 require 'transpec/syntax/should'
 require 'transpec/syntax/expect'
 require 'parser'
@@ -55,7 +54,7 @@ end
 
 shared_context 'should object' do
   let(:should_object) do
-    Transpec::AST::Scanner.scan(ast) do |node, ancestor_nodes|
+    ast.each_node do |node|
       next unless Transpec::Syntax::Should.target_node?(node)
       return Transpec::Syntax::Should.new(node, source_rewriter, runtime_data)
     end
@@ -68,7 +67,7 @@ end
 
 shared_context 'expect object' do
   let(:expect_object) do
-    Transpec::AST::Scanner.scan(ast) do |node, ancestor_nodes|
+    ast.each_node do |node|
       next unless Transpec::Syntax::Expect.target_node?(node)
       return Transpec::Syntax::Expect.new(node, source_rewriter, runtime_data)
     end
