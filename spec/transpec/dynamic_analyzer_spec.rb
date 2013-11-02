@@ -126,6 +126,14 @@ module Transpec
         end
       end
 
+      context 'when working directory has been changed at exit of rspec' do
+        let(:source) { "Dir.chdir('spec')" }
+
+        it 'does not raise error' do
+          -> { dynamic_analyzer.analyze }.should_not raise_error
+        end
+      end
+
       runtime_data_cache = {}
 
       subject(:runtime_data) do

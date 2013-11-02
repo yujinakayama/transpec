@@ -20,7 +20,7 @@ module Transpec
       require 'pathname'
 
       module TranspecAnalysis
-        @base_pathname = Pathname.pwd
+        @base_path = Dir.pwd
 
         def self.data
           @data ||= {}
@@ -28,12 +28,17 @@ module Transpec
 
         def self.node_id(filename, begin_pos, end_pos)
           absolute_path = File.expand_path(filename)
-          relative_path = Pathname.new(absolute_path).relative_path_from(@base_pathname).to_s
+          relative_path = Pathname.new(absolute_path).relative_path_from(base_pathname).to_s
           [relative_path, begin_pos, end_pos].join('_')
         end
 
+        def self.base_pathname
+          @base_pathname ||= Pathname.new(@base_path)
+        end
+
         at_exit do
-          File.open('#{RESULT_FILE}', 'w') do |file|
+          path = File.join(@base_path, '#{RESULT_FILE}')
+          File.open(path, 'w') do |file|
             Marshal.dump(data, file)
           end
         end

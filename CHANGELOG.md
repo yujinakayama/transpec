@@ -2,6 +2,8 @@
 
 ## Master
 
+* Fix failure of dynamic analysis when cwd was changed at exit of rspec
+
 ## v1.1.0
 
 * Support conversion of `its` (#9)
