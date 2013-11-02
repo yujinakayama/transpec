@@ -2,6 +2,8 @@
 
 ## Master
 
+## v1.1.1
+
 * Fix failure of dynamic analysis when cwd was changed at exit of rspec
 
 ## v1.1.0
