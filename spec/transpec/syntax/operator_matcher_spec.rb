@@ -70,9 +70,9 @@ module Transpec
         end
       end
 
-      describe '#correct_operator!' do
+      describe '#convert_operator!' do
         before do
-          matcher.correct_operator!(parenthesize_arg)
+          matcher.convert_operator!(parenthesize_arg)
         end
 
         let(:parenthesize_arg) { true }

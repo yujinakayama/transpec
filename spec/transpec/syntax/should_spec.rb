@@ -189,8 +189,8 @@ module Transpec
           END
         end
 
-        it 'invokes OperatorMatcher#correct_operator!' do
-          should_object.operator_matcher.should_receive(:correct_operator!)
+        it 'invokes OperatorMatcher#convert_operator!' do
+          should_object.operator_matcher.should_receive(:convert_operator!)
           should_object.expectize!
         end
 

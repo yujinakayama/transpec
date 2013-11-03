@@ -24,7 +24,7 @@ module Transpec
         rewriter.register_request(arg_node, :arg_is_enumerable?, 'is_a?(Enumerable)')
       end
 
-      def correct_operator!(parenthesize_arg = true)
+      def convert_operator!(parenthesize_arg = true)
         case method_name
         when :==
           convert_to_eq!(parenthesize_arg)

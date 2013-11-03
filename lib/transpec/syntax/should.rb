@@ -59,7 +59,7 @@ module Transpec
         @current_syntax_type = :expect
         register_record(negative_form)
 
-        operator_matcher.correct_operator!(parenthesize_matcher_arg) if operator_matcher
+        operator_matcher.convert_operator!(parenthesize_matcher_arg) if operator_matcher
       end
 
       def operator_matcher
