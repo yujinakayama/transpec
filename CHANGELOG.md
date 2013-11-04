@@ -2,6 +2,8 @@
 
 ## Master
 
+## v1.1.2
+
 * Allow use of non monkey patch syntaxes in non example group contexts by including `RSpec::Matchers` ([#15](https://github.com/yujinakayama/transpec/issues/15))
 
 ## v1.1.1
