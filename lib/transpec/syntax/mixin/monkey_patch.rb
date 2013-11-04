@@ -5,7 +5,7 @@ module Transpec
     module Mixin
       module MonkeyPatch
         def register_request_of_syntax_availability_inspection(rewriter, key, methods)
-          code = "self.class.name.start_with?('RSpec::')"
+          code = "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') }"
 
           methods.each do |method|
             code << " && respond_to?(#{method.inspect})"

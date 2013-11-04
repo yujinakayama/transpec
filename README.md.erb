@@ -291,14 +291,26 @@ end
 ### Reason
 
 * `should` is defined on `BasicObject` class, so you can use `should` everywhere.
-* `expect` is defined on `RSpec::Matchers` module that is included by `RSpec::Core::ExampleGroup` class, so you can use `expect` only where `self` is an instance of `RSpec::Core::ExampleGroup` (i.e. in `it` blocks, `:each` hook blocks or included module methods).
+* `expect` is defined on `RSpec::Matchers` module that is included by `RSpec::Core::ExampleGroup` class, so you can use `expect` only where `self` is an instance of `RSpec::Core::ExampleGroup` (i.e. in `it` blocks, `:each` hook blocks or included module methods) or other classes that include `RSpec::Matchers`.
 
 With the above example, in the context of `1.should == 1`, the `self` is an instance of `MyAwesomeTestRunner`.
 Transpec tracks contexts and skips conversion if the target syntax cannot be converted in a case like this.
 
 ### Solution
 
-You need to rewrite the spec by yourself.
+Include or extend `RSpec::Matchers` module to make `expect` available in the context:
+
+```ruby
+  class MyAwesomeTestRunner
+    include RSpec::Matchers
+
+    def run
+      1.should == 1
+    end
+  end
+```
+
+Then run `transpec` again.
 
 ## Supported Conversions
 

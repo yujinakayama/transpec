@@ -2,6 +2,8 @@
 
 ## Master
 
+* Allow use of non monkey patch syntaxes in non example group contexts by including `RSpec::Matchers` ([#15](https://github.com/yujinakayama/transpec/issues/15))
+
 ## v1.1.1
 
 * Fix failure of dynamic analysis when cwd was changed at exit of rspec
