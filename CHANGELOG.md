@@ -1,6 +1,11 @@
 # Changelog
 
-## Master
+## Development
+
+* Support conversion to `allow(obj).to receive_messages(:message => value)` ([#6](https://github.com/yujinakayama/transpec/issues/6))
+* Support conversion to `be_truthy` / `be_falsey` ([#8](https://github.com/yujinakayama/transpec/issues/8))
+* Add `-b/--boolean-matcher` option that allows to specify matcher type that `be_true` and `be_false` will be converted to
+* Abort if a target project's `rspec` gem dependency is older than the version required by Transpec
 
 ## v1.1.2
 
@@ -12,7 +17,7 @@
 
 ## v1.1.0
 
-* Support conversion of `its` (#9)
+* Support conversion of `its` ([#9](https://github.com/yujinakayama/transpec/issues/9))
 
 ## v1.0.0
 

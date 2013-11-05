@@ -3,7 +3,9 @@
 require 'transpec/base_rewriter'
 require 'transpec/configuration'
 require 'transpec/report'
+require 'transpec/rspec_version'
 require 'transpec/syntax'
+require 'transpec/syntax/be_boolean'
 require 'transpec/syntax/be_close'
 require 'transpec/syntax/double'
 require 'transpec/syntax/expect'
@@ -16,13 +18,14 @@ require 'transpec/syntax/should_receive'
 
 module Transpec
   class Converter < BaseRewriter
-    attr_reader :configuration, :runtime_data, :report, :invalid_context_errors
+    attr_reader :configuration, :rspec_version, :runtime_data, :report, :invalid_context_errors
 
     alias_method :convert_file!, :rewrite_file!
     alias_method :convert, :rewrite
 
-    def initialize(configuration = nil, runtime_data = nil, report = nil)
+    def initialize(configuration = nil, rspec_version = nil, runtime_data = nil, report = nil)
       @configuration = configuration || Configuration.new
+      @rspec_version = rspec_version || Transpec.current_rspec_version
       @runtime_data = runtime_data
       @report = report || Report.new
       @invalid_context_errors = []
@@ -92,12 +95,24 @@ module Transpec
 
     def process_method_stub(method_stub)
       if @configuration.convert_stub?
-        method_stub.allowize!
+        method_stub.allowize!(@rspec_version.receive_messages_available?)
       elsif @configuration.convert_deprecated_method?
         method_stub.convert_deprecated_method!
       end
 
       method_stub.remove_allowance_for_no_message! if @configuration.convert_deprecated_method?
+    end
+
+    def process_be_boolean(be_boolean)
+      return unless @rspec_version.be_truthy_available?
+      return unless @configuration.convert_deprecated_method?
+
+      case @configuration.boolean_matcher_type
+      when :conditional
+        be_boolean.convert_to_conditional_matcher!(@configuration.form_of_be_falsey)
+      when :exact
+        be_boolean.convert_to_exact_matcher!
+      end
     end
 
     def process_be_close(be_close)

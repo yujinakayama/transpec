@@ -354,6 +354,39 @@ expect([1, 2, 3]).to match_array([2, 1, 3])
 
 * See also: [(Almost) All Matchers Are Supported - RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#almost_all_matchers_are_supported)
 
+### Boolean matchers
+
+**This conversion is available only if your project has `rspec` gem dependency `2.99` or later.**
+
+```ruby
+# Targets
+expect(obj).to be_true
+expect(obj).to be_false
+
+# Converted
+expect(obj).to be_truthy
+expect(obj).to be_falsey
+
+# With `--boolean-matcher truthy,falsy`
+# be_falsy is just an alias of be_falsey.
+expect(obj).to be_truthy
+expect(obj).to be_falsy
+
+# With `--boolean-matcher true,false`
+expect(obj).to be true
+expect(obj).to be false
+```
+
+* `be_true` matcher passes if expectation subject is _truthy_ in conditional semantics. (i.e. all objects except `false` and `nil`)
+* `be_false` matcher passes if expectation subject is _falsey_ in conditional semantics. (i.e. `false` or `nil`)
+* `be_truthy` and `be_falsey` matchers are renamed version of `be_true` and `be_false` and their behaviors are same.
+* `be true` and `be false` are not new things. These are combinations of `be` matcher and boolean literals. These pass if expectation subject is exactly equal to boolean value.
+
+So, converting `be_true`/`be_false` to `be_truthy`/`be_falsey` never breaks your specs and this is the Transpec's default. If you are willing to test boolean values strictly, you can convert them to `be true`/`be false` with `--boolean-matcher true,false` option. Note that this may break your specs if your library codes don't return exact boolean values.
+
+* Disabled by: `--keep deprecated`
+* See also: [Consider renaming `be_true` and `be_false` to `be_truthy` and `be_falsey` · rspec/rspec-expectations](https://github.com/rspec/rspec-expectations/issues/283)
+
 ### `be_close` matcher
 
 ```ruby
@@ -485,14 +518,20 @@ allow(obj).to receive(:foo)
 
 allow(obj).to receive(:foo)
 
+# If the target project's rspec gem dependency is prior to 3.0
 allow(obj).to receive(:foo).and_return(1)
 allow(obj).to receive(:bar).and_return(2)
+
+# If the target project's rspec gem dependency is 3.0 or later
+allow(obj).to receive_messages(:foo => 1, :bar => 2)
 
 allow_any_instance_of(SomeClass).to receive(:foo)
 ```
 
 * Disabled by: `--keep stub`
-* See also: [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
+* See also:
+    * [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
+    * [allow receive with multiple methods · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/368)
 
 ### Deprecated method stub aliases
 

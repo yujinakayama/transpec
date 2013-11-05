@@ -6,18 +6,20 @@ require 'transpec/converter'
 require 'transpec/dynamic_analyzer'
 require 'transpec/file_finder'
 require 'transpec/option_parser'
+require 'transpec/project'
 require 'transpec/report'
 require 'rainbow'
 
 module Transpec
   class CLI
-    attr_reader :configuration
+    attr_reader :project, :configuration, :report
 
     def self.run(args = ARGV)
       new.run(args)
     end
 
     def initialize
+      @project = Project.new
       @configuration = Configuration.new
       @report = Report.new
     end
@@ -60,7 +62,7 @@ module Transpec
     def convert_file(file_path, runtime_data = nil)
       puts "Converting #{file_path}"
 
-      converter = Converter.new(@configuration, runtime_data, @report)
+      converter = Converter.new(@configuration, @project.rspec_version, runtime_data, @report)
       converter.convert_file!(file_path)
 
       @report.invalid_context_errors.concat(converter.invalid_context_errors)
@@ -76,11 +78,16 @@ module Transpec
     private
 
     def fail_if_should_not_continue!
-      return if @configuration.forced?
-      return unless Git.command_available?
-      return unless Git.inside_of_repository?
-      return if Git.clean?
-      fail 'The current Git repository is not clean. Aborting.'
+      unless @configuration.forced?
+        if Git.command_available? && Git.inside_of_repository? && !Git.clean?
+          fail 'The current Git repository is not clean. Aborting.'
+        end
+      end
+
+      if @project.rspec_version < Transpec.required_rspec_version
+        fail "Your project must have rspec gem dependency #{Transpec.required_rspec_version} " +
+             "or later but currently it's #{@project.rspec_version}. Aborting."
+      end
     end
 
     def display_summary

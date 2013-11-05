@@ -105,9 +105,41 @@ module Transpec
           context "when #{form.inspect} is specified" do
             let(:args) { ['--negative-form', form] }
 
-            it "sets Configuration#negative_form_of_to? #{form.inspect}" do
+            it "sets Configuration#negative_form_of_to #{form.inspect}" do
               parser.parse(args)
               configuration.negative_form_of_to.should == form
+            end
+          end
+        end
+      end
+
+      describe '-b/--boolean-matcher option' do
+        [
+          ['truthy,falsey', :conditional, 'be_falsey'],
+          ['truthy,falsy',  :conditional, 'be_falsy'],
+          ['true,false',    :exact,       'be_falsey']
+        ].each do |cli_type, configuration_type, form_of_be_falsey|
+          context "when #{cli_type.inspect} is specified" do
+            let(:args) { ['--boolean-matcher', cli_type] }
+
+            it "sets Configuration#boolean_matcher_type #{configuration_type.inspect}" do
+              parser.parse(args)
+              configuration.boolean_matcher_type.should == configuration_type
+            end
+
+            it "sets Configuration#form_of_be_falsey #{form_of_be_falsey.inspect}" do
+              parser.parse(args)
+              configuration.form_of_be_falsey.should == form_of_be_falsey
+            end
+          end
+        end
+
+        ['', 'truthy', 'true', 'foo'].each do |cli_type|
+          context "when #{cli_type.inspect} is specified" do
+            let(:args) { ['--boolean-matcher', cli_type] }
+
+            it 'raises error' do
+              -> { parser.parse(args) }.should raise_error(/must be any of/)
             end
           end
         end
