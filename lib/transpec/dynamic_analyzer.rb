@@ -1,8 +1,9 @@
 # coding: utf-8
 
-require 'transpec/file_finder'
 require 'transpec/dynamic_analyzer/rewriter'
 require 'transpec/dynamic_analyzer/runtime_data'
+require 'transpec/file_finder'
+require 'transpec/project'
 require 'tmpdir'
 require 'fileutils'
 require 'ostruct'
@@ -71,11 +72,11 @@ module Transpec
       end
     END
 
-    attr_reader :project_path, :rspec_command, :silent
+    attr_reader :project, :rspec_command, :silent
     alias_method :silent?, :silent
 
     def initialize(options = {})
-      @project_path = options[:project_path] || Dir.pwd
+      @project = options[:project] || Project.new
       @rspec_command = options[:rspec_command] || default_rspec_command
       @silent = options[:silent] || false
 
@@ -87,15 +88,11 @@ module Transpec
     end
 
     def default_rspec_command
-      if project_requires_bundler?
+      if @project.require_bundler?
         'bundle exec rspec'
       else
         'rspec'
       end
-    end
-
-    def project_requires_bundler?
-      File.exist?('Gemfile')
     end
 
     def analyze(paths = [])
@@ -127,8 +124,8 @@ module Transpec
       @in_copied_project = true
 
       Dir.mktmpdir do |tmpdir|
-        FileUtils.cp_r(@project_path, tmpdir)
-        @copied_project_path = File.join(tmpdir, File.basename(@project_path))
+        FileUtils.cp_r(@project.path, tmpdir)
+        @copied_project_path = File.join(tmpdir, @project.basename)
         Dir.chdir(@copied_project_path) do
           yield
         end
@@ -138,7 +135,7 @@ module Transpec
     end
 
     def run_rspec(paths)
-      with_bundler_clean_env do
+      @project.with_bundler_clean_env do
         ENV['SPEC_OPTS'] = ['-r', "./#{HELPER_FILE}"].shelljoin
 
         command = "#{rspec_command} #{paths.shelljoin}"
@@ -157,18 +154,6 @@ module Transpec
           end
           fail message
         end
-      end
-    end
-
-    def with_bundler_clean_env
-      if defined?(Bundler) && project_requires_bundler?
-        Bundler.with_clean_env do
-          # Bundler.with_clean_env cleans environment variables
-          # which are set after bundler is loaded.
-          yield
-        end
-      else
-        yield
       end
     end
   end
