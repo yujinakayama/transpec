@@ -116,6 +116,8 @@ module Transpec
     end
 
     def display_final_guide
+      return if @report.records.empty?
+
       puts
       puts "Done! Now run #{'rspec'.bright} and check if all the converted specs pass."
     end
