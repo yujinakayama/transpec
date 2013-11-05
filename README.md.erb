@@ -215,6 +215,18 @@ Either `not_to` or `to_not`.
 $ transpec --negative-form to_not
 ```
 
+### `-b/--boolean-matcher`
+
+Specify matcher type that `be_true` and `be_false` will be converted to.
+Any of `truthy,falsey`, `truthy,falsy` or `true,false` can be specified.
+`truthy,falsey` is used by default.
+
+```bash
+$ transpec --boolean-matcher true,false
+```
+
+See [Supported Conversions - Boolean matchers](#boolean-matchers) for more details.
+
 ### `-p/--no-parentheses-matcher-arg`
 
 Suppress parenthesizing argument of matcher when converting
