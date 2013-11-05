@@ -82,7 +82,7 @@ $ gem install transpec
 
 Before converting your specs:
 
-* Make sure your project has `rspec` gem dependency `<%= rspec_version %>` or later. If not, change your `*.gemspec` or `Gemfile` to do so.
+* Make sure your project has `rspec` gem dependency `<%= Transpec.required_rspec_version %>` or later. If not, change your `*.gemspec` or `Gemfile` to do so.
 * Run `rspec` and check if all the specs pass.
 * Ensure the Git repository is clean. (You don't want to mix up your changes and Transpec's changes, right?)
 

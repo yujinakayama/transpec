@@ -9,6 +9,10 @@ module Transpec
 
     subject(:cli) { CLI.new }
 
+    before do
+      cli.project.stub(:rspec_version).and_return(Transpec.current_rspec_version)
+    end
+
     describe '.run' do
       it 'invokes #run' do
         args = ['foo', 'bar']
@@ -52,6 +56,13 @@ module Transpec
         end
       end
 
+      shared_examples 'aborts processing' do
+        it 'aborts processing' do
+          cli.should_not_receive(:convert_file)
+          cli.run(args).should be_false
+        end
+      end
+
       context 'when git is available' do
         before { Git.stub(:command_available?).and_return(true) }
 
@@ -61,11 +72,8 @@ module Transpec
           context 'and the repository is not clean' do
             before { Git.stub(:clean?).and_return(false) }
 
-            context '--force option is not specified' do
-              it 'aborts processing' do
-                cli.should_not_receive(:convert_file)
-                cli.run(args).should be_false
-              end
+            context 'and --force option is not specified' do
+              include_examples 'aborts processing'
 
               it 'warns to the user' do
                 cli.should_receive(:warn) do |arg|
@@ -76,8 +84,14 @@ module Transpec
               end
             end
 
-            context '#forced? is true' do
-              before { args << '--force' }
+            context 'and --force option is specified' do
+              before do
+                args << '--force'
+                # Silence "fatal: Not a git repository (or any of the parent directories): .git"
+                # from Bundler.
+                `git init`
+              end
+
               include_examples 'rewrites files'
             end
           end
@@ -97,6 +111,23 @@ module Transpec
       context 'when git is not available' do
         before { Git.stub(:command_available?).and_return(false) }
         include_examples 'rewrites files'
+      end
+
+      context "when the project's RSpec dependency is older than the required version" do
+        before do
+          Git.stub(:command_available?).and_return(false)
+          cli.project.stub(:rspec_version).and_return(RSpecVersion.new('2.13.0'))
+        end
+
+        include_examples 'aborts processing'
+
+        it 'warns to the user' do
+          cli.should_receive(:warn) do |arg|
+            arg.should match(/rspec.+dependency/i)
+          end
+
+          cli.run(args)
+        end
       end
 
       context 'when a syntax error is raised while processing files' do

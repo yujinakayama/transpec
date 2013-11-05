@@ -17,6 +17,17 @@ module CacheHelper
     end
   end
 
+  def with_cached_dir(dirname)
+    dir_path = File.join(cache_dir, dirname)
+
+    cached = Dir.exist?(dir_path)
+    FileUtils.mkdir_p(dir_path) unless cached
+
+    Dir.chdir(dir_path) do
+      yield cached
+    end
+  end
+
   def load_cache(path)
     File.open(path) do |file|
       Marshal.load(file)
@@ -36,8 +47,8 @@ module CacheHelper
 
   def cache_dir
     @cache_dir ||= begin
-      spec_dir = File.expand_path(File.join(File.dirname(__FILE__), '..'))
-      cache_dir = File.join(spec_dir, 'cache')
+      project_root = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
+      cache_dir = File.join(project_root, 'tmp', 'spec_cache')
 
       unless Dir.exist?(cache_dir)
         require 'fileutils'
