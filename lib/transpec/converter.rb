@@ -3,6 +3,7 @@
 require 'transpec/base_rewriter'
 require 'transpec/configuration'
 require 'transpec/report'
+require 'transpec/rspec_version'
 require 'transpec/syntax'
 require 'transpec/syntax/be_boolean'
 require 'transpec/syntax/be_close'
@@ -17,13 +18,14 @@ require 'transpec/syntax/should_receive'
 
 module Transpec
   class Converter < BaseRewriter
-    attr_reader :configuration, :runtime_data, :report, :invalid_context_errors
+    attr_reader :configuration, :rspec_version, :runtime_data, :report, :invalid_context_errors
 
     alias_method :convert_file!, :rewrite_file!
     alias_method :convert, :rewrite
 
-    def initialize(configuration = nil, runtime_data = nil, report = nil)
+    def initialize(configuration = nil, rspec_version = nil, runtime_data = nil, report = nil)
       @configuration = configuration || Configuration.new
+      @rspec_version = rspec_version || Transpec.current_rspec_version
       @runtime_data = runtime_data
       @report = report || Report.new
       @invalid_context_errors = []
@@ -102,6 +104,7 @@ module Transpec
     end
 
     def process_be_boolean(be_boolean)
+      return unless @rspec_version.be_truthy_available?
       return unless @configuration.convert_deprecated_method?
 
       case @configuration.boolean_matcher_type

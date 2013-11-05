@@ -62,7 +62,7 @@ module Transpec
     def convert_file(file_path, runtime_data = nil)
       puts "Converting #{file_path}"
 
-      converter = Converter.new(@configuration, runtime_data, @report)
+      converter = Converter.new(@configuration, @project.rspec_version, runtime_data, @report)
       converter.convert_file!(file_path)
 
       @report.invalid_context_errors.concat(converter.invalid_context_errors)

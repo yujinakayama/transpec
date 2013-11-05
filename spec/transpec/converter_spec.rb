@@ -5,7 +5,8 @@ require 'transpec/converter'
 
 module Transpec
   describe Converter do
-    subject(:converter) { Converter.new(configuration) }
+    subject(:converter) { Converter.new(configuration, rspec_version) }
+    let(:rspec_version) { Transpec.current_rspec_version }
     let(:configuration) { Configuration.new }
 
     describe '#convert_file!' do
@@ -487,43 +488,57 @@ module Transpec
     describe '#process_be_boolean' do
       let(:be_boolean_object) { double('be_boolean_object').as_null_object }
 
-      context 'when Configuration#convert_deprecated_method? is true' do
-        before { configuration.convert_deprecated_method = true }
+      context 'when RSpecVersion#be_truthy_available? returns true' do
+        before { rspec_version.stub(:be_truthy_available?).and_return(true) }
 
-        context 'and Configuration#boolean_matcher_type is :conditional' do
-          before { configuration.boolean_matcher_type = :conditional }
+        context 'when Configuration#convert_deprecated_method? is true' do
+          before { configuration.convert_deprecated_method = true }
 
-          context 'and Configuration#form_of_be_falsey is "be_falsey"' do
-            before { configuration.form_of_be_falsey = 'be_falsey' }
+          context 'and Configuration#boolean_matcher_type is :conditional' do
+            before { configuration.boolean_matcher_type = :conditional }
 
-            it 'invokes BeBoolean#convert_to_conditional_matcher! with "be_falsey"' do
-              be_boolean_object.should_receive(:convert_to_conditional_matcher!).with('be_falsey')
-              converter.process_be_boolean(be_boolean_object)
+            context 'and Configuration#form_of_be_falsey is "be_falsey"' do
+              before { configuration.form_of_be_falsey = 'be_falsey' }
+
+              it 'invokes BeBoolean#convert_to_conditional_matcher! with "be_falsey"' do
+                be_boolean_object.should_receive(:convert_to_conditional_matcher!).with('be_falsey')
+                converter.process_be_boolean(be_boolean_object)
+              end
+            end
+
+            context 'and Configuration#form_of_be_falsey is "be_falsy"' do
+              before { configuration.form_of_be_falsey = 'be_falsy' }
+
+              it 'invokes BeBoolean#convert_to_conditional_matcher! with "be_falsy"' do
+                be_boolean_object.should_receive(:convert_to_conditional_matcher!).with('be_falsy')
+                converter.process_be_boolean(be_boolean_object)
+              end
             end
           end
 
-          context 'and Configuration#form_of_be_falsey is "be_falsy"' do
-            before { configuration.form_of_be_falsey = 'be_falsy' }
+          context 'and Configuration#boolean_matcher_type is :exact' do
+            before { configuration.boolean_matcher_type = :exact }
 
-            it 'invokes BeBoolean#convert_to_conditional_matcher! with "be_falsy"' do
-              be_boolean_object.should_receive(:convert_to_conditional_matcher!).with('be_falsy')
+            it 'invokes BeBoolean#convert_to_exact_matcher!' do
+              be_boolean_object.should_receive(:convert_to_exact_matcher!)
               converter.process_be_boolean(be_boolean_object)
             end
           end
         end
 
-        context 'and Configuration#boolean_matcher_type is :exact' do
-          before { configuration.boolean_matcher_type = :exact }
+        context 'when Configuration#convert_deprecated_method? is false' do
+          before { configuration.convert_deprecated_method = false }
 
-          it 'invokes BeBoolean#convert_to_exact_matcher!' do
-            be_boolean_object.should_receive(:convert_to_exact_matcher!)
+          it 'does nothing' do
+            be_boolean_object.should_not_receive(:convert_to_conditional_matcher!)
+            be_boolean_object.should_not_receive(:convert_to_exact_matcher!)
             converter.process_be_boolean(be_boolean_object)
           end
         end
       end
 
-      context 'when Configuration#convert_deprecated_method? is false' do
-        before { configuration.convert_deprecated_method = false }
+      context 'when RSpecVersion#be_truthy_available? returns true' do
+        before { rspec_version.stub(:be_truthy_available?).and_return(false) }
 
         it 'does nothing' do
           be_boolean_object.should_not_receive(:convert_to_conditional_matcher!)

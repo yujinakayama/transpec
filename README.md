@@ -356,6 +356,8 @@ expect([1, 2, 3]).to match_array([2, 1, 3])
 
 ### Boolean matchers
 
+**This conversion is available only if your project has `rspec` gem dependency `2.99` or later.**
+
 ```ruby
 # Targets
 expect(obj).to be_true
