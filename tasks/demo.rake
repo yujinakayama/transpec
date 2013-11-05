@@ -5,9 +5,9 @@ require_relative 'lib/transpec_demo'
 namespace :demo do
   # rubocop:disable LineLength
   demos = [
-    TranspecDemo.new('git@github.com:yujinakayama/twitter.git', 'v4.1.0'),
-    TranspecDemo.new('git@github.com:yujinakayama/guard.git', 'transpec-test', %w(--without development)),
-    TranspecDemo.new('git@github.com:yujinakayama/mail.git', 'transpec-test')
+    TranspecDemo.new('git@github.com:yujinakayama/twitter.git', 'transpec-test-rspec-2-99'),
+    TranspecDemo.new('git@github.com:yujinakayama/guard.git', 'transpec-test-rspec-2-99', %w(--without development)),
+    TranspecDemo.new('git@github.com:yujinakayama/mail.git', 'transpec-test-rspec-2-99')
   ]
   # rubocop:enable LineLength
 
