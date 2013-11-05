@@ -518,14 +518,20 @@ allow(obj).to receive(:foo)
 
 allow(obj).to receive(:foo)
 
+# If the target project's rspec gem dependency is prior to 3.0
 allow(obj).to receive(:foo).and_return(1)
 allow(obj).to receive(:bar).and_return(2)
+
+# If the target project's rspec gem dependency is 3.0 or later
+allow(obj).to receive_messages(:foo => 1, :bar => 2)
 
 allow_any_instance_of(SomeClass).to receive(:foo)
 ```
 
 * Disabled by: `--keep stub`
-* See also: [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
+* See also:
+    * [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
+    * [allow receive with multiple methods · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/368)
 
 ### Deprecated method stub aliases
 

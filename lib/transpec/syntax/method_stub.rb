@@ -29,7 +29,7 @@ module Transpec
         check_syntax_availability(__method__)
       end
 
-      def allowize!
+      def allowize!(receive_messages_available = false)
         # There's no way of unstubbing in #allow syntax.
         return unless [:stub, :stub!].include?(method_name)
 
@@ -37,15 +37,19 @@ module Transpec
           fail InvalidContextError.new(selector_range, "##{method_name}", '#allow')
         end
 
-        if arg_node.type == :hash
-          expressions = build_allow_expressions_from_hash_node(arg_node)
-          replace(expression_range, expressions)
-        else
-          expression = build_allow_expression(arg_node)
-          replace(expression_range, expression)
-        end
+        source, type = if arg_node.type == :hash
+                         if receive_messages_available
+                           [build_allow_to_receive_messages_expression, :allow_to_receive_messages]
+                         else
+                           [build_allow_expressions_from_hash_node(arg_node), :allow_to_receive]
+                         end
+                       else
+                         [build_allow_expression(arg_node), :allow_to_receive]
+                       end
 
-        register_record(:allow)
+        replace(expression_range, source)
+
+        register_record(type)
       end
 
       def convert_deprecated_method!
@@ -87,6 +91,14 @@ module Transpec
         expression
       end
 
+      def build_allow_to_receive_messages_expression
+        expression =  allow_source
+        expression << range_in_between_receiver_and_selector.source
+        expression << 'to receive_messages'
+        expression << parentheses_range.source
+        expression
+      end
+
       def allow_source
         if any_instance?
           class_source = class_node_of_any_instance.loc.expression.source
@@ -122,10 +134,15 @@ module Transpec
 
       def converted_syntax(conversion_type)
         case conversion_type
-        when :allow
+        when :allow_to_receive, :allow_to_receive_messages
           syntax = any_instance? ? 'allow_any_instance_of(SomeClass)' : 'allow(obj)'
-          syntax << '.to receive(:message)'
-          syntax << '.and_return(value)' if arg_node.type == :hash
+          syntax << '.to '
+          if conversion_type == :allow_to_receive
+            syntax << 'receive(:message)'
+            syntax << '.and_return(value)' if arg_node.type == :hash
+          else
+            syntax << 'receive_messages(:message => value)'
+          end
         when :deprecated
           syntax = 'obj.'
           syntax << replacement_method_for_deprecated_method

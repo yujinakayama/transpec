@@ -296,36 +296,72 @@ module Transpec
           end
 
           context "when it is `subject.#{method}(:method => value)` form" do
-            let(:source) do
-              <<-END
-                describe 'example' do
-                  it 'responds to #foo and returns 1' do
-                    subject.#{method}(:foo => 1)
+            context 'and #receive_messages is available' do
+              let(:source) do
+                <<-END
+                  describe 'example' do
+                    it 'responds to #foo and returns 1' do
+                      subject.#{method}(:foo => 1)
+                    end
                   end
-                end
-              END
-            end
+                END
+              end
 
-            let(:expected_source) do
-              <<-END
-                describe 'example' do
-                  it 'responds to #foo and returns 1' do
-                    allow(subject).to receive(:foo).and_return(1)
+              let(:expected_source) do
+                <<-END
+                  describe 'example' do
+                    it 'responds to #foo and returns 1' do
+                      allow(subject).to receive_messages(:foo => 1)
+                    end
                   end
-                end
-              END
+                END
+              end
+
+              it 'converts into `allow(subject).to receive_messages(:method => value)` form' do
+                method_stub_object.allowize!(true)
+                rewritten_source.should == expected_source
+              end
+
+              it 'adds record ' +
+                 "\"`obj.#{method}(:message => value)` -> `allow(obj).to receive_messages(:message => value)`\"" do
+                method_stub_object.allowize!(true)
+                record.original_syntax.should  == "obj.#{method}(:message => value)"
+                record.converted_syntax.should == 'allow(obj).to receive_messages(:message => value)'
+              end
             end
 
-            it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
-              method_stub_object.allowize!
-              rewritten_source.should == expected_source
-            end
+            context 'and #receive_messages is not available' do
+              let(:source) do
+                <<-END
+                  describe 'example' do
+                    it 'responds to #foo and returns 1' do
+                      subject.#{method}(:foo => 1)
+                    end
+                  end
+                END
+              end
 
-            it 'adds record ' +
-               "\"`obj.#{method}(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
-              method_stub_object.allowize!
-              record.original_syntax.should  == "obj.#{method}(:message => value)"
-              record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
+              let(:expected_source) do
+                <<-END
+                  describe 'example' do
+                    it 'responds to #foo and returns 1' do
+                      allow(subject).to receive(:foo).and_return(1)
+                    end
+                  end
+                END
+              end
+
+              it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
+                method_stub_object.allowize!
+                rewritten_source.should == expected_source
+              end
+
+              it 'adds record ' +
+                 "\"`obj.#{method}(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
+                method_stub_object.allowize!
+                record.original_syntax.should  == "obj.#{method}(:message => value)"
+                record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
+              end
             end
           end
 
@@ -399,36 +435,73 @@ module Transpec
             end
 
             context 'when the statement continues over multi lines' do
-              let(:source) do
-                <<-END
-                  describe 'example' do
-                    it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
-                      subject
-                        .#{method}(
-                          :foo => 1,
-                          :bar => 2
-                        )
+              context 'and #receive_messages is available' do
+                let(:source) do
+                  <<-END
+                    describe 'example' do
+                      it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
+                        subject
+                          .#{method}(
+                            :foo => 1,
+                            :bar => 2
+                          )
+                      end
                     end
-                  end
-                END
+                  END
+                end
+
+                let(:expected_source) do
+                  <<-END
+                    describe 'example' do
+                      it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
+                        allow(subject)
+                          .to receive_messages(
+                            :foo => 1,
+                            :bar => 2
+                          )
+                      end
+                    end
+                  END
+                end
+
+                it 'keeps the style' do
+                  method_stub_object.allowize!(true)
+                  rewritten_source.should == expected_source
+                end
               end
 
-              let(:expected_source) do
-                <<-END
-                  describe 'example' do
-                    it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
-                      allow(subject)
-                        .to receive(:foo).and_return(1)
-                      allow(subject)
-                        .to receive(:bar).and_return(2)
+              context 'and #receive_messages is not available' do
+                let(:source) do
+                  <<-END
+                    describe 'example' do
+                      it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
+                        subject
+                          .#{method}(
+                            :foo => 1,
+                            :bar => 2
+                          )
+                      end
                     end
-                  end
-                END
-              end
+                  END
+                end
 
-              it 'keeps the style except around the hash' do
-                method_stub_object.allowize!
-                rewritten_source.should == expected_source
+                let(:expected_source) do
+                  <<-END
+                    describe 'example' do
+                      it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
+                        allow(subject)
+                          .to receive(:foo).and_return(1)
+                        allow(subject)
+                          .to receive(:bar).and_return(2)
+                      end
+                    end
+                  END
+                end
+
+                it 'keeps the style except around the hash' do
+                  method_stub_object.allowize!
+                  rewritten_source.should == expected_source
+                end
               end
             end
           end
