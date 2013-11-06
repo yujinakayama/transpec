@@ -11,6 +11,9 @@ LineLength:
 MethodLength:
   Max: 17
 
+CyclomaticComplexity:
+  Max: 9
+
 WordArray:
   Enabled: false
 
