@@ -77,7 +77,7 @@ module Transpec
           end
 
           it 'returns itself' do
-            returned_value = target_node.each_ancestor_node { }
+            returned_value = target_node.each_ancestor_node {}
             returned_value.should be(target_node)
           end
         end
@@ -133,7 +133,7 @@ module Transpec
           end
 
           it 'returns itself' do
-            returned_value = ast.each_child_node { }
+            returned_value = ast.each_child_node {}
             returned_value.should be(ast)
           end
         end
@@ -191,7 +191,7 @@ module Transpec
           end
 
           it 'returns itself' do
-            returned_value = ast.each_descendent_node { }
+            returned_value = ast.each_descendent_node {}
             returned_value.should be(ast)
           end
         end
@@ -245,7 +245,7 @@ module Transpec
           end
 
           it 'returns itself' do
-            returned_value = ast.each_node { }
+            returned_value = ast.each_node {}
             returned_value.should be(ast)
           end
         end
