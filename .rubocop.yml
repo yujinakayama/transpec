@@ -48,6 +48,10 @@ Documentation:
 IndentationWidth:
   Enabled: false
 
+# TODO: This should not register offences for non keyword hashes.
+BracesAroundHashParameters:
+  Enabled: false
+
 # TODO: Shorten to 100.
 ClassLength:
   Max: 150
