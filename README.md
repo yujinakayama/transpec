@@ -4,7 +4,7 @@
 
 **Transpec** automatically converts your specs into latest [RSpec](http://rspec.info/) syntax with static and dynamic code analysis.
 
-This aims to facilitate smooth transition to RSpec 3, and Transpec is now ready for RSpec 2.99 and 3.0 beta!
+This aims to facilitate smooth transition to RSpec 3, and is now ready for RSpec 2.99 and 3.0 beta!
 
 See the following pages for the new RSpec syntax and the plan for RSpec 3:
 
@@ -307,7 +307,7 @@ end
 ### Reason
 
 * `should` is defined on `BasicObject` class, so you can use `should` everywhere.
-* `expect` is defined on `RSpec::Matchers` module that is included by `RSpec::Core::ExampleGroup` class, so you can use `expect` only where `self` is an instance of `RSpec::Core::ExampleGroup` (i.e. in `it` blocks, `:each` hook blocks or included module methods) or other classes that include `RSpec::Matchers`.
+* `expect` is defined on `RSpec::Matchers` module that is included by `RSpec::Core::ExampleGroup` class, so you can use `expect` only where `self` is an instance of `RSpec::Core::ExampleGroup` (i.e. in `it` blocks, `:each` hook blocks or included module methods) or other classes that explicitly include `RSpec::Matchers`.
 
 With the above example, in the context of `1.should == 1`, the `self` is an instance of `MyAwesomeTestRunner`.
 Transpec tracks contexts and skips conversion if the target syntax cannot be converted in a case like this.
