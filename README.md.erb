@@ -360,6 +360,8 @@ expect('string').to match(/^str/)
 expect([1, 2, 3]).to match_array([2, 1, 3])
 ```
 
+This conversion is combined with the conversion of [Standard expectations](#standard-expecatations) and cannot be disabled separately because `expect` syntax does not directly support the operator matchers.
+
 * See also: [(Almost) All Matchers Are Supported - RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#almost_all_matchers_are_supported)
 
 ### Boolean matchers
