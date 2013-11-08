@@ -339,7 +339,8 @@ expect(obj).not_to matcher
 expect(obj).to_not matcher # with `--negative-form to_not`
 ```
 
-* Disabled by: `--keep should`
+* Conversion can be disabled by: `--keep should`
+* Deprecation: Deprecated since RSpec 3.0
 * See also: [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax)
 
 ### Operator matchers
@@ -394,7 +395,8 @@ expect(obj).to be false
 
 So, converting `be_true`/`be_false` to `be_truthy`/`be_falsey` never breaks your specs and this is the Transpec's default. If you are willing to test boolean values strictly, you can convert them to `be true`/`be false` with `--boolean-matcher true,false` option. Note that this may break your specs if your library codes don't return exact boolean values.
 
-* Disabled by: `--keep deprecated`
+* Conversion can be disabled by: `--keep deprecated`
+* Deprecation: Deprecated since RSpec 2.99, removed at RSpec 3.0
 * See also: [Consider renaming `be_true` and `be_false` to `be_truthy` and `be_falsey` · rspec/rspec-expectations](https://github.com/rspec/rspec-expectations/issues/283)
 
 ### `be_close` matcher
@@ -407,7 +409,8 @@ expect(1.0 / 3.0).to be_close(0.333, 0.001)
 expect(1.0 / 3.0).to be_within(0.001).of(0.333)
 ```
 
-* Disabled by: `--keep deprecated`
+* Conversion can be disabled by: `--keep deprecated`
+* Deprecation: Deprecated since RSpec 2.1, removed at RSpec 3.0
 * See also: [New be within matcher and RSpec.deprecate fix · rspec/rspec-expectations](https://github.com/rspec/rspec-expectations/pull/32)
 
 ### `have(n).items` matcher
@@ -440,7 +443,8 @@ expect(team.send(:players).size).to eq(3)
 There's the option to continue using `have(n).items` matcher with [rspec-collection_matchers](https://github.com/rspec/rspec-collection_matchers) that is an external gem extracted from `rspec-expectations`.
 If you choose so, disable this conversion with `--keep have_items`.
 
-* Disabled by: `--keep have_items`
+* Conversion can be disabled by: `--keep have_items`
+* Deprecation: Deprecated since RSpec 2.99, removed at RSpec 3.0
 * See also: [Expectations: have(x).items matchers will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#expectations__matchers_will_be_moved_into_an_external_gem)
 
 ### Expectations on block
@@ -455,7 +459,8 @@ proc { do_something }.should raise_error
 expect { do_something }.to raise_error
 ```
 
-* Disabled by: `--keep should`
+* Conversion can be disabled by: `--keep should`
+* Deprecation: Deprecated since RSpec 3.0
 * See also: [Unification of Block vs. Value Syntaxes - RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#unification_of_block_vs_value_syntaxes)
 
 ### Negative error expectations with specific error
@@ -472,7 +477,8 @@ expect { do_something }.not_to raise_error
 lambda { do_something }.should_not raise_error # with `--keep should`
 ```
 
-* Disabled by: `--keep deprecated`
+* Conversion can be disabled by: `--keep deprecated`
+* Deprecation: Deprecated since RSpec 2.14, removed at RSpec 3.0
 * See also: [Consider deprecating `expect { }.not_to raise_error(SpecificErrorClass)` · rspec/rspec-expectations](https://github.com/rspec/rspec-expectations/issues/231)
 
 ### Message expectations
@@ -487,7 +493,8 @@ expect(obj).to receive(:foo)
 expect_any_instance_of(SomeClass).to receive(:foo)
 ```
 
-* Disabled by: `--keep should_receive`
+* Conversion can be disabled by: `--keep should_receive`
+* Deprecation: Deprecated since RSpec 3.0
 * See also: [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
 
 ### Message expectations that are actually method stubs
@@ -508,7 +515,8 @@ allow_any_instance_of(SomeClass).to receive(:foo)
 SomeClass.any_instance.stub(:foo) # with `--keep stub`
 ```
 
-* Disabled by: `--keep deprecated`
+* Conversion can be disabled by: `--keep deprecated`
+* Deprecation: Deprecated since RSpec 2.14, removed at RSpec 3.0
 * See also: [Don't allow at_least(0) · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/133)
 
 ### Method stubs
@@ -538,7 +546,8 @@ allow(obj).to receive_messages(:foo => 1, :bar => 2)
 allow_any_instance_of(SomeClass).to receive(:foo)
 ```
 
-* Disabled by: `--keep stub`
+* Conversion can be disabled by: `--keep stub`
+* Deprecation: Deprecated since RSpec 3.0
 * See also:
     * [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
     * [allow receive with multiple methods · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/368)
@@ -555,7 +564,8 @@ obj.stub(:foo) # with `--keep stub`
 obj.unstub(:foo)
 ```
 
-* Disabled by: `--keep deprecated`
+* Conversion can be disabled by: `--keep deprecated`
+* Deprecation: Deprecated since RSpec 2.14, removed at RSpec 3.0
 * See also: [Consider deprecating and/or removing #stub! and #unstub! at some point · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/122)
 
 ### Method stubs with deprecated specification of number of times
@@ -570,7 +580,8 @@ allow(obj).to receive(:foo)
 obj.stub(:foo) # with `--keep stub`
 ```
 
-* Disabled by: `--keep deprecated`
+* Conversion can be disabled by: `--keep deprecated`
+* Deprecation: Deprecated since RSpec 2.14, removed at RSpec 3.0
 * See also: [Don't allow at_least(0) · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/133)
 
 ### Deprecated test double aliases
@@ -584,7 +595,8 @@ mock('something')
 double('something')
 ```
 
-* Disabled by: `--keep deprecated`
+* Conversion can be disabled by: `--keep deprecated`
+* Deprecation: Deprecated since RSpec 2.14, removed at RSpec 3.0
 * See also: [Deprecate "stub" for doubles · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/214)
 
 ### Expectations on attribute of subject with `its`
@@ -609,7 +621,8 @@ END
 There's the option to continue using `its` with [rspec-its](https://github.com/rspec/rspec-its) that is an external gem extracted from `rspec-core`.
 If you choose so, disable this conversion with `--keep its`.
 
-* Disabled by: `--keep its`
+* Conversion can be disabled by: `--keep its`
+* Deprecation: Deprecated since RSpec 2.99, removed at RSpec 3.0
 * See also: [Core: its will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#core__will_be_moved_into_an_external_gem)
 
 ## Compatibility
