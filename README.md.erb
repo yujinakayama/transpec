@@ -207,7 +207,7 @@ See [Supported Conversions](#supported-conversions) for more details.
 
 ### `-n/--negative-form`
 
-Specify negative form of `to` that is used in `expect` syntax.
+Specify negative form of `to` that is used in the `expect` syntax.
 Either `not_to` or `to_not`.
 `not_to` is used by default.
 
@@ -231,7 +231,7 @@ See [Supported Conversions - Boolean matchers](#boolean-matchers) for more detai
 
 Suppress parenthesizing argument of matcher when converting
 `should` with operator matcher to `expect` with non-operator matcher
-(`expect` syntax does not directly support the operator matchers).
+(the `expect` syntax does not directly support the operator matchers).
 Note that it will be parenthesized even if this option is specified
 when parentheses are necessary to keep the meaning of the expression.
 
@@ -361,7 +361,7 @@ expect('string').to match(/^str/)
 expect([1, 2, 3]).to match_array([2, 1, 3])
 ```
 
-This conversion is combined with the conversion of [Standard expectations](#standard-expecatations) and cannot be disabled separately because `expect` syntax does not directly support the operator matchers.
+This conversion is combined with the conversion of [Standard expectations](#standard-expecatations) and cannot be disabled separately because the `expect` syntax does not directly support the operator matchers.
 
 * See also: [(Almost) All Matchers Are Supported - RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#almost_all_matchers_are_supported)
 

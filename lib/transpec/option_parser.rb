@@ -149,7 +149,7 @@ module Transpec
         ],
         '-n' => [
           "Specify negative form of #{'to'.underline} that is used in",
-          "#{'expect(...).to'.underline} syntax.",
+          "the #{'expect(...).to'.underline} syntax.",
           "Either #{'not_to'.bright} or #{'to_not'.bright}.",
           "Default: #{'not_to'.bright}"
         ],
@@ -164,7 +164,7 @@ module Transpec
         '-p' => [
           'Suppress parenthesizing argument of matcher',
           'when converting operator to non-operator in',
-          "#{'expect'.underline} syntax. Note that it will be",
+          "the #{'expect'.underline} syntax. Note that it will be",
           'parenthesized even if this option is',
           'specified when parentheses are necessary to',
           'keep the meaning of the expression.',
