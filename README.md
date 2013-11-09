@@ -154,6 +154,12 @@ $ git commit -eF .git/COMMIT_EDITMSG
 
 And you are done!
 
+## Upgrade Process to RSpec 3 beta
+
+If you are going to use Transpec in the upgrade process to RSpec 3 beta, read the article by [Myron Marston](https://github.com/myronmarston):
+
+* [Myron Marston » RSpec 2.99 and 3.0 betas have been released!](http://myronmars.to/n/dev-blog/2013/11/rspec-2-99-and-3-0-betas-have-been-released)
+
 ## Options
 
 ### `-f/--force`
