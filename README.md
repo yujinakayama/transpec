@@ -610,7 +610,7 @@ double('something')
 
 * Conversion can be disabled by: `--keep deprecated`
 * Deprecation: Deprecated since RSpec 2.14, removed at RSpec 3.0
-* See also: [Deprecate "stub" for doubles · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/214)
+* See also: [myronmarston / why_double.md - Gist](https://gist.github.com/myronmarston/6576665)
 
 ### Expectations on attribute of subject with `its`
 
