@@ -27,7 +27,7 @@ module Transpec
       let(:lines) { commit_message.to_s.lines.to_a }
 
       it 'has concise summary at first line' do
-        lines[0].chomp.should == 'Convert specs to latest RSpec syntax with Transpec'
+        lines[0].chomp.should == 'Convert specs to the latest RSpec syntax with Transpec'
       end
 
       it 'has blank line at second line' do

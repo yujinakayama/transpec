@@ -13,7 +13,7 @@ module Transpec
       conversion_summary = @report.summary(bullet: '*', separate_by_blank_line: true)
 
       <<-END.gsub(/^\s+\|/, '').chomp
-        |Convert specs to latest RSpec syntax with Transpec
+        |Convert specs to the latest RSpec syntax with Transpec
         |
         |This conversion is done by Transpec #{Transpec::Version} with the following command:
         |    transpec #{@cli_args.join(' ')}
