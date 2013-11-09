@@ -2,6 +2,8 @@
 
 ## Development
 
+* Apply `-p/--no-parentheses-matcher-arg` to the conversion of `have(n).items` (`obj.should have(n).items` is now converted to `expect(obj.size).to eq n` with `-p/--no-parentheses-matcher-arg`)
+
 ## v1.2.0
 
 * Transpec is now ready for RSpec 2.99 and 3.0 beta!

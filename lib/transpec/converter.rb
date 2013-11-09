@@ -63,7 +63,8 @@ module Transpec
       end
 
       if should.have_matcher && @configuration.convert_have_items?
-        should.have_matcher.convert_to_standard_expectation!
+        parenthesize_matcher_arg = @configuration.parenthesize_matcher_arg
+        should.have_matcher.convert_to_standard_expectation!(parenthesize_matcher_arg)
       end
     end
 

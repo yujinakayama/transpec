@@ -17,6 +17,8 @@ module Transpec
       # for String (String responds to #size).
       QUERY_METHOD_PRIORITIES = [:size, :count, :length].freeze
 
+      attr_reader :expectation
+
       def self.standalone?
         false
       end
@@ -60,9 +62,9 @@ module Transpec
         rewriter.register_request(node, key, code)
       end
 
-      def convert_to_standard_expectation!
+      def convert_to_standard_expectation!(parenthesize_matcher_arg = true)
         replace(@expectation.subject_range, replacement_subject_source)
-        replace(expression_range, replacement_matcher_source(size_source))
+        replace(expression_range, replacement_matcher_source(size_source, parenthesize_matcher_arg))
         register_record
       end
 
@@ -103,11 +105,20 @@ module Transpec
         end
       end
 
-      private
-
       def default_query_method
         QUERY_METHOD_PRIORITIES.first
       end
+
+      def replacement_matcher_source(size_source, parenthesize_arg = true)
+        case @expectation.current_syntax_type
+        when :should
+          replacement_matcher_source_for_should(size_source)
+        when :expect
+          replacement_matcher_source_for_expect(size_source, parenthesize_arg)
+        end
+      end
+
+      private
 
       def replacement_subject_source
         source = @expectation.subject_range.source
@@ -121,20 +132,26 @@ module Transpec
         source << ".#{query_method}"
       end
 
-      def replacement_matcher_source(size_source)
-        case @expectation.current_syntax_type
-        when :should
-          case have_method_name
-          when :have, :have_exactly then "== #{size_source}"
-          when :have_at_least       then ">= #{size_source}"
-          when :have_at_most        then "<= #{size_source}"
+      def replacement_matcher_source_for_should(size_source)
+        case have_method_name
+        when :have, :have_exactly then "== #{size_source}"
+        when :have_at_least       then ">= #{size_source}"
+        when :have_at_most        then "<= #{size_source}"
+        end
+      end
+
+      def replacement_matcher_source_for_expect(size_source, parenthesize_arg)
+        case have_method_name
+        when :have, :have_exactly
+          if parenthesize_arg
+            "eq(#{size_source})"
+          else
+            "eq #{size_source}"
           end
-        when :expect
-          case have_method_name
-          when :have, :have_exactly then "eq(#{size_source})"
-          when :have_at_least       then "be >= #{size_source}"
-          when :have_at_most        then "be <= #{size_source}"
-          end
+        when :have_at_least
+          "be >= #{size_source}"
+        when :have_at_most
+          "be <= #{size_source}"
         end
       end
 
@@ -148,47 +165,67 @@ module Transpec
       end
 
       def register_record
-        @report.records << Record.new(original_syntax, converted_syntax)
+        @report.records << HaveRecord.new(self)
       end
 
-      def original_syntax
-        if subject_is_owner_of_collection?
-          subject = 'obj'
-          items = items_name
-        else
-          subject = 'collection'
-          items = 'items'
+      class HaveRecord < Record
+        def initialize(have)
+          @have = have
         end
 
-        syntax = case @expectation
-                 when Should
-                   "#{subject}.should"
-                 when Expect
-                   "expect(#{subject}).to"
-                 end
+        def original_syntax
+          @original_syntax ||= begin
+            syntax = case @have.expectation
+                     when Should
+                       "#{original_subject}.should"
+                     when Expect
+                       "expect(#{original_subject}).to"
+                     end
 
-        syntax << " #{have_method_name}(n).#{items}"
-      end
+            syntax << " #{@have.have_method_name}(n).#{original_items}"
+          end
+        end
 
-      def converted_syntax
-        subject = if subject_is_owner_of_collection?
-                    if collection_accessor_is_private?
-                      "obj.send(#{items_name.inspect}).#{query_method}"
-                    else
-                      "obj.#{items_name}.#{query_method}"
-                    end
-                  else
-                    "collection.#{default_query_method}"
-                  end
+        def converted_syntax
+          @converted_syntax ||= begin
+            syntax = case @have.expectation.current_syntax_type
+                     when :should
+                       "#{converted_subject}.should"
+                     when :expect
+                       "expect(#{converted_subject}).to"
+                     end
 
-        syntax = case @expectation.current_syntax_type
-                 when :should
-                   "#{subject}.should"
-                 when :expect
-                   "expect(#{subject}).to"
-                 end
+            syntax << " #{@have.replacement_matcher_source('n')}"
+          end
+        end
 
-        syntax << " #{replacement_matcher_source('n')}"
+        def original_subject
+          if @have.subject_is_owner_of_collection?
+            'obj'
+          else
+            'collection'
+          end
+        end
+
+        def original_items
+          if @have.subject_is_owner_of_collection?
+            @have.items_name
+          else
+            'items'
+          end
+        end
+
+        def converted_subject
+          if @have.subject_is_owner_of_collection?
+            if @have.collection_accessor_is_private?
+              "obj.send(#{@have.items_name.inspect}).#{@have.query_method}"
+            else
+              "obj.#{@have.items_name}.#{@have.query_method}"
+            end
+          else
+            "collection.#{@have.default_query_method}"
+          end
+        end
       end
     end
   end

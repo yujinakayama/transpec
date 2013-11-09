@@ -105,6 +105,8 @@ module Transpec
           end
 
           context 'and Should#expectize! is invoked before it' do
+            let(:parenthesize_matcher_arg) { true }
+
             let(:expected_source) do
             <<-END
               describe 'example' do
@@ -117,7 +119,7 @@ module Transpec
 
             before do
               should_object.expectize!
-              should_object.have_matcher.convert_to_standard_expectation!
+              should_object.have_matcher.convert_to_standard_expectation!(parenthesize_matcher_arg)
             end
 
             it 'converts into `expect(collection.size).to eq(2)` form' do
@@ -127,6 +129,29 @@ module Transpec
             it 'adds record "`collection.should have(n).items` -> `expect(collection.size).to eq(n)`"' do
               record.original_syntax.should  == 'collection.should have(n).items'
               record.converted_syntax.should == 'expect(collection.size).to eq(n)'
+            end
+
+            context 'and false is passed as `parenthesize_matcher_arg` argument' do
+              let(:parenthesize_matcher_arg) { false }
+
+              let(:expected_source) do
+              <<-END
+              describe 'example' do
+                it 'has 2 items' do
+                  expect(collection.size).to eq 2
+                end
+              end
+              END
+              end
+
+              it 'converts into `expect(collection.size).to eq 2` form' do
+                rewritten_source.should == expected_source
+              end
+
+              it 'adds record "`collection.should have(n).items` -> `expect(collection.size).to eq(n)`"' do
+                record.original_syntax.should  == 'collection.should have(n).items'
+                record.converted_syntax.should == 'expect(collection.size).to eq(n)'
+              end
             end
           end
         end

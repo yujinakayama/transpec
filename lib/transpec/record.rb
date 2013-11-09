@@ -11,14 +11,14 @@ module Transpec
 
     def ==(other)
       self.class == other.class &&
-        @original_syntax == other.original_syntax &&
-        @converted_syntax == other.converted_syntax
+        original_syntax == other.original_syntax &&
+        converted_syntax == other.converted_syntax
     end
 
     alias_method :eql?, :==
 
     def hash
-      @original_syntax.hash ^ @converted_syntax.hash
+      original_syntax.hash ^ converted_syntax.hash
     end
 
     def to_s
