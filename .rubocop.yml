@@ -12,7 +12,7 @@ MethodLength:
   Max: 17
 
 CyclomaticComplexity:
-  Max: 9
+  Max: 8
 
 WordArray:
   Enabled: false
