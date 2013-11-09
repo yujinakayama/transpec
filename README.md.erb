@@ -423,6 +423,7 @@ expect(collection).to have_at_least(3).items
 expect(collection).to have_at_most(3).items
 collection.should have(3).items
 
+# Assume `team` responds to #players.
 expect(team).to have(3).players
 
 # Assume #players is a private method.
