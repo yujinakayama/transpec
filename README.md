@@ -101,9 +101,13 @@ You can see actual conversion examples below:
 
 ## Installation
 
+Simply install `transpec` with `gem` command:
+
 ```bash
 $ gem install transpec
 ```
+
+Usually you don't need to add `transpec` to your `*.gemspec` or `Gemfile` since this isn't a tool to be used daily.
 
 ## Basic Usage
 
