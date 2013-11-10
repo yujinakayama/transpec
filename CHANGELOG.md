@@ -3,6 +3,7 @@
 ## Development
 
 * Fix error `singleton can't be dumped (TypeError)` at the end of dynamic analysis ([#17](https://github.com/yujinakayama/transpec/issues/17))
+* Do not copy pseudo files (device, socket, etc.) in dynamic analysis ([#17](https://github.com/yujinakayama/transpec/issues/17))
 
 ## v1.2.1
 
