@@ -2,6 +2,8 @@
 
 ## Development
 
+* Fix error `singleton can't be dumped (TypeError)` at the end of dynamic analysis ([#17](https://github.com/yujinakayama/transpec/issues/17))
+
 ## v1.2.1
 
 * Apply `-p/--no-parentheses-matcher-arg` to the conversion of `have(n).items` (`obj.should have(n).items` is now converted to `expect(obj.size).to eq n` with `-p/--no-parentheses-matcher-arg`)

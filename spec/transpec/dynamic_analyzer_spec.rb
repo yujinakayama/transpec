@@ -167,12 +167,12 @@ module Transpec
 
         subject(:element) { runtime_data[target_node] }
 
-        it 'is a hash' do
-          should be_a(Hash)
+        it 'is an OpenStruct' do
+          should be_a(OpenStruct)
         end
 
         it 'has result of requested analysis' do
-          element[:available_query_methods].result.should =~ [:size, :count, :length]
+          element[:available_query_methods].result.should =~ %w(size count length)
         end
       end
     end

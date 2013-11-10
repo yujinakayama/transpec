@@ -6,7 +6,6 @@ require 'transpec/file_finder'
 require 'transpec/project'
 require 'tmpdir'
 require 'fileutils'
-require 'ostruct'
 require 'shellwords'
 require 'English'
 
@@ -15,10 +14,10 @@ module Transpec
     EVAL_TARGET_TYPES = [:object, :context]
     ANALYSIS_METHOD = 'transpec_analysis'
     HELPER_FILE = 'transpec_analysis_helper.rb'
-    RESULT_FILE = 'transpec_analysis_result.dump'
+    RESULT_FILE = 'transpec_analysis_result.json'
     HELPER_SOURCE = <<-END
-      require 'ostruct'
       require 'pathname'
+      require 'json'
 
       module TranspecAnalysis
         @base_path = Dir.pwd
@@ -38,9 +37,14 @@ module Transpec
         end
 
         at_exit do
+          # Use JSON rather than Marshal so that:
+          # * Unknown third-party class information won't be serialized.
+          #   (Such objects are stored as a string.)
+          # * Singleton method information won't be serialized.
+          #   (With Marshal.load, `singleton can't be dumped (TypeError)` will be raised.)
           path = File.join(@base_path, '#{RESULT_FILE}')
           File.open(path, 'w') do |file|
-            Marshal.dump(data, file)
+            JSON.dump(data, file)
           end
         end
       end
@@ -52,12 +56,12 @@ module Transpec
                    when :context then context
                    end
 
-          eval_data = OpenStruct.new
+          eval_data = {}
 
           begin
-            eval_data.result = target.instance_eval(code)
+            eval_data[:result] = target.instance_eval(code)
           rescue Exception => error
-            eval_data.error = error
+            eval_data[:error] = error
           end
 
           [key, eval_data]
@@ -112,8 +116,7 @@ module Transpec
         run_rspec(paths)
 
         File.open(RESULT_FILE) do |file|
-          hash = Marshal.load(file)
-          RuntimeData.new(hash)
+          RuntimeData.load(file)
         end
       end
     end

@@ -98,8 +98,9 @@ module Transpec
 
       def query_method
         node_data = runtime_node_data(@expectation.subject_node)
-        if node_data
-          (QUERY_METHOD_PRIORITIES & node_data[:available_query_methods].result).first
+        if node_data && node_data[:available_query_methods].result.is_a?(Array)
+          available_query_methods = node_data[:available_query_methods].result.map(&:to_sym)
+          (QUERY_METHOD_PRIORITIES & available_query_methods).first
         else
           default_query_method
         end
