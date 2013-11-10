@@ -64,6 +64,13 @@ class TranspecTest
         next if ['.', '..', 'tmp'].include?(entry)
         FileUtils.cp_r(entry, project_dir)
       end
+
+      spec_cache_dir = File.join('tmp', 'spec_cache')
+
+      if Dir.exist?(spec_cache_dir)
+        Dir.mkdir(File.join(project_dir, 'tmp'))
+        FileUtils.cp_r(spec_cache_dir, File.join(project_dir, spec_cache_dir))
+      end
     end
 
     bundle_install
