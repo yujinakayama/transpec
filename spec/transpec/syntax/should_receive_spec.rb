@@ -409,12 +409,12 @@ module Transpec
           end
         end
 
-        context 'when it is `SomeClass.any_instance.should_receive(:method)` form' do
+        context 'when it is `Klass.any_instance.should_receive(:method)` form' do
           let(:source) do
             <<-END
               describe 'example' do
                 it 'receives #foo' do
-                  SomeClass.any_instance.should_receive(:foo)
+                  Klass.any_instance.should_receive(:foo)
                 end
               end
             END
@@ -424,22 +424,22 @@ module Transpec
             <<-END
               describe 'example' do
                 it 'receives #foo' do
-                  expect_any_instance_of(SomeClass).to receive(:foo)
+                  expect_any_instance_of(Klass).to receive(:foo)
                 end
               end
             END
           end
 
-          it 'converts into `expect_any_instance_of(SomeClass).to receive(:method)` form' do
+          it 'converts into `expect_any_instance_of(Klass).to receive(:method)` form' do
             should_receive_object.expectize!
             rewritten_source.should == expected_source
           end
 
-          it 'adds record "`SomeClass.any_instance.should_receive(:message)` ' +
-             '-> `expect_any_instance_of(SomeClass).to receive(:message)`"' do
+          it 'adds record "`Klass.any_instance.should_receive(:message)` ' +
+             '-> `expect_any_instance_of(Klass).to receive(:message)`"' do
             should_receive_object.expectize!
-            record.original_syntax.should  == 'SomeClass.any_instance.should_receive(:message)'
-            record.converted_syntax.should == 'expect_any_instance_of(SomeClass).to receive(:message)'
+            record.original_syntax.should  == 'Klass.any_instance.should_receive(:message)'
+            record.converted_syntax.should == 'expect_any_instance_of(Klass).to receive(:message)'
           end
 
           context 'when the statement continues over multi lines' do
@@ -447,7 +447,7 @@ module Transpec
               <<-END
                 describe 'example' do
                   it 'receives #foo and returns 1' do
-                    SomeClass
+                    Klass
                       .any_instance
                         .should_receive(
                           :foo
@@ -464,7 +464,7 @@ module Transpec
               <<-END
                 describe 'example' do
                   it 'receives #foo and returns 1' do
-                    expect_any_instance_of(SomeClass)
+                    expect_any_instance_of(Klass)
                         .to receive(
                           :foo
                         ).
@@ -509,11 +509,11 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record "`SomeClass.any_instance.should_receive(:message)` ' +
-             '-> `expect_any_instance_of(SomeClass).to receive(:message)`"' do
+          it 'adds record "`Klass.any_instance.should_receive(:message)` ' +
+             '-> `expect_any_instance_of(Klass).to receive(:message)`"' do
             should_receive_object.expectize!
-            record.original_syntax.should  == 'SomeClass.any_instance.should_receive(:message)'
-            record.converted_syntax.should == 'expect_any_instance_of(SomeClass).to receive(:message)'
+            record.original_syntax.should  == 'Klass.any_instance.should_receive(:message)'
+            record.converted_syntax.should == 'expect_any_instance_of(Klass).to receive(:message)'
           end
         end
 
@@ -546,16 +546,16 @@ module Transpec
               END
             end
 
-            it 'converts into `expect_any_instance_of(SomeClass).to receive(:method)` form' do
+            it 'converts into `expect_any_instance_of(Klass).to receive(:method)` form' do
               should_receive_object.expectize!
               rewritten_source.should == expected_source
             end
 
-            it 'adds record "`SomeClass.any_instance.should_receive(:message)` ' +
-               '-> `expect_any_instance_of(SomeClass).to receive(:message)`"' do
+            it 'adds record "`Klass.any_instance.should_receive(:message)` ' +
+               '-> `expect_any_instance_of(Klass).to receive(:message)`"' do
               should_receive_object.expectize!
-              record.original_syntax.should  == 'SomeClass.any_instance.should_receive(:message)'
-              record.converted_syntax.should == 'expect_any_instance_of(SomeClass).to receive(:message)'
+              record.original_syntax.should  == 'Klass.any_instance.should_receive(:message)'
+              record.converted_syntax.should == 'expect_any_instance_of(Klass).to receive(:message)'
             end
           end
         end
@@ -738,12 +738,12 @@ module Transpec
           end
         end
 
-        context 'when it is `SomeClass.any_instance.should_receive(:method).any_number_of_times` form' do
+        context 'when it is `Klass.any_instance.should_receive(:method).any_number_of_times` form' do
           let(:source) do
             <<-END
               describe 'example' do
                 it 'responds to #foo' do
-                  SomeClass.any_instance.should_receive(:foo).any_number_of_times
+                  Klass.any_instance.should_receive(:foo).any_number_of_times
                 end
               end
             END
@@ -753,22 +753,22 @@ module Transpec
             <<-END
               describe 'example' do
                 it 'responds to #foo' do
-                  allow_any_instance_of(SomeClass).to receive(:foo)
+                  allow_any_instance_of(Klass).to receive(:foo)
                 end
               end
             END
           end
 
-          it 'converts into `allow_any_instance_of(SomeClass).to receive(:method)` form' do
+          it 'converts into `allow_any_instance_of(Klass).to receive(:method)` form' do
             should_receive_object.allowize_useless_expectation!
             rewritten_source.should == expected_source
           end
 
-          it 'adds record "`SomeClass.any_instance.should_receive(:message).any_number_of_times` ' +
-             '-> `allow_any_instance_of(SomeClass).to receive(:message)`"' do
+          it 'adds record "`Klass.any_instance.should_receive(:message).any_number_of_times` ' +
+             '-> `allow_any_instance_of(Klass).to receive(:message)`"' do
             should_receive_object.allowize_useless_expectation!
-            record.original_syntax.should  == 'SomeClass.any_instance.should_receive(:message).any_number_of_times'
-            record.converted_syntax.should == 'allow_any_instance_of(SomeClass).to receive(:message)'
+            record.original_syntax.should  == 'Klass.any_instance.should_receive(:message).any_number_of_times'
+            record.converted_syntax.should == 'allow_any_instance_of(Klass).to receive(:message)'
           end
         end
 
@@ -798,11 +798,11 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record "`SomeClass.any_instance.should_receive(:message).any_number_of_times` ' +
-             '-> `allow_any_instance_of(SomeClass).to receive(:message)`"' do
+          it 'adds record "`Klass.any_instance.should_receive(:message).any_number_of_times` ' +
+             '-> `allow_any_instance_of(Klass).to receive(:message)`"' do
             should_receive_object.allowize_useless_expectation!
-            record.original_syntax.should  == 'SomeClass.any_instance.should_receive(:message).any_number_of_times'
-            record.converted_syntax.should == 'allow_any_instance_of(SomeClass).to receive(:message)'
+            record.original_syntax.should  == 'Klass.any_instance.should_receive(:message).any_number_of_times'
+            record.converted_syntax.should == 'allow_any_instance_of(Klass).to receive(:message)'
           end
         end
 
@@ -840,12 +840,12 @@ module Transpec
           end
         end
 
-        context 'when it is `SomeClass.any_instance.should_receive(:method).at_least(0)` form' do
+        context 'when it is `Klass.any_instance.should_receive(:method).at_least(0)` form' do
           let(:source) do
             <<-END
               describe 'example' do
                 it 'responds to #foo' do
-                  SomeClass.any_instance.should_receive(:foo).at_least(0)
+                  Klass.any_instance.should_receive(:foo).at_least(0)
                 end
               end
             END
@@ -855,22 +855,22 @@ module Transpec
             <<-END
               describe 'example' do
                 it 'responds to #foo' do
-                  allow_any_instance_of(SomeClass).to receive(:foo)
+                  allow_any_instance_of(Klass).to receive(:foo)
                 end
               end
             END
           end
 
-          it 'converts into `allow_any_instance_of(SomeClass).to receive(:method)` form' do
+          it 'converts into `allow_any_instance_of(Klass).to receive(:method)` form' do
             should_receive_object.allowize_useless_expectation!
             rewritten_source.should == expected_source
           end
 
-          it 'adds record "`SomeClass.any_instance.should_receive(:message).at_least(0)` ' +
-             '-> `allow_any_instance_of(SomeClass).to receive(:message)`"' do
+          it 'adds record "`Klass.any_instance.should_receive(:message).at_least(0)` ' +
+             '-> `allow_any_instance_of(Klass).to receive(:message)`"' do
             should_receive_object.allowize_useless_expectation!
-            record.original_syntax.should  == 'SomeClass.any_instance.should_receive(:message).at_least(0)'
-            record.converted_syntax.should == 'allow_any_instance_of(SomeClass).to receive(:message)'
+            record.original_syntax.should  == 'Klass.any_instance.should_receive(:message).at_least(0)'
+            record.converted_syntax.should == 'allow_any_instance_of(Klass).to receive(:message)'
           end
         end
 

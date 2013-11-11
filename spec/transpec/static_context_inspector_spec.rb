@@ -481,7 +481,7 @@ module Transpec
         <<-END
           describe 'foo' do
             it 'is an example' do
-              class SomeClass
+              class Klass
                 target
               end
             end
@@ -497,13 +497,13 @@ module Transpec
         <<-END
           describe 'foo' do
             it 'is an example' do
-              class SomeClass
+              class Klass
                 def some_method
                   target
                 end
               end
 
-              SomeClass.new.some_method
+              Klass.new.some_method
             end
           end
         END
@@ -583,14 +583,14 @@ module Transpec
     context 'when in an instance method in a class' do
       let(:source) do
         <<-END
-          class SomeClass
+          class Klass
             def some_method
               target
             end
           end
 
           describe 'test' do
-            example { SomeClass.new.some_method }
+            example { Klass.new.some_method }
           end
         END
       end

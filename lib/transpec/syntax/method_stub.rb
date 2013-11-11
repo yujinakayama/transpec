@@ -127,7 +127,7 @@ module Transpec
       end
 
       def original_syntax
-        syntax = any_instance? ? 'SomeClass.any_instance' : 'obj'
+        syntax = any_instance? ? 'Klass.any_instance' : 'obj'
         syntax << ".#{method_name}"
         syntax << (arg_node.type == :hash ? '(:message => value)' : '(:message)')
       end
@@ -135,7 +135,7 @@ module Transpec
       def converted_syntax(conversion_type)
         case conversion_type
         when :allow_to_receive, :allow_to_receive_messages
-          syntax = any_instance? ? 'allow_any_instance_of(SomeClass)' : 'allow(obj)'
+          syntax = any_instance? ? 'allow_any_instance_of(Klass)' : 'allow(obj)'
           syntax << '.to '
           if conversion_type == :allow_to_receive
             syntax << 'receive(:message)'

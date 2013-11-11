@@ -224,14 +224,14 @@ module Transpec
         let(:source) do
           <<-END
             describe 'example group' do
-              class SomeClass
+              class Klass
                 def some_method
                   1.should == 1
                 end
               end
 
               it 'is an example' do
-                SomeClass.new.some_method
+                Klass.new.some_method
               end
             end
           END

@@ -164,7 +164,7 @@ module Transpec
 
       def original_syntax(conversion_type)
         syntax = if any_instance? && conversion_type != :stub
-                  'SomeClass.any_instance.'
+                  'Klass.any_instance.'
                  else
                   'obj.'
                  end
@@ -186,13 +186,13 @@ module Transpec
         syntax = case conversion_type
                  when :expect
                    if any_instance?
-                     'expect_any_instance_of(SomeClass).'
+                     'expect_any_instance_of(Klass).'
                    else
                      'expect(obj).'
                    end
                  when :allow
                    if any_instance?
-                     'allow_any_instance_of(SomeClass).'
+                     'allow_any_instance_of(Klass).'
                    else
                      'allow(obj).'
                    end

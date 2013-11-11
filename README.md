@@ -501,11 +501,11 @@ lambda { do_something }.should_not raise_error # with `--keep should`
 ```ruby
 # Targets
 obj.should_receive(:foo)
-SomeClass.any_instance.should_receive(:foo)
+Klass.any_instance.should_receive(:foo)
 
 # Converted
 expect(obj).to receive(:foo)
-expect_any_instance_of(SomeClass).to receive(:foo)
+expect_any_instance_of(Klass).to receive(:foo)
 ```
 
 * Conversion can be disabled by: `--keep should_receive`
@@ -519,15 +519,15 @@ expect_any_instance_of(SomeClass).to receive(:foo)
 obj.should_receive(:foo).any_number_of_times
 obj.should_receive(:foo).at_least(0)
 
-SomeClass.any_instance.should_receive(:foo).any_number_of_times
-SomeClass.any_instance.should_receive(:foo).at_least(0)
+Klass.any_instance.should_receive(:foo).any_number_of_times
+Klass.any_instance.should_receive(:foo).at_least(0)
 
 # Converted
 allow(obj).to receive(:foo)
 obj.stub(:foo) # with `--keep stub`
 
-allow_any_instance_of(SomeClass).to receive(:foo)
-SomeClass.any_instance.stub(:foo) # with `--keep stub`
+allow_any_instance_of(Klass).to receive(:foo)
+Klass.any_instance.stub(:foo) # with `--keep stub`
 ```
 
 * Conversion can be disabled by: `--keep deprecated`
@@ -544,7 +544,7 @@ obj.stub!(:foo)
 
 obj.stub(:foo => 1, :bar => 2)
 
-SomeClass.any_instance.stub(:foo)
+Klass.any_instance.stub(:foo)
 
 # Converted
 allow(obj).to receive(:foo)
@@ -558,7 +558,7 @@ allow(obj).to receive(:bar).and_return(2)
 # If the target project's rspec gem dependency is 3.0 or later
 allow(obj).to receive_messages(:foo => 1, :bar => 2)
 
-allow_any_instance_of(SomeClass).to receive(:foo)
+allow_any_instance_of(Klass).to receive(:foo)
 ```
 
 Note: `allow(obj).to receive_messages(:foo => 1, :bar => 2)` that is designed to be the replacement for `obj.stub(:foo => 1, :bar => 2)` is available from RSpec 3.0 (though [it's now being considered to be backported to RSpec 2.99](https://github.com/rspec/rspec-mocks/issues/454)). So, in [the upgrade path to RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#the_upgrade_path), if you want to convert them with keeping the syntax correspondence, you need to follow these steps:
