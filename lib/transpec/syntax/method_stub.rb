@@ -23,6 +23,7 @@ module Transpec
           :allow_to_receive_available?,
           [:allow, :receive]
         )
+        register_request_of_any_instance_inspection(rewriter)
       end
 
       def allow_to_receive_available?
@@ -101,8 +102,7 @@ module Transpec
 
       def allow_source
         if any_instance?
-          class_source = class_node_of_any_instance.loc.expression.source
-          "allow_any_instance_of(#{class_source})"
+          "allow_any_instance_of(#{any_instance_target_class_source})"
         else
           "allow(#{subject_range.source})"
         end

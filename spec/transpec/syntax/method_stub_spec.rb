@@ -106,13 +106,234 @@ module Transpec
       end
 
       describe '#allowize!' do
-        [:stub, :stub!].each do |method|
-          context "when it is `subject.#{method}(:method)` form" do
+        context 'when it is `subject.stub(:method)` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.stub(:foo)
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo' do
+                  allow(subject).to receive(:foo)
+                end
+              end
+            END
+          end
+
+          it 'converts into `allow(subject).to receive(:method)` form' do
+            method_stub_object.allowize!
+            rewritten_source.should == expected_source
+          end
+
+          it "adds record \"`obj.stub(:message)` -> `allow(obj).to receive(:message)`\"" do
+            method_stub_object.allowize!
+            record.original_syntax.should  == 'obj.stub(:message)'
+            record.converted_syntax.should == 'allow(obj).to receive(:message)'
+          end
+
+          context 'and #allow and #receive are not available in the context' do
+            context 'and the context is determinable statically' do
+              let(:source) do
+                <<-END
+                  describe 'example' do
+                    class TestRunner
+                      def run
+                        'something'.stub(:foo)
+                      end
+                    end
+
+                    it 'responds to #foo' do
+                      TestRunner.new.run
+                    end
+                  end
+                END
+              end
+
+              context 'with runtime information' do
+                include_context 'dynamic analysis objects'
+
+                it 'raises InvalidContextError' do
+                  -> { method_stub_object.allowize! }.should raise_error(InvalidContextError)
+                end
+              end
+
+              context 'without runtime information' do
+                it 'raises InvalidContextError' do
+                  -> { method_stub_object.allowize! }.should raise_error(InvalidContextError)
+                end
+              end
+            end
+
+            context 'and the context is not determinable statically' do
+              let(:source) do
+                <<-END
+                  def my_eval(&block)
+                    Object.new.instance_eval(&block)
+                  end
+
+                  describe 'example' do
+                    it 'responds to #foo' do
+                      my_eval { 'something'.stub(:foo) }
+                    end
+                  end
+                END
+              end
+
+              context 'with runtime information' do
+                include_context 'dynamic analysis objects'
+
+                it 'raises InvalidContextError' do
+                  -> { method_stub_object.allowize! }.should raise_error(InvalidContextError)
+                end
+              end
+
+              context 'without runtime information' do
+                it 'does not raise InvalidContextError' do
+                  -> { method_stub_object.allowize! }.should_not raise_error
+                end
+              end
+            end
+          end
+        end
+
+        context 'when it is `subject.stub!(:method)` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.stub!(:foo)
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo' do
+                  allow(subject).to receive(:foo)
+                end
+              end
+            END
+          end
+
+          it 'converts into `allow(subject).to receive(:method)` form' do
+            method_stub_object.allowize!
+            rewritten_source.should == expected_source
+          end
+
+          it "adds record \"`obj.stub!(:message)` -> `allow(obj).to receive(:message)`\"" do
+            method_stub_object.allowize!
+            record.original_syntax.should  == 'obj.stub!(:message)'
+            record.converted_syntax.should == 'allow(obj).to receive(:message)'
+          end
+        end
+
+        context 'when it is `subject.stub(:method).and_return(value)` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo and returns 1' do
+                  subject.stub(:foo).and_return(1)
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo and returns 1' do
+                  allow(subject).to receive(:foo).and_return(1)
+                end
+              end
+            END
+          end
+
+          it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
+            method_stub_object.allowize!
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'when it is `subject.stub(:method).and_raise(RuntimeError)` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo and raises RuntimeError' do
+                  subject.stub(:foo).and_raise(RuntimeError)
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo and raises RuntimeError' do
+                  allow(subject).to receive(:foo).and_raise(RuntimeError)
+                end
+              end
+            END
+          end
+
+          it 'converts into `allow(subject).to receive(:method).and_raise(RuntimeError)` form' do
+            method_stub_object.allowize!
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'when the statement continues over multi lines' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo and returns 1' do
+                  subject.stub(
+                      :foo
+                    ).
+                    and_return(
+                      1
+                    )
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo and returns 1' do
+                  allow(subject).to receive(
+                      :foo
+                    ).
+                    and_return(
+                      1
+                    )
+                end
+              end
+            END
+          end
+
+          it 'keeps the style as far as possible' do
+            method_stub_object.allowize!
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'when it is `subject.stub(:method => value)` form' do
+          context 'and #receive_messages is available' do
             let(:source) do
               <<-END
                 describe 'example' do
-                  it 'responds to #foo' do
-                    subject.#{method}(:foo)
+                  it 'responds to #foo and returns 1' do
+                    subject.stub(:foo => 1)
                   end
                 end
               END
@@ -121,95 +342,32 @@ module Transpec
             let(:expected_source) do
               <<-END
                 describe 'example' do
-                  it 'responds to #foo' do
-                    allow(subject).to receive(:foo)
+                  it 'responds to #foo and returns 1' do
+                    allow(subject).to receive_messages(:foo => 1)
                   end
                 end
               END
             end
 
-            it 'converts into `allow(subject).to receive(:method)` form' do
-              method_stub_object.allowize!
+            it 'converts into `allow(subject).to receive_messages(:method => value)` form' do
+              method_stub_object.allowize!(true)
               rewritten_source.should == expected_source
             end
 
-            it "adds record \"`obj.#{method}(:message)` -> `allow(obj).to receive(:message)`\"" do
-              method_stub_object.allowize!
-              record.original_syntax.should  == "obj.#{method}(:message)"
-              record.converted_syntax.should == 'allow(obj).to receive(:message)'
-            end
-
-            context 'and #allow and #receive are not available in the context' do
-              context 'and the context is determinable statically' do
-                let(:source) do
-                  <<-END
-                    describe 'example' do
-                      class TestRunner
-                        def run
-                          'something'.#{method}(:foo)
-                        end
-                      end
-
-                      it 'responds to #foo' do
-                        TestRunner.new.run
-                      end
-                    end
-                  END
-                end
-
-                context 'with runtime information' do
-                  include_context 'dynamic analysis objects'
-
-                  it 'raises InvalidContextError' do
-                    -> { method_stub_object.allowize! }.should raise_error(InvalidContextError)
-                  end
-                end
-
-                context 'without runtime information' do
-                  it 'raises InvalidContextError' do
-                    -> { method_stub_object.allowize! }.should raise_error(InvalidContextError)
-                  end
-                end
-              end
-
-              context 'and the context is not determinable statically' do
-                let(:source) do
-                  <<-END
-                    def my_eval(&block)
-                      Object.new.instance_eval(&block)
-                    end
-
-                    describe 'example' do
-                      it 'responds to #foo' do
-                        my_eval { 'something'.#{method}(:foo) }
-                      end
-                    end
-                  END
-                end
-
-                context 'with runtime information' do
-                  include_context 'dynamic analysis objects'
-
-                  it 'raises InvalidContextError' do
-                    -> { method_stub_object.allowize! }.should raise_error(InvalidContextError)
-                  end
-                end
-
-                context 'without runtime information' do
-                  it 'does not raise InvalidContextError' do
-                    -> { method_stub_object.allowize! }.should_not raise_error
-                  end
-                end
-              end
+            it 'adds record ' +
+               "\"`obj.stub(:message => value)` -> `allow(obj).to receive_messages(:message => value)`\"" do
+              method_stub_object.allowize!(true)
+              record.original_syntax.should  == 'obj.stub(:message => value)'
+              record.converted_syntax.should == 'allow(obj).to receive_messages(:message => value)'
             end
           end
 
-          context "when it is `subject.#{method}(:method).and_return(value)` form" do
+          context 'and #receive_messages is not available' do
             let(:source) do
               <<-END
                 describe 'example' do
                   it 'responds to #foo and returns 1' do
-                    subject.#{method}(:foo).and_return(1)
+                    subject.stub(:foo => 1)
                   end
                 end
               END
@@ -229,79 +387,96 @@ module Transpec
               method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
+
+            it 'adds record ' +
+               "\"`obj.stub(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
+              method_stub_object.allowize!
+              record.original_syntax.should  == 'obj.stub(:message => value)'
+              record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
+            end
+          end
+        end
+
+        context 'when it is `subject.stub(method: value)` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo and returns 1' do
+                  subject.stub(foo: 1)
+                end
+              end
+            END
           end
 
-          context "when it is `subject.#{method}(:method).and_raise(RuntimeError)` form" do
-            let(:source) do
-              <<-END
-                describe 'example' do
-                  it 'responds to #foo and raises RuntimeError' do
-                    subject.#{method}(:foo).and_raise(RuntimeError)
-                  end
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo and returns 1' do
+                  allow(subject).to receive(:foo).and_return(1)
                 end
-              END
-            end
+              end
+            END
+          end
 
-            let(:expected_source) do
-              <<-END
-                describe 'example' do
-                  it 'responds to #foo and raises RuntimeError' do
-                    allow(subject).to receive(:foo).and_raise(RuntimeError)
-                  end
+          it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
+            method_stub_object.allowize!
+            rewritten_source.should == expected_source
+          end
+
+          it 'adds record ' +
+             "\"`obj.stub(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
+            method_stub_object.allowize!
+            record.original_syntax.should  == 'obj.stub(:message => value)'
+            record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
+          end
+        end
+
+        context 'when it is `subject.stub(:a_method => a_value, b_method => b_value)` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
+                  subject.stub(:foo => 1, :bar => 2)
                 end
-              END
-            end
+              end
+            END
+          end
 
-            it 'converts into `allow(subject).to receive(:method).and_raise(RuntimeError)` form' do
-              method_stub_object.allowize!
-              rewritten_source.should == expected_source
-            end
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
+                  allow(subject).to receive(:foo).and_return(1)
+                  allow(subject).to receive(:bar).and_return(2)
+                end
+              end
+            END
+          end
+
+          it 'converts into `allow(subject).to receive(:a_method).and_return(a_value)` ' +
+             'and `allow(subject).to receive(:b_method).and_return(b_value)` form' do
+            method_stub_object.allowize!
+            rewritten_source.should == expected_source
+          end
+
+          it 'adds record ' +
+             "\"`obj.stub(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
+            method_stub_object.allowize!
+            record.original_syntax.should  == 'obj.stub(:message => value)'
+            record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
           end
 
           context 'when the statement continues over multi lines' do
-            let(:source) do
-              <<-END
-                describe 'example' do
-                  it 'responds to #foo and returns 1' do
-                    subject.#{method}(
-                        :foo
-                      ).
-                      and_return(
-                        1
-                      )
-                  end
-                end
-              END
-            end
-
-            let(:expected_source) do
-              <<-END
-                describe 'example' do
-                  it 'responds to #foo and returns 1' do
-                    allow(subject).to receive(
-                        :foo
-                      ).
-                      and_return(
-                        1
-                      )
-                  end
-                end
-              END
-            end
-
-            it 'keeps the style as far as possible' do
-              method_stub_object.allowize!
-              rewritten_source.should == expected_source
-            end
-          end
-
-          context "when it is `subject.#{method}(:method => value)` form" do
             context 'and #receive_messages is available' do
               let(:source) do
                 <<-END
                   describe 'example' do
-                    it 'responds to #foo and returns 1' do
-                      subject.#{method}(:foo => 1)
+                    it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
+                      subject
+                        .stub(
+                          :foo => 1,
+                          :bar => 2
+                        )
                     end
                   end
                 END
@@ -310,23 +485,20 @@ module Transpec
               let(:expected_source) do
                 <<-END
                   describe 'example' do
-                    it 'responds to #foo and returns 1' do
-                      allow(subject).to receive_messages(:foo => 1)
+                    it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
+                      allow(subject)
+                        .to receive_messages(
+                          :foo => 1,
+                          :bar => 2
+                        )
                     end
                   end
                 END
               end
 
-              it 'converts into `allow(subject).to receive_messages(:method => value)` form' do
+              it 'keeps the style' do
                 method_stub_object.allowize!(true)
                 rewritten_source.should == expected_source
-              end
-
-              it 'adds record ' +
-                 "\"`obj.#{method}(:message => value)` -> `allow(obj).to receive_messages(:message => value)`\"" do
-                method_stub_object.allowize!(true)
-                record.original_syntax.should  == "obj.#{method}(:message => value)"
-                record.converted_syntax.should == 'allow(obj).to receive_messages(:message => value)'
               end
             end
 
@@ -334,8 +506,12 @@ module Transpec
               let(:source) do
                 <<-END
                   describe 'example' do
-                    it 'responds to #foo and returns 1' do
-                      subject.#{method}(:foo => 1)
+                    it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
+                      subject
+                        .stub(
+                          :foo => 1,
+                          :bar => 2
+                        )
                     end
                   end
                 END
@@ -344,284 +520,218 @@ module Transpec
               let(:expected_source) do
                 <<-END
                   describe 'example' do
-                    it 'responds to #foo and returns 1' do
-                      allow(subject).to receive(:foo).and_return(1)
+                    it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
+                      allow(subject)
+                        .to receive(:foo).and_return(1)
+                      allow(subject)
+                        .to receive(:bar).and_return(2)
                     end
                   end
                 END
               end
 
-              it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
+              it 'keeps the style except around the hash' do
                 method_stub_object.allowize!
                 rewritten_source.should == expected_source
               end
-
-              it 'adds record ' +
-                 "\"`obj.#{method}(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
-                method_stub_object.allowize!
-                record.original_syntax.should  == "obj.#{method}(:message => value)"
-                record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
-              end
-            end
-          end
-
-          context "when it is `subject.#{method}(method: value)` form" do
-            let(:source) do
-              <<-END
-                describe 'example' do
-                  it 'responds to #foo and returns 1' do
-                    subject.#{method}(foo: 1)
-                  end
-                end
-              END
-            end
-
-            let(:expected_source) do
-              <<-END
-                describe 'example' do
-                  it 'responds to #foo and returns 1' do
-                    allow(subject).to receive(:foo).and_return(1)
-                  end
-                end
-              END
-            end
-
-            it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
-              method_stub_object.allowize!
-              rewritten_source.should == expected_source
-            end
-
-            it 'adds record ' +
-               "\"`obj.#{method}(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
-              method_stub_object.allowize!
-              record.original_syntax.should  == "obj.#{method}(:message => value)"
-              record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
-            end
-          end
-
-          context "when it is `subject.#{method}(:a_method => a_value, b_method => b_value)` form" do
-            let(:source) do
-              <<-END
-                describe 'example' do
-                  it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
-                    subject.#{method}(:foo => 1, :bar => 2)
-                  end
-                end
-              END
-            end
-
-            let(:expected_source) do
-              <<-END
-                describe 'example' do
-                  it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
-                    allow(subject).to receive(:foo).and_return(1)
-                    allow(subject).to receive(:bar).and_return(2)
-                  end
-                end
-              END
-            end
-
-            it 'converts into `allow(subject).to receive(:a_method).and_return(a_value)` ' +
-               'and `allow(subject).to receive(:b_method).and_return(b_value)` form' do
-              method_stub_object.allowize!
-              rewritten_source.should == expected_source
-            end
-
-            it 'adds record ' +
-               "\"`obj.#{method}(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
-              method_stub_object.allowize!
-              record.original_syntax.should  == "obj.#{method}(:message => value)"
-              record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
-            end
-
-            context 'when the statement continues over multi lines' do
-              context 'and #receive_messages is available' do
-                let(:source) do
-                  <<-END
-                    describe 'example' do
-                      it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
-                        subject
-                          .#{method}(
-                            :foo => 1,
-                            :bar => 2
-                          )
-                      end
-                    end
-                  END
-                end
-
-                let(:expected_source) do
-                  <<-END
-                    describe 'example' do
-                      it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
-                        allow(subject)
-                          .to receive_messages(
-                            :foo => 1,
-                            :bar => 2
-                          )
-                      end
-                    end
-                  END
-                end
-
-                it 'keeps the style' do
-                  method_stub_object.allowize!(true)
-                  rewritten_source.should == expected_source
-                end
-              end
-
-              context 'and #receive_messages is not available' do
-                let(:source) do
-                  <<-END
-                    describe 'example' do
-                      it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
-                        subject
-                          .#{method}(
-                            :foo => 1,
-                            :bar => 2
-                          )
-                      end
-                    end
-                  END
-                end
-
-                let(:expected_source) do
-                  <<-END
-                    describe 'example' do
-                      it 'responds to #foo and returns 1, and responds to #bar and returns 2' do
-                        allow(subject)
-                          .to receive(:foo).and_return(1)
-                        allow(subject)
-                          .to receive(:bar).and_return(2)
-                      end
-                    end
-                  END
-                end
-
-                it 'keeps the style except around the hash' do
-                  method_stub_object.allowize!
-                  rewritten_source.should == expected_source
-                end
-              end
             end
           end
         end
+      end
 
-        [:unstub, :unstub!].each do |method|
-          context "when it is `subject.#{method}(:method)` form" do
-            let(:source) do
-              <<-END
-                describe 'example' do
-                  it 'does not respond to #foo' do
-                    subject.#{method}(:foo)
-                  end
+      [:unstub, :unstub!].each do |method|
+        context "when it is `subject.#{method}(:method)` form" do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'does not respond to #foo' do
+                  subject.#{method}(:foo)
                 end
-              END
-            end
+              end
+            END
+          end
 
-            it 'does nothing' do
-              method_stub_object.allowize!
-              rewritten_source.should == source
-            end
+          it 'does nothing' do
+            method_stub_object.allowize!
+            rewritten_source.should == source
+          end
 
-            it 'reports nothing' do
-              method_stub_object.allowize!
-              method_stub_object.report.records.should be_empty
-            end
+          it 'reports nothing' do
+            method_stub_object.allowize!
+            method_stub_object.report.records.should be_empty
           end
         end
+      end
 
-        [:stub, :stub!].each do |method|
-          context "when it is `SomeClass.any_instance.#{method}(:method)` form" do
-            let(:source) do
-              <<-END
-                describe 'example' do
-                  it 'responds to #foo' do
-                    SomeClass.any_instance.#{method}(:foo)
-                  end
-                end
-              END
+      context 'when it is `SomeClass.any_instance.stub(:method)` form' do
+        let(:source) do
+          <<-END
+            describe 'example' do
+              it 'responds to #foo' do
+                SomeClass.any_instance.stub(:foo)
+              end
             end
-
-            let(:expected_source) do
-              <<-END
-                describe 'example' do
-                  it 'responds to #foo' do
-                    allow_any_instance_of(SomeClass).to receive(:foo)
-                  end
-                end
-              END
-            end
-
-            it 'converts into `allow_any_instance_of(SomeClass).to receive(:method)` form' do
-              method_stub_object.allowize!
-              rewritten_source.should == expected_source
-            end
-
-            it "adds record \"`SomeClass.any_instance.#{method}(:message)` " +
-               '-> `allow_any_instance_of(obj).to receive(:message)`"' do
-              method_stub_object.allowize!
-              record.original_syntax.should  == "SomeClass.any_instance.#{method}(:message)"
-              record.converted_syntax.should == 'allow_any_instance_of(SomeClass).to receive(:message)'
-            end
-          end
-
-          context "when it is `described_class.any_instance.#{method}(:method)` form" do
-            let(:source) do
-              <<-END
-                describe 'example' do
-                  it 'responds to #foo' do
-                    described_class.any_instance.#{method}(:foo)
-                  end
-                end
-              END
-            end
-
-            let(:expected_source) do
-              <<-END
-                describe 'example' do
-                  it 'responds to #foo' do
-                    allow_any_instance_of(described_class).to receive(:foo)
-                  end
-                end
-              END
-            end
-
-            it 'converts into `allow_any_instance_of(described_class).to receive(:method)` form' do
-              method_stub_object.allowize!
-              rewritten_source.should == expected_source
-            end
-
-            it "adds record \"`SomeClass.any_instance.#{method}(:message)` " +
-               '-> `allow_any_instance_of(obj).to receive(:message)`"' do
-              method_stub_object.allowize!
-              record.original_syntax.should  == "SomeClass.any_instance.#{method}(:message)"
-              record.converted_syntax.should == 'allow_any_instance_of(SomeClass).to receive(:message)'
-            end
-          end
+          END
         end
 
-        [:unstub, :unstub!].each do |method|
-          context "when it is `SomeClass.any_instance.#{method}(:method)` form" do
-            let(:source) do
-              <<-END
-                describe 'example' do
-                  it 'does not respond to #foo' do
-                    SomeClass.any_instance.#{method}(:foo)
-                  end
+        let(:expected_source) do
+          <<-END
+            describe 'example' do
+              it 'responds to #foo' do
+                allow_any_instance_of(SomeClass).to receive(:foo)
+              end
+            end
+          END
+        end
+
+        it 'converts into `allow_any_instance_of(SomeClass).to receive(:method)` form' do
+          method_stub_object.allowize!
+          rewritten_source.should == expected_source
+        end
+
+        it "adds record \"`SomeClass.any_instance.stub(:message)` " +
+           '-> `allow_any_instance_of(obj).to receive(:message)`"' do
+          method_stub_object.allowize!
+          record.original_syntax.should  == 'SomeClass.any_instance.stub(:message)'
+          record.converted_syntax.should == 'allow_any_instance_of(SomeClass).to receive(:message)'
+        end
+
+        context 'when the statement continues over multi lines' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo and returns 1' do
+                  SomeClass
+                    .any_instance
+                      .stub(
+                        :foo
+                      ).
+                      and_return(
+                        1
+                      )
                 end
-              END
-            end
+              end
+            END
+          end
 
-            it 'does nothing' do
-              method_stub_object.allowize!
-              rewritten_source.should == source
-            end
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo and returns 1' do
+                  allow_any_instance_of(SomeClass)
+                      .to receive(
+                        :foo
+                      ).
+                      and_return(
+                        1
+                      )
+                end
+              end
+            END
+          end
 
-            it 'reports nothing' do
-              method_stub_object.allowize!
-              method_stub_object.report.records.should be_empty
+          it 'keeps the style as far as possible' do
+            method_stub_object.allowize!
+            rewritten_source.should == expected_source
+          end
+        end
+      end
+
+      context 'when it is `described_class.any_instance.stub(:method)` form' do
+        let(:source) do
+          <<-END
+            describe 'example' do
+              it 'responds to #foo' do
+                described_class.any_instance.stub(:foo)
+              end
             end
+          END
+        end
+
+        let(:expected_source) do
+          <<-END
+            describe 'example' do
+              it 'responds to #foo' do
+                allow_any_instance_of(described_class).to receive(:foo)
+              end
+            end
+          END
+        end
+
+        it 'converts into `allow_any_instance_of(described_class).to receive(:method)` form' do
+          method_stub_object.allowize!
+          rewritten_source.should == expected_source
+        end
+
+        it "adds record \"`SomeClass.any_instance.stub(:message)` " +
+           '-> `allow_any_instance_of(obj).to receive(:message)`"' do
+          method_stub_object.allowize!
+          record.original_syntax.should  == 'SomeClass.any_instance.stub(:message)'
+          record.converted_syntax.should == 'allow_any_instance_of(SomeClass).to receive(:message)'
+        end
+      end
+
+      context 'when it is `variable.any_instance.stub(:method)` form ' +
+              'and the variable is an AnyInstance::Recorder' do
+        context 'with runtime information' do
+          include_context 'dynamic analysis objects'
+
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo' do
+                  variable = String.any_instance
+                  variable.stub(:foo)
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo' do
+                  variable = String.any_instance
+                  allow_any_instance_of(String).to receive(:foo)
+                end
+              end
+            END
+          end
+
+          it 'converts into `allow_any_instance_of(SomeClass).to receive(:method)` form' do
+            method_stub_object.allowize!
+            rewritten_source.should == expected_source
+          end
+
+          it "adds record \"`SomeClass.any_instance.stub(:message)` " +
+             '-> `allow_any_instance_of(obj).to receive(:message)`"' do
+            method_stub_object.allowize!
+            record.original_syntax.should  == 'SomeClass.any_instance.stub(:message)'
+            record.converted_syntax.should == 'allow_any_instance_of(SomeClass).to receive(:message)'
+          end
+        end
+      end
+
+      [:unstub, :unstub!].each do |method|
+        context "when it is `SomeClass.any_instance.#{method}(:method)` form" do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'does not respond to #foo' do
+                  SomeClass.any_instance.#{method}(:foo)
+                end
+              end
+            END
+          end
+
+          it 'does nothing' do
+            method_stub_object.allowize!
+            rewritten_source.should == source
+          end
+
+          it 'reports nothing' do
+            method_stub_object.allowize!
+            method_stub_object.report.records.should be_empty
           end
         end
       end

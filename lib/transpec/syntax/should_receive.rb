@@ -34,6 +34,8 @@ module Transpec
           :allow_to_receive_available?,
           [:allow, :receive]
         )
+
+        register_request_of_any_instance_inspection(rewriter)
       end
 
       def expect_to_receive_available?
@@ -83,7 +85,7 @@ module Transpec
 
       def convert_to_syntax!(syntax, negative_form)
         if any_instance?
-          wrap_class_with_any_instance_of!(syntax)
+          wrap_subject_with_any_instance_of!(syntax)
         else
           wrap_subject_with_method!(syntax)
         end
@@ -104,11 +106,9 @@ module Transpec
         end
       end
 
-      def wrap_class_with_any_instance_of!(syntax)
-        insert_before(subject_range, "#{syntax}_any_instance_of(")
-        map = subject_node.loc
-        dot_any_instance_range = map.dot.join(map.selector)
-        replace(dot_any_instance_range, ')')
+      def wrap_subject_with_any_instance_of!(syntax)
+        expression = "#{syntax}_any_instance_of(#{any_instance_target_class_source})"
+        replace(subject_range, expression)
       end
 
       def broken_block_nodes

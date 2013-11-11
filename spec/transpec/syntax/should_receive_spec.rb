@@ -53,6 +53,43 @@ module Transpec
             record.converted_syntax.should == 'expect(obj).to receive(:message)'
           end
 
+          context 'when the statement continues over multi lines' do
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'receives #foo and returns 1' do
+                    subject.should_receive(
+                        :foo
+                      ).
+                      and_return(
+                        1
+                      )
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  it 'receives #foo and returns 1' do
+                    expect(subject).to receive(
+                        :foo
+                      ).
+                      and_return(
+                        1
+                      )
+                  end
+                end
+              END
+            end
+
+            it 'keeps the style as far as possible' do
+              should_receive_object.expectize!
+              rewritten_source.should == expected_source
+            end
+          end
+
           context 'and #expect and #receive are not available in the context' do
             context 'and the context is determinable statically' do
               let(:source) do
@@ -404,6 +441,46 @@ module Transpec
             record.original_syntax.should  == 'SomeClass.any_instance.should_receive(:message)'
             record.converted_syntax.should == 'expect_any_instance_of(SomeClass).to receive(:message)'
           end
+
+          context 'when the statement continues over multi lines' do
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'receives #foo and returns 1' do
+                    SomeClass
+                      .any_instance
+                        .should_receive(
+                          :foo
+                        ).
+                        and_return(
+                          1
+                        )
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  it 'receives #foo and returns 1' do
+                    expect_any_instance_of(SomeClass)
+                        .to receive(
+                          :foo
+                        ).
+                        and_return(
+                          1
+                        )
+                  end
+                end
+              END
+            end
+
+            it 'keeps the style as far as possible' do
+              should_receive_object.expectize!
+              rewritten_source.should == expected_source
+            end
+          end
         end
 
         context 'when it is `described_class.any_instance.should_receive(:method)` form' do
@@ -437,6 +514,49 @@ module Transpec
             should_receive_object.expectize!
             record.original_syntax.should  == 'SomeClass.any_instance.should_receive(:message)'
             record.converted_syntax.should == 'expect_any_instance_of(SomeClass).to receive(:message)'
+          end
+        end
+
+        context 'when it is `variable.any_instance.should_receive(:method)` form ' +
+                'and the variable is an AnyInstance::Recorder' do
+          context 'with runtime information' do
+            include_context 'dynamic analysis objects'
+
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'receives #foo' do
+                    variable = String.any_instance
+                    variable.should_receive(:foo)
+                    'string'.foo
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  it 'receives #foo' do
+                    variable = String.any_instance
+                    expect_any_instance_of(String).to receive(:foo)
+                    'string'.foo
+                  end
+                end
+              END
+            end
+
+            it 'converts into `expect_any_instance_of(SomeClass).to receive(:method)` form' do
+              should_receive_object.expectize!
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record "`SomeClass.any_instance.should_receive(:message)` ' +
+               '-> `expect_any_instance_of(SomeClass).to receive(:message)`"' do
+              should_receive_object.expectize!
+              record.original_syntax.should  == 'SomeClass.any_instance.should_receive(:message)'
+              record.converted_syntax.should == 'expect_any_instance_of(SomeClass).to receive(:message)'
+            end
           end
         end
       end

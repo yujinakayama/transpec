@@ -6,11 +6,43 @@ module Transpec
       module AnyInstance
         include ::AST::Sexp
 
-        def any_instance?
-          !class_node_of_any_instance.nil?
+        def register_request_of_any_instance_inspection(rewriter)
+          key = :any_instance_target_class_name
+          code = <<-END.gsub(/^\s+\|/, '').chomp
+            |if self.class.name == 'RSpec::Mocks::AnyInstance::Recorder'
+            |  if respond_to?(:klass)
+            |    klass.name
+            |  elsif instance_variable_defined?(:@klass)
+            |    instance_variable_get(:@klass).name
+            |  else
+            |    nil
+            |  end
+            |else
+            |  nil
+            |end
+          END
+          rewriter.register_request(subject_node, key, code)
         end
 
-        def class_node_of_any_instance
+        def any_instance?
+          return true unless any_instance_target_node.nil?
+          node_data = runtime_node_data(subject_node)
+          return false unless node_data
+          return false unless node_data[:any_instance_target_class_name]
+          !node_data[:any_instance_target_class_name].result.nil?
+        end
+
+        def any_instance_target_class_source
+          return nil unless any_instance?
+
+          if any_instance_target_node
+            any_instance_target_node.loc.expression.source
+          else
+            runtime_node_data(subject_node)[:any_instance_target_class_name].result
+          end
+        end
+
+        def any_instance_target_node
           return nil unless subject_node.type == :send
           return nil unless subject_node.children.count == 2
           receiver_node, method_name = *subject_node
