@@ -565,6 +565,40 @@ module Transpec
               record.converted_syntax.should == 'allow_any_instance_of(SomeClass).to receive(:message)'
             end
           end
+
+          context "when it is `described_class.any_instance.#{method}(:method)` form" do
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'responds to #foo' do
+                    described_class.any_instance.#{method}(:foo)
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  it 'responds to #foo' do
+                    allow_any_instance_of(described_class).to receive(:foo)
+                  end
+                end
+              END
+            end
+
+            it 'converts into `allow_any_instance_of(described_class).to receive(:method)` form' do
+              method_stub_object.allowize!
+              rewritten_source.should == expected_source
+            end
+
+            it "adds record \"`SomeClass.any_instance.#{method}(:message)` " +
+               '-> `allow_any_instance_of(obj).to receive(:message)`"' do
+              method_stub_object.allowize!
+              record.original_syntax.should  == "SomeClass.any_instance.#{method}(:message)"
+              record.converted_syntax.should == 'allow_any_instance_of(SomeClass).to receive(:message)'
+            end
+          end
         end
 
         [:unstub, :unstub!].each do |method|
