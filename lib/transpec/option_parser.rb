@@ -154,7 +154,7 @@ module Transpec
           "Default: #{'not_to'.bright}"
         ],
         '-b' => [
-          "Specify matcher type that #{'be_true'.underline} and",
+          "Specify a matcher type that #{'be_true'.underline} and",
           "#{'be_false'.underline} will be converted to.",
           "  #{'truthy,falsey'.bright} (conditional semantics)",
           "  #{'truthy,falsy'.bright}  (alias of #{'falsey'.underline})",
@@ -162,14 +162,15 @@ module Transpec
           "Default: #{'truthy,falsey'.bright}"
         ],
         '-p' => [
-          'Suppress parenthesizing argument of matcher',
-          'when converting operator to non-operator in',
-          "the #{'expect'.underline} syntax. Note that it will be",
-          'parenthesized even if this option is',
-          'specified when parentheses are necessary to',
-          'keep the meaning of the expression.',
-          'By default, arguments of the following',
-          'operator matchers will be parenthesized.',
+          'Suppress parenthesizing arguments of matchers',
+          "when converting #{'should'.underline} with operator matcher",
+          "to #{'expect'.underline} with non-operator matcher. Note",
+          'that it will be parenthesized even if this',
+          'option is specified when parentheses are',
+          'necessary to keep the meaning of the',
+          'expression. By default, arguments of the',
+          'following operator matchers will be',
+          'parenthesized.',
           "  #{'== 10'.underline} to #{'eq(10)'.underline}",
           "  #{'=~ /pattern/'.underline} to #{'match(/pattern/)'.underline}",
           "  #{'=~ [1, 2]'.underline} to #{'match_array([1, 2])'.underline}"
