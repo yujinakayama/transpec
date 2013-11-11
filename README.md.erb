@@ -405,6 +405,8 @@ expect(obj).to be false
 
 So, converting `be_true`/`be_false` to `be_truthy`/`be_falsey` never breaks your specs and this is the Transpec's default. If you are willing to test boolean values strictly, you can convert them to `be true`/`be false` with `--boolean-matcher true,false` option. Note that this may break your specs if your library codes don't return exact boolean values.
 
+---
+
 * Conversion can be disabled by: `--keep deprecated`
 * Deprecation: Deprecated since RSpec 2.99, removed at RSpec 3.0
 * See also: [Consider renaming `be_true` and `be_false` to `be_truthy` and `be_falsey` · rspec/rspec-expectations](https://github.com/rspec/rspec-expectations/issues/283)
@@ -574,6 +576,8 @@ Note: `allow(obj).to receive_messages(:foo => 1, :bar => 2)` that is designed to
 4. Run `transpec`
 
 Otherwise `obj.stub(:foo => 1, :bar => 2)` will be converted to two `allow(obj).to receive(...).and_return(...)` expressions on RSpec 2.99.
+
+---
 
 * Conversion can be disabled by: `--keep stub`
 * Deprecation: Deprecated since RSpec 3.0
