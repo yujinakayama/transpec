@@ -187,14 +187,14 @@ $ transpec --keep should_receive,stub
 #### Available syntax types
 
 Type             | Target Syntax                    | Converted Syntax
------------------|----------------------------------|----------------------------
+-----------------|----------------------------------|-----------------------------------
 <%=
 conversion_type_table = <<END
 `should`         | `obj.should matcher`             | `expect(obj).to matcher`
 `should_receive` | `obj.should_receive`             | `expect(obj).to receive`
 `stub`           | `obj.stub`                       | `allow(obj).to receive`
 `have_items`     | `expect(obj).to have(x).items`   | `expect(obj.size).to eq(x)`
-`its`            | `its(:attr) { }`                 | `describe { subject { } it { } }`
+`its`            | `its(:attr) { }`                 | `describe { subject { }; it { } }`
 `deprecated`     | `obj.stub!`, `mock('foo')`, etc. | `obj.stub`, `double('foo')`
 END
 

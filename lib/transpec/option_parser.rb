@@ -143,7 +143,7 @@ module Transpec
           "  #{'should_receive'.bright} (to #{'expect(obj).to receive'.underline})",
           "  #{'stub'.bright}  (to #{'allow(obj).to receive'.underline})",
           "  #{'have_items'.bright} (to #{'expect(obj.size).to eq(x)'.underline})",
-          "  #{'its'.bright} (to #{'describe { subject { } it { } }'.underline})",
+          "  #{'its'.bright} (to #{'describe { subject { }; it { } }'.underline})",
           "  #{'deprecated'.bright} (e.g. from #{'mock'.underline} to #{'double'.underline})",
           'These are all converted by default.'
         ],
