@@ -16,7 +16,7 @@ module Transpec
       if rspec_dependency
         rspec_requirement = rspec_dependency.requirement
         gem_version = rspec_requirement.requirements.first.find { |r| r.is_a?(Gem::Version) }
-        RSpecVersion.new(gem_version.to_s)
+        RSpecVersion.new(gem_version)
       else
         # Using development version of RSpec with Bundler.
         current_rspec_version
