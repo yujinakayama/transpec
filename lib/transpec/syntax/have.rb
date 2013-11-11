@@ -43,6 +43,7 @@ module Transpec
       end
 
       def convert_to_standard_expectation!(parenthesize_matcher_arg = true)
+        return if project_requires_collection_matcher?
         replace(@expectation.subject_range, replacement_subject_source)
         replace(expression_range, replacement_matcher_source(size_source, parenthesize_matcher_arg))
         register_record
@@ -68,6 +69,10 @@ module Transpec
 
       def items_name
         items_node.children[1]
+      end
+
+      def project_requires_collection_matcher?
+        runtime_subject_data && runtime_subject_data[:project_requires_collection_matcher?].result
       end
 
       def collection_accessor
@@ -193,6 +198,10 @@ module Transpec
           key = :collection_accessor_is_private?
           code = "private_methods.include?(#{@have.items_name.inspect})"
           @rewriter.register_request(target_node, key, code)
+
+          key = :project_requires_collection_matcher?
+          code = 'defined?(RSpec::Rails) || defined?(RSpec::CollectionMatchers)'
+          @rewriter.register_request(target_node, key, code, :context)
         end
 
         # rubocop:disable MethodLength

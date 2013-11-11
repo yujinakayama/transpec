@@ -70,6 +70,58 @@ module Transpec
       describe '#convert_to_standard_expectation!' do
         let(:record) { have_object.report.records.last }
 
+        context 'when rspec-rails is loaded in the spec' do
+          include_context 'dynamic analysis objects'
+
+          let(:source) do
+            <<-END
+              module RSpec
+                module Rails
+                end
+              end
+
+              describe 'example' do
+                it 'has 2 items' do
+                  [:foo, :bar].should have(2).items
+                end
+              end
+            END
+          end
+
+          let(:have_object) { should_object.have_matcher }
+
+          it 'does nothing' do
+            have_object.convert_to_standard_expectation!
+            rewritten_source.should == source
+          end
+        end
+
+        context 'when rspec-collection_matchers is loaded in the spec' do
+          include_context 'dynamic analysis objects'
+
+          let(:source) do
+            <<-END
+              module RSpec
+                module CollectionMatchers
+                end
+              end
+
+              describe 'example' do
+                it 'has 2 items' do
+                  [:foo, :bar].should have(2).items
+                end
+              end
+            END
+          end
+
+          let(:have_object) { should_object.have_matcher }
+
+          it 'does nothing' do
+            have_object.convert_to_standard_expectation!
+            rewritten_source.should == source
+          end
+        end
+
         context 'when it is `collection.should have(2).items` form' do
           let(:source) do
             <<-END

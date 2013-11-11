@@ -429,6 +429,8 @@ expect(1.0 / 3.0).to be_within(0.001).of(0.333)
 
 ### `have(n).items` matcher
 
+**This conversion will be disabled automatically if `rspec-collection_matchers` or `rspec-rails` is loaded in your spec.**
+
 ```ruby
 # Targets
 expect(collection).to have(3).items
@@ -455,8 +457,15 @@ expect(team.players.size).to eq(3)
 expect(team.send(:players).size).to eq(3)
 ```
 
-There's the option to continue using `have(n).items` matcher with [rspec-collection_matchers](https://github.com/rspec/rspec-collection_matchers) that is an external gem extracted from `rspec-expectations`.
-If you choose so, disable this conversion with `--keep have_items`.
+There's an option to continue using `have(n).items` matcher with [rspec-collection_matchers](https://github.com/rspec/rspec-collection_matchers) that is an external gem extracted from `rspec-expectations`.
+If you choose so, disable this conversion by either:
+
+* Specify `--keep have_items` option manually.
+* Require `rspec-collection_matchers` or `rspec-rails` in your spec so that Transpec automatically disables this conversion.
+
+Note: `rspec-rails` 3.0 [still uses `have(n).items` matcher with `rspec-collection_matchers`](https://github.com/rspec/rspec-rails/blob/v3.0.0.beta1/rspec-rails.gemspec#L41).
+
+---
 
 * Conversion can be disabled by: `--keep have_items`
 * Deprecation: Deprecated since RSpec 2.99, removed at RSpec 3.0
