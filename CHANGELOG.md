@@ -2,6 +2,8 @@
 
 ## Development
 
+## v1.3.0
+
 * Handle singular collection names like `have(n).item` ([#18](https://github.com/yujinakayama/transpec/issues/18))
 * Handle collection accessors with arguments like `have(n).errors_on(...)` ([#18](https://github.com/yujinakayama/transpec/issues/18))
 * Handle `described_class.any_instance` ([#18](https://github.com/yujinakayama/transpec/issues/18))
