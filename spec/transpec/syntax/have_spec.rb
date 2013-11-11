@@ -771,6 +771,156 @@ module Transpec
             end
           end
         end
+
+        context 'when it is `expect(subject).to have(2).errors_on(:name)` form' do
+          let(:have_object) { expect_object.have_matcher }
+
+          context 'with runtime information' do
+            include_context 'dynamic analysis objects'
+
+            context 'and subject responds to #errors_on' do
+              let(:source) do
+                <<-END
+                  class SomeModel
+                    def errors_on(attribute)
+                      [:foo, :bar]
+                    end
+                  end
+
+                  describe SomeModel do
+                    it 'has 2 errors on name' do
+                      expect(subject).to have(2).errors_on(:name)
+                    end
+                  end
+                END
+              end
+
+              let(:expected_source) do
+                <<-END
+                  class SomeModel
+                    def errors_on(attribute)
+                      [:foo, :bar]
+                    end
+                  end
+
+                  describe SomeModel do
+                    it 'has 2 errors on name' do
+                      expect(subject.errors_on(:name).size).to eq(2)
+                    end
+                  end
+                END
+              end
+
+              it 'converts into `expect(subject.errors_on(:name).size).to eq(2)` form' do
+                have_object.convert_to_standard_expectation!
+                rewritten_source.should == expected_source
+              end
+
+              it 'adds record ' +
+                 '"`expect(obj).to have(n).errors_on(...)` -> `expect(obj.errors_on(...).size).to eq(n)`"' do
+                have_object.convert_to_standard_expectation!
+                record.original_syntax.should  == 'expect(obj).to have(n).errors_on(...)'
+                record.converted_syntax.should == 'expect(obj.errors_on(...).size).to eq(n)'
+              end
+            end
+
+            context 'and #errors_on is a private method' do
+              let(:source) do
+                <<-END
+                  class SomeModel
+                    private
+
+                    def errors_on(attribute)
+                      [:foo, :bar]
+                    end
+                  end
+
+                  describe SomeModel do
+                    it 'has 2 errors on name' do
+                      expect(subject).to have(2).errors_on(:name)
+                    end
+                  end
+                END
+              end
+
+              let(:expected_source) do
+                <<-END
+                  class SomeModel
+                    private
+
+                    def errors_on(attribute)
+                      [:foo, :bar]
+                    end
+                  end
+
+                  describe SomeModel do
+                    it 'has 2 errors on name' do
+                      expect(subject.send(:errors_on, :name).size).to eq(2)
+                    end
+                  end
+                END
+              end
+
+              it 'converts into `expect(subject.send(:errors_on, :name).size).to eq(2)` form' do
+                have_object.convert_to_standard_expectation!
+                rewritten_source.should == expected_source
+              end
+
+              it 'adds record ' +
+                 '"`expect(obj).to have(n).errors_on(...)` -> `expect(obj.send(:errors_on, ...).size).to eq(n)`"' do
+                have_object.convert_to_standard_expectation!
+                record.original_syntax.should  == 'expect(obj).to have(n).errors_on(...)'
+                record.converted_syntax.should == 'expect(obj.send(:errors_on, ...).size).to eq(n)'
+              end
+            end
+          end
+
+          context 'without runtime information' do
+            let(:source) do
+              <<-END
+                class SomeModel
+                  def errors_on(attribute)
+                    [:foo, :bar]
+                  end
+                end
+
+                describe SomeModel do
+                  it 'has 2 errors on name' do
+                    expect(subject).to have(2).errors_on(:name)
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                class SomeModel
+                  def errors_on(attribute)
+                    [:foo, :bar]
+                  end
+                end
+
+                describe SomeModel do
+                  it 'has 2 errors on name' do
+                    expect(subject.errors_on(:name).size).to eq(2)
+                  end
+                end
+              END
+            end
+
+            it 'converts into `expect(subject.errors_on(:name).size).to eq(2)` form' do
+              have_object.convert_to_standard_expectation!
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record ' +
+               '"`expect(obj).to have(n).errors_on(...)` -> `expect(obj.errors_on(...).size).to eq(n)`"' do
+              have_object.convert_to_standard_expectation!
+              record.original_syntax.should  == 'expect(obj).to have(n).errors_on(...)'
+              record.converted_syntax.should == 'expect(obj.errors_on(...).size).to eq(n)'
+            end
+          end
+        end
       end
     end
   end

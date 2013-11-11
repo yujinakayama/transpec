@@ -58,6 +58,10 @@ module Transpec
 
       alias_method :items_node, :node
 
+      def items_method_has_arguments?
+        items_node.children.size > 2
+      end
+
       def have_method_name
         have_node.children[1]
       end
@@ -66,13 +70,17 @@ module Transpec
         items_node.children[1]
       end
 
-      def collection_accessor_name
-        return nil unless subject_is_owner_of_collection?
-        runtime_subject_data[:collection_accessor_name].result.to_sym
+      def collection_accessor
+        if runtime_subject_data && runtime_subject_data[:collection_accessor].result
+          runtime_subject_data[:collection_accessor].result.to_sym
+        else
+          items_name
+        end
       end
 
       def subject_is_owner_of_collection?
-        runtime_subject_data && !runtime_subject_data[:collection_accessor_name].result.nil?
+        return true if items_method_has_arguments?
+        runtime_subject_data && !runtime_subject_data[:collection_accessor].result.nil?
       end
 
       def collection_accessor_is_private?
@@ -80,7 +88,7 @@ module Transpec
       end
 
       def query_method
-        if runtime_subject_data
+        if runtime_subject_data && runtime_subject_data[:available_query_methods]
           available_query_methods = runtime_subject_data[:available_query_methods].result
           (QUERY_METHOD_PRIORITIES & available_query_methods.map(&:to_sym)).first
         else
@@ -112,9 +120,11 @@ module Transpec
         source = @expectation.subject_range.source
         if subject_is_owner_of_collection?
           if collection_accessor_is_private?
-            source << ".send(#{collection_accessor_name.inspect})"
+            source << ".send(#{collection_accessor.inspect}"
+            source << ", #{args_range.source}" if items_method_has_arguments?
+            source << ')'
           else
-            source << ".#{collection_accessor_name}"
+            source << ".#{collection_accessor}#{parentheses_range.source}"
           end
         end
         source << ".#{query_method}"
@@ -166,15 +176,19 @@ module Transpec
         end
 
         def register_request
-          key = :collection_accessor_name
+          key = :collection_accessor
           code = collection_accessor_inspection_code
           @rewriter.register_request(target_node, key, code)
 
-          key = :available_query_methods
-          code = "collection_accessor = #{code}; " +
-                 'target = collection_accessor ? __send__(collection_accessor) : self; ' +
-                 "target.methods & #{QUERY_METHOD_PRIORITIES.inspect}"
-          @rewriter.register_request(target_node, key, code)
+          # Give up inspecting query methods of collection accessor with arguments
+          # (e.g. have(2).errors_on(variable)) since this is a context of #instance_eval.
+          unless @have.items_method_has_arguments?
+            key = :available_query_methods
+            code = "collection_accessor = #{code}; " +
+                   'target = collection_accessor ? __send__(collection_accessor) : self; ' +
+                   "target.methods & #{QUERY_METHOD_PRIORITIES.inspect}"
+            @rewriter.register_request(target_node, key, code)
+          end
 
           key = :collection_accessor_is_private?
           code = "private_methods.include?(#{@have.items_name.inspect})"
@@ -265,7 +279,11 @@ module Transpec
 
         def original_items
           if @have.subject_is_owner_of_collection?
-            @have.collection_accessor_name
+            if @have.items_method_has_arguments?
+              "#{@have.collection_accessor}(...)"
+            else
+              @have.collection_accessor
+            end
           else
             'items'
           end
@@ -273,11 +291,16 @@ module Transpec
 
         def converted_subject
           if @have.subject_is_owner_of_collection?
+            subject = 'obj.'
             if @have.collection_accessor_is_private?
-              "obj.send(#{@have.collection_accessor_name.inspect}).#{@have.query_method}"
+              subject << "send(#{@have.collection_accessor.inspect}"
+              subject << ', ...' if @have.items_method_has_arguments?
+              subject << ')'
             else
-              "obj.#{@have.collection_accessor_name}.#{@have.query_method}"
+              subject << "#{@have.collection_accessor}"
+              subject << '(...)' if @have.items_method_has_arguments?
             end
+            subject << ".#{@have.query_method}"
           else
             "collection.#{@have.default_query_method}"
           end

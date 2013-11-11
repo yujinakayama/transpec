@@ -88,6 +88,10 @@ module Transpec
           arg_node.loc.expression
         end
 
+        def args_range
+          arg_nodes.first.loc.expression.begin.join(arg_nodes.last.loc.expression.end)
+        end
+
         def parentheses_range
           selector_range.end.join(expression_range.end)
         end
