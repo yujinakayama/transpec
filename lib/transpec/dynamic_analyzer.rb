@@ -146,18 +146,9 @@ module Transpec
         command = "#{rspec_command} #{paths.shelljoin}"
 
         if silent?
-          rspec_output = `#{command} 2> /dev/null`
+          `#{command} 2> /dev/null`
         else
           system(command)
-        end
-
-        unless $CHILD_STATUS.exitstatus == 0
-          message = 'Dynamic analysis failed!'
-          if silent?
-            message << "\n"
-            message << rspec_output
-          end
-          fail message
         end
       end
     end

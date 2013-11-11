@@ -2,6 +2,8 @@
 
 ## Development
 
+* Proceed to conversion even if `rspec` didn't pass in dynamic analysis
+
 ## v1.3.0
 
 * Handle singular collection names like `have(n).item` ([#18](https://github.com/yujinakayama/transpec/issues/18))

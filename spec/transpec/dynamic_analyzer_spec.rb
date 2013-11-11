@@ -118,11 +118,27 @@ module Transpec
         end
       end
 
-      context 'when rspec exited with non-0 status' do
-        let(:source) { 'This is invalid syntax <' }
+      context 'when rspec did not pass' do
+        let(:source) do
+          <<-END
+            describe [1, 2] do
+              it 'has 2 items' do
+                expect(subject).to have(1).items
+              end
+            end
+          END
+        end
+
+        it 'does not raise error' do
+          -> { dynamic_analyzer.analyze }.should_not raise_error
+        end
+      end
+
+      context 'when analysis result data file is not found' do
+        let(:source) { 'exit!' }
 
         it 'raises error' do
-          -> { dynamic_analyzer.analyze }.should raise_error(/Dynamic analysis failed/)
+          -> { dynamic_analyzer.analyze }.should raise_error
         end
       end
 
