@@ -618,6 +618,159 @@ module Transpec
             end
           end
         end
+
+        context 'when it is `expect(subject).to have(1).word` form' do
+          let(:have_object) { expect_object.have_matcher }
+
+          context 'with runtime information' do
+            include_context 'dynamic analysis objects'
+
+            context 'when the subject responds to #words and #words responds to #size' do
+              context 'and ActiveSupport::Inflector.pluralize is available in the spec' do
+                let(:source) do
+                  <<-END
+                    require 'active_support/inflector'
+
+                    class String
+                      def words
+                        split(' ')
+                      end
+                    end
+
+                    describe 'string' do
+                      it 'has a word' do
+                        expect(subject).to have(1).word
+                      end
+                    end
+                  END
+                end
+
+                let(:expected_source) do
+                  <<-END
+                    require 'active_support/inflector'
+
+                    class String
+                      def words
+                        split(' ')
+                      end
+                    end
+
+                    describe 'string' do
+                      it 'has a word' do
+                        expect(subject.words.size).to eq(1)
+                      end
+                    end
+                  END
+                end
+
+                it 'converts into `expect(subject.words.size).to eq(1)` form' do
+                  have_object.convert_to_standard_expectation!
+                  rewritten_source.should == expected_source
+                end
+
+                it 'adds record "`expect(obj).to have(n).words` -> `expect(obj.words.size).to eq(n)`"' do
+                  have_object.convert_to_standard_expectation!
+                  record.original_syntax.should  == 'expect(obj).to have(n).words'
+                  record.converted_syntax.should == 'expect(obj.words.size).to eq(n)'
+                end
+              end
+
+              context 'and ActiveSupport::Inflector.pluralize is not available in the spec' do
+                let(:source) do
+                  <<-END
+                    class String
+                      def words
+                        split(' ')
+                      end
+                    end
+
+                    describe 's' do
+                      it 'has a character' do
+                        expect(subject).to have(1).word
+                      end
+                    end
+                  END
+                end
+
+                let(:expected_source) do
+                  <<-END
+                    class String
+                      def words
+                        split(' ')
+                      end
+                    end
+
+                    describe 's' do
+                      it 'has a character' do
+                        expect(subject.size).to eq(1)
+                      end
+                    end
+                  END
+                end
+
+                it 'converts into `expect(subject.size).to eq(1)` form' do
+                  have_object.convert_to_standard_expectation!
+                  rewritten_source.should == expected_source
+                end
+
+                it 'adds record "`expect(collection).to have(n).items` -> `expect(collection.size).to eq(n)`"' do
+                  have_object.convert_to_standard_expectation!
+                  record.original_syntax.should  == 'expect(collection).to have(n).items'
+                  record.converted_syntax.should == 'expect(collection.size).to eq(n)'
+                end
+              end
+            end
+          end
+
+          context 'without runtime information' do
+            let(:source) do
+              <<-END
+                require 'active_support/inflector'
+
+                class String
+                  def words
+                    split(' ')
+                  end
+                end
+
+                describe 'string' do
+                  it 'has a word' do
+                    expect(subject).to have(1).word
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                require 'active_support/inflector'
+
+                class String
+                  def words
+                    split(' ')
+                  end
+                end
+
+                describe 'string' do
+                  it 'has a word' do
+                    expect(subject.size).to eq(1)
+                  end
+                end
+              END
+            end
+
+            it 'converts into `expect(subject.size).to eq(1)` form' do
+              have_object.convert_to_standard_expectation!
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record "`expect(collection).to have(n).items` -> `expect(collection.size).to eq(n)`"' do
+              have_object.convert_to_standard_expectation!
+              record.original_syntax.should  == 'expect(collection).to have(n).items'
+              record.converted_syntax.should == 'expect(collection.size).to eq(n)'
+            end
+          end
+        end
       end
     end
   end

@@ -32,4 +32,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'guard-rubocop', '~> 1.0'
   spec.add_development_dependency 'guard-shell',   '~> 0.5'
   spec.add_development_dependency 'ruby_gntp',     '~> 0.3'
+  spec.add_development_dependency 'activesupport', '~> 4.0'
 end

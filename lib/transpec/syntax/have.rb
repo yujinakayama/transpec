@@ -39,27 +39,7 @@ module Transpec
       end
 
       def register_request_for_dynamic_analysis(rewriter)
-        node = @expectation.subject_node
-
-        # `expect(owner).to have(n).things` invokes private owner#things with Object#__send__
-        # if the owner does not respond to any of #size, #count and #length.
-        #
-        # rubocop:disable LineLength
-        # https://github.com/rspec/rspec-expectations/blob/v2.14.3/lib/rspec/matchers/built_in/have.rb#L48-L58
-        # rubocop:enable LineLength
-        key = :subject_is_owner_of_collection?
-        code = "respond_to?(#{items_name.inspect}) || " +
-               "(methods & #{QUERY_METHOD_PRIORITIES.inspect}).empty?"
-        rewriter.register_request(node, key, code)
-
-        key = :available_query_methods
-        code = "target = #{code} ? #{items_name} : self; " +
-               "target.methods & #{QUERY_METHOD_PRIORITIES.inspect}"
-        rewriter.register_request(node, key, code)
-
-        key = :collection_accessor_is_private?
-        code = "private_methods.include?(#{items_name.inspect})"
-        rewriter.register_request(node, key, code)
+        DynamicInspector.register_request(self, rewriter)
       end
 
       def convert_to_standard_expectation!(parenthesize_matcher_arg = true)
@@ -86,21 +66,23 @@ module Transpec
         items_node.children[1]
       end
 
+      def collection_accessor_name
+        return nil unless subject_is_owner_of_collection?
+        runtime_subject_data[:collection_accessor_name].result.to_sym
+      end
+
       def subject_is_owner_of_collection?
-        node_data = runtime_node_data(@expectation.subject_node)
-        node_data && node_data[:subject_is_owner_of_collection?].result
+        runtime_subject_data && !runtime_subject_data[:collection_accessor_name].result.nil?
       end
 
       def collection_accessor_is_private?
-        node_data = runtime_node_data(@expectation.subject_node)
-        node_data && node_data[:collection_accessor_is_private?].result
+        runtime_subject_data && runtime_subject_data[:collection_accessor_is_private?].result
       end
 
       def query_method
-        node_data = runtime_node_data(@expectation.subject_node)
-        if node_data && node_data[:available_query_methods].result.is_a?(Array)
-          available_query_methods = node_data[:available_query_methods].result.map(&:to_sym)
-          (QUERY_METHOD_PRIORITIES & available_query_methods).first
+        if runtime_subject_data
+          available_query_methods = runtime_subject_data[:available_query_methods].result
+          (QUERY_METHOD_PRIORITIES & available_query_methods.map(&:to_sym)).first
         else
           default_query_method
         end
@@ -121,13 +103,18 @@ module Transpec
 
       private
 
+      def runtime_subject_data
+        return @runtime_subject_data if instance_variable_defined?(:@runtime_subject_data)
+        @runtime_subject_data = runtime_node_data(@expectation.subject_node)
+      end
+
       def replacement_subject_source
         source = @expectation.subject_range.source
         if subject_is_owner_of_collection?
           if collection_accessor_is_private?
-            source << ".send(#{items_name.inspect})"
+            source << ".send(#{collection_accessor_name.inspect})"
           else
-            source << ".#{items_name}"
+            source << ".#{collection_accessor_name}"
           end
         end
         source << ".#{query_method}"
@@ -160,13 +147,81 @@ module Transpec
         size_node.loc.expression.source
       end
 
-      def dot_items_range
-        map = items_node.loc
-        map.dot.join(map.selector)
-      end
-
       def register_record
         @report.records << HaveRecord.new(self)
+      end
+
+      class DynamicInspector
+        def self.register_request(have, rewriter)
+          new(have, rewriter).register_request
+        end
+
+        def initialize(have, rewriter)
+          @have = have
+          @rewriter = rewriter
+        end
+
+        def target_node
+          @have.expectation.subject_node
+        end
+
+        def register_request
+          key = :collection_accessor_name
+          code = collection_accessor_inspection_code
+          @rewriter.register_request(target_node, key, code)
+
+          key = :available_query_methods
+          code = "collection_accessor = #{code}; " +
+                 'target = collection_accessor ? __send__(collection_accessor) : self; ' +
+                 "target.methods & #{QUERY_METHOD_PRIORITIES.inspect}"
+          @rewriter.register_request(target_node, key, code)
+
+          key = :collection_accessor_is_private?
+          code = "private_methods.include?(#{@have.items_name.inspect})"
+          @rewriter.register_request(target_node, key, code)
+        end
+
+        # rubocop:disable MethodLength
+        def collection_accessor_inspection_code
+          # `expect(owner).to have(n).things` invokes private owner#things with Object#__send__
+          # if the owner does not respond to any of #size, #count and #length.
+          #
+          # rubocop:disable LineLength
+          # https://github.com/rspec/rspec-expectations/blob/v2.14.3/lib/rspec/matchers/built_in/have.rb#L48-L58
+          # rubocop:enable LineLength
+          <<-END.gsub(/^\s+\|/, '').chomp
+            |begin
+            |  exact_name = #{@have.items_name.inspect}
+            |
+            |  inflector = if defined?(ActiveSupport::Inflector) &&
+            |                   ActiveSupport::Inflector.respond_to?(:pluralize)
+            |                ActiveSupport::Inflector
+            |              elsif defined?(Inflector)
+            |                Inflector
+            |              else
+            |                nil
+            |              end
+            |
+            |  if inflector
+            |    pluralized_name = inflector.pluralize(exact_name).to_sym
+            |    respond_to_pluralized_name = respond_to?(pluralized_name)
+            |  end
+            |
+            |  respond_to_query_methods = !(methods & #{QUERY_METHOD_PRIORITIES.inspect}).empty?
+            |
+            |  if respond_to?(exact_name)
+            |    exact_name
+            |  elsif respond_to_pluralized_name
+            |    pluralized_name
+            |  elsif respond_to_query_methods
+            |    nil
+            |  else
+            |    exact_name
+            |  end
+            |end
+          END
+        end
+        # rubocop:enable MethodLength
       end
 
       class HaveRecord < Record
@@ -210,7 +265,7 @@ module Transpec
 
         def original_items
           if @have.subject_is_owner_of_collection?
-            @have.items_name
+            @have.collection_accessor_name
           else
             'items'
           end
@@ -219,9 +274,9 @@ module Transpec
         def converted_subject
           if @have.subject_is_owner_of_collection?
             if @have.collection_accessor_is_private?
-              "obj.send(#{@have.items_name.inspect}).#{@have.query_method}"
+              "obj.send(#{@have.collection_accessor_name.inspect}).#{@have.query_method}"
             else
-              "obj.#{@have.items_name}.#{@have.query_method}"
+              "obj.#{@have.collection_accessor_name}.#{@have.query_method}"
             end
           else
             "collection.#{@have.default_query_method}"

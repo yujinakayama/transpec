@@ -2,6 +2,8 @@
 
 ## Development
 
+* Handle singular collection names like `have(n).item` ([#18](https://github.com/yujinakayama/transpec/issues/18))
+
 ## v1.2.2
 
 * Fix error `singleton can't be dumped (TypeError)` at the end of dynamic analysis ([#17](https://github.com/yujinakayama/transpec/issues/17))
