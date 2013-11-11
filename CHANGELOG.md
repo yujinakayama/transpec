@@ -2,6 +2,8 @@
 
 ## Development
 
+## v1.3.1
+
 * Proceed to conversion even if `rspec` didn't pass in dynamic analysis
 
 ## v1.3.0
