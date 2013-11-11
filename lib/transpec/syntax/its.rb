@@ -13,7 +13,15 @@ module Transpec
         receiver_node.nil? && method_name == :its
       end
 
+      def register_request_for_dynamic_analysis(rewriter)
+        key = :project_requires_its?
+        code = 'defined?(RSpec::Its)'
+        rewriter.register_request(@node, key, code, :context)
+      end
+
       def convert_to_describe_subject_it!
+        return if project_requires_its?
+
         front, rear = build_wrapper_codes
 
         insert_before(beginning_of_line_range, front)
@@ -35,6 +43,11 @@ module Transpec
 
       def block_node
         @node.parent_node
+      end
+
+      def project_requires_its?
+        node_data = runtime_node_data(@node)
+        node_data && node_data[:project_requires_its?].result
       end
 
       private

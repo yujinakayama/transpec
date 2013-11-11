@@ -7,6 +7,7 @@
 * Handle `described_class.any_instance` ([#18](https://github.com/yujinakayama/transpec/issues/18))
 * Handle indirect `any_instance` subject with runtime information  (e.g. `variable = SomeClass.any_instance; variable.stub(:message)`)
 * Disable conversion of `have(n).items` automatically if `rspec-rails` or `rspec-collection_matchers` is loaded in the target project
+* Disable conversion of `its` automatically if `rspec-its` is loaded in the target project
 
 ## v1.2.2
 

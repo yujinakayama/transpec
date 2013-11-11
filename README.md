@@ -634,6 +634,8 @@ double('something')
 
 ### Expectations on attribute of subject with `its`
 
+**This conversion will be disabled automatically if `rspec-its` is loaded in your spec.**
+
 ```ruby
 # Targets
 describe 'example' do
@@ -667,8 +669,13 @@ describe 'example' do
 end
 ```
 
-There's the option to continue using `its` with [rspec-its](https://github.com/rspec/rspec-its) that is an external gem extracted from `rspec-core`.
-If you choose so, disable this conversion with `--keep its`.
+There's an option to continue using `its` with [rspec-its](https://github.com/rspec/rspec-its) that is an external gem extracted from `rspec-core`.
+If you choose so, disable this conversion by either:
+
+* Specify `--keep its` option manually.
+* Require `rspec-its` in your spec so that Transpec automatically disables this conversion.
+
+---
 
 * Conversion can be disabled by: `--keep its`
 * Deprecation: Deprecated since RSpec 2.99, removed at RSpec 3.0

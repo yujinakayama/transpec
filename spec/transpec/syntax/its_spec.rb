@@ -11,16 +11,41 @@ module Transpec
       subject(:its_object) do
         ast.each_node do |node|
           next unless Its.target_node?(node)
-          return Its.new(node, source_rewriter)
+          return Its.new(node, source_rewriter, runtime_data)
         end
         fail 'No #its node is found!'
       end
+
+      let(:runtime_data) { nil }
 
       let(:record) { its_object.report.records.last }
 
       describe '#convert_to_describe_subject_it!' do
         before do
           its_object.convert_to_describe_subject_it!
+        end
+
+        context 'when rspec-its is loaded in the spec' do
+          include_context 'dynamic analysis objects'
+
+          let(:source) do
+            <<-END
+              module RSpec
+                module Its
+                end
+              end
+
+              describe 'example' do
+                subject { ['foo'] }
+
+                its(:size) { should == 1 }
+              end
+            END
+          end
+
+          it 'does nothing' do
+            rewritten_source.should == source
+          end
         end
 
         context 'when it is `its(:size) { ... }` form' do
