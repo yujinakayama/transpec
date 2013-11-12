@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require 'transpec/rspec_version'
+require 'English'
 
 module Transpec
   class Project
@@ -20,18 +21,7 @@ module Transpec
     end
 
     def rspec_version
-      @rspec_version ||= begin
-        command = 'rspec --version'
-        command = 'bundle exec ' + command if require_bundler?
-
-        version_string = nil
-
-        Dir.chdir(@path) do
-          with_bundler_clean_env { version_string = `#{command}`.chomp }
-        end
-
-        RSpecVersion.new(version_string)
-      end
+      @rspec_version ||= RSpecVersion.new(fetch_rspec_version)
     end
 
     def with_bundler_clean_env
@@ -44,6 +34,27 @@ module Transpec
       else
         yield
       end
+    end
+
+    private
+
+    def fetch_rspec_version
+      command = 'rspec --version'
+      command = 'bundle exec ' + command if require_bundler?
+
+      output = nil
+
+      Dir.chdir(@path) do
+        with_bundler_clean_env do
+          IO.popen(command) do |io|
+            output = io.read
+          end
+        end
+      end
+
+      fail 'Failed checking RSpec version.' if output.nil? || $CHILD_STATUS.exitstatus != 0
+
+      output.chomp
     end
   end
 end

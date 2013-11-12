@@ -68,6 +68,16 @@ module Transpec
           rspec_version.to_s.should == RSpec::Core::Version::STRING
         end
       end
+
+      context 'when failed checking version' do
+        before do
+          IO.stub(:popen).and_return(nil)
+        end
+
+        it 'raises error' do
+          -> { rspec_version }.should raise_error(/failed checking/i)
+        end
+      end
     end
   end
 end
