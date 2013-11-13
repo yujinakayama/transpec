@@ -7,7 +7,7 @@ module Transpec
   class Syntax
     describe Should do
       include_context 'parsed objects'
-      include_context 'should object'
+      include_context 'syntax object', Should, :should_object
 
       let(:record) { should_object.report.records.first }
 

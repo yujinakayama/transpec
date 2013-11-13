@@ -7,16 +7,7 @@ module Transpec
   class Syntax
     describe MethodStub do
       include_context 'parsed objects'
-
-      subject(:method_stub_object) do
-        ast.each_node do |node|
-          next unless MethodStub.target_node?(node)
-          return MethodStub.new(node, source_rewriter, runtime_data)
-        end
-        fail 'No method stub node is found!'
-      end
-
-      let(:runtime_data) { nil }
+      include_context 'syntax object', MethodStub, :method_stub_object
 
       let(:record) { method_stub_object.report.records.first }
 

@@ -7,7 +7,7 @@ module Transpec
   class Syntax
     describe Expect do
       include_context 'parsed objects'
-      include_context 'expect object'
+      include_context 'syntax object', Expect, :expect_object
 
       describe '#subject_node' do
         let(:source) do

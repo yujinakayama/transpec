@@ -7,16 +7,7 @@ module Transpec
   class Syntax
     describe ShouldReceive do
       include_context 'parsed objects'
-
-      subject(:should_receive_object) do
-        ast.each_node do |node|
-          next unless ShouldReceive.target_node?(node)
-          return ShouldReceive.new(node, source_rewriter, runtime_data)
-        end
-        fail 'No should_receive node is found!'
-      end
-
-      let(:runtime_data) { nil }
+      include_context 'syntax object', ShouldReceive, :should_receive_object
 
       let(:record) { should_receive_object.report.records.first }
 

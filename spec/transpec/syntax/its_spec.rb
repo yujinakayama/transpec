@@ -7,16 +7,7 @@ module Transpec
   class Syntax
     describe Its do
       include_context 'parsed objects'
-
-      subject(:its_object) do
-        ast.each_node do |node|
-          next unless Its.target_node?(node)
-          return Its.new(node, source_rewriter, runtime_data)
-        end
-        fail 'No #its node is found!'
-      end
-
-      let(:runtime_data) { nil }
+      include_context 'syntax object', Its, :its_object
 
       let(:record) { its_object.report.records.last }
 

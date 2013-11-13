@@ -8,8 +8,8 @@ module Transpec
     describe Have do
       include ::AST::Sexp
       include_context 'parsed objects'
-      include_context 'should object'
-      include_context 'expect object'
+      include_context 'syntax object', Should, :should_object
+      include_context 'syntax object', Expect, :expect_object
 
       describe '#have_node' do
         let(:source) do

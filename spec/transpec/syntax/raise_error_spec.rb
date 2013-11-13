@@ -7,14 +7,7 @@ module Transpec
   class Syntax
     describe RaiseError do
       include_context 'parsed objects'
-
-      subject(:raise_error_object) do
-        ast.each_node do |node|
-          next unless RaiseError.target_node?(node)
-          return RaiseError.new(node, source_rewriter)
-        end
-        fail 'No raise_error node is found!'
-      end
+      include_context 'syntax object', RaiseError, :raise_error_object
 
       let(:record) { raise_error_object.report.records.first }
 

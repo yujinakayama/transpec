@@ -7,14 +7,7 @@ module Transpec
   class Syntax
     describe BeClose do
       include_context 'parsed objects'
-
-      subject(:be_close_object) do
-        ast.each_node do |node|
-          next unless BeClose.target_node?(node)
-          return BeClose.new(node, source_rewriter)
-        end
-        fail 'No be_close node is found!'
-      end
+      include_context 'syntax object', BeClose, :be_close_object
 
       describe '#convert_to_be_within!' do
         before do

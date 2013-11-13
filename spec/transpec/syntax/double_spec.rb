@@ -7,14 +7,7 @@ module Transpec
   class Syntax
     describe Double do
       include_context 'parsed objects'
-
-      subject(:double_object) do
-        ast.each_node do |node|
-          next unless Double.target_node?(node)
-          return Double.new(node, source_rewriter)
-        end
-        fail 'No double node is found!'
-      end
+      include_context 'syntax object', Double, :double_object
 
       describe '.target_node?' do
         let(:send_node) do

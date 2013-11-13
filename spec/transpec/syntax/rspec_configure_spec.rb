@@ -7,14 +7,7 @@ module Transpec
   class Syntax
     describe RSpecConfigure do
       include_context 'parsed objects'
-
-      subject(:rspec_configure) do
-        ast.each_node do |node|
-          next unless RSpecConfigure.target_node?(node)
-          return RSpecConfigure.new(node, source_rewriter)
-        end
-        fail 'No RSpec.configure node is found!'
-      end
+      include_context 'syntax object', RSpecConfigure, :rspec_configure
 
       [
         [:expectation_syntaxes, :expect_with, 'RSpec::Matchers::Configuration'],

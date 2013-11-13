@@ -7,14 +7,7 @@ module Transpec
   class Syntax
     describe BeBoolean do
       include_context 'parsed objects'
-
-      subject(:be_boolean_object) do
-        ast.each_node do |node|
-          next unless BeBoolean.target_node?(node)
-          return BeBoolean.new(node, source_rewriter)
-        end
-        fail 'No be_boolean node is found!'
-      end
+      include_context 'syntax object', BeBoolean, :be_boolean_object
 
       let(:record) { be_boolean_object.report.records.last }
 

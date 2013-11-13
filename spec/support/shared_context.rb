@@ -2,8 +2,6 @@
 
 require 'transpec/dynamic_analyzer'
 require 'transpec/ast/builder'
-require 'transpec/syntax/should'
-require 'transpec/syntax/expect'
 require 'parser'
 require 'parser/current'
 require 'tmpdir'
@@ -25,6 +23,9 @@ shared_context 'parsed objects' do
   let(:source_rewriter) { Parser::Source::Rewriter.new(source_buffer) }
 
   let(:rewritten_source) { source_rewriter.process }
+
+  # Include 'dynamic analysis objects' after this context so that this nil will be overridden.
+  let(:runtime_data) { nil }
 end
 
 # This context requires `source` to be defined with #let.
@@ -52,30 +53,16 @@ shared_context 'dynamic analysis objects' do
   end
 end
 
-shared_context 'should object' do
-  let(:should_object) do
+# This context depends on the context 'parsed objects'.
+shared_context 'syntax object' do |syntax_class, name|
+  let(name) do
     ast.each_node do |node|
-      next unless Transpec::Syntax::Should.target_node?(node)
-      return Transpec::Syntax::Should.new(node, source_rewriter, runtime_data)
+      next unless syntax_class.target_node?(node)
+      return syntax_class.new(node, source_rewriter, runtime_data)
     end
 
-    fail 'No should node is found!'
+    fail "No #{syntax_class.name} node is found!"
   end
-
-  let(:runtime_data) { nil }
-end
-
-shared_context 'expect object' do
-  let(:expect_object) do
-    ast.each_node do |node|
-      next unless Transpec::Syntax::Expect.target_node?(node)
-      return Transpec::Syntax::Expect.new(node, source_rewriter, runtime_data)
-    end
-
-    fail 'No expect node is found!'
-  end
-
-  let(:runtime_data) { nil }
 end
 
 shared_context 'isolated environment' do

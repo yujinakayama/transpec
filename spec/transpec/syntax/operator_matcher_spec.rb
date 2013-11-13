@@ -2,19 +2,18 @@
 
 require 'spec_helper'
 require 'transpec/syntax/operator_matcher'
+require 'transpec/syntax/should'
 
 module Transpec
   class Syntax
     describe OperatorMatcher do
       include ::AST::Sexp
       include_context 'parsed objects'
-      include_context 'should object'
+      include_context 'syntax object', Should, :should_object
 
       subject(:matcher) do
         OperatorMatcher.new(should_object.matcher_node, source_rewriter, runtime_data)
       end
-
-      let(:runtime_data) { nil }
 
       let(:record) { matcher.report.records.first }
 
