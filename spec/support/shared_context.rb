@@ -1,20 +1,17 @@
 # coding: utf-8
 
-require 'transpec/dynamic_analyzer'
-require 'transpec/ast/builder'
-require 'parser'
-require 'parser/current'
-require 'tmpdir'
-
 # This context requires `source` to be defined with #let.
 shared_context 'parsed objects' do
   let(:source_buffer) do
+    require 'parser'
     buffer = Parser::Source::Buffer.new('(string)')
     buffer.source = source
     buffer
   end
 
   let(:ast) do
+    require 'transpec/ast/builder'
+    require 'parser/current'
     builder = Transpec::AST::Builder.new
     parser = Parser::CurrentRuby.new(builder)
     parser.parse(source_buffer)
@@ -35,6 +32,7 @@ shared_context 'dynamic analysis objects' do
   let(:source_path) { 'spec/example_spec.rb' }
 
   let(:source_buffer) do
+    require 'parser'
     buffer = Parser::Source::Buffer.new(source_path)
     buffer.source = source
     buffer
@@ -43,6 +41,8 @@ shared_context 'dynamic analysis objects' do
   runtime_data_cache = {}
 
   let(:runtime_data) do
+    require 'transpec/dynamic_analyzer'
+
     if runtime_data_cache[source]
       runtime_data_cache[source]
     else
@@ -76,6 +76,8 @@ shared_context 'isolated environment' do
 end
 
 shared_context 'inside of git repository' do
+  require 'tmpdir'
+
   around do |example|
     Dir.mkdir('repo')
     Dir.chdir('repo') do
