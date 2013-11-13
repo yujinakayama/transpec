@@ -216,9 +216,22 @@ module Transpec
       context 'when Configuration#convert_have_items? is true' do
         before { configuration.convert_have_items = true }
 
-        it 'invokes Have#convert_to_standard_expectation!' do
-          expect_object.have_matcher.should_receive(:convert_to_standard_expectation!)
-          converter.process_expect(expect_object)
+        context 'and Configuration#parenthesize_matcher_arg is true' do
+          before { configuration.parenthesize_matcher_arg = true }
+
+          it 'invokes Have#convert_to_standard_expectation! with true' do
+            expect_object.have_matcher.should_receive(:convert_to_standard_expectation!).with(true)
+            converter.process_expect(expect_object)
+          end
+        end
+
+        context 'and Configuration#parenthesize_matcher_arg is false' do
+          before { configuration.parenthesize_matcher_arg = false }
+
+          it 'invokes Have#convert_to_standard_expectation! with false' do
+            expect_object.have_matcher.should_receive(:convert_to_standard_expectation!).with(false)
+            converter.process_expect(expect_object)
+          end
         end
       end
 

@@ -70,7 +70,8 @@ module Transpec
 
     def process_expect(expect)
       if expect.have_matcher && @configuration.convert_have_items?
-        expect.have_matcher.convert_to_standard_expectation!
+        parenthesize_matcher_arg = @configuration.parenthesize_matcher_arg
+        expect.have_matcher.convert_to_standard_expectation!(parenthesize_matcher_arg)
       end
     end
 

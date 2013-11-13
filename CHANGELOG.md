@@ -2,6 +2,8 @@
 
 ## Development
 
+* Fix a bug where `-p/--no-parentheses-matcher-arg` was not applied to the conversion of `have(n).items` with `expect`
+
 ## v1.3.1
 
 * Proceed to conversion even if `rspec` didn't pass in dynamic analysis
