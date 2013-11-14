@@ -5,9 +5,13 @@ require 'parser'
 module Transpec
   module AST
     class Node < Parser::AST::Node
-      def initialize(type, children = [], properties = {})
-        @properties = {}
+      attr_reader :metadata
 
+      def initialize(type, children = [], properties = {})
+        @metadata = {}
+        @mutable_attributes = {}
+
+        # ::AST::Node#initialize freezes itself.
         super
 
         each_child_node do |child_node|
@@ -16,11 +20,11 @@ module Transpec
       end
 
       def parent_node
-        @properties[:parent_node]
+        @mutable_attributes[:parent_node]
       end
 
       def parent_node=(node)
-        @properties[:parent_node] = node
+        @mutable_attributes[:parent_node] = node
       end
 
       protected :parent_node=
