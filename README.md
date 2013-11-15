@@ -685,6 +685,62 @@ If you choose so, disable this conversion by either:
 * Deprecation: Deprecated since RSpec 2.99, removed at RSpec 3.0
 * See also: [Core: its will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#core__will_be_moved_into_an_external_gem)
 
+### Current example object
+
+**This conversion is available only if your project has `rspec` gem dependency `2.99` or later.**
+
+```ruby
+# Targets
+module ScreenshotHelper
+  def save_failure_screenshot
+    return unless example.exception
+    # ...
+  end
+end
+
+describe 'example page' do
+  include ScreenshotHelper
+  after { save_failure_screenshot }
+  let(:user) { User.find(example.metadata[:user_id]) }
+  # ...
+end
+
+# Converted
+module ScreenshotHelper
+  def save_failure_screenshot
+    return unless RSpec.current_example.exception
+    # ...
+  end
+end
+
+describe 'example page' do
+  include ScreenshotHelper
+  after { save_failure_screenshot }
+  let(:user) { |example| User.find(example.metadata[:user_id]) }
+  # ...
+end
+```
+
+Here's an excerpt from [the warning for `RSpec::Core::ExampleGroup#example` and `#running_example` in RSpec 2.99](https://github.com/rspec/rspec-core/blob/7d6d2ca/lib/rspec/core/example_group.rb#L513-L527):
+
+>`RSpec::Core::ExampleGroup#example` is deprecated and will be removed in RSpec 3. There are a few options for what you can use instead:
+>
+>- `rspec-core`'s DSL methods (`it`, `before`, `after`, `let`, `subject`, etc) now yield the example as a block argument, and that is the recommended way to access the current example from those contexts.
+>- The current example is now exposed via `RSpec.current_example`, which is accessible from any context.
+>- If you can't update the code at this call site (e.g. because it is in an extension gem), you can use this snippet to continue making this method available in RSpec 2.99 and RSpec 3:
+>
+>```ruby
+>RSpec.configure do |c|
+>  c.expose_current_running_example_as :example
+>end
+>```
+
+---
+
+* Conversion can be disabled by: `--keep deprecated`
+* Deprecation: Deprecated since RSpec 2.99, removed at RSpec 3.0
+* See also: [Core: DSL methods will yield the example - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#core_dsl_methods_will_yield_the_example)
+
 ## Compatibility
 
 Tested on MRI 1.9, MRI 2.0 and JRuby in 1.9 mode.

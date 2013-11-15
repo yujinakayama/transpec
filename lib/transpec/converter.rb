@@ -8,6 +8,7 @@ require 'transpec/syntax'
 require 'transpec/syntax/be_boolean'
 require 'transpec/syntax/be_close'
 require 'transpec/syntax/double'
+require 'transpec/syntax/example'
 require 'transpec/syntax/expect'
 require 'transpec/syntax/its'
 require 'transpec/syntax/method_stub'
@@ -129,6 +130,11 @@ module Transpec
 
     def process_its(its)
       its.convert_to_describe_subject_it! if @configuration.convert_its?
+    end
+
+    def process_example(example)
+      return unless @rspec_version.yielded_example_available?
+      example.convert! if @configuration.convert_deprecated_method?
     end
 
     def process_rspec_configure(rspec_configure)

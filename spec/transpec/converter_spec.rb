@@ -640,6 +640,45 @@ module Transpec
       end
     end
 
+    describe '#process_example' do
+      let(:example_object) { double('example_object').as_null_object }
+
+      context 'when RSpecVersion#yielded_example_available? returns true' do
+        before { rspec_version.stub(:yielded_example_available?).and_return(true) }
+
+        context 'when Configuration#convert_deprecated_method? is true' do
+          before { configuration.convert_deprecated_method = true }
+
+          it 'invokes Example#convert!' do
+            example_object.should_receive(:convert!)
+            converter.process_example(example_object)
+          end
+        end
+
+        context 'when Configuration#convert_deprecated_method? is false' do
+          before { configuration.convert_deprecated_method = false }
+
+          it 'does not invoke Its#convert_to_describe_subject_it!' do
+            example_object.should_not_receive(:convert!)
+            converter.process_example(example_object)
+          end
+        end
+      end
+
+      context 'when RSpecVersion#yielded_example_available? returns false' do
+        before { rspec_version.stub(:yielded_example_available?).and_return(false) }
+
+        context 'when Configuration#convert_deprecated_method? is true' do
+          before { configuration.convert_deprecated_method = true }
+
+          it 'does nothing' do
+            example_object.should_not_receive(:convert!)
+            converter.process_example(example_object)
+          end
+        end
+      end
+    end
+
     describe '#process_rspec_configure' do
       let(:rspec_configure) { double('rspec_configure').as_null_object }
 

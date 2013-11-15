@@ -36,6 +36,10 @@ module Transpec
       @gem_version >= GEM_VERSION_3_0
     end
 
+    def yielded_example_available?
+      @gem_version >= GEM_VERSION_2_99
+    end
+
     def <=>(other)
       @gem_version <=> other.gem_version
     end

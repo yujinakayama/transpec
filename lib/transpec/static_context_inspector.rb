@@ -8,21 +8,6 @@ module Transpec
 
     SCOPE_TYPES = [:module, :class, :sclass, :def, :defs, :block].freeze
 
-    EXAMPLE_GROUP_METHODS = [
-      :describe, :context,
-      :shared_examples, :shared_context, :share_examples_for, :shared_examples_for
-    ].freeze
-
-    EXAMPLE_METHODS = [
-      :example, :it, :specify,
-      :focus, :focused, :fit,
-      :pending, :xexample, :xit, :xspecify
-    ].freeze
-
-    HOOK_METHODS = [:before, :after, :around].freeze
-
-    HELPER_METHODS = [:subject, :subject!, :let, :let!]
-
     NON_MONKEY_PATCH_EXPECTATION_AVAILABLE_CONTEXT = [
       [:example_group, :example],
       [:example_group, :each_before_after],
