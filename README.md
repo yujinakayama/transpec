@@ -572,7 +572,13 @@ allow(obj).to receive_messages(:foo => 1, :bar => 2)
 allow_any_instance_of(Klass).to receive(:foo)
 ```
 
-Note: `allow(obj).to receive_messages(:foo => 1, :bar => 2)` that is designed to be the replacement for `obj.stub(:foo => 1, :bar => 2)` is available from RSpec 3.0 (though [it's now being considered to be backported to RSpec 2.99](https://github.com/rspec/rspec-mocks/issues/454)). So, in [the upgrade path to RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#the_upgrade_path), if you want to convert them with keeping the syntax correspondence, you need to follow these steps:
+#### No replacement for `unstub`
+
+There's no replacement for `unstub` in the `expect` syntax. See [the discussion](https://github.com/rspec/rspec-mocks/issues/153#issuecomment-12208638) for more details.
+
+#### Steps to upgrade `obj.stub(:foo => 1, :bar => 2)`
+
+`allow(obj).to receive_messages(:foo => 1, :bar => 2)` that is designed to be the replacement for `obj.stub(:foo => 1, :bar => 2)` is available from RSpec 3.0 (though [it's now being considered to be backported to RSpec 2.99](https://github.com/rspec/rspec-mocks/issues/454)). So, in [the upgrade path to RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#the_upgrade_path), if you want to convert them with keeping the syntax correspondence, you need to follow these steps:
 
 1. Upgrade to RSpec 2.99
 2. Run `transpec --keep stub`
