@@ -2,6 +2,9 @@
 
 require 'spec_helper'
 require 'transpec/syntax/have'
+require 'transpec/syntax/should'
+require 'transpec/syntax/expect'
+require 'ast'
 
 module Transpec
   class Syntax

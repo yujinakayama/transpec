@@ -3,6 +3,7 @@
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/send'
 require 'transpec/util'
+require 'ast'
 
 module Transpec
   class Syntax
