@@ -179,19 +179,21 @@ module Transpec
       end
 
       describe '#expectize!' do
-        let(:source) do
-          <<-END
-            describe 'example' do
-              it 'is 1' do
-                subject.should == 1
+        context 'when it has an operator matcher' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'is 1' do
+                  subject.should == 1
+                end
               end
-            end
-          END
-        end
+            END
+          end
 
-        it 'invokes OperatorMatcher#convert_operator!' do
-          should_object.operator_matcher.should_receive(:convert_operator!)
-          should_object.expectize!
+          it 'invokes OperatorMatcher#convert_operator!' do
+            should_object.operator_matcher.should_receive(:convert_operator!)
+            should_object.expectize!
+          end
         end
 
         context 'when it is `subject.should` form' do
