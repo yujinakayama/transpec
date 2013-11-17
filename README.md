@@ -381,7 +381,7 @@ This conversion is combined with the conversion of [standard expectations](#stan
 
 ### Boolean matchers
 
-**This conversion is available only if your project has `rspec` gem dependency `2.99` or later.**
+**This conversion is available only if your project has `rspec` gem dependency `2.99.0.beta1` or later.**
 
 ```ruby
 # Targets
@@ -562,11 +562,11 @@ allow(obj).to receive(:foo)
 
 allow(obj).to receive(:foo)
 
-# If the target project's rspec gem dependency is prior to 3.0
+# If the target project's rspec gem dependency is prior to 3.0.0.beta1
 allow(obj).to receive(:foo).and_return(1)
 allow(obj).to receive(:bar).and_return(2)
 
-# If the target project's rspec gem dependency is 3.0 or later
+# If the target project's rspec gem dependency is 3.0.0.beta1 or later
 allow(obj).to receive_messages(:foo => 1, :bar => 2)
 
 allow_any_instance_of(Klass).to receive(:foo)
@@ -693,7 +693,7 @@ If you choose so, disable this conversion by either:
 
 ### Current example object
 
-**This conversion is available only if your project has `rspec` gem dependency `2.99` or later.**
+**This conversion is available only if your project has `rspec` gem dependency `2.99.0.beta1` or later.**
 
 ```ruby
 # Targets
