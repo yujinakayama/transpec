@@ -19,7 +19,6 @@ module Transpec
     RESULT_FILE = 'transpec_analysis_result.json'
     HELPER_SOURCE = <<-END
       require 'pathname'
-      require 'json'
 
       module TranspecAnalysis
         @base_path = Dir.pwd
@@ -44,6 +43,7 @@ module Transpec
           #   (Such objects are stored as a string.)
           # * Singleton method information won't be serialized.
           #   (With Marshal.load, `singleton can't be dumped (TypeError)` will be raised.)
+          require 'json'
           path = File.join(@base_path, '#{RESULT_FILE}')
           File.open(path, 'w') do |file|
             JSON.dump(data, file)
