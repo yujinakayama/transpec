@@ -63,6 +63,7 @@ module Transpec
       describe '-k/--keep option' do
         [
           ['should',         :convert_should?],
+          ['oneliner',       :convert_oneliner?],
           ['should_receive', :convert_should_receive?],
           ['stub',           :convert_stub?],
           ['have_items',     :convert_have_items],

@@ -57,4 +57,4 @@ BracesAroundHashParameters:
 
 # TODO: Shorten to 100.
 ClassLength:
-  Max: 150
+  Max: 152

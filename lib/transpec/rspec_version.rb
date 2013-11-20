@@ -15,8 +15,9 @@ module Transpec
     # Prerelease parts are sorted alphabetically using the normal Ruby string sorting rules.
     # If a prerelease part contains both letters and numbers, it will be broken into multiple parts
     # to provide expected sort behavior (1.0.a10 becomes 1.0.a.10, and is greater than 1.0.a9).
-    GEM_VERSION_2_99_BETA1 = Gem::Version.new('2.99.beta1')
-    GEM_VERSION_3_0_BETA1  = Gem::Version.new('3.0.beta1')
+    GEM_VERSION_2_99_0_BETA1 = Gem::Version.new('2.99.0.beta1')
+    GEM_VERSION_2_99_0_BETA2 = Gem::Version.new('2.99.0.beta2')
+    GEM_VERSION_3_0_0_BETA1  = Gem::Version.new('3.0.0.beta1')
 
     attr_reader :gem_version
 
@@ -29,15 +30,19 @@ module Transpec
     end
 
     def be_truthy_available?
-      @gem_version >= GEM_VERSION_2_99_BETA1
+      @gem_version >= GEM_VERSION_2_99_0_BETA1
     end
 
     def receive_messages_available?
-      @gem_version >= GEM_VERSION_3_0_BETA1
+      @gem_version >= GEM_VERSION_3_0_0_BETA1
     end
 
     def yielded_example_available?
-      @gem_version >= GEM_VERSION_2_99_BETA1
+      @gem_version >= GEM_VERSION_2_99_0_BETA1
+    end
+
+    def one_liner_is_expected_available?
+      @gem_version >= GEM_VERSION_2_99_0_BETA2
     end
 
     def <=>(other)

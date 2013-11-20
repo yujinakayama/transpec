@@ -12,6 +12,7 @@ require 'transpec/syntax/example'
 require 'transpec/syntax/expect'
 require 'transpec/syntax/its'
 require 'transpec/syntax/method_stub'
+require 'transpec/syntax/oneliner_should'
 require 'transpec/syntax/raise_error'
 require 'transpec/syntax/rspec_configure'
 require 'transpec/syntax/should'
@@ -66,6 +67,27 @@ module Transpec
       if should.have_matcher && @configuration.convert_have_items?
         parenthesize_matcher_arg = @configuration.parenthesize_matcher_arg
         should.have_matcher.convert_to_standard_expectation!(parenthesize_matcher_arg)
+      end
+    end
+
+    def process_oneliner_should(oneliner_should)
+      negative_form = @configuration.negative_form_of_to
+      parenthesize = @configuration.parenthesize_matcher_arg?
+
+      # TODO: Referencing oneliner_should.have_matcher.project_requires_collection_matcher?
+      #   from this converter is considered bad design.
+      should_convert_have_items = @configuration.convert_have_items? &&
+                                  oneliner_should.have_matcher &&
+                                  !oneliner_should.have_matcher.project_requires_collection_matcher?
+
+      if should_convert_have_items
+        if @configuration.convert_should?
+          oneliner_should.convert_have_items_to_standard_expect!(negative_form, parenthesize)
+        else
+          oneliner_should.convert_have_items_to_standard_should!
+        end
+      elsif @configuration.convert_oneliner? && @rspec_version.one_liner_is_expected_available?
+        oneliner_should.expectize!(negative_form, parenthesize)
       end
     end
 
