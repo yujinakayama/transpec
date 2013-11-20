@@ -1,5 +1,7 @@
 # coding: utf-8
 
+require 'ast'
+
 module Transpec
   class Syntax
     module Mixin
