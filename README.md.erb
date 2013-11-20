@@ -191,6 +191,7 @@ Type             | Target Syntax                    | Converted Syntax
 <%=
 conversion_type_table = <<END
 `should`         | `obj.should matcher`             | `expect(obj).to matcher`
+`oneliner`       | `it { should ... }`              | `it { is_expected.to ... }`
 `should_receive` | `obj.should_receive`             | `expect(obj).to receive`
 `stub`           | `obj.stub`                       | `allow(obj).to receive`
 `have_items`     | `expect(obj).to have(x).items`   | `expect(obj.size).to eq(x)`
@@ -353,6 +354,31 @@ expect(obj).to_not matcher # with `--negative-form to_not`
 * Deprecation: Deprecated since RSpec 3.0
 * See also: [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax)
 
+### One-liner expectations
+
+**This conversion is available only if your project has `rspec` gem dependency `2.99.0.beta2` or later.**
+
+```ruby
+# Targets
+it { should matcher }
+it { should_not matcher }
+
+# Converted
+it { is_expected.to matcher }
+it { is_expected.not_to matcher }
+it { is_expected.to_not matcher } # with `--negative-form to_not`
+```
+
+`is_expected.to` is designed for the consistency with the `expect` syntax.
+However the one-liner `should` is still _not_ deprecated in RSpec 3.0
+and available even if the `should` syntax is disabled in `RSpec.configure`.
+So if you think `is_expected.to` is verbose,
+feel free to disable this conversion and continue using the one-liner `should`.
+
+* Conversion can be disabled by: `--keep oneliner`
+* Deprecation: Not deprecated
+* See also: [Add `is_expected` for expect-based one-liner syntax. by myronmarston · rspec/rspec-core](https://github.com/rspec/rspec-core/pull/1180)
+
 ### Operator matchers
 
 ```ruby
@@ -468,6 +494,32 @@ Note: `rspec-rails` 3.0 [still uses `have(n).items` matcher with `rspec-collecti
 * Conversion can be disabled by: `--keep have_items`
 * Deprecation: Deprecated since RSpec 2.99, removed in RSpec 3.0
 * See also: [Expectations: have(x).items matchers will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#expectations__matchers_will_be_moved_into_an_external_gem)
+
+### One-liner expectations with `have(n).items` matcher
+
+**This conversion will be disabled automatically if `rspec-collection_matchers` or `rspec-rails` is loaded in your spec.**
+
+```ruby
+# Targets
+it { should have(3).items }
+it { should have_at_least(3).players }
+
+# Converted
+it 'has 3 items' do
+  expect(subject.size).to eq(3)
+end
+
+# With `--keep should`
+it 'has 3 items' do
+  subject.size.should == 3
+end
+
+it 'has at least 3 players' do
+  expect(subject.players.size).to be >= 3
+end
+```
+
+* Conversion can be disabled by: `--keep have_items`
 
 ### Expectations on block
 
