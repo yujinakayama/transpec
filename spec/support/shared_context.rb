@@ -17,7 +17,10 @@ shared_context 'parsed objects' do
     parser.parse(source_buffer)
   end
 
-  let(:source_rewriter) { Parser::Source::Rewriter.new(source_buffer) }
+  let(:source_rewriter) do
+    require 'parser'
+    Parser::Source::Rewriter.new(source_buffer)
+  end
 
   let(:rewritten_source) { source_rewriter.process }
 

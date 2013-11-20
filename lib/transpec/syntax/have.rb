@@ -44,9 +44,13 @@ module Transpec
 
       def convert_to_standard_expectation!(parenthesize_matcher_arg = true)
         return if project_requires_collection_matcher?
-        replace(@expectation.subject_range, replacement_subject_source)
-        replace(expression_range, replacement_matcher_source(size_source, parenthesize_matcher_arg))
-        register_record
+        replace(@expectation.subject_range, replacement_subject_source) if explicit_subject?
+        replace(expression_range, replacement_matcher_source(parenthesize_matcher_arg))
+        register_record if explicit_subject?
+      end
+
+      def explicit_subject?
+        @expectation.respond_to?(:subject_node)
       end
 
       def have_node
@@ -105,24 +109,12 @@ module Transpec
         QUERY_METHOD_PRIORITIES.first
       end
 
-      def replacement_matcher_source(size_source, parenthesize_arg = true)
-        case @expectation.current_syntax_type
-        when :should
-          replacement_matcher_source_for_should(size_source)
-        when :expect
-          replacement_matcher_source_for_expect(size_source, parenthesize_arg)
-        end
-      end
-
-      private
-
-      def runtime_subject_data
-        return @runtime_subject_data if instance_variable_defined?(:@runtime_subject_data)
-        @runtime_subject_data = runtime_node_data(@expectation.subject_node)
-      end
-
       def replacement_subject_source
-        source = @expectation.subject_range.source
+        build_replacement_subject_source(@expectation.subject_range.source)
+      end
+
+      def build_replacement_subject_source(original_subject_source)
+        source = original_subject_source.dup
         if subject_is_owner_of_collection?
           if collection_accessor_is_private?
             source << ".send(#{collection_accessor.inspect}"
@@ -135,7 +127,33 @@ module Transpec
         source << ".#{query_method}"
       end
 
-      def replacement_matcher_source_for_should(size_source)
+      def replacement_matcher_source(parenthesize_arg)
+        size_source = size_node.loc.expression.source
+        build_replacement_matcher_source(size_source, parenthesize_arg)
+      end
+
+      def build_replacement_matcher_source(size_source, parenthesize_arg = true)
+        case @expectation.current_syntax_type
+        when :should
+          build_replacement_matcher_source_for_should(size_source)
+        when :expect
+          build_replacement_matcher_source_for_expect(size_source, parenthesize_arg)
+        end
+      end
+
+      def size_source
+        size_node.loc.expression.source
+      end
+
+      private
+
+      def runtime_subject_data
+        return @runtime_subject_data if instance_variable_defined?(:@runtime_subject_data)
+        node = explicit_subject? ? @expectation.subject_node : @expectation.node
+        @runtime_subject_data = runtime_node_data(node)
+      end
+
+      def build_replacement_matcher_source_for_should(size_source)
         case have_method_name
         when :have, :have_exactly then "== #{size_source}"
         when :have_at_least       then ">= #{size_source}"
@@ -143,7 +161,7 @@ module Transpec
         end
       end
 
-      def replacement_matcher_source_for_expect(size_source, parenthesize_arg)
+      def build_replacement_matcher_source_for_expect(size_source, parenthesize_arg)
         case have_method_name
         when :have, :have_exactly
           if parenthesize_arg
@@ -156,10 +174,6 @@ module Transpec
         when :have_at_most
           "be <= #{size_source}"
         end
-      end
-
-      def size_source
-        size_node.loc.expression.source
       end
 
       def register_record
@@ -177,31 +191,45 @@ module Transpec
         end
 
         def target_node
-          @have.expectation.subject_node
+          if @have.explicit_subject?
+            @have.expectation.subject_node
+          else
+            @have.expectation.node
+          end
+        end
+
+        def target_type
+          if @have.explicit_subject?
+            :object
+          else
+            :context
+          end
         end
 
         def register_request
           key = :collection_accessor
           code = collection_accessor_inspection_code
-          @rewriter.register_request(target_node, key, code)
+          @rewriter.register_request(target_node, key, code, target_type)
 
           # Give up inspecting query methods of collection accessor with arguments
           # (e.g. have(2).errors_on(variable)) since this is a context of #instance_eval.
           unless @have.items_method_has_arguments?
             key = :available_query_methods
-            code = "collection_accessor = #{code}; " +
-                   'target = collection_accessor ? __send__(collection_accessor) : self; ' +
-                   "target.methods & #{QUERY_METHOD_PRIORITIES.inspect}"
-            @rewriter.register_request(target_node, key, code)
+            code = available_query_methods_inspection_code
+            @rewriter.register_request(target_node, key, code, target_type)
           end
 
           key = :collection_accessor_is_private?
-          code = "private_methods.include?(#{@have.items_name.inspect})"
-          @rewriter.register_request(target_node, key, code)
+          code = "#{subject_code}.private_methods.include?(#{@have.items_name.inspect})"
+          @rewriter.register_request(target_node, key, code, target_type)
 
           key = :project_requires_collection_matcher?
           code = 'defined?(RSpec::Rails) || defined?(RSpec::CollectionMatchers)'
           @rewriter.register_request(target_node, key, code, :context)
+        end
+
+        def subject_code
+          @have.explicit_subject? ? 'self' : 'subject'
         end
 
         # rubocop:disable MethodLength
@@ -212,7 +240,7 @@ module Transpec
           # rubocop:disable LineLength
           # https://github.com/rspec/rspec-expectations/blob/v2.14.3/lib/rspec/matchers/built_in/have.rb#L48-L58
           # rubocop:enable LineLength
-          <<-END.gsub(/^\s+\|/, '').chomp
+          @collection_accessor_inspection_code ||= <<-END.gsub(/^\s+\|/, '').chomp
             |begin
             |  exact_name = #{@have.items_name.inspect}
             |
@@ -227,12 +255,13 @@ module Transpec
             |
             |  if inflector
             |    pluralized_name = inflector.pluralize(exact_name).to_sym
-            |    respond_to_pluralized_name = respond_to?(pluralized_name)
+            |    respond_to_pluralized_name = #{subject_code}.respond_to?(pluralized_name)
             |  end
             |
-            |  respond_to_query_methods = !(methods & #{QUERY_METHOD_PRIORITIES.inspect}).empty?
+            |  respond_to_query_methods =
+            |    !(#{subject_code}.methods & #{QUERY_METHOD_PRIORITIES.inspect}).empty?
             |
-            |  if respond_to?(exact_name)
+            |  if #{subject_code}.respond_to?(exact_name)
             |    exact_name
             |  elsif respond_to_pluralized_name
             |    pluralized_name
@@ -245,6 +274,18 @@ module Transpec
           END
         end
         # rubocop:enable MethodLength
+
+        def available_query_methods_inspection_code
+          <<-END.gsub(/^\s+\|/, '').chomp
+            |collection_accessor = #{collection_accessor_inspection_code}
+            |target = if collection_accessor
+            |           #{subject_code}.__send__(collection_accessor)
+            |         else
+            |           #{subject_code}
+            |         end
+            |target.methods & #{QUERY_METHOD_PRIORITIES.inspect}
+          END
+        end
       end
 
       class HaveRecord < Record
@@ -274,7 +315,7 @@ module Transpec
                        "expect(#{converted_subject}).to"
                      end
 
-            syntax << " #{@have.replacement_matcher_source('n')}"
+            syntax << " #{@have.build_replacement_matcher_source('n')}"
           end
         end
 
@@ -300,7 +341,16 @@ module Transpec
 
         def converted_subject
           if @have.subject_is_owner_of_collection?
-            subject = 'obj.'
+            build_converted_subject('obj')
+          else
+            build_converted_subject('collection')
+          end
+        end
+
+        def build_converted_subject(subject)
+          subject << '.'
+
+          if @have.subject_is_owner_of_collection?
             if @have.collection_accessor_is_private?
               subject << "send(#{@have.collection_accessor.inspect}"
               subject << ', ...' if @have.items_method_has_arguments?
@@ -311,7 +361,7 @@ module Transpec
             end
             subject << ".#{@have.query_method}"
           else
-            "collection.#{@have.default_query_method}"
+            subject << "#{@have.default_query_method}"
           end
         end
       end
