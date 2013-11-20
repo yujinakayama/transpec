@@ -21,6 +21,11 @@ module Transpec
         :expect
       end
 
+      def positive?
+        to_method_name = parent_node.children[1]
+        to_method_name == :to
+      end
+
       def matcher_node
         parent_node.children[2]
       end

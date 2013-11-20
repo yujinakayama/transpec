@@ -213,6 +213,41 @@ module Transpec
           end
         end
 
+        context 'when it is `collection.should_not have(2).items` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'does not 2 items' do
+                  collection.should_not have(2).items
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'does not 2 items' do
+                  collection.size.should_not == 2
+                end
+              end
+            END
+          end
+
+          let(:have_object) { should_object.have_matcher }
+
+          it 'converts into `collection.size.should_not == 2` form' do
+            have_object.convert_to_standard_expectation!
+            rewritten_source.should == expected_source
+          end
+
+          it 'adds record "`collection.should_not have(n).items` -> `collection.size.should_not == n`"' do
+            have_object.convert_to_standard_expectation!
+            record.original_syntax.should  == 'collection.should_not have(n).items'
+            record.converted_syntax.should == 'collection.size.should_not == n'
+          end
+        end
+
         context 'when it is `collection.should have_at_least(2).items` form' do
           let(:source) do
             <<-END
@@ -364,6 +399,41 @@ module Transpec
                 record.converted_syntax.should == 'expect(collection.size).to eq(n)'
               end
             end
+          end
+        end
+
+        context 'when it is `expect(collection).not_to have(2).items` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'does not have 2 items' do
+                  expect(collection).not_to have(2).items
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'does not have 2 items' do
+                  expect(collection.size).not_to eq(2)
+                end
+              end
+            END
+          end
+
+          let(:have_object) { expect_object.have_matcher }
+
+          it 'converts into `expect(collection.size).not_to eq(2)` form' do
+            have_object.convert_to_standard_expectation!
+            rewritten_source.should == expected_source
+          end
+
+          it 'adds record "`expect(collection).not_to have(n).items` -> `expect(collection.size).not_to eq(n)`"' do
+            have_object.convert_to_standard_expectation!
+            record.original_syntax.should  == 'expect(collection).not_to have(n).items'
+            record.converted_syntax.should == 'expect(collection.size).not_to eq(n)'
           end
         end
 

@@ -295,28 +295,35 @@ module Transpec
 
         def original_syntax
           @original_syntax ||= begin
-            syntax = case @have.expectation
-                     when Should
-                       "#{original_subject}.should"
-                     when Expect
-                       "expect(#{original_subject}).to"
-                     end
-
+            type = @have.expectation.class.snake_case_name.to_sym
+            syntax = build_expectation(original_subject, type)
             syntax << " #{@have.have_method_name}(n).#{original_items}"
           end
         end
 
         def converted_syntax
           @converted_syntax ||= begin
-            syntax = case @have.expectation.current_syntax_type
-                     when :should
-                       "#{converted_subject}.should"
-                     when :expect
-                       "expect(#{converted_subject}).to"
-                     end
-
+            type = @have.expectation.current_syntax_type
+            syntax = build_expectation(converted_subject, type)
             syntax << " #{@have.build_replacement_matcher_source('n')}"
           end
+        end
+
+        def build_expectation(subject, type)
+          case type
+          when :should
+            syntax = "#{subject}.should"
+            syntax << '_not' unless positive?
+          when :expect
+            syntax = "expect(#{subject})."
+            syntax << (positive? ? 'to' : 'not_to')
+          end
+
+          syntax
+        end
+
+        def positive?
+          @have.expectation.positive?
         end
 
         def original_subject
