@@ -5,6 +5,7 @@
 * Support conversion of `RSpec::Core::ExampleGroup#example` ([#23](https://github.com/yujinakayama/transpec/issues/23))
 * Support conversion of one-liner syntax ([#25](https://github.com/yujinakayama/transpec/issues/25))
 * Support conversion of one-liner syntax with `have(n).items` matcher
+* Support conversion of `stub_chain`
 * Fix a bug where `-p/--no-parentheses-matcher-arg` was not applied to the conversion of `have(n).items` with `expect`
 * Fix a bug where conversion summaries of `have(n).item` with negative expectation were reported as positive expectations
 

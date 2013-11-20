@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require 'transpec/syntax/method_stub'
+require 'transpec'
 
 module Transpec
   class Syntax
@@ -97,6 +98,12 @@ module Transpec
       end
 
       describe '#allowize!' do
+        before do
+          method_stub_object.allowize!(rspec_version) unless example.metadata[:no_before_allowize!]
+        end
+
+        let(:rspec_version) { Transpec.required_rspec_version }
+
         context 'when it is `subject.stub(:method)` form' do
           let(:source) do
             <<-END
@@ -119,17 +126,15 @@ module Transpec
           end
 
           it 'converts into `allow(subject).to receive(:method)` form' do
-            method_stub_object.allowize!
             rewritten_source.should == expected_source
           end
 
           it "adds record \"`obj.stub(:message)` -> `allow(obj).to receive(:message)`\"" do
-            method_stub_object.allowize!
             record.original_syntax.should  == 'obj.stub(:message)'
             record.converted_syntax.should == 'allow(obj).to receive(:message)'
           end
 
-          context 'and #allow and #receive are not available in the context' do
+          context 'and #allow and #receive are not available in the context', :no_before_allowize! do
             context 'and the context is determinable statically' do
               let(:source) do
                 <<-END
@@ -151,13 +156,15 @@ module Transpec
                 include_context 'dynamic analysis objects'
 
                 it 'raises InvalidContextError' do
-                  -> { method_stub_object.allowize! }.should raise_error(InvalidContextError)
+                  -> { method_stub_object.allowize!(rspec_version) }
+                    .should raise_error(InvalidContextError)
                 end
               end
 
               context 'without runtime information' do
                 it 'raises InvalidContextError' do
-                  -> { method_stub_object.allowize! }.should raise_error(InvalidContextError)
+                  -> { method_stub_object.allowize!(rspec_version) }
+                    .should raise_error(InvalidContextError)
                 end
               end
             end
@@ -181,13 +188,15 @@ module Transpec
                 include_context 'dynamic analysis objects'
 
                 it 'raises InvalidContextError' do
-                  -> { method_stub_object.allowize! }.should raise_error(InvalidContextError)
+                  -> { method_stub_object.allowize!(rspec_version) }
+                    .should raise_error(InvalidContextError)
                 end
               end
 
               context 'without runtime information' do
                 it 'does not raise InvalidContextError' do
-                  -> { method_stub_object.allowize! }.should_not raise_error
+                  -> { method_stub_object.allowize!(rspec_version) }
+                    .should_not raise_error
                 end
               end
             end
@@ -216,12 +225,10 @@ module Transpec
           end
 
           it 'converts into `allow(subject).to receive(:method)` form' do
-            method_stub_object.allowize!
             rewritten_source.should == expected_source
           end
 
           it "adds record \"`obj.stub!(:message)` -> `allow(obj).to receive(:message)`\"" do
-            method_stub_object.allowize!
             record.original_syntax.should  == 'obj.stub!(:message)'
             record.converted_syntax.should == 'allow(obj).to receive(:message)'
           end
@@ -249,7 +256,6 @@ module Transpec
           end
 
           it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
-            method_stub_object.allowize!
             rewritten_source.should == expected_source
           end
         end
@@ -276,7 +282,6 @@ module Transpec
           end
 
           it 'converts into `allow(subject).to receive(:method).and_raise(RuntimeError)` form' do
-            method_stub_object.allowize!
             rewritten_source.should == expected_source
           end
         end
@@ -313,13 +318,19 @@ module Transpec
           end
 
           it 'keeps the style as far as possible' do
-            method_stub_object.allowize!
             rewritten_source.should == expected_source
           end
         end
 
         context 'when it is `subject.stub(:method => value)` form' do
           context 'and #receive_messages is available' do
+            # #before here does not work because #allowized! is invoked in super #before.
+            let(:rspec_version) do
+              rspec_version = Transpec.required_rspec_version
+              rspec_version.stub(:receive_messages_available?).and_return(true)
+              rspec_version
+            end
+
             let(:source) do
               <<-END
                 describe 'example' do
@@ -341,13 +352,11 @@ module Transpec
             end
 
             it 'converts into `allow(subject).to receive_messages(:method => value)` form' do
-              method_stub_object.allowize!(true)
               rewritten_source.should == expected_source
             end
 
             it 'adds record ' +
                "\"`obj.stub(:message => value)` -> `allow(obj).to receive_messages(:message => value)`\"" do
-              method_stub_object.allowize!(true)
               record.original_syntax.should  == 'obj.stub(:message => value)'
               record.converted_syntax.should == 'allow(obj).to receive_messages(:message => value)'
             end
@@ -375,13 +384,11 @@ module Transpec
             end
 
             it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
-              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
 
             it 'adds record ' +
                "\"`obj.stub(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
-              method_stub_object.allowize!
               record.original_syntax.should  == 'obj.stub(:message => value)'
               record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
             end
@@ -410,13 +417,11 @@ module Transpec
           end
 
           it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
-            method_stub_object.allowize!
             rewritten_source.should == expected_source
           end
 
           it 'adds record ' +
              "\"`obj.stub(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
-            method_stub_object.allowize!
             record.original_syntax.should  == 'obj.stub(:message => value)'
             record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
           end
@@ -446,19 +451,24 @@ module Transpec
 
           it 'converts into `allow(subject).to receive(:a_method).and_return(a_value)` ' +
              'and `allow(subject).to receive(:b_method).and_return(b_value)` form' do
-            method_stub_object.allowize!
             rewritten_source.should == expected_source
           end
 
           it 'adds record ' +
              "\"`obj.stub(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
-            method_stub_object.allowize!
             record.original_syntax.should  == 'obj.stub(:message => value)'
             record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
           end
 
           context 'when the statement continues over multi lines' do
             context 'and #receive_messages is available' do
+              # #before here does not work because #allowized! is invoked in super #before.
+              let(:rspec_version) do
+                rspec_version = Transpec.required_rspec_version
+                rspec_version.stub(:receive_messages_available?).and_return(true)
+                rspec_version
+              end
+
               let(:source) do
                 <<-END
                   describe 'example' do
@@ -488,7 +498,6 @@ module Transpec
               end
 
               it 'keeps the style' do
-                method_stub_object.allowize!(true)
                 rewritten_source.should == expected_source
               end
             end
@@ -522,9 +531,55 @@ module Transpec
               end
 
               it 'keeps the style except around the hash' do
-                method_stub_object.allowize!
                 rewritten_source.should == expected_source
               end
+            end
+          end
+        end
+
+        context 'when it is `subject.stub_chain(:foo, :bar => value)` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'responds to .foo.bar and returns 1' do
+                  subject.stub_chain(:foo, :bar => 1)
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'responds to .foo.bar and returns 1' do
+                  allow(subject).to receive_message_chain(:foo, :bar => 1)
+                end
+              end
+            END
+          end
+
+          context 'and #receive_message_chain is available' do
+            # #before here does not work because #allowized! is invoked in super #before.
+            let(:rspec_version) do
+              rspec_version = Transpec.required_rspec_version
+              rspec_version.stub(:receive_message_chain_available?).and_return(true)
+              rspec_version
+            end
+
+            it 'converts into `allow(subject).to receive_message_chain(:foo, :bar => value)` form' do
+              rewritten_source.should == expected_source
+            end
+
+            it "adds record \"`obj.stub_chain(:message1, :message2)` -> ' +
+               '`allow(obj).to receive_message_chain(:message1, :message2)`\"" do
+              record.original_syntax.should  == 'obj.stub_chain(:message1, :message2)'
+              record.converted_syntax.should == 'allow(obj).to receive_message_chain(:message1, :message2)'
+            end
+          end
+
+          context 'and #receive_message_chain is not available' do
+            it 'does nothing' do
+              rewritten_source.should == source
             end
           end
         end
@@ -542,12 +597,10 @@ module Transpec
             end
 
             it 'does nothing' do
-              method_stub_object.allowize!
               rewritten_source.should == source
             end
 
             it 'reports nothing' do
-              method_stub_object.allowize!
               method_stub_object.report.records.should be_empty
             end
           end
@@ -575,13 +628,11 @@ module Transpec
           end
 
           it 'converts into `allow_any_instance_of(Klass).to receive(:method)` form' do
-            method_stub_object.allowize!
             rewritten_source.should == expected_source
           end
 
           it "adds record \"`Klass.any_instance.stub(:message)` " +
              '-> `allow_any_instance_of(obj).to receive(:message)`"' do
-            method_stub_object.allowize!
             record.original_syntax.should  == 'Klass.any_instance.stub(:message)'
             record.converted_syntax.should == 'allow_any_instance_of(Klass).to receive(:message)'
           end
@@ -621,7 +672,6 @@ module Transpec
             end
 
             it 'keeps the style as far as possible' do
-              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
           end
@@ -649,13 +699,11 @@ module Transpec
           end
 
           it 'converts into `allow_any_instance_of(described_class).to receive(:method)` form' do
-            method_stub_object.allowize!
             rewritten_source.should == expected_source
           end
 
           it "adds record \"`Klass.any_instance.stub(:message)` " +
              '-> `allow_any_instance_of(obj).to receive(:message)`"' do
-            method_stub_object.allowize!
             record.original_syntax.should  == 'Klass.any_instance.stub(:message)'
             record.converted_syntax.should == 'allow_any_instance_of(Klass).to receive(:message)'
           end
@@ -689,13 +737,11 @@ module Transpec
             end
 
             it 'converts into `allow_any_instance_of(Klass).to receive(:method)` form' do
-              method_stub_object.allowize!
               rewritten_source.should == expected_source
             end
 
             it "adds record \"`Klass.any_instance.stub(:message)` " +
                '-> `allow_any_instance_of(obj).to receive(:message)`"' do
-              method_stub_object.allowize!
               record.original_syntax.should  == 'Klass.any_instance.stub(:message)'
               record.converted_syntax.should == 'allow_any_instance_of(Klass).to receive(:message)'
             end
@@ -715,12 +761,10 @@ module Transpec
             end
 
             it 'does nothing' do
-              method_stub_object.allowize!
               rewritten_source.should == source
             end
 
             it 'reports nothing' do
-              method_stub_object.allowize!
               method_stub_object.report.records.should be_empty
             end
           end

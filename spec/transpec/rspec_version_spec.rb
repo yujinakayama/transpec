@@ -30,7 +30,7 @@ module Transpec
       ]
     end
 
-    [:one_liner_is_expected_available?].each do |method|
+    [:receive_message_chain_available?, :one_liner_is_expected_available?].each do |method|
       include_examples 'feature availability', method, [
         ['2.14.0',       false],
         ['2.99.0.beta1', false],

@@ -602,16 +602,15 @@ Klass.any_instance.stub(:foo) # with `--keep stub`
 ```ruby
 # Targets
 obj.stub(:foo)
-
 obj.stub!(:foo)
 
 obj.stub(:foo => 1, :bar => 2)
 
+obj.stub_chain(:foo, :bar, :baz)
+
 Klass.any_instance.stub(:foo)
 
 # Converted
-allow(obj).to receive(:foo)
-
 allow(obj).to receive(:foo)
 
 # If the target project's rspec gem dependency is prior to 3.0.0.beta1
@@ -620,6 +619,10 @@ allow(obj).to receive(:bar).and_return(2)
 
 # If the target project's rspec gem dependency is 3.0.0.beta1 or later
 allow(obj).to receive_messages(:foo => 1, :bar => 2)
+
+# Conversion from `stub_chain` to `receive_message_chain` is available
+# only if the target project's rspec gem dependency is 2.99.0.beta2 or later
+allow(obj).to receive_message_chain(:foo, :bar, :baz)
 
 allow_any_instance_of(Klass).to receive(:foo)
 ```

@@ -120,7 +120,7 @@ module Transpec
 
     def process_method_stub(method_stub)
       if @configuration.convert_stub?
-        method_stub.allowize!(@rspec_version.receive_messages_available?)
+        method_stub.allowize!(@rspec_version)
       elsif @configuration.convert_deprecated_method?
         method_stub.convert_deprecated_method!
       end
