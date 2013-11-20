@@ -49,5 +49,35 @@ module Transpec
         it { should be_false }
       end
     end
+
+    describe '#expand_range_to_adjacent_whitespaces' do
+      let(:node) { ast.each_node.find { |n| n.type == :block } }
+      let(:range) { node.loc.begin }
+      subject(:expanded_range) { Util.expand_range_to_adjacent_whitespaces(range) }
+
+      context 'when the range is adjacent to whitespaces' do
+        let(:source) do
+          <<-END
+            1.times  { \t do_something }
+          END
+        end
+
+        it 'returns expanded range that contains adjacent whitespaces' do
+          expanded_range.source.should == "  { \t "
+        end
+      end
+
+      context 'when the range is not adjacent to whitespaces' do
+        let(:source) do
+          <<-'END'
+            1.times{do_something }
+          END
+        end
+
+        it 'returns un-expanded range' do
+          expanded_range.source.should == '{'
+        end
+      end
+    end
   end
 end
