@@ -10,6 +10,7 @@ module Transpec
   class OptionParser
     CONFIG_ATTRS_FOR_KEEP_TYPES = {
               should: :convert_should=,
+            oneliner: :convert_oneliner=,
       should_receive: :convert_should_receive=,
                 stub: :convert_stub=,
           have_items: :convert_have_items=,
@@ -140,6 +141,7 @@ module Transpec
           'conversions.',
           'Available syntax types:',
           "  #{'should'.bright} (to #{'expect(obj).to'.underline})",
+          "  #{'oneliner'.bright} (from #{'should'.underline} to #{'is_expected.to'.underline})",
           "  #{'should_receive'.bright} (to #{'expect(obj).to receive'.underline})",
           "  #{'stub'.bright}  (to #{'allow(obj).to receive'.underline})",
           "  #{'have_items'.bright} (to #{'expect(obj.size).to eq(x)'.underline})",

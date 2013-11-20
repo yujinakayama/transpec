@@ -210,6 +210,157 @@ module Transpec
       end
     end
 
+    describe '#process_oneliner_should' do
+      let(:should_object) { double('oneliner_should_object').as_null_object }
+
+      shared_examples 'does nothing' do
+        it 'does nothing' do
+          should_object.should_not_receive(:expectize!)
+          should_object.should_not_receive(:convert_have_items_to_standard_should!)
+          should_object.should_not_receive(:convert_have_items_to_standard_expect!)
+          converter.process_oneliner_should(should_object)
+        end
+      end
+
+      shared_examples 'invokes OnelinerShould#expectize! if available' do
+        context 'when RSpecVersion#one_liner_is_expected_available? returns true' do
+          before { rspec_version.stub(:one_liner_is_expected_available?).and_return(true) }
+
+          it 'invokes OnelinerShould#expectize!' do
+            should_object.should_receive(:expectize!)
+            converter.process_oneliner_should(should_object)
+          end
+        end
+
+        context 'when RSpecVersion#one_liner_is_expected_available? returns false' do
+          before { rspec_version.stub(:one_liner_is_expected_available?).and_return(false) }
+          include_examples 'does nothing'
+        end
+      end
+
+      shared_examples 'converts to standard expecatations' do
+        context 'and Configuration#convert_should? is true' do
+          before { configuration.convert_should = true }
+
+          it 'invokes OnelinerShould#convert_have_items_to_standard_expect!' do
+            should_object.should_receive(:convert_have_items_to_standard_expect!)
+            converter.process_oneliner_should(should_object)
+          end
+        end
+
+        context 'and Configuration#convert_should? is false' do
+          before { configuration.convert_should = false }
+
+          it 'invokes OnelinerShould#convert_have_items_to_standard_should!' do
+            should_object.should_receive(:convert_have_items_to_standard_should!)
+            converter.process_oneliner_should(should_object)
+          end
+        end
+      end
+
+      context 'when Configuration#convert_oneliner? is true' do
+        before { configuration.convert_oneliner = true }
+
+        context 'and the OnelinerShould has #have matcher' do
+          before do
+            should_object.stub(:have_matcher).and_return(double('have_matcher').as_null_object)
+          end
+
+          context 'and Configuration#convert_have_items? is true' do
+            before { configuration.convert_have_items = true }
+
+            context 'and Have#project_requires_collection_matcher? is true' do
+              before do
+                should_object.have_matcher
+                  .stub(:project_requires_collection_matcher?).and_return(true)
+              end
+              include_examples 'invokes OnelinerShould#expectize! if available'
+            end
+
+            context 'and Have#project_requires_collection_matcher? is false' do
+              before do
+                should_object.have_matcher
+                  .stub(:project_requires_collection_matcher?).and_return(false)
+              end
+              include_examples 'converts to standard expecatations'
+            end
+          end
+
+          context 'and Configuration#convert_have_items? is false' do
+            before { configuration.convert_have_items = false }
+            include_examples 'invokes OnelinerShould#expectize! if available'
+          end
+        end
+
+        context 'and the OnelinerShould does not have #have matcher' do
+          before do
+            should_object.stub(:have_matcher).and_return(nil)
+          end
+
+          context 'and Configuration#convert_have_items? is true' do
+            before { configuration.convert_have_items = true }
+            include_examples 'invokes OnelinerShould#expectize! if available'
+          end
+
+          context 'and Configuration#convert_have_items? is false' do
+            before { configuration.convert_have_items = false }
+            include_examples 'invokes OnelinerShould#expectize! if available'
+          end
+        end
+      end
+
+      context 'when Configuration#convert_oneliner? is false' do
+        before { configuration.convert_oneliner = false }
+
+        context 'and the OnelinerShould has #have matcher' do
+          before do
+            should_object.stub(:have_matcher).and_return(double('have_matcher').as_null_object)
+          end
+
+          context 'and Configuration#convert_have_items? is true' do
+            before { configuration.convert_have_items = true }
+
+            context 'and Have#project_requires_collection_matcher? is true' do
+              before do
+                should_object.have_matcher
+                  .stub(:project_requires_collection_matcher?).and_return(true)
+              end
+              include_examples 'does nothing'
+            end
+
+            context 'and Have#project_requires_collection_matcher? is false' do
+              before do
+                should_object.have_matcher
+                  .stub(:project_requires_collection_matcher?).and_return(false)
+              end
+              include_examples 'converts to standard expecatations'
+            end
+          end
+
+          context 'and Configuration#convert_have_items? is false' do
+            before { configuration.convert_have_items = false }
+            include_examples 'does nothing'
+          end
+        end
+
+        context 'and the OnelinerShould does not have #have matcher' do
+          before do
+            should_object.stub(:have_matcher).and_return(nil)
+          end
+
+          context 'and Configuration#convert_have_items? is true' do
+            before { configuration.convert_have_items = true }
+            include_examples 'does nothing'
+          end
+
+          context 'and Configuration#convert_have_items? is false' do
+            before { configuration.convert_have_items = false }
+            include_examples 'does nothing'
+          end
+        end
+      end
+    end
+
     describe '#process_expect' do
       let(:expect_object) { double('expect_object').as_null_object }
 

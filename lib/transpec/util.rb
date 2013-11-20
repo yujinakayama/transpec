@@ -23,6 +23,8 @@ module Transpec
       str sym regexp
     ).map(&:to_sym).freeze
 
+    WHITESPACES = [' ', "\t"].freeze
+
     module_function
 
     def proc_literal?(node)
@@ -99,6 +101,43 @@ module Transpec
         end
       else
         false
+      end
+    end
+
+    def expand_range_to_adjacent_whitespaces(range, direction = :both)
+      source = range.source_buffer.source
+      begin_pos = if [:both, :begin].include?(direction)
+                    find_consecutive_whitespace_position(source, range.begin_pos, :downto)
+                  else
+                    range.begin_pos
+                  end
+
+      end_pos = if [:both, :end].include?(direction)
+                  find_consecutive_whitespace_position(source, range.end_pos - 1, :upto) + 1
+                else
+                  range.end_pos
+                end
+
+      Parser::Source::Range.new(range.source_buffer, begin_pos, end_pos)
+    end
+
+    def find_consecutive_whitespace_position(source, origin, method)
+      from, to = case method
+                 when :upto
+                   [origin + 1, source.length - 1]
+                 when :downto
+                   [origin - 1, 0]
+                 else
+                   fail "Invalid method #{method}"
+                 end
+
+      from.send(method, to).reduce(origin) do |previous_position, position|
+        character = source[position]
+        if WHITESPACES.include?(character)
+          position
+        else
+          return previous_position
+        end
       end
     end
   end

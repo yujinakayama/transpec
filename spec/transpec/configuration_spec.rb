@@ -10,6 +10,7 @@ module Transpec
     context 'by default' do
       [
         [:convert_should?,            true],
+        [:convert_oneliner?,          true],
         [:convert_should_receive?,    true],
         [:convert_stub?,              true],
         [:convert_have_items?,        true],

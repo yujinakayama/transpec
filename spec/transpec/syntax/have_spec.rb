@@ -4,6 +4,7 @@ require 'spec_helper'
 require 'transpec/syntax/have'
 require 'transpec/syntax/should'
 require 'transpec/syntax/expect'
+require 'transpec/syntax/oneliner_should'
 require 'ast'
 
 module Transpec
@@ -13,6 +14,7 @@ module Transpec
       include_context 'parsed objects'
       include_context 'syntax object', Should, :should_object
       include_context 'syntax object', Expect, :expect_object
+      include_context 'syntax object', OnelinerShould, :oneliner_should_object
 
       describe '#have_node' do
         let(:source) do
@@ -974,6 +976,36 @@ module Transpec
               record.original_syntax.should  == 'expect(obj).to have(n).errors_on(...)'
               record.converted_syntax.should == 'expect(obj.errors_on(...).size).to eq(n)'
             end
+          end
+        end
+
+        context 'when it is `it { should have(2).items }` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it { should have(2).items }
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it { should == 2 }
+              end
+            END
+          end
+
+          let(:have_object) { oneliner_should_object.have_matcher }
+
+          it "converts into `it { should == 2 }` form since there's no subject" do
+            have_object.convert_to_standard_expectation!
+            rewritten_source.should == expected_source
+          end
+
+          it 'does not add record' do
+            have_object.convert_to_standard_expectation!
+            record.should be_nil
           end
         end
       end
