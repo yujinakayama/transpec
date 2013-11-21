@@ -129,7 +129,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it "adds record \"`obj.stub(:message)` -> `allow(obj).to receive(:message)`\"" do
+          it 'adds record `obj.stub(:message)` -> `allow(obj).to receive(:message)`' do
             record.original_syntax.should  == 'obj.stub(:message)'
             record.converted_syntax.should == 'allow(obj).to receive(:message)'
           end
@@ -228,7 +228,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it "adds record \"`obj.stub!(:message)` -> `allow(obj).to receive(:message)`\"" do
+          it 'adds record `obj.stub!(:message)` -> `allow(obj).to receive(:message)`' do
             record.original_syntax.should  == 'obj.stub!(:message)'
             record.converted_syntax.should == 'allow(obj).to receive(:message)'
           end
@@ -356,7 +356,7 @@ module Transpec
             end
 
             it 'adds record ' +
-               "\"`obj.stub(:message => value)` -> `allow(obj).to receive_messages(:message => value)`\"" do
+               '`obj.stub(:message => value)` -> `allow(obj).to receive_messages(:message => value)`' do
               record.original_syntax.should  == 'obj.stub(:message => value)'
               record.converted_syntax.should == 'allow(obj).to receive_messages(:message => value)'
             end
@@ -388,7 +388,7 @@ module Transpec
             end
 
             it 'adds record ' +
-               "\"`obj.stub(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
+               '`obj.stub(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`' do
               record.original_syntax.should  == 'obj.stub(:message => value)'
               record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
             end
@@ -421,7 +421,7 @@ module Transpec
           end
 
           it 'adds record ' +
-             "\"`obj.stub(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
+             '`obj.stub(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`' do
             record.original_syntax.should  == 'obj.stub(:message => value)'
             record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
           end
@@ -455,7 +455,7 @@ module Transpec
           end
 
           it 'adds record ' +
-             "\"`obj.stub(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`\"" do
+             '`obj.stub(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`' do
             record.original_syntax.should  == 'obj.stub(:message => value)'
             record.converted_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
           end
@@ -570,8 +570,8 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            it "adds record \"`obj.stub_chain(:message1, :message2)` -> ' +
-               '`allow(obj).to receive_message_chain(:message1, :message2)`\"" do
+            it "adds record `obj.stub_chain(:message1, :message2)` -> ' +
+               '`allow(obj).to receive_message_chain(:message1, :message2)`" do
               record.original_syntax.should  == 'obj.stub_chain(:message1, :message2)'
               record.converted_syntax.should == 'allow(obj).to receive_message_chain(:message1, :message2)'
             end
@@ -631,8 +631,8 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it "adds record \"`Klass.any_instance.stub(:message)` " +
-             '-> `allow_any_instance_of(obj).to receive(:message)`"' do
+          it 'adds record `Klass.any_instance.stub(:message)` ' +
+             '-> `allow_any_instance_of(obj).to receive(:message)`' do
             record.original_syntax.should  == 'Klass.any_instance.stub(:message)'
             record.converted_syntax.should == 'allow_any_instance_of(Klass).to receive(:message)'
           end
@@ -702,8 +702,8 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it "adds record \"`Klass.any_instance.stub(:message)` " +
-             '-> `allow_any_instance_of(obj).to receive(:message)`"' do
+          it 'adds record `Klass.any_instance.stub(:message)` ' +
+             '-> `allow_any_instance_of(obj).to receive(:message)`' do
             record.original_syntax.should  == 'Klass.any_instance.stub(:message)'
             record.converted_syntax.should == 'allow_any_instance_of(Klass).to receive(:message)'
           end
@@ -740,8 +740,8 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            it "adds record \"`Klass.any_instance.stub(:message)` " +
-               '-> `allow_any_instance_of(obj).to receive(:message)`"' do
+            it 'adds record `Klass.any_instance.stub(:message)` ' +
+               '-> `allow_any_instance_of(obj).to receive(:message)`' do
               record.original_syntax.should  == 'Klass.any_instance.stub(:message)'
               record.converted_syntax.should == 'allow_any_instance_of(Klass).to receive(:message)'
             end
@@ -806,7 +806,7 @@ module Transpec
             end
 
             it 'adds record ' +
-               "\"`obj.#{method}(:message)` -> `obj.#{replacement_method}(:message)`\"" do
+               "`obj.#{method}(:message)` -> `obj.#{replacement_method}(:message)`" do
               record.original_syntax.should  == "obj.#{method}(:message)"
               record.converted_syntax.should == "obj.#{replacement_method}(:message)"
             end

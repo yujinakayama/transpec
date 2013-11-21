@@ -42,7 +42,7 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            it "adds record \"`#{method} { example }` -> `#{method} { |example| example }`\"" do
+            it "adds record `#{method} { example }` -> `#{method} { |example| example }`" do
               record.original_syntax.should  == "#{method} { example }"
               record.converted_syntax.should == "#{method} { |example| example }"
             end
@@ -75,7 +75,7 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            it "adds record \"`#{method}(:name) { example }` -> `#{method}(:name) { |example| example }`\"" do
+            it "adds record `#{method}(:name) { example }` -> `#{method}(:name) { |example| example }`" do
               record.original_syntax.should  == "#{method}(:name) { example }"
               record.converted_syntax.should == "#{method}(:name) { |example| example }"
             end
@@ -238,7 +238,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it "adds record \"`def helper_method example; end` -> `def helper_method RSpec.current_example; end`\"" do
+          it 'adds record `def helper_method example; end` -> `def helper_method RSpec.current_example; end`' do
             record.original_syntax.should  == 'def helper_method example; end'
             record.converted_syntax.should == 'def helper_method RSpec.current_example; end'
           end

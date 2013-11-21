@@ -101,7 +101,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record "`== expected` -> `eq(expected)`"' do
+          it 'adds record `== expected` -> `eq(expected)`' do
             record.original_syntax.should == '== expected'
             record.converted_syntax.should == 'eq(expected)'
           end
@@ -221,7 +221,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record "`== expected` -> `eq(expected)`"' do
+          it 'adds record `== expected` -> `eq(expected)`' do
             record.original_syntax.should == '== expected'
             record.converted_syntax.should == 'eq(expected)'
           end
@@ -371,7 +371,7 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            it "adds record \"`#{operator} expected` -> `be #{operator} expected`\"" do
+            it "adds record `#{operator} expected` -> `be #{operator} expected`" do
               record.original_syntax.should == "#{operator} expected"
               record.converted_syntax.should == "be #{operator} expected"
             end
@@ -423,7 +423,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record "`=~ /pattern/` -> `match(/pattern/)`"' do
+          it 'adds record `=~ /pattern/` -> `match(/pattern/)`' do
             record.original_syntax.should == '=~ /pattern/'
             record.converted_syntax.should == 'match(/pattern/)'
           end
@@ -506,7 +506,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record "`=~ [1, 2]` -> `match_array([1, 2])`"' do
+          it 'adds record `=~ [1, 2]` -> `match_array([1, 2])`' do
             record.original_syntax.should == '=~ [1, 2]'
             record.converted_syntax.should == 'match_array([1, 2])'
           end

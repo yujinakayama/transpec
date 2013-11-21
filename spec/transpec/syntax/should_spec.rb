@@ -222,7 +222,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record "`obj.should` -> `expect(obj).to`"' do
+          it 'adds record `obj.should` -> `expect(obj).to`' do
             should_object.expectize!
             record.original_syntax.should  == 'obj.should'
             record.converted_syntax.should == 'expect(obj).to'
@@ -353,7 +353,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record "`obj.should_not` -> `expect(obj).not_to`"' do
+          it 'adds record `obj.should_not` -> `expect(obj).not_to`' do
             should_object.expectize!
             record.original_syntax.should  == 'obj.should_not'
             record.converted_syntax.should == 'expect(obj).not_to'
@@ -375,7 +375,7 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            it 'adds record "`obj.should_not` -> `expect(obj).to_not`"' do
+            it 'adds record `obj.should_not` -> `expect(obj).to_not`' do
               should_object.expectize!('to_not')
               record.original_syntax.should  == 'obj.should_not'
               record.converted_syntax.should == 'expect(obj).to_not'
@@ -469,7 +469,7 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            it 'adds record "`lambda { }.should` -> `expect { }.to`"' do
+            it 'adds record `lambda { }.should` -> `expect { }.to`' do
               should_object.expectize!
               record.original_syntax.should  == 'lambda { }.should'
               record.converted_syntax.should == 'expect { }.to'

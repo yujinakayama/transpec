@@ -39,7 +39,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record "`be_close(expected, delta)` -> `be_within(delta).of(expected)`"' do
+          it 'adds record `be_close(expected, delta)` -> `be_within(delta).of(expected)`' do
             record = be_close_object.report.records.first
             record.original_syntax.should  == 'be_close(expected, delta)'
             record.converted_syntax.should == 'be_within(delta).of(expected)'

@@ -144,7 +144,7 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            it "adds record \"`#{method}('something')` -> `double('something')`\"" do
+            it "adds record `#{method}('something')` -> `double('something')`" do
               record = double_object.report.records.first
               record.original_syntax.should  == "#{method}('something')"
               record.converted_syntax.should == "double('something')"
