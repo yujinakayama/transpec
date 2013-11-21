@@ -18,6 +18,7 @@ module Transpec
     GEM_VERSION_2_99_0_BETA1 = Gem::Version.new('2.99.0.beta1')
     GEM_VERSION_2_99_0_BETA2 = Gem::Version.new('2.99.0.beta2')
     GEM_VERSION_3_0_0_BETA1  = Gem::Version.new('3.0.0.beta1')
+    GEM_VERSION_3_0_0_BETA2  = Gem::Version.new('3.0.0.beta2')
 
     attr_reader :gem_version
 
@@ -38,7 +39,7 @@ module Transpec
     end
 
     def receive_message_chain_available?
-      @gem_version >= GEM_VERSION_2_99_0_BETA2
+      @gem_version >= GEM_VERSION_3_0_0_BETA2
     end
 
     def yielded_example_available?

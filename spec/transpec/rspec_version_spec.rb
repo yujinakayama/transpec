@@ -33,7 +33,7 @@ module Transpec
       ]
     end
 
-    [:receive_message_chain_available?, :one_liner_is_expected_available?].each do |method|
+    [:one_liner_is_expected_available?].each do |method|
       include_examples 'feature availability', method, [
         ['2.14.0',       false],
         ['2.99.0.beta1', false],
@@ -50,6 +50,17 @@ module Transpec
         ['2.99.0.beta1', false],
         ['2.99.0',       false],
         ['3.0.0.beta1',  true],
+        ['3.0.0',        true]
+      ]
+    end
+
+    [:receive_message_chain_available?].each do |method|
+      include_examples 'feature availability', method, [
+        ['2.14.0',       false],
+        ['2.99.0.beta1', false],
+        ['2.99.0',       false],
+        ['3.0.0.beta1',  false],
+        ['3.0.0.beta2',  true],
         ['3.0.0',        true]
       ]
     end
