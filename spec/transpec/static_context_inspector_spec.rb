@@ -143,7 +143,7 @@ module Transpec
           end
         end
 
-        it { should == expected }
+        it { should be expected }
       end
 
       describe '#non_monkey_patch_mock_available?' do
@@ -156,7 +156,7 @@ module Transpec
           end
         end
 
-        it { should == expected }
+        it { should be expected }
       end
     end
 

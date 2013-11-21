@@ -14,7 +14,10 @@ module Transpec
         expectations.each do |version, expected|
           context "when the version is #{version}" do
             let(:version_string) { version }
-            it { should == expected }
+
+            it "returns #{expected.inspect}" do
+              should be expected
+            end
           end
         end
       end
