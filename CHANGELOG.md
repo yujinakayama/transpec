@@ -2,6 +2,8 @@
 
 ## Development
 
+## v1.4.0
+
 * Support conversion of `RSpec::Core::ExampleGroup#example` ([#23](https://github.com/yujinakayama/transpec/issues/23))
 * Support conversion of one-liner syntax ([#25](https://github.com/yujinakayama/transpec/issues/25))
 * Support conversion of one-liner syntax with `have(n).items` matcher
