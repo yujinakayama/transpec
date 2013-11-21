@@ -34,20 +34,20 @@ module Transpec
       @gem_version >= GEM_VERSION_2_99_0_BETA1
     end
 
-    def receive_messages_available?
-      @gem_version >= GEM_VERSION_3_0_0_BETA1
-    end
-
-    def receive_message_chain_available?
-      @gem_version >= GEM_VERSION_3_0_0_BETA2
-    end
-
     def yielded_example_available?
       @gem_version >= GEM_VERSION_2_99_0_BETA1
     end
 
     def one_liner_is_expected_available?
       @gem_version >= GEM_VERSION_2_99_0_BETA2
+    end
+
+    def receive_messages_available?
+      @gem_version >= GEM_VERSION_3_0_0_BETA1
+    end
+
+    def receive_message_chain_available?
+      @gem_version >= GEM_VERSION_3_0_0_BETA2
     end
 
     def <=>(other)
