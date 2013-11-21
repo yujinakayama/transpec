@@ -13,8 +13,8 @@ module Transpec
     let(:rspec_command) { nil }
 
     describe '.new' do
-      context 'when when block is passed' do
-        it 'yields instance' do
+      context 'when block is passed' do
+        it 'yields the instance' do
           yielded = false
 
           DynamicAnalyzer.new(silent: true) do |analyzer|

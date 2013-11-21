@@ -43,7 +43,7 @@ module Transpec
           end
         end
 
-        context 'when the node has parent' do
+        context 'when the node does not have parent' do
           it 'returns nil' do
             ast.parent_node.should be_nil
           end
