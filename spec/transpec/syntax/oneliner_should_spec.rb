@@ -318,6 +318,126 @@ module Transpec
           end
         end
 
+        context 'when it is `it { should have(1).items }` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it { should have(1).items }
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'has 1 item' do
+                  subject.size.should == 1
+                end
+              end
+            END
+          end
+
+          it "converts into `it 'has 1 item' do subject.size.should == 1 end` form" do
+            rewritten_source.should == expected_source
+          end
+
+          it 'adds record ' +
+             '`it { should have(n).items }` -> `it \'has n items\' do subject.size.should == n end`' do
+            record.original_syntax.should  == 'it { should have(n).items }'
+            record.converted_syntax.should == "it 'has n items' do subject.size.should == n end"
+          end
+        end
+
+        context 'when it is `it { should have(0).items }` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it { should have(0).items }
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'has no items' do
+                  subject.size.should == 0
+                end
+              end
+            END
+          end
+
+          it "converts into `it 'has no items' do subject.size.should == 0 end` form" do
+            rewritten_source.should == expected_source
+          end
+
+          it 'adds record ' +
+             '`it { should have(n).items }` -> `it \'has n items\' do subject.size.should == n end`' do
+            record.original_syntax.should  == 'it { should have(n).items }'
+            record.converted_syntax.should == "it 'has n items' do subject.size.should == n end"
+          end
+        end
+
+        context 'when it is `it { should have(variable).items }` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it { should have(number_of).items }
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'has number_of items' do
+                  subject.size.should == number_of
+                end
+              end
+            END
+          end
+
+          it "converts into `it 'has variable items' do subject.size.should == variable end` form" do
+            rewritten_source.should == expected_source
+          end
+
+          it 'adds record ' +
+             '`it { should have(n).items }` -> `it \'has n items\' do subject.size.should == n end`' do
+            record.original_syntax.should  == 'it { should have(n).items }'
+            record.converted_syntax.should == "it 'has n items' do subject.size.should == n end"
+          end
+        end
+
+        context 'when it is `it { should_not have(0).items }` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it { should_not have(0).items }
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'does not have 0 items' do
+                  subject.size.should_not == 0
+                end
+              end
+            END
+          end
+
+          it "converts into `it 'does not have 0 items' do subject.size.should_not == 0 end` form" do
+            rewritten_source.should == expected_source
+          end
+
+          it 'adds record `it { should_not have(n).items }`' +
+             ' -> `it \'does not have n items\' do subject.size.should_not == n end`' do
+            record.original_syntax.should  == 'it { should_not have(n).items }'
+            record.converted_syntax.should == "it 'does not have n items' do subject.size.should_not == n end"
+          end
+        end
+
         context 'when it is multiline `it { should have(2).items }` form' do
           let(:source) do
             <<-END

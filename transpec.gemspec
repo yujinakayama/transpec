@@ -20,10 +20,11 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
-  spec.add_runtime_dependency 'parser',  '~> 2.0'
-  spec.add_runtime_dependency 'bundler', '~> 1.3'
-  spec.add_runtime_dependency 'rainbow', '~> 1.1'
-  spec.add_runtime_dependency 'json',    '~> 1.8'
+  spec.add_runtime_dependency 'parser',        '~> 2.0'
+  spec.add_runtime_dependency 'bundler',       '~> 1.3'
+  spec.add_runtime_dependency 'rainbow',       '~> 1.1'
+  spec.add_runtime_dependency 'json',          '~> 1.8'
+  spec.add_runtime_dependency 'activesupport', '~> 4.0'
 
   spec.add_development_dependency 'rspec',         '~> 2.14'
   spec.add_development_dependency 'rake',          '~> 10.1'
@@ -33,5 +34,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'guard-rubocop', '~> 1.0'
   spec.add_development_dependency 'guard-shell',   '~> 0.5'
   spec.add_development_dependency 'ruby_gntp',     '~> 0.3'
-  spec.add_development_dependency 'activesupport', '~> 4.0'
 end

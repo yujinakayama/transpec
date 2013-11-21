@@ -5,6 +5,7 @@ require 'transpec/syntax/mixin/should_base'
 require 'transpec/syntax/mixin/send'
 require 'transpec/syntax/mixin/have_matcher'
 require 'transpec/util'
+require 'active_support/inflector/methods'
 
 module Transpec
   class Syntax
@@ -82,7 +83,15 @@ module Transpec
         when :have_at_most  then description << 'at most '
         end
 
-        description << "#{size} #{have_matcher.items_name}"
+        items = have_matcher.items_name
+
+        if positive? && size == '0'
+          size = 'no'
+        elsif size == '1'
+          items = ActiveSupport::Inflector.singularize(have_matcher.items_name)
+        end
+
+        description << "#{size} #{items}"
       end
 
       private
