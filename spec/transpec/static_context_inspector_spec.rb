@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require 'transpec/static_context_inspector'
+require 'ast'
 
 module Transpec
   describe StaticContextInspector do

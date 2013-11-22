@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require 'transpec/util'
+require 'ast'
 
 module Transpec
   describe Util do
