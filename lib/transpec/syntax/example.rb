@@ -2,12 +2,13 @@
 
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/send'
+require 'transpec/rspec_dsl'
 require 'transpec/util'
 
 module Transpec
   class Syntax
     class Example < Syntax
-      include Mixin::Send, Util
+      include Mixin::Send, RSpecDSL, Util
 
       METHODS_YIELD_EXAMPLE = (EXAMPLE_METHODS + HOOK_METHODS + HELPER_METHODS).freeze
 

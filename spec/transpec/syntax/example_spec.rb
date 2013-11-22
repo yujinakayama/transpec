@@ -16,7 +16,7 @@ module Transpec
           example_object.convert! unless example.metadata[:no_auto_convert]
         end
 
-        (Util::EXAMPLE_METHODS + Util::HOOK_METHODS).each do |method|
+        (RSpecDSL::EXAMPLE_METHODS + RSpecDSL::HOOK_METHODS).each do |method|
           context "when it is `#{method} do example end` form" do
             let(:source) do
               <<-END
@@ -49,7 +49,7 @@ module Transpec
           end
         end
 
-        Util::HELPER_METHODS.each do |method|
+        RSpecDSL::HELPER_METHODS.each do |method|
           context "when it is `#{method}(:name) do example end` form" do
             let(:source) do
               <<-END

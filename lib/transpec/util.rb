@@ -2,21 +2,6 @@
 
 module Transpec
   module Util
-    EXAMPLE_GROUP_METHODS = %w(
-      describe context
-      shared_examples shared_context share_examples_for shared_examples_for
-    ).map(&:to_sym).freeze
-
-    EXAMPLE_METHODS = %w(
-      example it specify
-      focus focused fit
-      pending xexample xit xspecify
-    ).map(&:to_sym).freeze
-
-    HOOK_METHODS = %w(before after around).map(&:to_sym).freeze
-
-    HELPER_METHODS = %w(subject subject! let let!).map(&:to_sym).freeze
-
     LITERAL_TYPES = %w(
       true false nil
       int float

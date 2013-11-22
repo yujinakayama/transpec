@@ -1,10 +1,11 @@
 # coding: utf-8
 
+require 'transpec/rspec_dsl'
 require 'transpec/util'
 
 module Transpec
   class StaticContextInspector
-    include Util
+    include RSpecDSL, Util
 
     SCOPE_TYPES = [:module, :class, :sclass, :def, :defs, :block].freeze
 
