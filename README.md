@@ -375,7 +375,7 @@ it { is_expected.to_not matcher } # with `--negative-form to_not`
 
 `is_expected.to` is designed for the consistency with the `expect` syntax.
 However the one-liner `should` is still _not_ deprecated in RSpec 3.0
-and available even if the `should` syntax is disabled in `RSpec.configure`.
+and available even if the `should` syntax is disabled with `RSpec.configure`.
 So if you think `is_expected.to` is verbose,
 feel free to disable this conversion and continue using the one-liner `should`.
 
@@ -433,7 +433,7 @@ expect(obj).to be false
 * `be_truthy` and `be_falsey` matchers are renamed version of `be_true` and `be_false` and their behaviors are same.
 * `be true` and `be false` are not new things. These are combinations of `be` matcher and boolean literals. These pass if expectation subject is exactly equal to boolean value.
 
-So, converting `be_true`/`be_false` to `be_truthy`/`be_falsey` never breaks your specs and this is the Transpec's default. If you are willing to test boolean values strictly, you can convert them to `be true`/`be false` with `--boolean-matcher true,false` option. Note that this may break your specs if your library codes don't return exact boolean values.
+So, converting `be_true`/`be_false` to `be_truthy`/`be_falsey` never breaks your specs and this is the Transpec's default. If you are willing to test boolean values strictly, you can convert them to `be true`/`be false` with `--boolean-matcher true,false` option. Note that this may break your specs if your application codes don't return exact boolean values.
 
 ---
 
