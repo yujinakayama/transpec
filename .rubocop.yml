@@ -4,6 +4,7 @@ AllCops:
     - tasks/*.rake
   Excludes:
     - tmp/*
+    - vendor/*
 
 LineLength:
   Max: 100
