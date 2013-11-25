@@ -97,11 +97,6 @@ module Transpec
 
         literal << ' }'
       end
-
-      def taking_block?(node)
-        parent_node = node.parent_node
-        parent_node && parent_node.type == :block && parent_node.children.first.equal?(node)
-      end
     end
   end
 end

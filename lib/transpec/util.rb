@@ -62,6 +62,11 @@ module Transpec
       source[0] == '(' && source[-1] == ')'
     end
 
+    def taking_block?(node)
+      parent_node = node.parent_node
+      parent_node && parent_node.type == :block && parent_node.children.first.equal?(node)
+    end
+
     def indentation_of_line(arg)
       line = case arg
              when AST::Node             then arg.loc.expression.source_line
