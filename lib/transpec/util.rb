@@ -56,7 +56,7 @@ module Transpec
       here_document?(node) || node.each_descendent_node.any? { |n| here_document?(n) }
     end
 
-    def in_parentheses?(node)
+    def in_explicit_parentheses?(node)
       return false unless node.type == :begin
       source = node.loc.expression.source
       source[0] == '(' && source[-1] == ')'

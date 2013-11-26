@@ -13,7 +13,7 @@ module Transpec
         private
 
         def wrap_subject_with_method!(method)
-          if Util.in_parentheses?(subject_node)
+          if Util.in_explicit_parentheses?(subject_node)
             insert_before(subject_range, method)
           else
             insert_before(subject_range, "#{method}(")

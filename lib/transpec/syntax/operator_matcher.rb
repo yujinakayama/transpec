@@ -98,7 +98,7 @@ module Transpec
       end
 
       def parenthesize_single_line!(always)
-        if in_parentheses?(arg_node)
+        if in_explicit_parentheses?(arg_node)
           remove(range_in_between_selector_and_arg)
         elsif always || arg_node.type == :hash
           replace(range_in_between_selector_and_arg, '(')
