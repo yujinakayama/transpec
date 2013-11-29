@@ -15,7 +15,7 @@ RSpec.configure do |config|
   config.color_enabled = true
   config.treat_symbols_as_metadata_keys_with_true_values = true
 
-  config.before(:all) do
+  config.before(:suite) do
     require 'rainbow'
     Sickill::Rainbow.enabled = false
 
