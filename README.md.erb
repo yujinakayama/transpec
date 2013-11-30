@@ -95,7 +95,7 @@ Then, run `transpec` (using `-m/--generate-commit-message` is recommended) in th
 ```bash
 $ cd some-project
 $ transpec -m
-Copying project for dynamic analysis...
+Copying the project for dynamic analysis...
 Running dynamic analysis with command "bundle exec rspec"...
 ...............................................................................
 ...................
@@ -112,17 +112,16 @@ Converting spec/transpec/ast/node_spec.rb
 
 This will run the specs, convert them, and overwrite all spec files in the `spec` directory.
 
-After the conversion, run `rspec` again and check whether all pass:
+After the conversion, run `rspec` again and check whether everything is green:
 
 ```bash
 $ bundle exec rspec
 ```
 
-If all pass, commit the changes with auto-generated message:
+If it's green, commit the changes with auto-generated message:
 
 ```bash
-$ git add -u
-$ git commit -eF .git/COMMIT_EDITMSG
+$ git commit -aeF .git/COMMIT_EDITMSG
 ```
 
 And you are done!
@@ -155,19 +154,19 @@ Skip dynamic analysis and convert with only static analysis. Note that specifyin
 
 ### `-c/--rspec-command`
 
-Specify command to run RSpec that is used for dynamic analysis.
+Specify a command to run RSpec that is used for dynamic analysis.
 
 Transpec needs to run your specs in a copied project directory for dynamic analysis.
-If your project requires some special setup or commands to run specs, use this option.
+If your project requires some special setups or commands to run specs, use this option.
 `bundle exec rspec` is used by default.
 
 ```bash
-$ transpec --rspec-command "./some_special_setup.sh && bundle exec rspec"
+$ transpec --rspec-command "./special_setup.sh && bundle exec rspec"
 ```
 
 ### `-m/--generate-commit-message`
 
-Generate commit message that describes conversion summary.
+Generate a commit message that describes conversion summary.
 Currently only Git is supported.
 
 When you commit, you need to run the following command to use the generated message:
@@ -218,7 +217,7 @@ See [Supported Conversions](#supported-conversions) for more details.
 
 ### `-n/--negative-form`
 
-Specify negative form of `to` that is used in the `expect` syntax.
+Specify a negative form of `to` that is used in the `expect` syntax.
 Either `not_to` or `to_not`.
 `not_to` is used by default.
 

@@ -110,7 +110,7 @@ module Transpec
       Git.write_commit_message(commit_message.to_s)
 
       puts
-      puts 'Commit message was generated to .git/COMMIT_EDITMSG.'.color(:cyan)
+      puts 'A commit message was generated to .git/COMMIT_EDITMSG.'.color(:cyan)
       puts 'Use the following command for the next commit:'.color(:cyan)
       puts '    git commit -eF .git/COMMIT_EDITMSG'
     end
@@ -119,7 +119,7 @@ module Transpec
       return if @report.records.empty?
 
       puts
-      puts "Done! Now run #{'rspec'.bright} and check if all the converted specs pass."
+      puts "Done! Now run #{'rspec'.bright} and check if everything is green."
     end
 
     def warn_syntax_error(error)
