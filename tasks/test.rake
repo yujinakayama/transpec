@@ -27,7 +27,7 @@ namespace :test do
   task all: tests.map(&:name)
 
   tests.each do |test|
-    desc "Test Transpec on #{test.name.capitalize} project"
+    desc "Test Transpec on #{test.name} project"
     task test.name do
       test.run
     end

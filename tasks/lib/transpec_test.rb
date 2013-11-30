@@ -36,7 +36,7 @@ class TranspecTest
 
   def run
     require 'transpec'
-    puts " Testing on #{name} Project ".center(80, '=')
+    puts " Testing on #{name} project ".center(80, '=')
     prepare_project
     run_test(%w(--force))
   end
