@@ -114,7 +114,7 @@ module Transpec
         if attribute_expression.brackets?
           "describe '[:key]' do subject { super()[:key] }; it { } end"
         else
-          "describe 'attr' do subject { super().attr }; it { } end"
+          "describe '#attr' do subject { super().attr }; it { } end"
         end
       end
 

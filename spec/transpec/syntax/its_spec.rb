@@ -67,9 +67,9 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it "adds record `its(:attr) { }` -> `describe 'attr' do subject { super().attr }; it { } end`" do
+          it "adds record `its(:attr) { }` -> `describe '#attr' do subject { super().attr }; it { } end`" do
             record.original_syntax.should  == 'its(:attr) { }'
-            record.converted_syntax.should == "describe 'attr' do subject { super().attr }; it { } end"
+            record.converted_syntax.should == "describe '#attr' do subject { super().attr }; it { } end"
           end
 
           context 'and there is no blank line before #its' do
@@ -164,9 +164,9 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it "adds record `its(:attr) { }` -> `describe 'attr' do subject { super().attr }; it { } end`" do
+          it "adds record `its(:attr) { }` -> `describe '#attr' do subject { super().attr }; it { } end`" do
             record.original_syntax.should  == 'its(:attr) { }'
-            record.converted_syntax.should == "describe 'attr' do subject { super().attr }; it { } end"
+            record.converted_syntax.should == "describe '#attr' do subject { super().attr }; it { } end"
           end
         end
 
@@ -201,9 +201,9 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it "adds record `its(:attr) { }` -> `describe 'attr' do subject { super().attr }; it { } end`" do
+          it "adds record `its(:attr) { }` -> `describe '#attr' do subject { super().attr }; it { } end`" do
             record.original_syntax.should  == 'its(:attr) { }'
-            record.converted_syntax.should == "describe 'attr' do subject { super().attr }; it { } end"
+            record.converted_syntax.should == "describe '#attr' do subject { super().attr }; it { } end"
           end
         end
 
@@ -347,9 +347,9 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it "adds record `its(:attr) { }` -> `describe 'attr' do subject { super().attr }; it { } end`" do
+          it "adds record `its(:attr) { }` -> `describe '#attr' do subject { super().attr }; it { } end`" do
             record.original_syntax.should  == 'its(:attr) { }'
-            record.converted_syntax.should == "describe 'attr' do subject { super().attr }; it { } end"
+            record.converted_syntax.should == "describe '#attr' do subject { super().attr }; it { } end"
           end
         end
 
