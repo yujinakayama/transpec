@@ -2,6 +2,8 @@
 
 ## Development
 
+* Support Ruby 2.1 runtime by falling back to Ruby 2.0 parser
+
 ## v1.4.0
 
 * Support conversion of `RSpec::Core::ExampleGroup#example` ([#23](https://github.com/yujinakayama/transpec/issues/23))
