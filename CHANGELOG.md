@@ -3,6 +3,7 @@
 ## Development
 
 * Avoid confusing methods defined with `#let` or `#subject` by user with RSpec built-in methods ([#55](https://github.com/yujinakayama/transpec/issues/55))
+* Add experimental support for Ruby 2.2 (development version) by falling back to Ruby 2.1 parser
 
 ## v1.10.3
 
