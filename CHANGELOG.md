@@ -2,6 +2,8 @@
 
 ## Development
 
+## v1.4.1
+
 * Support Ruby 2.1 runtime by falling back to Ruby 2.0 parser
 
 ## v1.4.0
