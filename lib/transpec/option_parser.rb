@@ -120,8 +120,8 @@ module Transpec
           'option decreases the conversion accuracy.'
         ],
         '-c' => [
-          'Specify command to run RSpec that is used for',
-          'dynamic analysis.',
+          'Specify a command to run your specs that is',
+          'used for dynamic analysis.',
           'Default: "bundle exec rspec"'
         ],
         '-k' => [
@@ -132,13 +132,13 @@ module Transpec
           "  #{'oneliner'.bright} (from #{'should'.underline} to #{'is_expected.to'.underline})",
           "  #{'should_receive'.bright} (to #{'expect(obj).to receive'.underline})",
           "  #{'stub'.bright}  (to #{'allow(obj).to receive'.underline})",
-          "  #{'have_items'.bright} (to #{'expect(obj.size).to eq(x)'.underline})",
+          "  #{'have_items'.bright} (to #{'expect(obj.size).to eq(n)'.underline})",
           "  #{'its'.bright} (to #{'describe { subject { }; it { } }'.underline})",
           "  #{'deprecated'.bright} (e.g. from #{'mock'.underline} to #{'double'.underline})",
           'These are all converted by default.'
         ],
         '-n' => [
-          "Specify negative form of #{'to'.underline} that is used in",
+          "Specify a negative form of #{'to'.underline} that is used in",
           "the #{'expect(...).to'.underline} syntax.",
           "Either #{'not_to'.bright} or #{'to_not'.bright}.",
           "Default: #{'not_to'.bright}"

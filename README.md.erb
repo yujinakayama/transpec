@@ -86,7 +86,7 @@ Usually you don't need to add `transpec` to your `*.gemspec` or `Gemfile` since 
 
 Before converting your specs:
 
-* Make sure your project has `rspec` gem dependency `<%= Transpec.required_rspec_version %>` or later. If not, change your `*.gemspec` or `Gemfile` to do so.
+* Make sure your project has `rspec` gem dependency **<%= Transpec.required_rspec_version %>** or later. If not, change your `*.gemspec` or `Gemfile` to do so.
 * Run `rspec` and check if all the specs pass.
 * Ensure the Git repository is clean. (You don't want to mix up your changes and Transpec's changes, right?)
 
@@ -154,7 +154,7 @@ Skip dynamic analysis and convert with only static analysis. Note that specifyin
 
 ### `-c/--rspec-command`
 
-Specify a command to run RSpec that is used for dynamic analysis.
+Specify a command to run your specs that is used for dynamic analysis.
 
 Transpec needs to run your specs in a copied project directory for dynamic analysis.
 If your project requires some special setups or commands to run specs, use this option.
@@ -182,7 +182,7 @@ conversion_type_table = <<END
 `oneliner`       | `it { should ... }`              | `it { is_expected.to ... }`
 `should_receive` | `obj.should_receive`             | `expect(obj).to receive`
 `stub`           | `obj.stub`                       | `allow(obj).to receive`
-`have_items`     | `expect(obj).to have(x).items`   | `expect(obj.size).to eq(x)`
+`have_items`     | `expect(obj).to have(n).items`   | `expect(obj.size).to eq(n)`
 `its`            | `its(:attr) { }`                 | `describe { subject { }; it { } }`
 `deprecated`     | `obj.stub!`, `mock('foo')`, etc. | `obj.stub`, `double('foo')`
 END
