@@ -4,6 +4,7 @@
 
 * Mention the project's RSpec version in the auto-generated commit message
 * Deprecate `-m/--generate-commit-message` option (A commit message will always be generated)
+* Display actual `Proc` constructor names in the summary of expectations on block
 
 ## v1.4.1
 

@@ -46,7 +46,7 @@ module Transpec
         end
 
         if proc_literal?(subject_node)
-          replace_proc_selector_with_expect!
+          replace(range_of_subject_method_taking_block, 'expect')
         else
           wrap_subject_in_expect!
         end
@@ -61,15 +61,14 @@ module Transpec
 
       private
 
-      def replace_proc_selector_with_expect!
+      def range_of_subject_method_taking_block
         send_node = subject_node.children.first
-        range_of_subject_method_taking_block = send_node.loc.expression
-        replace(range_of_subject_method_taking_block, 'expect')
+        send_node.loc.expression
       end
 
       def register_record(negative_form_of_to)
         if proc_literal?(subject_node)
-          original_syntax = 'lambda { }.should'
+          original_syntax = "#{range_of_subject_method_taking_block.source} { }.should"
           converted_syntax = 'expect { }.'
         else
           original_syntax = 'obj.should'

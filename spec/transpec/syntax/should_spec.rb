@@ -469,9 +469,9 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            it 'adds record `lambda { }.should` -> `expect { }.to`' do
+            it "adds record `#{method} { }.should` -> `expect { }.to`" do
               should_object.expectize!
-              record.original_syntax.should  == 'lambda { }.should'
+              record.original_syntax.should  == "#{method} { }.should"
               record.converted_syntax.should == 'expect { }.to'
             end
           end
