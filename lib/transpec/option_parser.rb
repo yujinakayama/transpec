@@ -32,7 +32,7 @@ module Transpec
     end
 
     def parse(args)
-      args = args.dup
+      args = exclude_deprecated_options(args)
       @parser.parse!(args)
       args
     end
@@ -57,14 +57,6 @@ module Transpec
 
       define_option('-c', '--rspec-command COMMAND') do |command|
         @configuration.rspec_command = command
-      end
-
-      define_option('-m', '--generate-commit-message') do
-        unless Git.inside_of_repository?
-          fail '-m/--generate-commit-message option is specified but not in a Git repository'
-        end
-
-        @configuration.generate_commit_message = true
       end
 
       define_option('-k', '--keep TYPE[,TYPE...]') do |types|
@@ -132,10 +124,6 @@ module Transpec
           'dynamic analysis.',
           'Default: "bundle exec rspec"'
         ],
-        '-m' => [
-          'Generate commit message that describes',
-          'conversion summary. Only Git is supported.'
-        ],
         '-k' => [
           'Keep specific syntaxes by disabling',
           'conversions.',
@@ -186,5 +174,18 @@ module Transpec
       }
     end
     # rubocop:enable MethodLength, AlignHash
+
+    def exclude_deprecated_options(args)
+      args.reject do |arg|
+        case arg
+        when '-m', '--generate-commit-message'
+          warn 'DEPRECATION: -m/--generate-commit-message option is deprecated. ' +
+               'A commit message will always be generated.'
+          true
+        else
+          false
+        end
+      end
+    end
   end
 end

@@ -16,8 +16,7 @@ module Transpec
       [:convert_deprecated_method, true],
       [:parenthesize_matcher_arg,  true],
       [:forced,                    false],
-      [:skip_dynamic_analysis,     false],
-      [:generate_commit_message,   false]
+      [:skip_dynamic_analysis,     false]
     ].freeze
 
     PREDICATES.each do |predicate, _|

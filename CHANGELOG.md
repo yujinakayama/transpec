@@ -3,6 +3,7 @@
 ## Development
 
 * Mention the project's RSpec version in the auto-generated commit message
+* Deprecate `-m/--generate-commit-message` option (A commit message will always be generated)
 
 ## v1.4.1
 

@@ -19,7 +19,6 @@ module Transpec
         [:parenthesize_matcher_arg?,  true],
         [:forced?,                    false],
         [:skip_dynamic_analysis?,     false],
-        [:generate_commit_message?,   false],
         [:negative_form_of_to,        'not_to'],
         [:boolean_matcher_type,       :conditional],
         [:form_of_be_falsey,          'be_falsey']

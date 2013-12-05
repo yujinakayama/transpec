@@ -63,17 +63,32 @@ module Transpec
         end
       end
 
+      shared_examples 'generates commit message' do
+        it 'generates commit message to .git/COMMIT_EDITMSG' do
+          cli.run(args)
+          File.read('.git/COMMIT_EDITMSG').should start_with('Convert specs')
+        end
+      end
+
+      shared_examples 'does not generate commit message' do
+        it 'does not generate commit message' do
+          cli.run(args)
+          File.exist?('.git/COMMIT_EDITMSG').should be_false
+        end
+      end
+
       context 'when git is available' do
         before { Git.stub(:command_available?).and_return(true) }
 
         context 'and inside of a repository' do
-          before { Git.stub(:inside_of_repository?).and_return(true) }
+          include_context 'inside of git repository'
 
           context 'and the repository is not clean' do
             before { Git.stub(:clean?).and_return(false) }
 
             context 'and --force option is not specified' do
               include_examples 'aborts processing'
+              include_examples 'does not generate commit message'
 
               it 'warns to the user' do
                 cli.should_receive(:warn) do |arg|
@@ -85,32 +100,35 @@ module Transpec
             end
 
             context 'and --force option is specified' do
-              before do
-                args << '--force'
-                # Silence "fatal: Not a git repository (or any of the parent directories): .git"
-                # from Bundler.
-                `git init`
-              end
-
+              before { args << '--force' }
               include_examples 'rewrites files'
+              include_examples 'generates commit message'
             end
           end
 
           context 'and the repository is clean' do
             before { Git.stub(:clean?).and_return(true) }
+
             include_examples 'rewrites files'
+            include_examples 'generates commit message'
+
+            context 'and no conversion is done' do
+              let(:file_content) { '' }
+              include_examples 'does not generate commit message'
+            end
           end
         end
 
         context 'and not inside of a repository' do
-          before { Git.stub(:inside_of_repository?).and_return(false) }
           include_examples 'rewrites files'
+          include_examples 'does not generate commit message'
         end
       end
 
       context 'when git is not available' do
         before { Git.stub(:command_available?).and_return(false) }
         include_examples 'rewrites files'
+        include_examples 'does not generate commit message'
       end
 
       context "when the project's RSpec dependency is older than the required version" do
@@ -170,28 +188,6 @@ module Transpec
           DynamicAnalyzer.any_instance.should_not_receive(:analysis)
           cli.should_receive(:convert_file)
           cli.run(args)
-        end
-      end
-
-      context 'when -m/--generate-commit-message option is specified' do
-        include_context 'inside of git repository'
-
-        let(:args) { ['--force', '--generate-commit-message', file_path] }
-
-        context 'and any conversion is done' do
-          it 'writes commit message to .git/COMMIT_EDITMSG' do
-            cli.run(args)
-            File.read('.git/COMMIT_EDITMSG').should start_with('Convert specs')
-          end
-        end
-
-        context 'and no conversion is done' do
-          let(:file_content) { '' }
-
-          it 'does not writes commit message' do
-            cli.run(args)
-            File.exist?('.git/COMMIT_EDITMSG').should be_false
-          end
         end
       end
 

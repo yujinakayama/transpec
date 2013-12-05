@@ -40,23 +40,22 @@ module Transpec
       end
 
       describe '-m/--generate-commit-message option' do
-        include_context 'isolated environment'
-
         let(:args) { ['--generate-commit-message'] }
 
-        context 'when inside of git repository' do
-          include_context 'inside of git repository'
-
-          it 'sets Configuration#generate_commit_message? true' do
-            parser.parse(args)
-            configuration.generate_commit_message?.should be_true
-          end
+        before do
+          parser.stub(:warn)
         end
 
-        context 'when not inside of git repository' do
-          it 'raises error' do
-            -> { parser.parse(args) }.should raise_error(/not in a Git repository/)
+        it 'is deprecated' do
+          parser.should_receive(:warn) do |message|
+            message.should =~ /--generate-commit-message.+deprecated/i
           end
+
+          parser.parse(args)
+        end
+
+        it 'does not raise error' do
+          -> { parser.parse(args) }.should_not raise_error
         end
       end
 

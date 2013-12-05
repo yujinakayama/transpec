@@ -36,7 +36,7 @@ module Transpec
       process(paths)
 
       display_summary
-      generate_commit_message if @configuration.generate_commit_message?
+      generate_commit_message
       display_final_guide
 
       true
@@ -105,13 +105,15 @@ module Transpec
 
     def generate_commit_message
       return if @report.records.empty?
+      return unless Git.command_available? && Git.inside_of_repository?
 
       commit_message = CommitMessage.new(@report, @project.rspec_version, ARGV)
       Git.write_commit_message(commit_message.to_s)
 
       puts
-      puts 'A commit message was generated to .git/COMMIT_EDITMSG.'.color(:cyan)
-      puts 'Use the following command for the next commit:'.color(:cyan)
+      puts 'A commit message that describes the conversion summary was generated to'.color(:cyan)
+      puts '.git/COMMIT_EDITMSG. To use the message, type the following command for'.color(:cyan)
+      puts 'the next commit:'.color(:cyan)
       puts '    git commit -eF .git/COMMIT_EDITMSG'
     end
 

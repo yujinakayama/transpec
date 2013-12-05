@@ -90,11 +90,11 @@ Before converting your specs:
 * Run `rspec` and check if all the specs pass.
 * Ensure the Git repository is clean. (You don't want to mix up your changes and Transpec's changes, right?)
 
-Then, run `transpec` (using `-m/--generate-commit-message` is recommended) in the project root directory:
+Then, run `transpec` in the project root directory:
 
 ```bash
 $ cd some-project
-$ transpec -m
+$ transpec
 Copying the project for dynamic analysis...
 Running dynamic analysis with command "bundle exec rspec"...
 ...............................................................................
@@ -118,7 +118,7 @@ After the conversion, run `rspec` again and check whether everything is green:
 $ bundle exec rspec
 ```
 
-If it's green, commit the changes with auto-generated message:
+If it's green, commit the changes with an auto-generated message that describes the conversion summary:
 
 ```bash
 $ git commit -aeF .git/COMMIT_EDITMSG
@@ -162,17 +162,6 @@ If your project requires some special setups or commands to run specs, use this 
 
 ```bash
 $ transpec --rspec-command "./special_setup.sh && bundle exec rspec"
-```
-
-### `-m/--generate-commit-message`
-
-Generate a commit message that describes conversion summary.
-Currently only Git is supported.
-
-When you commit, you need to run the following command to use the generated message:
-
-```bash
-$ git commit -eF .git/COMMIT_EDITMSG
 ```
 
 ### `-k/--keep`
