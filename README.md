@@ -637,6 +637,7 @@ Otherwise `obj.stub(:foo => 1, :bar => 2)` will be converted to two `allow(obj).
 * See also:
     * [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
     * [allow receive with multiple methods · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/368)
+    * [Bring back stub_chain (receive_message_chain) · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/464)
 
 ### Deprecated method stub aliases
 
