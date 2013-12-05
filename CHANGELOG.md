@@ -2,6 +2,8 @@
 
 ## Development
 
+* Mention the project's RSpec version in the auto-generated commit message
+
 ## v1.4.1
 
 * Support Ruby 2.1 runtime by falling back to Ruby 2.0 parser

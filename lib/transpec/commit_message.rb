@@ -4,8 +4,9 @@ require 'transpec/version'
 
 module Transpec
   class CommitMessage
-    def initialize(report, cli_args = [])
+    def initialize(report, rspec_version, cli_args = [])
       @report = report
+      @rspec_version = rspec_version
       @cli_args = cli_args
     end
 
@@ -13,7 +14,7 @@ module Transpec
       conversion_summary = @report.summary(bullet: '*', separate_by_blank_line: true)
 
       <<-END.gsub(/^\s+\|/, '').chomp
-        |Convert specs to the latest RSpec syntax with Transpec
+        |Convert specs to RSpec #{@rspec_version} syntax with Transpec
         |
         |This conversion is done by Transpec #{Transpec::Version} with the following command:
         |    transpec #{@cli_args.join(' ')}

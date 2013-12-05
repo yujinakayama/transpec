@@ -106,7 +106,7 @@ module Transpec
     def generate_commit_message
       return if @report.records.empty?
 
-      commit_message = CommitMessage.new(@report, ARGV)
+      commit_message = CommitMessage.new(@report, @project.rspec_version, ARGV)
       Git.write_commit_message(commit_message.to_s)
 
       puts

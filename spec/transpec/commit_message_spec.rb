@@ -4,11 +4,13 @@ require 'spec_helper'
 require 'transpec/commit_message'
 require 'transpec/report'
 require 'transpec/record'
+require 'transpec/rspec_version'
 
 module Transpec
   describe CommitMessage do
-    subject(:commit_message) { CommitMessage.new(report, cli_args) }
+    subject(:commit_message) { CommitMessage.new(report, rspec_version, cli_args) }
     let(:report) { Report.new }
+    let(:rspec_version) { RSpecVersion.new('2.99.0.beta1') }
     let(:cli_args) { %w(--force --generate-commit-message) }
 
     before do
@@ -28,7 +30,7 @@ module Transpec
 
       describe 'first line' do
         it 'has concise summary' do
-          lines[0].chomp.should == 'Convert specs to the latest RSpec syntax with Transpec'
+          lines[0].chomp.should == 'Convert specs to RSpec 2.99.0.beta1 syntax with Transpec'
         end
       end
 
