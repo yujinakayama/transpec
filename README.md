@@ -609,7 +609,7 @@ allow(obj).to receive(:bar).and_return(2)
 allow(obj).to receive_messages(:foo => 1, :bar => 2)
 
 # Conversion from `stub_chain` to `receive_message_chain` is available
-# only if the target project's rspec gem dependency is 2.99.0.beta2 or later
+# only if the target project's rspec gem dependency is 3.0.0.beta2 or later
 allow(obj).to receive_message_chain(:foo, :bar, :baz)
 
 allow_any_instance_of(Klass).to receive(:foo)
