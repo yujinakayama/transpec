@@ -10,11 +10,8 @@ require 'transpec/syntax/mixin/any_instance'
 module Transpec
   class Syntax
     class ShouldReceive < Syntax
-      include Mixin::Send
-      include Mixin::MonkeyPatch
-      include Mixin::Expectizable
-      include Mixin::AllowNoMessage
-      include Mixin::AnyInstance
+      include Mixin::Send, Mixin::MonkeyPatch, Mixin::Expectizable, Mixin::AllowNoMessage,
+              Mixin::AnyInstance
 
       alias_method :useless_expectation?, :allow_no_message?
 
