@@ -1,12 +1,12 @@
 # coding: utf-8
 
+require 'active_support/concern'
+
 module Transpec
   class Syntax
     module Mixin
       module Send
-        def self.included(klass)
-          klass.extend(ClassMethods)
-        end
+        extend ActiveSupport::Concern
 
         module ClassMethods
           def register_request_for_dynamic_analysis(node, rewriter)
