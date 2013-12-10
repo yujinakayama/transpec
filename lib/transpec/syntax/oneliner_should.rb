@@ -24,10 +24,6 @@ module Transpec
         @current_syntax_type = :should
       end
 
-      add_dynamic_analysis_request do |rewriter|
-        operator_matcher.register_request_for_dynamic_analysis(rewriter) if operator_matcher
-      end
-
       def expectize!(negative_form = 'not_to', parenthesize_matcher_arg = true)
         replacement = 'is_expected.'
         replacement << (positive? ? 'to' : negative_form)

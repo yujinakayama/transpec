@@ -6,6 +6,12 @@ module Transpec
   class Syntax
     module Mixin
       module ShouldBase
+        def self.included(syntax)
+          syntax.add_dynamic_analysis_request do |rewriter|
+            operator_matcher.register_request_for_dynamic_analysis(rewriter) if operator_matcher
+          end
+        end
+
         def positive?
           method_name == :should
         end

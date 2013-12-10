@@ -31,8 +31,6 @@ module Transpec
           :expect_available?,
           [:expect]
         )
-
-        operator_matcher.register_request_for_dynamic_analysis(rewriter) if operator_matcher
       end
 
       def expect_available?
