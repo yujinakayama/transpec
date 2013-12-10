@@ -104,14 +104,14 @@ module Transpec
               context 'with runtime information' do
                 include_context 'dynamic analysis objects'
 
-                it 'raises InvalidContextError' do
-                  -> { should_receive_object.expectize! }.should raise_error(InvalidContextError)
+                it 'raises ContextError' do
+                  -> { should_receive_object.expectize! }.should raise_error(ContextError)
                 end
               end
 
               context 'without runtime information' do
-                it 'raises InvalidContextError' do
-                  -> { should_receive_object.expectize! }.should raise_error(InvalidContextError)
+                it 'raises ContextError' do
+                  -> { should_receive_object.expectize! }.should raise_error(ContextError)
                 end
               end
             end
@@ -138,13 +138,13 @@ module Transpec
               context 'with runtime information' do
                 include_context 'dynamic analysis objects'
 
-                it 'raises InvalidContextError' do
-                  -> { should_receive_object.expectize! }.should raise_error(InvalidContextError)
+                it 'raises ContextError' do
+                  -> { should_receive_object.expectize! }.should raise_error(ContextError)
                 end
               end
 
               context 'without runtime information' do
-                it 'does not raise InvalidContextError' do
+                it 'does not raise ContextError' do
                   -> { should_receive_object.expectize! }.should_not raise_error
                 end
               end
@@ -681,16 +681,16 @@ module Transpec
               context 'with runtime information' do
                 include_context 'dynamic analysis objects'
 
-                it 'raises InvalidContextError' do
+                it 'raises ContextError' do
                   -> { should_receive_object.allowize_useless_expectation! }
-                    .should raise_error(InvalidContextError)
+                    .should raise_error(ContextError)
                 end
               end
 
               context 'without runtime information' do
-                it 'raises InvalidContextError' do
+                it 'raises ContextError' do
                   -> { should_receive_object.allowize_useless_expectation! }
-                    .should raise_error(InvalidContextError)
+                    .should raise_error(ContextError)
                 end
               end
             end
@@ -713,14 +713,14 @@ module Transpec
               context 'with runtime information' do
                 include_context 'dynamic analysis objects'
 
-                it 'raises InvalidContextError' do
+                it 'raises ContextError' do
                   -> { should_receive_object.allowize_useless_expectation! }
-                    .should raise_error(InvalidContextError)
+                    .should raise_error(ContextError)
                 end
               end
 
               context 'without runtime information' do
-                it 'does not raise InvalidContextError' do
+                it 'does not raise ContextError' do
                   -> { should_receive_object.allowize_useless_expectation! }
                     .should_not raise_error
                 end

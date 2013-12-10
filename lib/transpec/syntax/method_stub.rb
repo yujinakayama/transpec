@@ -36,7 +36,7 @@ module Transpec
         return if method_name == :stub_chain && !rspec_version.receive_message_chain_available?
 
         unless allow_to_receive_available?
-          fail InvalidContextError.new(selector_range, "##{method_name}", '#allow')
+          fail ContextError.new(selector_range, "##{method_name}", '#allow')
         end
 
         source, type = replacement_source_and_conversion_type(rspec_version)

@@ -250,14 +250,14 @@ module Transpec
             context 'with runtime information' do
               include_context 'dynamic analysis objects'
 
-              it 'does not raise InvalidContextError' do
+              it 'does not raise ContextError' do
                 -> { should_object.expectize! }.should_not raise_error
               end
             end
 
             context 'without runtime information' do
-              it 'raises InvalidContextError' do
-                -> { should_object.expectize! }.should raise_error(InvalidContextError)
+              it 'raises ContextError' do
+                -> { should_object.expectize! }.should raise_error(ContextError)
               end
             end
           end
@@ -283,14 +283,14 @@ module Transpec
               context 'with runtime information' do
                 include_context 'dynamic analysis objects'
 
-                it 'raises InvalidContextError' do
-                  -> { should_object.expectize! }.should raise_error(InvalidContextError)
+                it 'raises ContextError' do
+                  -> { should_object.expectize! }.should raise_error(ContextError)
                 end
               end
 
               context 'without runtime information' do
-                it 'raises InvalidContextError' do
-                  -> { should_object.expectize! }.should raise_error(InvalidContextError)
+                it 'raises ContextError' do
+                  -> { should_object.expectize! }.should raise_error(ContextError)
                 end
               end
             end
@@ -313,13 +313,13 @@ module Transpec
               context 'with runtime information' do
                 include_context 'dynamic analysis objects'
 
-                it 'raises InvalidContextError' do
-                  -> { should_object.expectize! }.should raise_error(InvalidContextError)
+                it 'raises ContextError' do
+                  -> { should_object.expectize! }.should raise_error(ContextError)
                 end
               end
 
               context 'without runtime information' do
-                it 'does not raise InvalidContextError' do
+                it 'does not raise ContextError' do
                   -> { should_object.expectize! }.should_not raise_error
                 end
               end

@@ -155,16 +155,16 @@ module Transpec
               context 'with runtime information' do
                 include_context 'dynamic analysis objects'
 
-                it 'raises InvalidContextError' do
+                it 'raises ContextError' do
                   -> { method_stub_object.allowize!(rspec_version) }
-                    .should raise_error(InvalidContextError)
+                    .should raise_error(ContextError)
                 end
               end
 
               context 'without runtime information' do
-                it 'raises InvalidContextError' do
+                it 'raises ContextError' do
                   -> { method_stub_object.allowize!(rspec_version) }
-                    .should raise_error(InvalidContextError)
+                    .should raise_error(ContextError)
                 end
               end
             end
@@ -187,14 +187,14 @@ module Transpec
               context 'with runtime information' do
                 include_context 'dynamic analysis objects'
 
-                it 'raises InvalidContextError' do
+                it 'raises ContextError' do
                   -> { method_stub_object.allowize!(rspec_version) }
-                    .should raise_error(InvalidContextError)
+                    .should raise_error(ContextError)
                 end
               end
 
               context 'without runtime information' do
-                it 'does not raise InvalidContextError' do
+                it 'does not raise ContextError' do
                   -> { method_stub_object.allowize!(rspec_version) }
                     .should_not raise_error
                 end

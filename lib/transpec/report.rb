@@ -4,11 +4,11 @@ require 'rainbow'
 
 module Transpec
   class Report
-    attr_reader :records, :invalid_context_errors, :syntax_errors
+    attr_reader :records, :context_errors, :syntax_errors
 
     def initialize
       @records = []
-      @invalid_context_errors = []
+      @context_errors = []
       @syntax_errors = []
     end
 
@@ -72,17 +72,17 @@ module Transpec
     end
 
     def convertion_and_incomplete_stats
-      color = invalid_context_errors.empty? ? :green : :yellow
+      color = context_errors.empty? ? :green : :yellow
 
       text = pluralize(records.count, 'conversion') + ', '
-      text << pluralize(invalid_context_errors.count, 'incomplete') + ', '
+      text << pluralize(context_errors.count, 'incomplete') + ', '
       text.color(color)
     end
 
     def error_stats
       color = if !syntax_errors.empty?
                 :red
-              elsif invalid_context_errors.empty?
+              elsif context_errors.empty?
                 :green
               else
                 :yellow

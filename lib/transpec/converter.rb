@@ -20,7 +20,7 @@ require 'transpec/syntax/should_receive'
 
 module Transpec
   class Converter < BaseRewriter
-    attr_reader :configuration, :rspec_version, :runtime_data, :report, :invalid_context_errors
+    attr_reader :configuration, :rspec_version, :runtime_data, :report, :context_errors
 
     alias_method :convert_file!, :rewrite_file!
     alias_method :convert, :rewrite
@@ -30,7 +30,7 @@ module Transpec
       @rspec_version = rspec_version || Transpec.current_rspec_version
       @runtime_data = runtime_data
       @report = report || Report.new
-      @invalid_context_errors = []
+      @context_errors = []
     end
 
     def process(ast, source_rewriter)
@@ -52,8 +52,8 @@ module Transpec
         break
       end
     rescue OverlappedRewriteError # rubocop:disable HandleExceptions
-    rescue Syntax::InvalidContextError => error
-      @invalid_context_errors << error
+    rescue ContextError => error
+      @context_errors << error
     end
 
     def process_should(should)

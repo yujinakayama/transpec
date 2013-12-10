@@ -65,9 +65,9 @@ module Transpec
       converter = Converter.new(@configuration, @project.rspec_version, runtime_data, @report)
       converter.convert_file!(file_path)
 
-      @report.invalid_context_errors.concat(converter.invalid_context_errors)
+      @report.context_errors.concat(converter.context_errors)
 
-      converter.invalid_context_errors.each do |error|
+      converter.context_errors.each do |error|
         warn_invalid_context_error(error)
       end
     rescue Parser::SyntaxError => error
