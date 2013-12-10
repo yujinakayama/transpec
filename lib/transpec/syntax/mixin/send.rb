@@ -24,17 +24,19 @@ module Transpec
           end
 
           def check_target_node_dynamically(node, runtime_data)
-            return true unless runtime_data
-
-            receiver_node, method_name, *_ = *node
-            target_node = receiver_node ? receiver_node : node
-
-            return true unless (node_data = runtime_data[target_node])
-            return true unless (eval_data = node_data[source_location_key(method_name)])
-            return true unless (source_location = eval_data.result)
-
+            source_location = source_location(node, runtime_data)
+            return true unless source_location
             file_path = source_location.first
             !file_path.match(%r{/gems/rspec\-[^/]+/lib/rspec/}).nil?
+          end
+
+          def source_location(node, runtime_data)
+            return unless runtime_data
+            receiver_node, method_name, *_ = *node
+            target_node = receiver_node ? receiver_node : node
+            return unless (node_data = runtime_data[target_node])
+            return unless (eval_data = node_data[source_location_key(method_name)])
+            eval_data.result
           end
 
           def source_location_key(method_name)

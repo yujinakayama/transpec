@@ -13,6 +13,33 @@ module Transpec
     class MethodStub < Syntax
       include Mixin::Send, Mixin::MonkeyPatch, Mixin::AllowNoMessage, Mixin::AnyInstance, Util
 
+      # rubocop:disable LineLength
+      CLASSES_DEFINING_OWN_STUB_METHOD = [
+        'Typhoeus', # https://github.com/typhoeus/typhoeus/blob/6a59c62/lib/typhoeus.rb#L66-L85
+        'Excon',    # https://github.com/geemus/excon/blob/6af4f9c/lib/excon.rb#L143-L178
+        'Factory'   # https://github.com/thoughtbot/factory_girl/blob/v3.6.2/lib/factory_girl/syntax/vintage.rb#L112
+      ]
+      # rubocop:enable LineLength
+
+      def self.dynamic_analysis_target_node?(node)
+        target_node?(node)
+      end
+
+      def self.conversion_target_node?(node, runtime_data = nil)
+        return false unless check_target_node_statically(node)
+
+        # Check if the method is RSpec's one or not.
+        if source_location(node, runtime_data)
+          # If we have a source location runtime data, check with it.
+          check_target_node_dynamically(node, runtime_data)
+        else
+          # Otherwise check with a static whitelist.
+          receiver_node = node.children.first
+          const_name = Util.const_name(receiver_node)
+          !CLASSES_DEFINING_OWN_STUB_METHOD.include?(const_name)
+        end
+      end
+
       def self.target_method?(receiver_node, method_name)
         !receiver_node.nil? && [:stub, :stub!, :stub_chain, :unstub, :unstub!].include?(method_name)
       end

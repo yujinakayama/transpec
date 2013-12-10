@@ -39,6 +39,22 @@ module Transpec
           end
         end
 
+        context 'when Factory.stub node is passed' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it "is not RSpec's #stub" do
+                  Factory.stub(:foo)
+                end
+              end
+            END
+          end
+
+          it 'returns false' do
+            MethodStub.conversion_target_node?(send_node).should be_false
+          end
+        end
+
         context 'with runtime information' do
           include_context 'dynamic analysis objects'
 
@@ -69,6 +85,44 @@ module Transpec
                 describe 'example' do
                   it "is not RSpec's #stub" do
                     AnotherStubProvider.stub(:something)
+                  end
+                end
+              END
+            end
+
+            it 'returns false' do
+              MethodStub.conversion_target_node?(send_node, runtime_data).should be_false
+            end
+          end
+
+          context "when Factory.stub node is passed and it's RSpec's #stub" do
+            let(:source) do
+              <<-END
+                module Factory
+                end
+
+                describe 'example' do
+                  it 'responds to #foo' do
+                    Factory.stub(:foo)
+                  end
+                end
+              END
+            end
+
+            it 'returns true' do
+              MethodStub.conversion_target_node?(send_node, runtime_data).should be_true
+            end
+          end
+
+          context 'when Factory.stub node is passed and it has not been run' do
+            let(:source) do
+              <<-END
+                module Factory
+                end
+
+                describe 'example' do
+                  it 'responds to #foo' do
+                    true || Factory.stub(:foo)
                   end
                 end
               END

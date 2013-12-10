@@ -2,6 +2,8 @@
 
 ## Development
 
+* Check whether a `stub` is RSpec's one or not with a static whitelist when there's no runtime data ([#33](https://github.com/yujinakayama/transpec/issues/33))
+
 ## v1.5.0
 
 * Mention the project's RSpec version in the auto-generated commit message
