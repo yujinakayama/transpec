@@ -26,7 +26,6 @@ module Transpec
 
       add_dynamic_analysis_request do |rewriter|
         operator_matcher.register_request_for_dynamic_analysis(rewriter) if operator_matcher
-        have_matcher.register_request_for_dynamic_analysis(rewriter) if have_matcher
       end
 
       def expectize!(negative_form = 'not_to', parenthesize_matcher_arg = true)
