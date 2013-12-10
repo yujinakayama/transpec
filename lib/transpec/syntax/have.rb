@@ -38,7 +38,7 @@ module Transpec
         @report = report || Report.new
       end
 
-      def register_request_for_dynamic_analysis(rewriter)
+      add_dynamic_analysis_request do |rewriter|
         DynamicInspector.register_request(self, rewriter)
       end
 

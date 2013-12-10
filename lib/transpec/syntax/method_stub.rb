@@ -17,14 +17,12 @@ module Transpec
         !receiver_node.nil? && [:stub, :stub!, :stub_chain, :unstub, :unstub!].include?(method_name)
       end
 
-      def register_request_for_dynamic_analysis(rewriter)
-        super
+      add_dynamic_analysis_request do |rewriter|
         register_request_of_syntax_availability_inspection(
           rewriter,
           :allow_to_receive_available?,
           [:allow, :receive]
         )
-        register_request_of_any_instance_inspection(rewriter)
       end
 
       def allow_to_receive_available?

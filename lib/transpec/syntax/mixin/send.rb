@@ -42,18 +42,20 @@ module Transpec
           end
         end
 
-        def register_request_for_dynamic_analysis(rewriter)
-          if receiver_node
-            target_node = receiver_node
-            target_object_type = :object
-          else
-            target_node = @node
-            target_object_type = :context
-          end
+        def self.included(syntax)
+          syntax.add_dynamic_analysis_request do |rewriter|
+            if receiver_node
+              target_node = receiver_node
+              target_object_type = :object
+            else
+              target_node = @node
+              target_object_type = :context
+            end
 
-          key = self.class.source_location_key(method_name)
-          code = "method(#{method_name.inspect}).source_location"
-          rewriter.register_request(target_node, key, code, target_object_type)
+            key = self.class.source_location_key(method_name)
+            code = "method(#{method_name.inspect}).source_location"
+            rewriter.register_request(target_node, key, code, target_object_type)
+          end
         end
 
         def receiver_node

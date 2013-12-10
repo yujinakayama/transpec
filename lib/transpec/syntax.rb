@@ -4,6 +4,7 @@ require 'transpec/context_error'
 require 'transpec/static_context_inspector'
 require 'transpec/record'
 require 'transpec/report'
+require 'active_support/concern'
 
 module Transpec
   class Syntax
@@ -49,8 +50,32 @@ end
 
 module Transpec
   class Syntax
+    module DynamicAnalysis
+      extend ActiveSupport::Concern
+
+      module ClassMethods
+        def add_dynamic_analysis_request(&block)
+          dynamic_analysis_requests << block
+        end
+
+        def dynamic_analysis_requests
+          @dynamic_analysis_requests ||= []
+        end
+      end
+
+      def register_request_for_dynamic_analysis(rewriter)
+        self.class.dynamic_analysis_requests.each do |request|
+          instance_exec(rewriter, &request)
+        end
+      end
+    end
+  end
+end
+
+module Transpec
+  class Syntax
     extend Collection
-    include Rewritable
+    include Rewritable, DynamicAnalysis
 
     attr_reader :node, :source_rewriter, :runtime_data, :report
 
@@ -74,9 +99,6 @@ module Transpec
       @source_rewriter = source_rewriter
       @runtime_data = runtime_data
       @report = report || Report.new
-    end
-
-    def register_request_for_dynamic_analysis(rewriter)
     end
 
     def static_context_inspector

@@ -19,9 +19,7 @@ module Transpec
         !receiver_node.nil? && [:should_receive, :should_not_receive].include?(method_name)
       end
 
-      def register_request_for_dynamic_analysis(rewriter)
-        super
-
+      add_dynamic_analysis_request do |rewriter|
         register_request_of_syntax_availability_inspection(
           rewriter,
           :expect_to_receive_available?,
@@ -33,8 +31,6 @@ module Transpec
           :allow_to_receive_available?,
           [:allow, :receive]
         )
-
-        register_request_of_any_instance_inspection(rewriter)
       end
 
       def expect_to_receive_available?

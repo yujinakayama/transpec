@@ -8,22 +8,24 @@ module Transpec
       module AnyInstance
         include ::AST::Sexp
 
-        def register_request_of_any_instance_inspection(rewriter)
-          key = :any_instance_target_class_name
-          code = <<-END.gsub(/^\s+\|/, '').chomp
-            |if self.class.name == 'RSpec::Mocks::AnyInstance::Recorder'
-            |  if respond_to?(:klass)
-            |    klass.name
-            |  elsif instance_variable_defined?(:@klass)
-            |    instance_variable_get(:@klass).name
-            |  else
-            |    nil
-            |  end
-            |else
-            |  nil
-            |end
-          END
-          rewriter.register_request(subject_node, key, code)
+        def self.included(syntax)
+          syntax.add_dynamic_analysis_request do |rewriter|
+            key = :any_instance_target_class_name
+            code = <<-END.gsub(/^\s+\|/, '').chomp
+              |if self.class.name == 'RSpec::Mocks::AnyInstance::Recorder'
+              |  if respond_to?(:klass)
+              |    klass.name
+              |  elsif instance_variable_defined?(:@klass)
+              |    instance_variable_get(:@klass).name
+              |  else
+              |    nil
+              |  end
+              |else
+              |  nil
+              |end
+            END
+            rewriter.register_request(subject_node, key, code)
+          end
         end
 
         def any_instance?

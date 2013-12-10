@@ -70,6 +70,7 @@ end
 
 shared_context 'isolated environment' do
   around do |example|
+    require 'tmpdir'
     Dir.mktmpdir do |tmpdir|
       Dir.chdir(tmpdir) do
         example.run
@@ -79,8 +80,6 @@ shared_context 'isolated environment' do
 end
 
 shared_context 'inside of git repository' do
-  require 'tmpdir'
-
   around do |example|
     Dir.mkdir('repo')
     Dir.chdir('repo') do

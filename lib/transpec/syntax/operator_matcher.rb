@@ -20,9 +20,10 @@ module Transpec
         !receiver_node.nil? && OPERATORS.include?(method_name)
       end
 
-      def register_request_for_dynamic_analysis(rewriter)
-        return unless method_name == :=~
-        rewriter.register_request(arg_node, :arg_is_enumerable?, 'is_a?(Enumerable)')
+      add_dynamic_analysis_request do |rewriter|
+        if method_name == :=~
+          rewriter.register_request(arg_node, :arg_is_enumerable?, 'is_a?(Enumerable)')
+        end
       end
 
       def convert_operator!(parenthesize_arg = true)
