@@ -7,19 +7,52 @@ require 'transpec/report'
 
 module Transpec
   class Syntax
+    module Collection
+      def inherited(subclass)
+        all_syntaxes << subclass
+      end
+
+      def all_syntaxes
+        @subclasses ||= []
+      end
+
+      def standalone_syntaxes
+        @standalone_syntaxes ||= all_syntaxes.select(&:standalone?)
+      end
+    end
+  end
+end
+
+module Transpec
+  class Syntax
+    module Rewritable
+      private
+
+      def remove(range)
+        @source_rewriter.remove(range)
+      end
+
+      def insert_before(range, content)
+        @source_rewriter.insert_before(range, content)
+      end
+
+      def insert_after(range, content)
+        @source_rewriter.insert_after(range, content)
+      end
+
+      def replace(range, content)
+        @source_rewriter.replace(range, content)
+      end
+    end
+  end
+end
+
+module Transpec
+  class Syntax
+    extend Collection
+    include Rewritable
+
     attr_reader :node, :source_rewriter, :runtime_data, :report
-
-    def self.inherited(subclass)
-      all_syntaxes << subclass
-    end
-
-    def self.all_syntaxes
-      @subclasses ||= []
-    end
-
-    def self.standalone_syntaxes
-      @standalone_syntaxes ||= all_syntaxes.select(&:standalone?)
-    end
 
     def self.standalone?
       true
@@ -65,22 +98,6 @@ module Transpec
 
     def runtime_node_data(node)
       @runtime_data && @runtime_data[node]
-    end
-
-    def remove(range)
-      @source_rewriter.remove(range)
-    end
-
-    def insert_before(range, content)
-      @source_rewriter.insert_before(range, content)
-    end
-
-    def insert_after(range, content)
-      @source_rewriter.insert_after(range, content)
-    end
-
-    def replace(range, content)
-      @source_rewriter.replace(range, content)
     end
   end
 end
