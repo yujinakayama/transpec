@@ -8,20 +8,26 @@ module Transpec
       module HaveMatcher
         def self.included(syntax)
           syntax.add_dynamic_analysis_request do |rewriter|
-            have_matcher.register_request_for_dynamic_analysis(rewriter) if have_matcher
+            if Have.dynamic_analysis_target_node?(matcher_node)
+              create_have_matcher.register_request_for_dynamic_analysis(rewriter)
+            end
           end
         end
 
         def have_matcher
           return @have_matcher if instance_variable_defined?(:@have_matcher)
 
-          @have_matcher ||= begin
-            if Have.target_node?(matcher_node, @runtime_data)
-              Have.new(matcher_node, self, @source_rewriter, @runtime_data, @report)
-            else
-              nil
-            end
-          end
+          @have_matcher ||= if Have.conversion_target_node?(matcher_node, @runtime_data)
+                              create_have_matcher
+                            else
+                              nil
+                            end
+        end
+
+        private
+
+        def create_have_matcher
+          Have.new(matcher_node, self, @source_rewriter, @runtime_data, @report)
         end
       end
     end

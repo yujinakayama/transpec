@@ -61,6 +61,10 @@ module Transpec
         def dynamic_analysis_requests
           @dynamic_analysis_requests ||= []
         end
+
+        def dynamic_analysis_target_node?(node)
+          target_node?(node)
+        end
       end
 
       def register_request_for_dynamic_analysis(rewriter)
@@ -90,8 +94,14 @@ module Transpec
       end
     end
 
+    # The default common method for .conversion_target_node? and .dynamic_analysis_target_node?.
+    # If they should behave differently, override either or both.
     def self.target_node?(node, runtime_data = nil)
       false
+    end
+
+    def self.conversion_target_node?(node, runtime_data = nil)
+      target_node?(node, runtime_data)
     end
 
     def initialize(node, source_rewriter = nil, runtime_data = nil, report = nil)

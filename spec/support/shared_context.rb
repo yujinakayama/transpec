@@ -60,7 +60,7 @@ end
 shared_context 'syntax object' do |syntax_class, name|
   let(name) do
     ast.each_node do |node|
-      next unless syntax_class.target_node?(node)
+      next unless syntax_class.conversion_target_node?(node)
       return syntax_class.new(node, source_rewriter, runtime_data)
     end
 

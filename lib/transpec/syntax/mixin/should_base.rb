@@ -8,7 +8,9 @@ module Transpec
       module ShouldBase
         def self.included(syntax)
           syntax.add_dynamic_analysis_request do |rewriter|
-            operator_matcher.register_request_for_dynamic_analysis(rewriter) if operator_matcher
+            if OperatorMatcher.dynamic_analysis_target_node?(matcher_node)
+              create_operator_matcher.register_request_for_dynamic_analysis(rewriter)
+            end
           end
         end
 
@@ -20,24 +22,30 @@ module Transpec
           arg_node || parent_node
         end
 
-        def operator_matcher
-          return @operator_matcher if instance_variable_defined?(:@operator_matcher)
-
-          @operator_matcher ||= begin
-            if OperatorMatcher.target_node?(matcher_node, @runtime_data)
-              OperatorMatcher.new(matcher_node, @source_rewriter, @runtime_data, @report)
-            else
-              nil
-            end
-          end
-        end
-
         def should_range
           if arg_node
             selector_range
           else
             selector_range.join(expression_range.end)
           end
+        end
+
+        def operator_matcher
+          return @operator_matcher if instance_variable_defined?(:@operator_matcher)
+
+          @operator_matcher ||= begin
+            if OperatorMatcher.conversion_target_node?(matcher_node, @runtime_data)
+              create_operator_matcher
+            else
+              nil
+            end
+          end
+        end
+
+        private
+
+        def create_operator_matcher
+          OperatorMatcher.new(matcher_node, @source_rewriter, @runtime_data, @report)
         end
       end
     end

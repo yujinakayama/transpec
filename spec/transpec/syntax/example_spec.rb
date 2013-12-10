@@ -159,7 +159,7 @@ module Transpec
 
           let(:example_objects) do
             ast.each_node.reduce([]) do |objects, node|
-              objects << Example.new(node, source_rewriter, runtime_data) if Example.target_node?(node)
+              objects << Example.new(node, source_rewriter, runtime_data) if Example.conversion_target_node?(node)
               objects
             end
           end

@@ -9,7 +9,7 @@ module Transpec
       include_context 'parsed objects'
       include_context 'syntax object', Double, :double_object
 
-      describe '.target_node?' do
+      describe '.conversion_target_node?' do
         let(:send_node) do
           ast.each_descendent_node do |node|
             next unless node.type == :send
@@ -33,7 +33,7 @@ module Transpec
           end
 
           it 'returns true' do
-            Double.target_node?(send_node).should be_true
+            Double.conversion_target_node?(send_node).should be_true
           end
         end
 
@@ -53,7 +53,7 @@ module Transpec
             end
 
             it 'returns true' do
-              Double.target_node?(send_node).should be_true
+              Double.conversion_target_node?(send_node).should be_true
             end
           end
 
@@ -88,7 +88,7 @@ module Transpec
             end
 
             it 'returns false' do
-              Double.target_node?(send_node, runtime_data).should be_false
+              Double.conversion_target_node?(send_node, runtime_data).should be_false
             end
           end
         end
