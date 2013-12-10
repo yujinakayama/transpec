@@ -14,6 +14,8 @@ module Transpec
       end
 
       def register_request_for_dynamic_analysis(rewriter)
+        super
+
         key = :project_requires_its?
         code = 'defined?(RSpec::Its)'
         rewriter.register_request(@node, key, code, :context)

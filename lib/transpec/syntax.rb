@@ -65,9 +65,6 @@ module Transpec
       end
     end
 
-    def self.register_request_for_dynamic_analysis(node, rewriter)
-    end
-
     def self.target_node?(node, runtime_data = nil)
       false
     end

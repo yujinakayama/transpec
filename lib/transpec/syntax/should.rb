@@ -26,6 +26,8 @@ module Transpec
       end
 
       def register_request_for_dynamic_analysis(rewriter)
+        super
+
         register_request_of_syntax_availability_inspection(
           rewriter,
           :expect_available?,

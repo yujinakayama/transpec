@@ -25,6 +25,7 @@ module Transpec
       end
 
       def register_request_for_dynamic_analysis(rewriter)
+        super
         operator_matcher.register_request_for_dynamic_analysis(rewriter) if operator_matcher
         have_matcher.register_request_for_dynamic_analysis(rewriter) if have_matcher
       end
