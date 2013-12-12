@@ -2,7 +2,7 @@
 
 # Transpec
 
-**Transpec** automatically converts your specs to the latest [RSpec](http://rspec.info/) syntax with static and dynamic code analysis.
+**Transpec** is a tool for converting your specs to the latest [RSpec](http://rspec.info/) syntax with static and dynamic code analysis.
 
 This aims to facilitate smooth transition to RSpec 3, and it's now ready for RSpec 2.99 and 3.0 beta!
 
