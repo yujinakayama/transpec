@@ -2,12 +2,12 @@
 
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/send'
-require 'transpec/syntax/mixin/have_matcher'
+require 'transpec/syntax/mixin/have_matcher_owner'
 
 module Transpec
   class Syntax
     class Expect < Syntax
-      include Mixin::Send, Mixin::HaveMatcher
+      include Mixin::Send, Mixin::HaveMatcherOwner
 
       def self.target_method?(receiver_node, method_name)
         receiver_node.nil? && method_name == :expect

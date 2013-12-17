@@ -5,7 +5,7 @@ require 'transpec/syntax/have'
 module Transpec
   class Syntax
     module Mixin
-      module HaveMatcher
+      module HaveMatcherOwner
         def self.included(syntax)
           syntax.add_dynamic_analysis_request do |rewriter|
             if Have.dynamic_analysis_target_node?(matcher_node)
