@@ -128,7 +128,6 @@ module Transpec
       end
 
       def replacement_matcher_source(parenthesize_arg)
-        size_source = size_node.loc.expression.source
         build_replacement_matcher_source(size_source, parenthesize_arg)
       end
 
