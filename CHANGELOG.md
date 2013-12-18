@@ -3,6 +3,7 @@
 ## Development
 
 * Check whether a `stub` is RSpec's one or not with a static whitelist when there's no runtime data ([#33](https://github.com/yujinakayama/transpec/issues/33))
+* Fix a bug where one-liner `should` was converted to `is_expected.to` on RSpec 3.0.0.beta1 (available since 2.99.0.beta2 and 3.0.0.beta2)
 
 ## v1.5.0
 

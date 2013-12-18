@@ -10,15 +10,18 @@ module Transpec
 
     attr_reader :gem_version
 
-    def self.define_feature_availability(feature, version_string)
+    def self.define_feature(feature, version_string, options = {})
       available_version = new(version_string)
+
+      exception_version_strings = Array(options[:except])
+      exception_versions = exception_version_strings.map { |s| new(s) }
 
       define_singleton_method("#{feature}_available_version") do
         available_version
       end
 
       define_method("#{feature}_available?") do
-        self >= available_version
+        self >= available_version && !exception_versions.include?(self)
       end
     end
 
@@ -38,10 +41,10 @@ module Transpec
       @gem_version.to_s
     end
 
-    define_feature_availability :be_truthy,             '2.99.0.beta1'
-    define_feature_availability :yielded_example,       '2.99.0.beta1'
-    define_feature_availability :one_liner_is_expected, '2.99.0.beta2'
-    define_feature_availability :receive_messages,      '3.0.0.beta1'
-    define_feature_availability :receive_message_chain, '3.0.0.beta2'
+    define_feature :be_truthy,             '2.99.0.beta1'
+    define_feature :yielded_example,       '2.99.0.beta1'
+    define_feature :one_liner_is_expected, '2.99.0.beta2', except: '3.0.0.beta1'
+    define_feature :receive_messages,      '3.0.0.beta1'
+    define_feature :receive_message_chain, '3.0.0.beta2'
   end
 end
