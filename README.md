@@ -791,6 +791,32 @@ Here's an excerpt from [the warning for `RSpec::Core::ExampleGroup#example` and 
 * Deprecation: Deprecated since RSpec 2.99, removed in RSpec 3.0
 * See also: [Core: DSL methods will yield the example - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#core_dsl_methods_will_yield_the_example)
 
+### Custom matcher DSL
+
+**This conversion is available only if your project has `rspec` gem dependency `3.0.0.beta2` or later.**
+
+```ruby
+# Targets
+RSpec::Matchers.define :be_awesome do
+  match_for_should { }
+  match_for_should_not { }
+  failure_message_for_should { }
+  failure_message_for_should_not { }
+end
+
+# Converted
+RSpec::Matchers.define :be_awesome do
+  match { }
+  match_when_negated { }
+  failure_message { }
+  failure_message_when_negated { }
+end
+```
+
+* Conversion can be disabled by: `--keep deprecated`
+* Deprecation: Deprecated since RSpec 3.0
+* See also: [Expectations: Matcher protocol and custom matcher API changes - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#expectations_matcher_protocol_and_custom_matcher_api_changes)
+
 ## Compatibility
 
 Tested on MRI 1.9, MRI 2.0 and JRuby in 1.9 mode.

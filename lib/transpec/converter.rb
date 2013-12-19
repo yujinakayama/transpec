@@ -11,6 +11,7 @@ require 'transpec/syntax/double'
 require 'transpec/syntax/example'
 require 'transpec/syntax/expect'
 require 'transpec/syntax/its'
+require 'transpec/syntax/matcher_definition'
 require 'transpec/syntax/method_stub'
 require 'transpec/syntax/oneliner_should'
 require 'transpec/syntax/raise_error'
@@ -157,6 +158,11 @@ module Transpec
     def process_example(example)
       return unless @rspec_version.yielded_example_available?
       example.convert! if @configuration.convert_deprecated_method?
+    end
+
+    def process_matcher_definition(matcher_definition)
+      return unless @rspec_version.non_should_matcher_protocol_available?
+      matcher_definition.convert_deprecated_method! if @configuration.convert_deprecated_method?
     end
 
     def process_rspec_configure(rspec_configure)

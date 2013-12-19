@@ -2,6 +2,8 @@
 
 ## Development
 
+* Support conversion of the custom matcher DSL ([#30](https://github.com/yujinakayama/transpec/issues/30))
+
 ## v1.5.1
 
 * Check whether a `stub` is RSpec's one or not with a static whitelist when there's no runtime data ([#33](https://github.com/yujinakayama/transpec/issues/33))

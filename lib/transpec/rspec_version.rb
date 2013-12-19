@@ -41,10 +41,11 @@ module Transpec
       @gem_version.to_s
     end
 
-    define_feature :be_truthy,             '2.99.0.beta1'
-    define_feature :yielded_example,       '2.99.0.beta1'
-    define_feature :one_liner_is_expected, '2.99.0.beta2', except: '3.0.0.beta1'
-    define_feature :receive_messages,      '3.0.0.beta1'
-    define_feature :receive_message_chain, '3.0.0.beta2'
+    define_feature :be_truthy,                   '2.99.0.beta1'
+    define_feature :yielded_example,             '2.99.0.beta1'
+    define_feature :one_liner_is_expected,       '2.99.0.beta2', except: '3.0.0.beta1'
+    define_feature :receive_messages,            '3.0.0.beta1'
+    define_feature :receive_message_chain,       '3.0.0.beta2'
+    define_feature :non_should_matcher_protocol, '3.0.0.beta2'
   end
 end

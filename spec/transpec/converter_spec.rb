@@ -830,6 +830,45 @@ module Transpec
       end
     end
 
+    describe '#process_matcher_definition' do
+      let(:matcher_definition) { double('matcher_definition').as_null_object }
+
+      context 'when RSpecVersion#non_should_matcher_protocol_available? returns true' do
+        before { rspec_version.stub(:non_should_matcher_protocol_available?).and_return(true) }
+
+        context 'and Configuration#convert_deprecated_method? is true' do
+          before { configuration.convert_deprecated_method = true }
+
+          it 'invokes MatcherDefinition#convert_deprecated_method!' do
+            matcher_definition.should_receive(:convert_deprecated_method!)
+            converter.process_matcher_definition(matcher_definition)
+          end
+        end
+
+        context 'and Configuration#convert_deprecated_method? is false' do
+          before { configuration.convert_deprecated_method = false }
+
+          it 'does not invoke MatcherDefinition#convert_deprecated_method!' do
+            matcher_definition.should_not_receive(:convert_deprecated_method!)
+            converter.process_matcher_definition(matcher_definition)
+          end
+        end
+      end
+
+      context 'when RSpecVersion#non_should_matcher_protocol_available? returns false' do
+        before { rspec_version.stub(:non_should_matcher_protocol_available?).and_return(false) }
+
+        context 'and Configuration#convert_deprecated_method? is true' do
+          before { configuration.convert_deprecated_method = true }
+
+          it 'does nothing' do
+            matcher_definition.should_not_receive(:convert_deprecated_method!)
+            converter.process_matcher_definition(matcher_definition)
+          end
+        end
+      end
+    end
+
     describe '#process_rspec_configure' do
       let(:rspec_configure) { double('rspec_configure').as_null_object }
 

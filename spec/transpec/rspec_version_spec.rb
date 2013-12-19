@@ -59,7 +59,7 @@ module Transpec
       ]
     end
 
-    [:receive_message_chain_available?].each do |method|
+    [:receive_message_chain_available?, :non_should_matcher_protocol_available?].each do |method|
       include_examples 'feature availability', method, [
         ['2.14.0',       false],
         ['2.99.0.beta1', false],
