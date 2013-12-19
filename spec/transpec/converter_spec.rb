@@ -655,7 +655,7 @@ module Transpec
       context 'when Configuration#convert_deprecated_method? is false' do
         before { configuration.convert_deprecated_method = false }
 
-        it 'does not invoke Double#convert_to_double!' do
+        it 'does nothing' do
           double_object.should_not_receive(:convert_to_double!)
           converter.process_double(double_object)
         end
@@ -668,7 +668,7 @@ module Transpec
       context 'when RSpecVersion#be_truthy_available? returns true' do
         before { rspec_version.stub(:be_truthy_available?).and_return(true) }
 
-        context 'when Configuration#convert_deprecated_method? is true' do
+        context 'and Configuration#convert_deprecated_method? is true' do
           before { configuration.convert_deprecated_method = true }
 
           context 'and Configuration#boolean_matcher_type is :conditional' do
@@ -703,7 +703,7 @@ module Transpec
           end
         end
 
-        context 'when Configuration#convert_deprecated_method? is false' do
+        context 'and Configuration#convert_deprecated_method? is false' do
           before { configuration.convert_deprecated_method = false }
 
           it 'does nothing' do
@@ -740,7 +740,7 @@ module Transpec
       context 'when Configuration#convert_deprecated_method? is false' do
         before { configuration.convert_deprecated_method = false }
 
-        it 'does not invoke BeClose#convert_to_be_within!' do
+        it 'does nothing' do
           be_close_object.should_not_receive(:convert_to_be_within!)
           converter.process_be_close(be_close_object)
         end
@@ -762,7 +762,7 @@ module Transpec
       context 'when Configuration#convert_deprecated_method? is false' do
         before { configuration.convert_deprecated_method = false }
 
-        it 'does not invoke BeClose#convert_to_be_within!' do
+        it 'does nothing' do
           raise_error_object.should_not_receive(:remove_error_specification_with_negative_expectation!)
           converter.process_raise_error(raise_error_object)
         end
@@ -784,7 +784,7 @@ module Transpec
       context 'when Configuration#convert_its? is false' do
         before { configuration.convert_its = false }
 
-        it 'does not invoke Its#convert_to_describe_subject_it!' do
+        it 'does nothing' do
           its_object.should_not_receive(:convert_to_describe_subject_it!)
           converter.process_its(its_object)
         end
@@ -797,7 +797,7 @@ module Transpec
       context 'when RSpecVersion#yielded_example_available? returns true' do
         before { rspec_version.stub(:yielded_example_available?).and_return(true) }
 
-        context 'when Configuration#convert_deprecated_method? is true' do
+        context 'and Configuration#convert_deprecated_method? is true' do
           before { configuration.convert_deprecated_method = true }
 
           it 'invokes Example#convert!' do
@@ -806,10 +806,10 @@ module Transpec
           end
         end
 
-        context 'when Configuration#convert_deprecated_method? is false' do
+        context 'and Configuration#convert_deprecated_method? is false' do
           before { configuration.convert_deprecated_method = false }
 
-          it 'does not invoke Its#convert_to_describe_subject_it!' do
+          it 'does nothing' do
             example_object.should_not_receive(:convert!)
             converter.process_example(example_object)
           end
@@ -819,7 +819,7 @@ module Transpec
       context 'when RSpecVersion#yielded_example_available? returns false' do
         before { rspec_version.stub(:yielded_example_available?).and_return(false) }
 
-        context 'when Configuration#convert_deprecated_method? is true' do
+        context 'and Configuration#convert_deprecated_method? is true' do
           before { configuration.convert_deprecated_method = true }
 
           it 'does nothing' do
@@ -848,7 +848,7 @@ module Transpec
         context 'and Configuration#convert_deprecated_method? is false' do
           before { configuration.convert_deprecated_method = false }
 
-          it 'does not invoke MatcherDefinition#convert_deprecated_method!' do
+          it 'does nothing' do
             matcher_definition.should_not_receive(:convert_deprecated_method!)
             converter.process_matcher_definition(matcher_definition)
           end
