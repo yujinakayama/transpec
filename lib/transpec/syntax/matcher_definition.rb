@@ -15,13 +15,6 @@ module Transpec
         failure_message_for_should_not: :failure_message_when_negated
       }
 
-      TARGET_METHODS = [
-        :match_for_should,
-        :match_for_should_not,
-        :failure_message_for_should,
-        :failure_message_for_should_not
-      ].freeze
-
       def self.target_method?(receiver_node, method_name)
         receiver_node.nil? && CONVERSION_CORRESPONDENCE.keys.include?(method_name)
       end
