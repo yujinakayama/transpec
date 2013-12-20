@@ -1,12 +1,18 @@
 # coding: utf-8
 
 require 'transpec/base_rewriter'
+require 'transpec/dynamic_analyzer'
+require 'transpec/syntax'
 require 'transpec/util'
+
+Transpec::Syntax.require_all
 
 module Transpec
   class DynamicAnalyzer
     class Rewriter < BaseRewriter
       include Util
+
+      EVAL_TARGET_TYPES = [:object, :context]
 
       def process(ast, source_rewriter)
         # TODO: Currently multitheading is not considered...

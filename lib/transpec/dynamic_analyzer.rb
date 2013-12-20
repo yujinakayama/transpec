@@ -13,7 +13,6 @@ require 'English'
 
 module Transpec
   class DynamicAnalyzer
-    EVAL_TARGET_TYPES = [:object, :context]
     ANALYSIS_METHOD = 'transpec_analysis'
     HELPER_FILE = 'transpec_analysis_helper.rb'
     RESULT_FILE = 'transpec_analysis_result.json'
