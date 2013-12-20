@@ -13,6 +13,13 @@ module Transpec
         all_syntaxes << subclass
       end
 
+      def require_all
+        pattern = File.join(File.dirname(__FILE__), 'syntax', '*.rb')
+        Dir.glob(pattern) do |path|
+          require path
+        end
+      end
+
       def all_syntaxes
         @subclasses ||= []
       end

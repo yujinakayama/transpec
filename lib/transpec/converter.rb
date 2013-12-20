@@ -5,19 +5,8 @@ require 'transpec/configuration'
 require 'transpec/report'
 require 'transpec/rspec_version'
 require 'transpec/syntax'
-require 'transpec/syntax/be_boolean'
-require 'transpec/syntax/be_close'
-require 'transpec/syntax/double'
-require 'transpec/syntax/example'
-require 'transpec/syntax/expect'
-require 'transpec/syntax/its'
-require 'transpec/syntax/matcher_definition'
-require 'transpec/syntax/method_stub'
-require 'transpec/syntax/oneliner_should'
-require 'transpec/syntax/raise_error'
-require 'transpec/syntax/rspec_configure'
-require 'transpec/syntax/should'
-require 'transpec/syntax/should_receive'
+
+Transpec::Syntax.require_all
 
 module Transpec
   class Converter < BaseRewriter
