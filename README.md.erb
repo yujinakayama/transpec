@@ -4,7 +4,7 @@
 
 **Transpec** is a tool for converting your specs to the latest [RSpec](http://rspec.info/) syntax with static and dynamic code analysis.
 
-This aims to facilitate smooth transition to RSpec 3, and it's now ready for RSpec 2.99 and 3.0 beta!
+This aims to facilitate a smooth transition to RSpec 3, and it's now ready for RSpec 2.99 and 3.0 beta!
 
 See the following pages for the new RSpec syntax and the plan for RSpec 3:
 
@@ -88,7 +88,7 @@ Before converting your specs:
 
 * Make sure your project has `rspec` gem dependency **<%= Transpec.required_rspec_version %>** or later. If not, change your `*.gemspec` or `Gemfile` to do so.
 * Run `rspec` and check if all the specs pass.
-* Ensure the Git repository is clean. (You don't want to mix up your changes and Transpec's changes, right?)
+* Ensure the Git repository is clean. (You don't want to mix up your changes and Transpec's changes, do you?)
 
 Then, run `transpec` in the project root directory:
 
@@ -157,7 +157,7 @@ Skip dynamic analysis and convert with only static analysis. Note that specifyin
 Specify a command to run your specs that is used for dynamic analysis.
 
 Transpec needs to run your specs in a copied project directory for dynamic analysis.
-If your project requires some special setups or commands to run specs, use this option.
+If your project requires some special setup or commands to run specs, use this option.
 `bundle exec rspec` is used by default.
 
 ```bash
@@ -417,7 +417,7 @@ expect(obj).to be false
 * `be_truthy` and `be_falsey` matchers are renamed version of `be_true` and `be_false` and their behaviors are same.
 * `be true` and `be false` are not new things. These are combinations of `be` matcher and boolean literals. These pass if expectation subject is exactly equal to boolean value.
 
-So, converting `be_true`/`be_false` to `be_truthy`/`be_falsey` never breaks your specs and this is the Transpec's default. If you are willing to test boolean values strictly, you can convert them to `be true`/`be false` with `--boolean-matcher true,false` option. Note that this may break your specs if your application codes don't return exact boolean values.
+So, converting `be_true`/`be_false` to `be_truthy`/`be_falsey` never breaks your specs and this is Transpec's default. If you are willing to test boolean values strictly, you can convert them to `be true`/`be false` with `--boolean-matcher true,false` option. Note that this may break your specs if your application code don't return exact boolean values.
 
 ---
 
@@ -469,8 +469,8 @@ expect(team.players.size).to eq(3)
 expect(team.send(:players).size).to eq(3)
 ```
 
-There's an option to continue using `have(n).items` matcher with [rspec-collection_matchers](https://github.com/rspec/rspec-collection_matchers) that is a gem extracted from `rspec-expectations`.
-If you choose so, disable this conversion by either:
+There's an option to continue using `have(n).items` matcher with [rspec-collection_matchers](https://github.com/rspec/rspec-collection_matchers) which is a gem extracted from `rspec-expectations`.
+If you choose to do so, disable this conversion by either:
 
 * Specify `--keep have_items` option manually.
 * Require `rspec-collection_matchers` or `rspec-rails` in your spec so that Transpec automatically disables this conversion.
@@ -613,7 +613,7 @@ allow_any_instance_of(Klass).to receive(:foo)
 
 #### No replacement for `unstub`
 
-There's no replacement for `unstub` in the `expect` syntax. See [the discussion](https://github.com/rspec/rspec-mocks/issues/153#issuecomment-12208638) for more details.
+There's no replacement for `unstub` in the `expect` syntax. See [this discussion](https://github.com/rspec/rspec-mocks/issues/153#issuecomment-12208638) for more details.
 
 #### Steps to upgrade `obj.stub(:foo => 1, :bar => 2)`
 
