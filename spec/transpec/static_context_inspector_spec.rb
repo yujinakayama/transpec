@@ -48,6 +48,20 @@ module Transpec
               in_normal_block
             end
           end
+
+          feature 'Capybara DSL' do
+            background do
+              in_background
+            end
+
+            given(:foo) do
+              in_given
+            end
+
+            scenario 'some page shows something' do
+              in_scenario
+            end
+          end
         END
       end
 
@@ -81,6 +95,12 @@ module Transpec
               [:module, :example_group, :example]
             when 'send nil :in_normal_block'
               [:module]
+            when 'send nil :in_background'
+              [:example_group, :each_before_after]
+            when 'send nil :given'
+              [:example_group, :helper]
+            when 'send nil :in_scenario'
+              [:example_group, :example]
             end
           end
 

@@ -3,6 +3,7 @@
 ## Development
 
 * Support conversion of the custom matcher DSL ([#30](https://github.com/yujinakayama/transpec/issues/30))
+* Support Capybara DSL in static context analysis (the logic used with `-s/--skip-dynamic-analysis`)
 
 ## v1.5.1
 
