@@ -352,7 +352,7 @@ expect(obj).to_not matcher # with `--negative-form to_not`
 
 ### One-liner expectations
 
-**This conversion is available only if your project has `rspec` gem dependency `2.99.0.beta2` or later.**
+**This conversion is available only if your project's RSpec is `2.99.0.beta2` or later.**
 
 Targets:
 
@@ -407,7 +407,7 @@ This conversion is combined with the conversion of [standard expectations](#stan
 
 ### Boolean matchers
 
-**This conversion is available only if your project has `rspec` gem dependency `2.99.0.beta1` or later.**
+**This conversion is available only if your project's RSpec is `2.99.0.beta1` or later.**
 
 Targets:
 
@@ -649,15 +649,15 @@ Will be converted to:
 ```ruby
 allow(obj).to receive(:foo)
 
-# If the target project's rspec gem dependency is prior to 3.0.0.beta1
+# If the target project's RSpec is prior to 3.0.0.beta1
 allow(obj).to receive(:foo).and_return(1)
 allow(obj).to receive(:bar).and_return(2)
 
-# If the target project's rspec gem dependency is 3.0.0.beta1 or later
+# If the target project's RSpec is 3.0.0.beta1 or later
 allow(obj).to receive_messages(:foo => 1, :bar => 2)
 
 # Conversion from `stub_chain` to `receive_message_chain` is available
-# only if the target project's rspec gem dependency is 3.0.0.beta2 or later
+# only if the target project's RSpec is 3.0.0.beta2 or later
 allow(obj).to receive_message_chain(:foo, :bar, :baz)
 
 allow_any_instance_of(Klass).to receive(:foo)
@@ -801,7 +801,7 @@ If you choose so, disable this conversion by either:
 
 ### Current example object
 
-**This conversion is available only if your project has `rspec` gem dependency `2.99.0.beta1` or later.**
+**This conversion is available only if your project's RSpec is `2.99.0.beta1` or later.**
 
 Targets:
 
@@ -861,7 +861,7 @@ Here's an excerpt from [the warning for `RSpec::Core::ExampleGroup#example` and 
 
 ### Custom matcher DSL
 
-**This conversion is available only if your project has `rspec` gem dependency `3.0.0.beta2` or later.**
+**This conversion is available only if your project's RSpec is `3.0.0.beta2` or later.**
 
 Targets:
 
