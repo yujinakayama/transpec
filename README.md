@@ -331,31 +331,39 @@ Then run `transpec` again.
 
 ### Standard expectations
 
+Targets:
+
 ```ruby
-# Targets
 obj.should matcher
 obj.should_not matcher
+```
 
-# Converted
+Will be converted to:
+
+```ruby
 expect(obj).to matcher
 expect(obj).not_to matcher
 expect(obj).to_not matcher # with `--negative-form to_not`
 ```
 
-* Conversion can be disabled by: `--keep should`
-* Deprecation: Deprecated since RSpec 3.0
+* This conversion can be disabled by: `--keep should`
+* Deprecation: deprecated since RSpec 3.0
 * See also: [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax)
 
 ### One-liner expectations
 
 **This conversion is available only if your project has `rspec` gem dependency `2.99.0.beta2` or later.**
 
+Targets:
+
 ```ruby
-# Targets
 it { should matcher }
 it { should_not matcher }
+```
 
-# Converted
+Will be converted to:
+
+```ruby
 it { is_expected.to matcher }
 it { is_expected.not_to matcher }
 it { is_expected.to_not matcher } # with `--negative-form to_not`
@@ -367,21 +375,25 @@ and available even if the `should` syntax is disabled with `RSpec.configure`.
 So if you think `is_expected.to` is verbose,
 feel free to disable this conversion and continue using the one-liner `should`.
 
-* Conversion can be disabled by: `--keep oneliner`
+* This conversion can be disabled by: `--keep oneliner`
 * Deprecation: Not deprecated
 * See also: [Add `is_expected` for expect-based one-liner syntax. by myronmarston · rspec/rspec-core](https://github.com/rspec/rspec-core/pull/1180)
 
 ### Operator matchers
 
+Targets:
+
 ```ruby
-# Targets
 1.should == 1
 1.should < 2
 Integer.should === 1
 'string'.should =~ /^str/
 [1, 2, 3].should =~ [2, 1, 3]
+```
 
-# Converted
+Will be converted to:
+
+```ruby
 expect(1).to eq(1)
 expect(1).to be < 2
 expect(Integer).to be === 1
@@ -397,12 +409,16 @@ This conversion is combined with the conversion of [standard expectations](#stan
 
 **This conversion is available only if your project has `rspec` gem dependency `2.99.0.beta1` or later.**
 
+Targets:
+
 ```ruby
-# Targets
 expect(obj).to be_true
 expect(obj).to be_false
+```
 
-# Converted
+Will be converted to:
+
+```ruby
 expect(obj).to be_truthy
 expect(obj).to be_falsey
 
@@ -425,30 +441,35 @@ So, converting `be_true`/`be_false` to `be_truthy`/`be_falsey` never breaks your
 
 ---
 
-* Conversion can be disabled by: `--keep deprecated`
-* Deprecation: Deprecated since RSpec 2.99, removed in RSpec 3.0
+* This conversion can be disabled by: `--keep deprecated`
+* Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
 * See also: [Consider renaming `be_true` and `be_false` to `be_truthy` and `be_falsey` · rspec/rspec-expectations](https://github.com/rspec/rspec-expectations/issues/283)
 
 ### `be_close` matcher
 
-```ruby
-# Targets
-expect(1.0 / 3.0).to be_close(0.333, 0.001)
+Targets:
 
-# Converted
+```ruby
+expect(1.0 / 3.0).to be_close(0.333, 0.001)
+```
+
+Will be converted to:
+
+```ruby
 expect(1.0 / 3.0).to be_within(0.001).of(0.333)
 ```
 
-* Conversion can be disabled by: `--keep deprecated`
-* Deprecation: Deprecated since RSpec 2.1, removed in RSpec 3.0
+* This conversion can be disabled by: `--keep deprecated`
+* Deprecation: deprecated since RSpec 2.1, removed in RSpec 3.0
 * See also: [New be within matcher and RSpec.deprecate fix · rspec/rspec-expectations](https://github.com/rspec/rspec-expectations/pull/32)
 
 ### `have(n).items` matcher
 
 **This conversion will be disabled automatically if `rspec-collection_matchers` or `rspec-rails` is loaded in your spec.**
 
+Targets:
+
 ```ruby
-# Targets
 expect(collection).to have(3).items
 expect(collection).to have_exactly(3).items
 expect(collection).to have_at_least(3).items
@@ -460,8 +481,11 @@ expect(team).to have(3).players
 
 # Assume #players is a private method.
 expect(team).to have(3).players
+```
 
-# Converted
+Will be converted to:
+
+```ruby
 expect(collection.size).to eq(3)
 expect(collection.size).to be >= 3
 expect(collection.size).to be <= 3
@@ -483,20 +507,24 @@ Note: `rspec-rails` 3.0 [still uses `have(n).items` matcher with `rspec-collecti
 
 ---
 
-* Conversion can be disabled by: `--keep have_items`
-* Deprecation: Deprecated since RSpec 2.99, removed in RSpec 3.0
+* This conversion can be disabled by: `--keep have_items`
+* Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
 * See also: [Expectations: have(x).items matchers will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#expectations__matchers_will_be_moved_into_an_external_gem)
 
 ### One-liner expectations with `have(n).items` matcher
 
 **This conversion will be disabled automatically if `rspec-collection_matchers` or `rspec-rails` is loaded in your spec.**
 
+Targets:
+
 ```ruby
-# Targets
 it { should have(3).items }
 it { should have_at_least(3).players }
+```
 
-# Converted
+Will be converted to:
+
+```ruby
 it 'has 3 items' do
   expect(subject.size).to eq(3)
 end
@@ -511,69 +539,85 @@ it 'has at least 3 players' do
 end
 ```
 
-* Conversion can be disabled by: `--keep have_items`
+* This conversion can be disabled by: `--keep have_items`
 
 ### Expectations on block
 
+Targets:
+
 ```ruby
-# Targets
 lambda { do_something }.should raise_error
 proc { do_something }.should raise_error
 -> { do_something }.should raise_error
+```
 
-# Converted
+Will be converted to:
+
+```ruby
 expect { do_something }.to raise_error
 ```
 
-* Conversion can be disabled by: `--keep should`
-* Deprecation: Deprecated since RSpec 3.0
+* This conversion can be disabled by: `--keep should`
+* Deprecation: deprecated since RSpec 3.0
 * See also: [Unification of Block vs. Value Syntaxes - RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#unification_of_block_vs_value_syntaxes)
 
 ### Negative error expectations with specific error
 
+Targets:
+
 ```ruby
-# Targets
 expect { do_something }.not_to raise_error(SomeErrorClass)
 expect { do_something }.not_to raise_error('message')
 expect { do_something }.not_to raise_error(SomeErrorClass, 'message')
 lambda { do_something }.should_not raise_error(SomeErrorClass)
+```
 
-# Converted
+Will be converted to:
+
+```ruby
 expect { do_something }.not_to raise_error
 lambda { do_something }.should_not raise_error # with `--keep should`
 ```
 
-* Conversion can be disabled by: `--keep deprecated`
-* Deprecation: Deprecated since RSpec 2.14, removed in RSpec 3.0
+* This conversion can be disabled by: `--keep deprecated`
+* Deprecation: deprecated since RSpec 2.14, removed in RSpec 3.0
 * See also: [Consider deprecating `expect { }.not_to raise_error(SpecificErrorClass)` · rspec/rspec-expectations](https://github.com/rspec/rspec-expectations/issues/231)
 
 ### Message expectations
 
+Targets:
+
 ```ruby
-# Targets
 obj.should_receive(:foo)
 Klass.any_instance.should_receive(:foo)
+```
 
-# Converted
+Will be converted to:
+
+```ruby
 expect(obj).to receive(:foo)
 expect_any_instance_of(Klass).to receive(:foo)
 ```
 
-* Conversion can be disabled by: `--keep should_receive`
-* Deprecation: Deprecated since RSpec 3.0
+* This conversion can be disabled by: `--keep should_receive`
+* Deprecation: deprecated since RSpec 3.0
 * See also: [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
 
 ### Message expectations that are actually method stubs
 
+Targets:
+
 ```ruby
-# Targets
 obj.should_receive(:foo).any_number_of_times
 obj.should_receive(:foo).at_least(0)
 
 Klass.any_instance.should_receive(:foo).any_number_of_times
 Klass.any_instance.should_receive(:foo).at_least(0)
+```
 
-# Converted
+Will be converted to:
+
+```ruby
 allow(obj).to receive(:foo)
 obj.stub(:foo) # with `--keep stub`
 
@@ -581,14 +625,15 @@ allow_any_instance_of(Klass).to receive(:foo)
 Klass.any_instance.stub(:foo) # with `--keep stub`
 ```
 
-* Conversion can be disabled by: `--keep deprecated`
-* Deprecation: Deprecated since RSpec 2.14, removed in RSpec 3.0
+* This conversion can be disabled by: `--keep deprecated`
+* Deprecation: deprecated since RSpec 2.14, removed in RSpec 3.0
 * See also: [Don't allow at_least(0) · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/133)
 
 ### Method stubs
 
+Targets:
+
 ```ruby
-# Targets
 obj.stub(:foo)
 obj.stub!(:foo)
 
@@ -597,8 +642,11 @@ obj.stub(:foo => 1, :bar => 2)
 obj.stub_chain(:foo, :bar, :baz)
 
 Klass.any_instance.stub(:foo)
+```
 
-# Converted
+Will be converted to:
+
+```ruby
 allow(obj).to receive(:foo)
 
 # If the target project's rspec gem dependency is prior to 3.0.0.beta1
@@ -632,8 +680,8 @@ Otherwise `obj.stub(:foo => 1, :bar => 2)` will be converted to two `allow(obj).
 
 ---
 
-* Conversion can be disabled by: `--keep stub`
-* Deprecation: Deprecated since RSpec 3.0
+* This conversion can be disabled by: `--keep stub`
+* Deprecation: deprecated since RSpec 3.0
 * See also:
     * [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
     * [allow receive with multiple methods · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/368)
@@ -641,65 +689,81 @@ Otherwise `obj.stub(:foo => 1, :bar => 2)` will be converted to two `allow(obj).
 
 ### Deprecated method stub aliases
 
+Targets:
+
 ```ruby
-# Targets
 obj.stub!(:foo)
 obj.unstub!(:foo)
+```
 
-# Converted
+Will be converted to:
+
+```ruby
 obj.stub(:foo) # with `--keep stub`
 obj.unstub(:foo)
 ```
 
-* Conversion can be disabled by: `--keep deprecated`
-* Deprecation: Deprecated since RSpec 2.14, removed in RSpec 3.0
+* This conversion can be disabled by: `--keep deprecated`
+* Deprecation: deprecated since RSpec 2.14, removed in RSpec 3.0
 * See also: [Consider deprecating and/or removing #stub! and #unstub! at some point · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/122)
 
 ### Method stubs with deprecated specification of number of times
 
+Targets:
+
 ```ruby
-# Targets
 obj.stub(:foo).any_number_of_times
 obj.stub(:foo).at_least(0)
+```
 
-# Converted
+Will be converted to:
+
+```ruby
 allow(obj).to receive(:foo)
 obj.stub(:foo) # with `--keep stub`
 ```
 
-* Conversion can be disabled by: `--keep deprecated`
-* Deprecation: Deprecated since RSpec 2.14, removed in RSpec 3.0
+* This conversion can be disabled by: `--keep deprecated`
+* Deprecation: deprecated since RSpec 2.14, removed in RSpec 3.0
 * See also: [Don't allow at_least(0) · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/133)
 
 ### Deprecated test double aliases
 
+Targets:
+
 ```ruby
-# Targets
 stub('something')
 mock('something')
+```
 
-# Converted
+Will be converted to:
+
+```ruby
 double('something')
 ```
 
-* Conversion can be disabled by: `--keep deprecated`
-* Deprecation: Deprecated since RSpec 2.14, removed in RSpec 3.0
+* This conversion can be disabled by: `--keep deprecated`
+* Deprecation: deprecated since RSpec 2.14, removed in RSpec 3.0
 * See also: [myronmarston / why_double.md - Gist](https://gist.github.com/myronmarston/6576665)
 
 ### Expectations on attribute of subject with `its`
 
 **This conversion will be disabled automatically if `rspec-its` is loaded in your spec.**
 
+Targets:
+
 ```ruby
-# Targets
 describe 'example' do
   subject { { foo: 1, bar: 2 } }
   its(:size) { should == 2 }
   its([:foo]) { should == 1 }
   its('keys.first') { should == :foo }
 end
+```
 
-# Converted
+Will be converted to:
+
+```ruby
 describe 'example' do
   subject { { foo: 1, bar: 2 } }
 
@@ -731,16 +795,17 @@ If you choose so, disable this conversion by either:
 
 ---
 
-* Conversion can be disabled by: `--keep its`
-* Deprecation: Deprecated since RSpec 2.99, removed in RSpec 3.0
+* This conversion can be disabled by: `--keep its`
+* Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
 * See also: [Core: its will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#core__will_be_moved_into_an_external_gem)
 
 ### Current example object
 
 **This conversion is available only if your project has `rspec` gem dependency `2.99.0.beta1` or later.**
 
+Targets:
+
 ```ruby
-# Targets
 module ScreenshotHelper
   def save_failure_screenshot
     return unless example.exception
@@ -754,8 +819,11 @@ describe 'example page' do
   let(:user) { User.find(example.metadata[:user_id]) }
   # ...
 end
+```
 
-# Converted
+Will be converted to:
+
+```ruby
 module ScreenshotHelper
   def save_failure_screenshot
     return unless RSpec.current_example.exception
@@ -787,24 +855,28 @@ Here's an excerpt from [the warning for `RSpec::Core::ExampleGroup#example` and 
 
 ---
 
-* Conversion can be disabled by: `--keep deprecated`
-* Deprecation: Deprecated since RSpec 2.99, removed in RSpec 3.0
+* This conversion can be disabled by: `--keep deprecated`
+* Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
 * See also: [Core: DSL methods will yield the example - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#core_dsl_methods_will_yield_the_example)
 
 ### Custom matcher DSL
 
 **This conversion is available only if your project has `rspec` gem dependency `3.0.0.beta2` or later.**
 
+Targets:
+
 ```ruby
-# Targets
 RSpec::Matchers.define :be_awesome do
   match_for_should { }
   match_for_should_not { }
   failure_message_for_should { }
   failure_message_for_should_not { }
 end
+```
 
-# Converted
+Will be converted to:
+
+```ruby
 RSpec::Matchers.define :be_awesome do
   match { }
   match_when_negated { }
@@ -813,8 +885,8 @@ RSpec::Matchers.define :be_awesome do
 end
 ```
 
-* Conversion can be disabled by: `--keep deprecated`
-* Deprecation: Deprecated since RSpec 3.0
+* This conversion can be disabled by: `--keep deprecated`
+* Deprecation: deprecated since RSpec 3.0
 * See also: [Expectations: Matcher protocol and custom matcher API changes - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#expectations_matcher_protocol_and_custom_matcher_api_changes)
 
 ## Compatibility
