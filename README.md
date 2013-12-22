@@ -352,7 +352,7 @@ expect(obj).to_not matcher # with `--negative-form to_not`
 
 ### One-liner expectations
 
-**This conversion is available only if your project's RSpec is `2.99.0.beta2` or later.**
+**This conversion is available only if your project's RSpec is `2.99.0.beta2` (not yet released) or later.**
 
 Targets:
 
@@ -657,7 +657,7 @@ allow(obj).to receive(:bar).and_return(2)
 allow(obj).to receive_messages(:foo => 1, :bar => 2)
 
 # Conversion from `stub_chain` to `receive_message_chain` is available
-# only if the target project's RSpec is 3.0.0.beta2 or later
+# only if the target project's RSpec is 3.0.0.beta2 (not yet released) or later
 allow(obj).to receive_message_chain(:foo, :bar, :baz)
 
 allow_any_instance_of(Klass).to receive(:foo)
@@ -861,7 +861,7 @@ Here's an excerpt from [the warning for `RSpec::Core::ExampleGroup#example` and 
 
 ### Custom matcher DSL
 
-**This conversion is available only if your project's RSpec is `3.0.0.beta2` or later.**
+**This conversion is available only if your project's RSpec is `3.0.0.beta2` (not yet released) or later.**
 
 Targets:
 
