@@ -20,7 +20,7 @@ module Transpec
           end
 
           def target_method?(receiver_node, method_name)
-            NotImplementedError
+            fail NotImplementedError
           end
 
           def check_target_node_dynamically(node, runtime_data)
