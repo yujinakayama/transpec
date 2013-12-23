@@ -81,8 +81,7 @@ module Transpec
         ], [
           'const nil :SomeModule',
           'at constant of module definition',
-          [:module],
-          true
+          []
         ], [
           'send nil :in_module',
           'in module',
@@ -90,8 +89,7 @@ module Transpec
         ], [
           'send nil :describe',
           'at #describe in module',
-          [:module],
-          true
+          [:module]
         ], [
           'def :some_method',
           'at method definition in #describe in module',
@@ -99,8 +97,7 @@ module Transpec
         ], [
           'arg :some_arg',
           'at method argument in #describe in module',
-          [:module, :example_group],
-          true
+          [:module, :example_group, :def]
         ], [
           'send nil :do_something',
           'in method in #describe in module',
@@ -108,13 +105,11 @@ module Transpec
         ], [
           'send nil :it',
           'at #it in #describe in module',
-          [:module, :example_group],
-          true
+          [:module, :example_group]
         ], [
           'str "is 1"',
           "at #it's description in #describe in module",
-          [:module, :example_group],
-          true
+          [:module, :example_group]
         ], [
           'send nil :in_example',
           '#it in #describe in module',
@@ -136,7 +131,7 @@ module Transpec
           'in #scenario block in #feature',
           [:example_group, :example]
         ]
-      ].each  do |target_node_id, description, expected_scopes, is_pending|
+      ].each  do |target_node_id, description, expected_scopes|
         context "when #{description}" do
           let(:target_node) do
             ast.each_node.find do |node|
@@ -145,7 +140,6 @@ module Transpec
           end
 
           it "returns #{expected_scopes.inspect}" do
-            pending if is_pending
             fail 'Target node is not found!' unless target_node
 
             context_inspector = StaticContextInspector.new(target_node)

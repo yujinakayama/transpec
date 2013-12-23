@@ -8,6 +8,7 @@ module Transpec
     include RSpecDSL, Util
 
     SCOPE_TYPES = [:module, :class, :sclass, :def, :defs, :block].freeze
+    TWISTED_SCOPE_TYPES = (SCOPE_TYPES - [:def, :defs]).freeze
 
     NON_MONKEY_PATCH_EXPECTATION_AVAILABLE_CONTEXT = [
       [:example_group, :example],
@@ -41,10 +42,14 @@ module Transpec
 
     def scopes
       @scopes ||= begin
-        scopes = @node.each_ancestor_node.reverse_each.map { |node| scope_type(node) }
+        scopes = valid_ancestor_nodes.reverse_each.map { |node| scope_type(node) }
         scopes.compact!
         scopes.extend(ArrayExtension)
       end
+    end
+
+    def inside_of_example_group?
+      scopes.include?(:example_group)
     end
 
     def non_monkey_patch_expectation_available?
@@ -63,6 +68,25 @@ module Transpec
     alias_method :allow_to_receive_available?, :non_monkey_patch_mock_available?
 
     private
+
+    def valid_ancestor_nodes
+      valid_nodes = []
+
+      self_and_ancestor_nodes = [@node] + @node.ancestor_nodes
+
+      self_and_ancestor_nodes.each_cons(2) do |child, parent|
+        valid_nodes << parent unless belong_to_direct_outer_scope?(child)
+      end
+
+      valid_nodes
+    end
+
+    def belong_to_direct_outer_scope?(node)
+      return false unless TWISTED_SCOPE_TYPES.include?(node.parent_node.type)
+      scope_node = node.parent_node
+      return true if node.equal?(scope_node.children[0])
+      scope_node.type == :class && node.equal?(scope_node.children[1])
+    end
 
     def scope_type(node)
       return nil unless SCOPE_TYPES.include?(node.type)
