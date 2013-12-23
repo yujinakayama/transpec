@@ -15,10 +15,8 @@ module Transpec
 
         let(:source) do
           <<-END
-            describe 'example' do
-              it 'is foo' do
-                subject.should be(foo)
-              end
+            it 'is foo' do
+              subject.should be(foo)
             end
           END
         end
@@ -26,10 +24,8 @@ module Transpec
         # rubocop:disable LineLength
         let(:expected_source) do
           <<-END
-            describe 'example' do
-              it 'is foo' do
-                transpec_analysis((transpec_analysis((subject), self, { :should_source_location => [:object, "method(:should).source_location"] }, __FILE__, 79, 86).should be(foo)), self, { :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] }, __FILE__, 79, 101)
-              end
+            it 'is foo' do
+              transpec_analysis((transpec_analysis((subject), self, { :should_source_location => [:object, "method(:should).source_location"] }, __FILE__, 41, 48).should be(foo)), self, { :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] }, __FILE__, 41, 63)
             end
           END
         end
@@ -42,12 +38,10 @@ module Transpec
         context 'when the target includes here document' do
           let(:source) do
             <<-END
-              describe 'example' do
-                it 'matches to foo' do
-                  subject.should =~ <<-HEREDOC.gsub('foo', 'bar')
-                  foo
-                  HEREDOC
-                end
+              it 'matches to foo' do
+                subject.should =~ <<-HEREDOC.gsub('foo', 'bar')
+                foo
+                HEREDOC
               end
             END
           end
@@ -55,13 +49,11 @@ module Transpec
           # rubocop:disable LineLength
           let(:expected_source) do
             <<-END
-              describe 'example' do
-                it 'matches to foo' do
-                  transpec_analysis((transpec_analysis((subject), self, { :should_source_location => [:object, "method(:should).source_location"] }, __FILE__, 93, 100).should), self, { :"=~_source_location" => [:object, "method(:=~).source_location"], :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] }, __FILE__, 93, 107) =~ transpec_analysis((<<-HEREDOC.gsub('foo', 'bar')
-                  foo
-                  HEREDOC
-                  ), self, { :arg_is_enumerable? => [:object, "is_a?(Enumerable)"] }, __FILE__, 111, 188)
-                end
+              it 'matches to foo' do
+                transpec_analysis((transpec_analysis((subject), self, { :should_source_location => [:object, "method(:should).source_location"] }, __FILE__, 53, 60).should), self, { :"=~_source_location" => [:object, "method(:=~).source_location"], :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] }, __FILE__, 53, 67) =~ transpec_analysis((<<-HEREDOC.gsub('foo', 'bar')
+                foo
+                HEREDOC
+                ), self, { :arg_is_enumerable? => [:object, "is_a?(Enumerable)"] }, __FILE__, 71, 144)
               end
             END
           end
@@ -75,10 +67,8 @@ module Transpec
         context 'when the target takes block' do
           let(:source) do
             <<-END
-              describe 'example' do
-                it 'raises error' do
-                  expect { do_something }.to throw_symbol
-                end
+              it 'raises error' do
+                expect { do_something }.to throw_symbol
               end
             END
           end
@@ -86,10 +76,8 @@ module Transpec
           # rubocop:disable LineLength
           let(:expected_source) do
             <<-END
-              describe 'example' do
-                it 'raises error' do
-                  transpec_analysis((expect { do_something }), self, { :expect_source_location => [:context, "method(:expect).source_location"] }, __FILE__, 91, 97).to throw_symbol
-                end
+              it 'raises error' do
+                transpec_analysis((expect { do_something }), self, { :expect_source_location => [:context, "method(:expect).source_location"] }, __FILE__, 51, 57).to throw_symbol
               end
             END
           end
@@ -103,10 +91,8 @@ module Transpec
         context 'when the target is only the expression in a block' do
           let(:source) do
             <<-END
-              describe 'example' do
-                it 'raises error' do
-                  expect
-                end
+              it 'raises error' do
+                expect
               end
             END
           end
@@ -114,10 +100,8 @@ module Transpec
           # rubocop:disable LineLength
           let(:expected_source) do
             <<-END
-              describe 'example' do
-                it 'raises error' do
-                  transpec_analysis((expect), self, { :expect_source_location => [:context, "method(:expect).source_location"] }, __FILE__, 91, 97)
-                end
+              it 'raises error' do
+                transpec_analysis((expect), self, { :expect_source_location => [:context, "method(:expect).source_location"] }, __FILE__, 51, 57)
               end
             END
           end
@@ -131,10 +115,8 @@ module Transpec
         context 'when the target is method invocation without parentheses' do
           let(:source) do
             <<-END
-              describe 'example' do
-                it 'raises error' do
-                  expect subject
-                end
+              it 'raises error' do
+                expect subject
               end
             END
           end
@@ -142,10 +124,8 @@ module Transpec
           # rubocop:disable LineLength
           let(:expected_source) do
             <<-END
-              describe 'example' do
-                it 'raises error' do
-                  transpec_analysis((expect subject), self, { :expect_source_location => [:context, "method(:expect).source_location"] }, __FILE__, 91, 105)
-                end
+              it 'raises error' do
+                transpec_analysis((expect subject), self, { :expect_source_location => [:context, "method(:expect).source_location"] }, __FILE__, 51, 65)
               end
             END
           end
