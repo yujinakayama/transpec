@@ -45,7 +45,7 @@ module Transpec
             end
 
             1.times do
-              in_normal_block
+              in_block
             end
           end
 
@@ -65,54 +65,92 @@ module Transpec
         END
       end
 
-      it 'returns scope stack' do
-        ast.each_node do |node|
-          expected_scopes = begin
-            case node_id(node)
-            when 'send nil :top_level'
-              []
-            when 'send nil :in_before'
-              [:rspec_configure, :each_before_after]
-            when 'module'
-              []
-            when 'const nil :SomeModule'
-              # [:module] # TODO
-            when 'send nil :in_module'
-              [:module]
-            when 'send nil :describe'
-              # [:module] # TODO
-            when 'def :some_method'
-              [:module, :example_group]
-            when 'arg :some_arg'
-              # [:module, :example_group] # TODO
-            when 'send nil :do_something'
-              [:module, :example_group, :def]
-            when 'send nil :it'
-              # [:module, :example_group] # TODO
-            when 'str "is 1"'
-              # [:module, :example_group] # TODO
-            when 'send nil :in_example'
-              [:module, :example_group, :example]
-            when 'send nil :in_normal_block'
-              [:module]
-            when 'send nil :in_background'
-              [:example_group, :each_before_after]
-            when 'send nil :given'
-              [:example_group, :helper]
-            when 'send nil :in_scenario'
-              [:example_group, :example]
+      [
+        [
+          'send nil :top_level',
+          'in top level',
+          []
+        ], [
+          'send nil :in_before',
+          'in before block in RSpec.configure',
+          [:rspec_configure, :each_before_after]
+        ], [
+          'module',
+          'at module definition in top level',
+          []
+        ], [
+          'const nil :SomeModule',
+          'at constant of module definition',
+          [:module],
+          true
+        ], [
+          'send nil :in_module',
+          'in module',
+          [:module]
+        ], [
+          'send nil :describe',
+          'at #describe in module',
+          [:module],
+          true
+        ], [
+          'def :some_method',
+          'at method definition in #describe in module',
+          [:module, :example_group]
+        ], [
+          'arg :some_arg',
+          'at method argument in #describe in module',
+          [:module, :example_group],
+          true
+        ], [
+          'send nil :do_something',
+          'in method in #describe in module',
+          [:module, :example_group, :def]
+        ], [
+          'send nil :it',
+          'at #it in #describe in module',
+          [:module, :example_group],
+          true
+        ], [
+          'str "is 1"',
+          "at #it's description in #describe in module",
+          [:module, :example_group],
+          true
+        ], [
+          'send nil :in_example',
+          '#it in #describe in module',
+          [:module, :example_group, :example]
+        ], [
+          'send nil :in_block',
+          'in normal block in #describe in module',
+          [:module]
+        ], [
+          'send nil :in_background',
+          'in #background block in #feature',
+          [:example_group, :each_before_after]
+        ], [
+          'send nil :given',
+          'in #given block in #feature',
+          [:example_group, :helper]
+        ], [
+          'send nil :in_scenario',
+          'in #scenario block in #feature',
+          [:example_group, :example]
+        ]
+      ].each  do |target_node_id, description, expected_scopes, is_pending|
+        context "when #{description}" do
+          let(:target_node) do
+            ast.each_node.find do |node|
+              node_id(node) == target_node_id
             end
           end
 
-          # TODO: Some scope nodes have special child nodes
-          #   such as their arguments or their subject.
-          #   But from scope point of view, the child nodes are not in the parent's scope,
-          #   they should be in the next outer scope.
+          it "returns #{expected_scopes.inspect}" do
+            pending if is_pending
+            fail 'Target node is not found!' unless target_node
 
-          next unless expected_scopes
-
-          context_inspector = StaticContextInspector.new(node)
-          context_inspector.scopes.should == expected_scopes
+            context_inspector = StaticContextInspector.new(target_node)
+            context_inspector.scopes.should == expected_scopes
+          end
         end
       end
     end
