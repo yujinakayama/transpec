@@ -128,7 +128,7 @@ module Transpec
           'in #background block in #feature',
           [:example_group, :each_before_after]
         ], [
-          'send nil :given',
+          'send nil :in_given',
           'in #given block in #feature',
           [:example_group, :helper]
         ], [
