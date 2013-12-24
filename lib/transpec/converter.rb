@@ -176,6 +176,10 @@ module Transpec
       matcher_definition.convert_deprecated_method! if configuration.convert_deprecated_method?
     end
 
+    def process_example_group(example_group)
+      # FIXME
+    end
+
     def process_rspec_configure(rspec_configure)
       if need_to_modify_expectation_syntax_configuration?(rspec_configure)
         rspec_configure.expectations.syntaxes = :expect
