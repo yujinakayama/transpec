@@ -223,8 +223,8 @@ module Transpec
       end
 
       shared_examples 'invokes OnelinerShould#expectize! if available' do
-        context 'when RSpecVersion#one_liner_is_expected_available? returns true' do
-          before { rspec_version.stub(:one_liner_is_expected_available?).and_return(true) }
+        context 'when RSpecVersion#oneliner_is_expected_available? returns true' do
+          before { rspec_version.stub(:oneliner_is_expected_available?).and_return(true) }
 
           it 'invokes OnelinerShould#expectize!' do
             should_object.should_receive(:expectize!)
@@ -232,8 +232,8 @@ module Transpec
           end
         end
 
-        context 'when RSpecVersion#one_liner_is_expected_available? returns false' do
-          before { rspec_version.stub(:one_liner_is_expected_available?).and_return(false) }
+        context 'when RSpecVersion#oneliner_is_expected_available? returns false' do
+          before { rspec_version.stub(:oneliner_is_expected_available?).and_return(false) }
           include_examples 'does nothing'
         end
       end

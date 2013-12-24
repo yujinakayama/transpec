@@ -76,7 +76,7 @@ module Transpec
         else
           oneliner_should.convert_have_items_to_standard_should!
         end
-      elsif @configuration.convert_oneliner? && @rspec_version.one_liner_is_expected_available?
+      elsif @configuration.convert_oneliner? && @rspec_version.oneliner_is_expected_available?
         oneliner_should.expectize!(negative_form, parenthesize)
       end
     end
