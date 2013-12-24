@@ -41,14 +41,15 @@ module Transpec
       gem_version.to_s
     end
 
-    define_feature :be_truthy,                   '2.99.0.beta1'
-    define_feature :yielded_example,             '2.99.0.beta1'
+    define_feature :be_truthy,                      '2.99.0.beta1'
+    define_feature :yielded_example,                '2.99.0.beta1'
     define_feature :yielding_receiver_to_any_instance_implementation_block, '2.99.0.beta1'
-    define_feature :oneliner_is_expected,        '2.99.0.beta2', except: '3.0.0.beta1'
-    define_feature :skip,                        '2.99.0.beta2', except: '3.0.0.beta1'
-    define_feature :receive_messages,            '3.0.0.beta1'
-    define_feature :receive_message_chain,       '3.0.0.beta2'
-    define_feature :non_should_matcher_protocol, '3.0.0.beta2'
+    define_feature :oneliner_is_expected,           '2.99.0.beta2', except: '3.0.0.beta1'
+    define_feature :skip,                           '2.99.0.beta2', except: '3.0.0.beta1'
+    define_feature :receive_messages,               '3.0.0.beta1'
+    define_feature :receive_message_chain,          '3.0.0.beta2'
+    define_feature :non_should_matcher_protocol,    '3.0.0.beta2'
+    define_feature :non_monkey_patch_example_group, '3.0.0.beta2'
 
     RSPEC_2_99 = new('2.99.0.beta1')
     RSPEC_3_0  = new('3.0.0.beta1')
