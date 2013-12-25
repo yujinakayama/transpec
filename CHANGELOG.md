@@ -2,6 +2,7 @@
 
 ## Development
 
+* Native support for Ruby 2.1 syntax with Parser 2.1
 * Support conversion of the custom matcher DSL ([#30](https://github.com/yujinakayama/transpec/issues/30))
 * Support Capybara DSL in static context analysis (the logic used with `-s/--skip-dynamic-analysis`)
 
