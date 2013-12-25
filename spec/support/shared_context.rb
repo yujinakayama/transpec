@@ -11,7 +11,7 @@ shared_context 'parsed objects' do
 
   let(:ast) do
     require 'transpec/ast/builder'
-    require 'transpec/parser'
+    require 'parser/current'
     builder = Transpec::AST::Builder.new
     parser = Parser::CurrentRuby.new(builder)
     parser.parse(source_buffer)

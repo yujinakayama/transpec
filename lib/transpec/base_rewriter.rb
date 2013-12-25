@@ -1,7 +1,7 @@
 # coding: utf-8
 
 require 'transpec/ast/builder'
-require 'transpec/parser'
+require 'parser/current'
 
 module Transpec
   class BaseRewriter
