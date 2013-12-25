@@ -9,9 +9,6 @@ Dir['tasks/**/*.rake'].each do |path|
   load(path)
 end
 
-task default: [:spec, :style, :readme]
+task default: %w(spec style readme)
 
-travis_tasks = [:spec]
-travis_tasks << :style unless RUBY_VERSION.start_with?('1.9')
-travis_tasks.concat(['readme:check', 'test:all'])
-task travis: travis_tasks
+task travis: %w(spec style readme:check test:all)
