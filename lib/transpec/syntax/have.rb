@@ -53,7 +53,7 @@ module Transpec
         @expectation.respond_to?(:subject_node)
       end
 
-      def have_node
+      def have_node # rubocop:disable PredicateName
         node.children.first
       end
 
@@ -67,7 +67,7 @@ module Transpec
         items_node.children.size > 2
       end
 
-      def have_method_name
+      def have_method_name # rubocop:disable PredicateName
         have_node.children[1]
       end
 

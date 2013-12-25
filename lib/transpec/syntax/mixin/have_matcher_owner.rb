@@ -14,7 +14,7 @@ module Transpec
           end
         end
 
-        def have_matcher
+        def have_matcher # rubocop:disable PredicateName
           return @have_matcher if instance_variable_defined?(:@have_matcher)
 
           @have_matcher ||= if Have.conversion_target_node?(matcher_node, @runtime_data)
