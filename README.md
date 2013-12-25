@@ -891,7 +891,7 @@ end
 
 ## Compatibility
 
-Tested on MRI 1.9, MRI 2.0 and JRuby in 1.9 mode.
+Tested on MRI 1.9, 2.0, 2.1 and JRuby in 1.9 mode.
 
 ## Contributing
 
