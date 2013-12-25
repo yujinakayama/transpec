@@ -47,13 +47,11 @@ module Transpec
 
     def here_document?(node)
       return false unless [:str, :dstr].include?(node.type)
-      map = node.loc
-      return false if !map.respond_to?(:begin) || map.begin.nil?
-      map.begin.source.start_with?('<<')
+      node.loc.respond_to?(:heredoc_end)
     end
 
     def contain_here_document?(node)
-      here_document?(node) || node.each_descendent_node.any? { |n| here_document?(n) }
+      node.each_node.any? { |n| here_document?(n) }
     end
 
     def in_explicit_parentheses?(node)

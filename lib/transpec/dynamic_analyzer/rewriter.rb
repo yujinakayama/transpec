@@ -81,7 +81,6 @@ module Transpec
           '), self, %s, __FILE__, %d, %d)',
           hash_literal(analysis_codes), source_range.begin_pos, source_range.end_pos
         )
-        rear = "\n" + indentation_of_line(source_range.end) + rear if contain_here_document?(node)
 
         [front, rear]
       end

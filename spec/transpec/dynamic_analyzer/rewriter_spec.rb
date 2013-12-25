@@ -50,10 +50,9 @@ module Transpec
           let(:expected_source) do
             <<-END
               it 'matches to foo' do
-                transpec_analysis((transpec_analysis((subject), self, { :should_source_location => [:object, "method(:should).source_location"] }, __FILE__, 53, 60).should), self, { :"=~_source_location" => [:object, "method(:=~).source_location"], :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] }, __FILE__, 53, 67) =~ transpec_analysis((<<-HEREDOC.gsub('foo', 'bar')
+                transpec_analysis((transpec_analysis((subject), self, { :should_source_location => [:object, "method(:should).source_location"] }, __FILE__, 53, 60).should), self, { :"=~_source_location" => [:object, "method(:=~).source_location"], :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] }, __FILE__, 53, 67) =~ transpec_analysis((<<-HEREDOC.gsub('foo', 'bar')), self, { :arg_is_enumerable? => [:object, "is_a?(Enumerable)"] }, __FILE__, 71, 100)
                 foo
                 HEREDOC
-                ), self, { :arg_is_enumerable? => [:object, "is_a?(Enumerable)"] }, __FILE__, 71, 144)
               end
             END
           end
