@@ -17,7 +17,7 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     require 'rainbow'
-    Sickill::Rainbow.enabled = false
+    Rainbow.enabled = false
 
     if ENV['TRAVIS']
       system('git config --global user.email "you@example.com"')

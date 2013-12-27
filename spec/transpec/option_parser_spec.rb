@@ -156,14 +156,14 @@ module Transpec
 
       describe '--no-color option' do
         before do
-          Sickill::Rainbow.enabled = true
+          Rainbow.enabled = true
         end
 
         let(:args) { ['--no-color'] }
 
         it 'disables color in the output' do
           parser.parse(args)
-          Sickill::Rainbow.enabled.should be_false
+          Rainbow.enabled.should be_false
         end
       end
 

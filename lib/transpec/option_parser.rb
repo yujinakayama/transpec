@@ -85,7 +85,7 @@ module Transpec
       end
 
       define_option('--no-color') do
-        Sickill::Rainbow.enabled = false
+        Rainbow.enabled = false
       end
 
       define_option('--version') do

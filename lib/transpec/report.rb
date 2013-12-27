@@ -51,10 +51,10 @@ module Transpec
 
     def without_color
       # TODO: Consider using another coloring gem that does not depend global state.
-      original_coloring_state = Sickill::Rainbow.enabled
-      Sickill::Rainbow.enabled = false
+      original_coloring_state = Rainbow.enabled
+      Rainbow.enabled = false
       value = yield
-      Sickill::Rainbow.enabled = original_coloring_state
+      Rainbow.enabled = original_coloring_state
       value
     end
 

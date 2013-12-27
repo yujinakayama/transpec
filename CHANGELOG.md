@@ -2,6 +2,8 @@
 
 ## Development
 
+* Handle deprecation messages from `rainbow` gem
+
 ## v1.6.0
 
 * Native support for Ruby 2.1 syntax with Parser 2.1
