@@ -2,6 +2,8 @@
 
 ## Development
 
+## v1.6.1
+
 * Handle deprecation messages from `rainbow` gem
 
 ## v1.6.0
