@@ -1,6 +1,8 @@
 # coding: utf-8
 
 require 'active_support/concern'
+require 'transpec/syntax/mixin/send'
+require 'transpec/syntax/mixin/have_matcher_owner'
 require 'transpec/syntax/operator_matcher'
 
 module Transpec
@@ -8,6 +10,7 @@ module Transpec
     module Mixin
       module ShouldBase
         extend ActiveSupport::Concern
+        include Send, HaveMatcherOwner
 
         included do
           add_dynamic_analysis_request do |rewriter|

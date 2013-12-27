@@ -2,8 +2,6 @@
 
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/should_base'
-require 'transpec/syntax/mixin/send'
-require 'transpec/syntax/mixin/have_matcher_owner'
 require 'transpec/rspec_dsl'
 require 'transpec/util'
 require 'active_support/inflector/methods'
@@ -11,7 +9,7 @@ require 'active_support/inflector/methods'
 module Transpec
   class Syntax
     class OnelinerShould < Syntax
-      include Mixin::ShouldBase, Mixin::Send, Mixin::HaveMatcherOwner, RSpecDSL, Util
+      include Mixin::ShouldBase, RSpecDSL, Util
 
       attr_reader :current_syntax_type
 

@@ -2,17 +2,14 @@
 
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/should_base'
-require 'transpec/syntax/mixin/send'
 require 'transpec/syntax/mixin/monkey_patch'
 require 'transpec/syntax/mixin/expectizable'
-require 'transpec/syntax/mixin/have_matcher_owner'
 require 'transpec/util'
 
 module Transpec
   class Syntax
     class Should < Syntax
-      include Mixin::ShouldBase, Mixin::Send, Mixin::MonkeyPatch, Mixin::Expectizable,
-              Mixin::HaveMatcherOwner, Util
+      include Mixin::ShouldBase, Mixin::MonkeyPatch, Mixin::Expectizable, Util
 
       attr_reader :current_syntax_type
 
