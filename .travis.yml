@@ -4,4 +4,5 @@ rvm:
   - 2.0.0
   - 2.1.0
   - jruby-19mode
+before_install: gem update --remote bundler
 script: bundle exec rake travis
