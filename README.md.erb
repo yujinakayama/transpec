@@ -174,17 +174,17 @@ $ transpec --keep should_receive,stub
 
 #### Available syntax types
 
-Type             | Target Syntax                    | Converted Syntax
------------------|----------------------------------|-----------------------------------
+Type             | Target Syntax                  | Converted Syntax
+-----------------|--------------------------------|-----------------------------------
 <%=
 conversion_type_table = <<END
-`should`         | `obj.should matcher`             | `expect(obj).to matcher`
-`oneliner`       | `it { should ... }`              | `it { is_expected.to ... }`
-`should_receive` | `obj.should_receive`             | `expect(obj).to receive`
-`stub`           | `obj.stub`                       | `allow(obj).to receive`
-`have_items`     | `expect(obj).to have(n).items`   | `expect(obj.size).to eq(n)`
-`its`            | `its(:attr) { }`                 | `describe { subject { }; it { } }`
-`deprecated`     | `obj.stub!`, `mock('foo')`, etc. | `obj.stub`, `double('foo')`
+`should`         | `obj.should matcher`           | `expect(obj).to matcher`
+`oneliner`       | `it { should ... }`            | `it { is_expected.to ... }`
+`should_receive` | `obj.should_receive(:message)` | `expect(obj).to receive(:message)`
+`stub`           | `obj.stub(:message)`           | `allow(obj).to receive(:message)`
+`have_items`     | `expect(obj).to have(n).items` | `expect(obj.size).to eq(n)`
+`its`            | `its(:attr) { }`               | `describe { subject { }; it { } }`
+`deprecated`     | All other deprecated syntaxes  | Latest syntaxes
 END
 
 types_in_readme = conversion_type_table.lines.map do |line|
