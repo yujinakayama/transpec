@@ -201,6 +201,9 @@ $ transpec --keep should_receive,stub
 
 #### Available syntax types
 
+Note that some syntaxes are available only if your project's RSpec is specific version or later.
+If they are unavailable, conversions for such syntaxes will be disabled automatically.
+
 Type             | Target Syntax                  | Converted Syntax
 -----------------|--------------------------------|-----------------------------------
 `should`         | `obj.should matcher`           | `expect(obj).to matcher`
