@@ -71,7 +71,7 @@ module Transpec
              when Parser::Source::Range then arg.source_line
              when String                then arg
              else fail ArgumentError, "Invalid argument #{arg}"
-            end
+             end
 
       /^(?<indentation>\s*)\S/ =~ line
       indentation
