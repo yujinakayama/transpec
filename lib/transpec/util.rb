@@ -13,7 +13,7 @@ module Transpec
     module_function
 
     def proc_literal?(node)
-      return false unless node.type == :block
+      return false unless node.block_type?
 
       send_node = node.children.first
       receiver_node, method_name, *_ = *send_node
@@ -28,7 +28,7 @@ module Transpec
     end
 
     def const_name(node)
-      return nil if node.nil? || node.type != :const
+      return nil if node.nil? || !node.const_type?
 
       const_names = []
       const_node = node
@@ -38,7 +38,7 @@ module Transpec
         const_names << name
         break unless namespace_node
         break unless namespace_node.is_a?(Parser::AST::Node)
-        break if namespace_node.type == :cbase
+        break if namespace_node.cbase_type?
         const_node = namespace_node
       end
 
@@ -55,14 +55,14 @@ module Transpec
     end
 
     def in_explicit_parentheses?(node)
-      return false unless node.type == :begin
+      return false unless node.begin_type?
       source = node.loc.expression.source
       source[0] == '(' && source[-1] == ')'
     end
 
     def taking_block?(node)
       parent_node = node.parent_node
-      parent_node && parent_node.type == :block && parent_node.children.first.equal?(node)
+      parent_node && parent_node.block_type? && parent_node.children.first.equal?(node)
     end
 
     def indentation_of_line(arg)

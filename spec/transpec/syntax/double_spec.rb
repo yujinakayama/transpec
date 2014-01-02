@@ -12,7 +12,7 @@ module Transpec
       describe '.conversion_target_node?' do
         let(:send_node) do
           ast.each_descendent_node do |node|
-            next unless node.type == :send
+            next unless node.send_type?
             method_name = node.children[1]
             next unless method_name == :double
             return node

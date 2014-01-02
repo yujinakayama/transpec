@@ -14,7 +14,7 @@ module Transpec
           end
 
           def check_target_node_statically(node)
-            return false unless node && node.type == :send
+            return false unless node && node.send_type?
             receiver_node, method_name, *_ = *node
             target_method?(receiver_node, method_name)
           end

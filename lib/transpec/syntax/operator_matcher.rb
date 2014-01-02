@@ -93,7 +93,7 @@ module Transpec
       end
 
       def arg_is_enumerable?
-        return true if arg_node.type == :array
+        return true if arg_node.array_type?
         node_data = runtime_node_data(arg_node)
         node_data && node_data[:arg_is_enumerable?].result
       end
@@ -101,7 +101,7 @@ module Transpec
       def parenthesize_single_line!(always)
         if in_explicit_parentheses?(arg_node)
           remove(range_in_between_selector_and_arg)
-        elsif always || arg_node.type == :hash
+        elsif always || arg_node.hash_type?
           replace(range_in_between_selector_and_arg, '(')
           insert_after(expression_range, ')')
         elsif range_in_between_selector_and_arg.source.empty?

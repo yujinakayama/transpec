@@ -114,7 +114,7 @@ module Transpec
         return @example_block_node if instance_variable_defined?(:@example_block_node)
 
         @example_block_node = @node.each_ancestor_node.find do |node|
-          next false unless node.type == :block
+          next false unless node.block_type?
           send_node = node.children.first
           receiver_node, method_name, = *send_node
           next false if receiver_node

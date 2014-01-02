@@ -85,7 +85,7 @@ module Transpec
       return false unless TWISTED_SCOPE_TYPES.include?(node.parent_node.type)
       scope_node = node.parent_node
       return true if node.equal?(scope_node.children[0])
-      scope_node.type == :class && node.equal?(scope_node.children[1])
+      scope_node.class_type? && node.equal?(scope_node.children[1])
     end
 
     def scope_type(node)
@@ -95,7 +95,7 @@ module Transpec
       when :block
         special_block_type(node)
       when :defs
-        if node.children.first.type == :self
+        if node.children.first.self_type?
           nil
         else
           node.type

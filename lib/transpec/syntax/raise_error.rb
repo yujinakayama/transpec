@@ -25,7 +25,7 @@ module Transpec
 
       def positive?
         @node.each_ancestor_node do |ancestor_node|
-          next unless ancestor_node.type == :send
+          next unless ancestor_node.send_type?
           expectation_method_name = ancestor_node.children[1]
           return [:should, :to].include?(expectation_method_name)
         end
@@ -38,7 +38,7 @@ module Transpec
       def register_record
         original_syntax = 'expect { }.not_to raise_error('
 
-        if arg_nodes.first.type == :const
+        if arg_nodes.first.const_type?
           original_syntax << 'SpecificErrorClass'
           original_syntax << ', message' if arg_nodes.count >= 2
         else

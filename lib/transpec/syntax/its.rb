@@ -124,7 +124,7 @@ module Transpec
         end
 
         def brackets?
-          @node.type == :array
+          @node.array_type?
         end
 
         def literal?

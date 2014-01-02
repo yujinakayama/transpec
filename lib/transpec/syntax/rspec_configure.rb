@@ -8,7 +8,7 @@ module Transpec
   class Syntax
     class RSpecConfigure < Syntax
       def self.target_node?(node, runtime_data = nil)
-        return false unless node && node.type == :block
+        return false unless node && node.block_type?
         send_node = node.children.first
         receiver_node, method_name, *_ = *send_node
         Util.const_name(receiver_node) == 'RSpec' && method_name == :configure
@@ -76,7 +76,7 @@ module Transpec
           framework_config_variable_name = first_block_arg_name(framework_block_node)
 
           framework_block_node.each_descendent_node do |node|
-            next unless node.type == :send
+            next unless node.send_type?
             receiver_node, method_name, arg_node, *_ = *node
             next unless receiver_node == s(:lvar, framework_config_variable_name)
             next unless method_name == :syntax=
@@ -90,7 +90,7 @@ module Transpec
           return @framework_block_node if instance_variable_defined?(:@framework_block_node)
 
           @framework_block_node = @rspec_configure_node.each_descendent_node.find do |node|
-            next unless node.type == :block
+            next unless node.block_type?
             send_node = node.children.first
             receiver_node, method_name, *_ = *send_node
             next unless receiver_node == s(:lvar, rspec_configure_block_arg_name)

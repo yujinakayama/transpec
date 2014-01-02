@@ -7,16 +7,12 @@ require 'ast'
 module Transpec
   describe Util do
     include_context 'parsed objects'
-    include ::AST::Sexp
 
     describe '#const_name' do
       subject { Util.const_name(ast) }
 
       context 'when the passed node is not :const type' do
-        let(:ast) do
-          s(:lvasgn, :foo,
-            s(:int, 1))
-        end
+        let(:source) { 'foo = 1' }
 
         it 'returns nil' do
           should be_nil
@@ -52,7 +48,7 @@ module Transpec
     end
 
     describe '#expand_range_to_adjacent_whitespaces' do
-      let(:node) { ast.each_node.find { |n| n.type == :block } }
+      let(:node) { ast.each_node.find(&:block_type?) }
       let(:range) { node.loc.begin }
       subject(:expanded_range) { Util.expand_range_to_adjacent_whitespaces(range) }
 

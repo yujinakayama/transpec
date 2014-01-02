@@ -38,7 +38,7 @@ module Transpec
         return @block_node if instance_variable_defined?(:@block_node)
 
         @block_node ||= @node.each_ancestor_node.find do |ancestor_node|
-          next false unless ancestor_node.type == :block
+          next false unless ancestor_node.block_type?
           method_name = method_name_of_block_node(ancestor_node)
           METHODS_YIELD_EXAMPLE.include?(method_name)
         end

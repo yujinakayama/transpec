@@ -87,7 +87,7 @@ module Transpec
         if method_name == :stub_chain
           [build_allow_to(:receive_message_chain), :allow_to_receive_message_chain]
         else
-          if arg_node.type == :hash
+          if arg_node.hash_type?
             if rspec_version.receive_messages_available?
               [build_allow_to(:receive_messages), :allow_to_receive_messages]
             else
@@ -141,7 +141,7 @@ module Transpec
 
       def message_source(node)
         message_source = node.loc.expression.source
-        message_source.prepend(':') if node.type == :sym && !message_source.start_with?(':')
+        message_source.prepend(':') if node.sym_type? && !message_source.start_with?(':')
         message_source
       end
 
@@ -164,7 +164,7 @@ module Transpec
         if method_name == :stub_chain
           syntax << '(:message1, :message2)'
         else
-          syntax << (arg_node.type == :hash ? '(:message => value)' : '(:message)')
+          syntax << (arg_node.hash_type? ? '(:message => value)' : '(:message)')
         end
       end
 
@@ -183,7 +183,7 @@ module Transpec
         case conversion_type
         when :allow_to_receive
           syntax << 'receive(:message)'
-          syntax << '.and_return(value)' if arg_node.type == :hash
+          syntax << '.and_return(value)' if arg_node.hash_type?
         when :allow_to_receive_messages
           syntax << 'receive_messages(:message => value)'
         when :allow_to_receive_message_chain
