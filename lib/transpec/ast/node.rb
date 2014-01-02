@@ -5,6 +5,46 @@ require 'parser'
 module Transpec
   module AST
     class Node < Parser::AST::Node
+      TYPES = %w(
+        true false nil
+        int float
+        str dstr
+        sym dsym
+        xstr
+        regexp regopt
+        array splat
+        hash pair kwsplat
+        irange erange
+        self
+        lvar ivar cvar gvar
+        nth_ref back_ref
+        const cbase
+        defined?
+        lvasgn ivasgn cvasgn gvasgn
+        casgn
+        masgn mlhs
+        op_asgn or_asgn and_asgn
+        module class sclass
+        def defs undef
+        alias
+        args
+        arg optarg restarg blockarg shadowarg kwarg kwoptarg kwrestarg
+        send
+        super zsuper
+        yield
+        block block_pass
+        and or not
+        if
+        case when
+        while until while_post until_post for
+        break next redo return
+        begin
+        rescue resbody ensure retry
+        preexe postexe
+        iflipflop eflipflop
+        match_current_line match_with_lvasgn
+      ).map(&:to_sym).freeze
+
       attr_reader :metadata
 
       def initialize(type, children = [], properties = {})
@@ -16,6 +56,13 @@ module Transpec
 
         each_child_node do |child_node|
           child_node.parent_node = self
+        end
+      end
+
+      TYPES.each do |node_type|
+        method_name = "#{node_type.to_s.gsub(/\W/, '')}_type?"
+        define_method(method_name) do
+          type == node_type
         end
       end
 

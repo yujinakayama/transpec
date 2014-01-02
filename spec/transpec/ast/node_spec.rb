@@ -266,6 +266,58 @@ module Transpec
           end
         end
       end
+
+      describe '#send_type?' do
+        context 'when the node is send type' do
+          let(:source) do
+            <<-END
+              do_something
+            END
+          end
+
+          it 'returns true' do
+            ast.send_type?.should be_true
+          end
+        end
+
+        context 'when the node is not send type' do
+          let(:source) do
+            <<-END
+              foo = 1
+            END
+          end
+
+          it 'returns false' do
+            ast.send_type?.should be_false
+          end
+        end
+      end
+
+      describe '#defined_type?' do
+        context 'when the node is defined? type' do
+          let(:source) do
+            <<-END
+              defined?(Foo)
+            END
+          end
+
+          it 'returns true' do
+            ast.defined_type?.should be_true
+          end
+        end
+
+        context 'when the node is not defined? type' do
+          let(:source) do
+            <<-END
+              foo = 1
+            END
+          end
+
+          it 'returns false' do
+            ast.defined_type?.should be_false
+          end
+        end
+      end
     end
   end
 end
