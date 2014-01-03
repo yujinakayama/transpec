@@ -159,9 +159,9 @@ module Transpec
 
       def original_syntax(conversion_type)
         syntax = if any_instance? && conversion_type != :stub
-                  'Klass.any_instance.'
+                   'Klass.any_instance.'
                  else
-                  'obj.'
+                   'obj.'
                  end
 
         syntax << (positive? ? 'should_receive' : 'should_not_receive')

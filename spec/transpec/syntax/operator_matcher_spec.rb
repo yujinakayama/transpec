@@ -181,13 +181,13 @@ module Transpec
             let(:parenthesize_arg) { false }
 
             let(:expected_source) do
-            <<-END
+              <<-END
               describe 'example' do
                 it 'is 1' do
                   subject.should eq 1
                 end
               end
-            END
+              END
             end
 
             it 'converts into `eq 1` form' do
@@ -691,13 +691,13 @@ module Transpec
             let(:always) { true }
 
             let(:expected_source) do
-            <<-END
+              <<-END
               describe 'example' do
                 it 'is 1' do
                   subject.should eq(1)
                 end
               end
-            END
+              END
             end
 
             it 'inserts parentheses' do
@@ -709,13 +709,13 @@ module Transpec
             let(:always) { false }
 
             let(:expected_source) do
-            <<-END
+              <<-END
               describe 'example' do
                 it 'is 1' do
                   subject.should eq 1
                 end
               end
-            END
+              END
             end
 
             it 'does not nothing' do

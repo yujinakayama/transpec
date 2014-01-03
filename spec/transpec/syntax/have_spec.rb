@@ -165,13 +165,13 @@ module Transpec
             let(:parenthesize_matcher_arg) { true }
 
             let(:expected_source) do
-            <<-END
+              <<-END
               describe 'example' do
                 it 'has 2 items' do
                   expect(collection.size).to eq(2)
                 end
               end
-            END
+              END
             end
 
             before do
@@ -192,13 +192,13 @@ module Transpec
               let(:parenthesize_matcher_arg) { false }
 
               let(:expected_source) do
-              <<-END
+                <<-END
               describe 'example' do
                 it 'has 2 items' do
                   expect(collection.size).to eq 2
                 end
               end
-              END
+                END
               end
 
               it 'converts into `expect(collection.size).to eq 2` form' do

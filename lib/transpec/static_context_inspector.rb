@@ -132,8 +132,8 @@ module Transpec
       return :around if method_name == :around
 
       if arg_node && [:sym, :str].include?(arg_node.type)
-         hook_arg = arg_node.children.first.to_sym
-         return :all_before_after if hook_arg == :all
+        hook_arg = arg_node.children.first.to_sym
+        return :all_before_after if hook_arg == :all
       end
 
       :each_before_after

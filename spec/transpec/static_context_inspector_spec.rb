@@ -530,7 +530,7 @@ module Transpec
     end
 
     context 'when in a class in a block in #describe block' do
-       let(:source) do
+      let(:source) do
         <<-END
           describe 'foo' do
             it 'is an example' do
@@ -546,7 +546,7 @@ module Transpec
     end
 
     context 'when in an instance method in a class in a block in #describe block' do
-       let(:source) do
+      let(:source) do
         <<-END
           describe 'foo' do
             it 'is an example' do

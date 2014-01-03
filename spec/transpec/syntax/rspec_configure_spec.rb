@@ -117,13 +117,13 @@ module Transpec
             let(:syntaxes) { :expect }
 
             let(:expected_source) do
-            <<-END
+              <<-END
               RSpec.configure do |config|
                 config.#{config_block_method} :rspec do |c|
                   c.syntax = :expect
                 end
               end
-            END
+              END
             end
 
             it 'rewrites syntax specification to `c.syntax = :expect`' do
@@ -135,13 +135,13 @@ module Transpec
             let(:syntaxes) { [:should, :expect] }
 
             let(:expected_source) do
-            <<-END
+              <<-END
               RSpec.configure do |config|
                 config.#{config_block_method} :rspec do |c|
                   c.syntax = [:should, :expect]
                 end
               end
-            END
+              END
             end
 
             it 'rewrites syntax specification to `c.syntax = [:should, :expect]`' do

@@ -48,10 +48,6 @@ AlignHash:
 Documentation:
   Enabled: false
 
-# Currently IndentationWidth reports false positive offence around here document.
-IndentationWidth:
-  Enabled: false
-
 # TODO: This should not register offences for non keyword hashes.
 BracesAroundHashParameters:
   Enabled: false

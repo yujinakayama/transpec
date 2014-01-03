@@ -187,13 +187,13 @@ module Transpec
 
           context 'and "to_not" is passed as negative form' do
             let(:expected_source) do
-            <<-END
+              <<-END
               describe 'example' do
                 it 'does not receive #foo' do
                   expect(subject).to_not receive(:foo)
                 end
               end
-            END
+              END
             end
 
             it 'converts into `expect(subject).to_not receive(:method)` form' do
