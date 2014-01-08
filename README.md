@@ -205,13 +205,13 @@ Note that some syntaxes are available only if your project's RSpec is specific v
 If they are unavailable, conversions for such syntaxes will be disabled automatically.
 
 Type             | Target Syntax                  | Converted Syntax
------------------|--------------------------------|-----------------------------------
+-----------------|--------------------------------|-------------------------------------------
 `should`         | `obj.should matcher`           | `expect(obj).to matcher`
 `oneliner`       | `it { should ... }`            | `it { is_expected.to ... }`
 `should_receive` | `obj.should_receive(:message)` | `expect(obj).to receive(:message)`
 `stub`           | `obj.stub(:message)`           | `allow(obj).to receive(:message)`
 `have_items`     | `expect(obj).to have(n).items` | `expect(obj.size).to eq(n)`
-`its`            | `its(:attr) { }`               | `describe { subject { }; it { } }`
+`its`            | `its(:attr) { }`               | `describe '#attr' { subject { }; it { } }`
 `deprecated`     | All other deprecated syntaxes  | Latest syntaxes
 
 See [Supported Conversions](#supported-conversions) for more details.
