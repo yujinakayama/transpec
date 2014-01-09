@@ -49,12 +49,19 @@ module Transpec
 
     private
 
+    def rainbow
+      @rainbow ||=  Rainbow.new
+    end
+
+    def colorize(string, *args)
+      rainbow.wrap(string).color(*args)
+    end
+
     def without_color
-      # TODO: Consider using another coloring gem that does not depend global state.
-      original_coloring_state = Rainbow.enabled
-      Rainbow.enabled = false
+      original_coloring_state = rainbow.enabled
+      rainbow.enabled = false
       value = yield
-      Rainbow.enabled = original_coloring_state
+      rainbow.enabled = original_coloring_state
       value
     end
 
@@ -66,9 +73,9 @@ module Transpec
                       ''
                     end
 
-      text = entry_prefix + pluralize(count, 'conversion').color(:cyan) + "\n"
-      text << indentation + '  ' + 'from: '.color(:cyan) + record.original_syntax + "\n"
-      text << indentation + '    ' + 'to: '.color(:cyan) + record.converted_syntax + "\n"
+      text = entry_prefix + colorize(pluralize(count, 'conversion'), :cyan) + "\n"
+      text << indentation + '  ' + colorize('from: ', :cyan) + record.original_syntax + "\n"
+      text << indentation + '    ' + colorize('to: ', :cyan) + record.converted_syntax + "\n"
     end
 
     def convertion_and_incomplete_stats
@@ -76,7 +83,7 @@ module Transpec
 
       text = pluralize(records.count, 'conversion') + ', '
       text << pluralize(context_errors.count, 'incomplete') + ', '
-      text.color(color)
+      colorize(text, color)
     end
 
     def error_stats
@@ -88,7 +95,7 @@ module Transpec
                 :yellow
               end
 
-      pluralize(syntax_errors.count, 'error').color(color)
+      colorize(pluralize(syntax_errors.count, 'error'), color)
     end
 
     def pluralize(number, thing, options = {})
