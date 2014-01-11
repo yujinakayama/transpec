@@ -145,7 +145,7 @@ After the conversion, run `rspec` again and check whether everything is green:
 $ bundle exec rspec
 ```
 
-If it's green, commit the changes with an auto-generated message that describes the conversion summary:
+If it's green, commit the changes with an auto-generated message which describes the conversion summary:
 
 ```bash
 $ git commit -aeF .git/COMMIT_EDITMSG
@@ -202,7 +202,7 @@ Skip dynamic analysis and convert with only static analysis. Note that specifyin
 
 ### `-c/--rspec-command`
 
-Specify a command to run your specs that is used for dynamic analysis.
+Specify a command to run your specs which is used for dynamic analysis.
 
 Transpec needs to run your specs in a copied project directory for dynamic analysis.
 If your project requires some special setup or commands to run specs, use this option.
@@ -239,7 +239,7 @@ See [Supported Conversions](#supported-conversions) for more details.
 
 ### `-n/--negative-form`
 
-Specify a negative form of `to` that is used in the `expect` syntax.
+Specify a negative form of `to` which is used in the `expect` syntax.
 Either `not_to` or `to_not`.
 `not_to` is used by default.
 
@@ -249,7 +249,7 @@ $ transpec --negative-form to_not
 
 ### `-b/--boolean-matcher`
 
-Specify a matcher type that `be_true` and `be_false` will be converted to.
+Specify a boolean matcher type which `be_true` and `be_false` will be converted to.
 Any of `truthy,falsey`, `truthy,falsy` or `true,false` can be specified.
 `truthy,falsey` is used by default.
 
@@ -330,7 +330,7 @@ end
 ### Reason
 
 * `should` is defined on `BasicObject` class, so you can use `should` everywhere.
-* `expect` is defined on `RSpec::Matchers` module that is included by `RSpec::Core::ExampleGroup` class, so you can use `expect` only where `self` is an instance of `RSpec::Core::ExampleGroup` (i.e. in `it` blocks, `:each` hook blocks or included module methods) or other classes that explicitly include `RSpec::Matchers`.
+* `expect` is defined on `RSpec::Matchers` module which is included by `RSpec::Core::ExampleGroup` class, so you can use `expect` only where `self` is an instance of `RSpec::Core::ExampleGroup` (i.e. in `it` blocks, `:each` hook blocks or included module methods) or other classes that explicitly include `RSpec::Matchers`.
 
 With the above example, in the context of `1.should == 1`, the `self` is an instance of `MyAwesomeTestRunner`.
 Transpec tracks contexts and skips conversion if the target syntax cannot be converted in a case like this.
@@ -693,7 +693,7 @@ There's no replacement for `unstub` in the `expect` syntax. See [this discussion
 
 #### Steps to upgrade `obj.stub(:foo => 1, :bar => 2)`
 
-`allow(obj).to receive_messages(:foo => 1, :bar => 2)` that is designed to be the replacement for `obj.stub(:foo => 1, :bar => 2)` is available from RSpec 3.0 (though [it's now being considered to be backported to RSpec 2.99](https://github.com/rspec/rspec-mocks/issues/454)). So, in [the upgrade path to RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#the_upgrade_path), if you want to convert them with keeping the syntax correspondence, you need to follow these steps:
+`allow(obj).to receive_messages(:foo => 1, :bar => 2)` which is designed to be the replacement for `obj.stub(:foo => 1, :bar => 2)` is available from RSpec 3.0 (though [it's now being considered to be backported to RSpec 2.99](https://github.com/rspec/rspec-mocks/issues/454)). So, in [the upgrade path to RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#the_upgrade_path), if you want to convert them with keeping the syntax correspondence, you need to follow these steps:
 
 1. Upgrade to RSpec 2.99
 2. Run `transpec --keep stub`
