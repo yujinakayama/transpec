@@ -153,6 +153,27 @@ $ git commit -aeF .git/COMMIT_EDITMSG
 
 And you are done!
 
+## Advanced Usage
+
+You can pass `transpec` arbitrary paths to be converted:
+
+```bash
+# You always need to be in the project root directory
+$ cd some-project
+
+$ # Convert only files in `features` directory
+$ transpec features
+
+$ # Convert only files in `spec/foo` and `spec/bar` directory
+$ transpec spec/foo spec/bar
+
+$ # Convert only `spec/baz_spec.rb`
+$ transpec spec/baz_spec.rb
+```
+
+Note that the current working directory always needs to be the project root directory,
+so that Transpec can copy the project in dynamic analysis.
+
 ## Upgrade Process to RSpec 3 beta
 
 If you are going to use Transpec in the upgrade process to RSpec 3 beta, read the article by [Myron Marston](https://github.com/myronmarston):
