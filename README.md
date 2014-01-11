@@ -161,13 +161,13 @@ You can pass `transpec` arbitrary paths to be converted:
 # You always need to be in the project root directory
 $ cd some-project
 
-$ # Convert only files in `features` directory
+# Convert only files in `features` directory
 $ transpec features
 
-$ # Convert only files in `spec/foo` and `spec/bar` directory
+# Convert only files in `spec/foo` and `spec/bar` directory
 $ transpec spec/foo spec/bar
 
-$ # Convert only `spec/baz_spec.rb`
+# Convert only `spec/baz_spec.rb`
 $ transpec spec/baz_spec.rb
 ```
 
