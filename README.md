@@ -351,6 +351,41 @@ Include or extend `RSpec::Matchers` module to make `expect` available in the con
 
 Then run `transpec` again.
 
+## The Monkey-Patched `should` and the One-Liner `should`
+
+There are two types of the `should`:
+
+```ruby
+describe 'the monkey-patched should' do
+  subject { [] }
+
+  it 'is empty' do
+    subject.should be_empty
+    #       ^^^^^^ BasicObject#should in RSpec 2.11 or later,
+    #                or Kernel#should prior to RSpec 2.11.
+  end
+end
+
+describe 'the one-liner should' do
+  subject { [] }
+
+  it { should be_empty }
+  #    ^^^^^^ RSpec::Core::ExampleGroup#should
+end
+```
+
+The monkey-patched `obj.should`:
+
+* Is deprecated in RSpec 3.
+* Has [the issue](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#delegation_issues) with delegate/proxy objects.
+* There's the alternative syntax [`expect(obj).to`](#standard-expectations) since RSpec 2.11.
+
+The one-liner (implicit receiver) `should`:
+
+* Is _not_ deprecated in RSpec 3.
+* Does _not_ have the issue with delegate/proxy objects.
+* There's the alternative syntax [`is_expected.to`](#one-liner-expectations) since RSpec 2.99.beta2 (not yet released).
+
 ## Supported Conversions
 
 ### Standard expectations
