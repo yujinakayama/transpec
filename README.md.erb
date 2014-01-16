@@ -347,9 +347,9 @@ Include or extend `RSpec::Matchers` module to make `expect` available in the con
 
 Then run `transpec` again.
 
-## The Monkey-Patched `should` and the One-Liner `should`
+## Two Types of `should`
 
-There are two types of the `should`:
+There are two types of `should`:
 
 ```ruby
 describe 'the monkey-patched should' do
@@ -372,12 +372,14 @@ end
 
 The monkey-patched `obj.should`:
 
+* Is provided by `rspec-expectations` gem.
 * Is deprecated in RSpec 3.
 * Has [the issue](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#delegation_issues) with delegate/proxy objects.
 * There's the alternative syntax [`expect(obj).to`](#standard-expectations) since RSpec 2.11.
 
 The one-liner (implicit receiver) `should`:
 
+* Is provided by `rspec-core` gem.
 * Is _not_ deprecated in RSpec 3.
 * Does _not_ have the issue with delegate/proxy objects.
 * There's the alternative syntax [`is_expected.to`](#one-liner-expectations) since RSpec 2.99.beta2 (not yet released).
