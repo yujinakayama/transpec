@@ -24,7 +24,7 @@ module Transpec
 
         front, rear = build_wrapper_codes
 
-        insert_before(beginning_of_line_range, front)
+        insert_before(beginning_of_line_range(block_node), front)
         replace(expression_range, 'it')
         insert_after(block_node.loc.expression, rear)
 
@@ -90,12 +90,6 @@ module Transpec
 
       def base_indentation
         @base_indentation ||= indentation_of_line(@node)
-      end
-
-      def beginning_of_line_range
-        block_range = block_node.loc.expression
-        begin_pos = block_range.begin_pos - block_range.column
-        Parser::Source::Range.new(block_range.source_buffer, begin_pos, begin_pos)
       end
 
       def register_record

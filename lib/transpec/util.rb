@@ -77,6 +77,17 @@ module Transpec
       indentation
     end
 
+    def beginning_of_line_range(arg)
+      range = case arg
+              when AST::Node             then arg.loc.expression
+              when Parser::Source::Range then arg
+              else fail ArgumentError, "Invalid argument #{arg}"
+              end
+
+      begin_pos = range.begin_pos - range.column
+      Parser::Source::Range.new(range.source_buffer, begin_pos, begin_pos)
+    end
+
     def literal?(node)
       case node.type
       when *LITERAL_TYPES

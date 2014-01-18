@@ -161,10 +161,140 @@ module Transpec
       end
 
       describe '#mocks' do
-        subject { rspec_configure.mocks }
+        subject(:mocks) { rspec_configure.mocks }
 
         include_examples '#syntaxes', :mock_with
         include_examples '#syntaxes=', :mock_with
+
+        describe '#yield_receiver_to_any_instance_implementation_blocks=' do
+          before do
+            mocks.yield_receiver_to_any_instance_implementation_blocks = value
+          end
+
+          context 'when #mock_with { #yield_receiver_to_any_instance_implementation_blocks= } exists' do
+            let(:source) do
+              <<-END
+                RSpec.configure do |config|
+                  config.mock_with :rspec do |c|
+                    c.yield_receiver_to_any_instance_implementation_blocks = foo
+                  end
+                end
+              END
+            end
+
+            context 'when true is passed' do
+              let(:value) { true }
+
+              let(:expected_source) do
+                <<-END
+                RSpec.configure do |config|
+                  config.mock_with :rspec do |c|
+                    c.yield_receiver_to_any_instance_implementation_blocks = true
+                  end
+                end
+                END
+              end
+
+              it 'rewrites the setter argument to `true`' do
+                rewritten_source.should == expected_source
+              end
+            end
+
+            context 'when false is passed' do
+              let(:value) { false }
+
+              let(:expected_source) do
+                <<-END
+                RSpec.configure do |config|
+                  config.mock_with :rspec do |c|
+                    c.yield_receiver_to_any_instance_implementation_blocks = false
+                  end
+                end
+                END
+              end
+
+              it 'rewrites the setter argument to `false`' do
+                rewritten_source.should == expected_source
+              end
+            end
+          end
+
+          context 'when #mock_with { #yield_receiver_to_any_instance_implementation_blocks= } does not exist' do
+            let(:source) do
+              <<-END
+                RSpec.configure do |config|
+                  config.mock_with :rspec do |c|
+                  end
+                end
+              END
+            end
+
+            let(:value) { true }
+
+            let(:expected_source) do
+              <<-END
+                RSpec.configure do |config|
+                  config.mock_with :rspec do |c|
+                    c.yield_receiver_to_any_instance_implementation_blocks = true
+                  end
+                end
+              END
+            end
+
+            it 'adds #yield_receiver_to_any_instance_implementation_blocks= statement' do
+              rewritten_source.should == expected_source
+            end
+          end
+
+          context 'when #mock_with block does not exist' do
+            let(:source) do
+              <<-END
+                RSpec.configure do |config|
+                end
+              END
+            end
+
+            let(:value) { true }
+
+            let(:expected_source) do
+              <<-END
+                RSpec.configure do |config|
+                  config.mock_with :rspec do |c|
+                    c.yield_receiver_to_any_instance_implementation_blocks = true
+                  end
+                end
+              END
+            end
+
+            it 'adds #mock_with block ' +
+               'and #yield_receiver_to_any_instance_implementation_blocks= statement' do
+              rewritten_source.should == expected_source
+            end
+
+            context "when RSpec.configure's argument variable name is `rspec`" do
+              let(:source) do
+                <<-END
+                  RSpec.configure do |rspec|
+                  end
+                END
+              end
+
+              let(:expected_source) do
+                <<-END
+                  RSpec.configure do |rspec|
+                    rspec.mock_with :rspec do |mocks|
+                      mocks.yield_receiver_to_any_instance_implementation_blocks = true
+                    end
+                  end
+                END
+              end
+
+              it 'defines #mock_with block argument name as `mocks`' do
+                rewritten_source.should == expected_source
+              end
+            end
+          end
+        end
       end
     end
   end

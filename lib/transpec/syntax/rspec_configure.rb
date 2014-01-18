@@ -7,6 +7,7 @@ module Transpec
   class Syntax
     class RSpecConfigure < Syntax
       require 'transpec/syntax/rspec_configure/framework'
+      require 'transpec/syntax/rspec_configure/mocks'
 
       def self.target_node?(node, runtime_data = nil)
         return false unless node && node.block_type?
@@ -15,16 +16,13 @@ module Transpec
         Util.const_name(receiver_node) == 'RSpec' && method_name == :configure
       end
 
-      def self.add_framework(type, framework_block_method_name)
-        class_eval <<-END
-          def #{type}
-            @#{type} ||= Framework.new(node, :#{framework_block_method_name}, source_rewriter)
-          end
-        END
+      def expectations
+        @expectations ||= Framework.new(node, :expect_with, source_rewriter)
       end
 
-      add_framework :expectations, :expect_with
-      add_framework :mocks,        :mock_with
+      def mocks
+        @mocks ||= Mocks.new(node, :mock_with, source_rewriter)
+      end
     end
   end
 end

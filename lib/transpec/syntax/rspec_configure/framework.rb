@@ -40,21 +40,33 @@ module Transpec
         private
 
         def syntaxes_node
-          return nil unless framework_block_node
-
           return @syntaxes_node if instance_variable_defined?(:@syntaxes_node)
 
-          framework_config_variable_name = first_block_arg_name(framework_block_node)
+          syntax_setter_node = find_configuration_node(:syntax=)
 
-          framework_block_node.each_descendent_node do |node|
+          @syntaxes_node = if syntax_setter_node
+                             syntax_setter_node.children[2]
+                           else
+                             nil
+                           end
+        end
+
+        def find_configuration_node(configuration_method_name)
+          return nil unless framework_block_node
+
+          configuration_method_name = configuration_method_name.to_sym
+
+          framework_block_node.each_descendent_node.find do |node|
             next unless node.send_type?
-            receiver_node, method_name, arg_node, *_ = *node
-            next unless receiver_node == s(:lvar, framework_config_variable_name)
-            next unless method_name == :syntax=
-            return @syntaxes_node = arg_node
+            receiver_node, method_name, = *node
+            next unless receiver_node == s(:lvar, framework_block_arg_name)
+            method_name == configuration_method_name
           end
+        end
 
-          @syntaxes_node = nil
+        def framework_block_arg_name
+          return nil unless framework_block_node
+          first_block_arg_name(framework_block_node)
         end
 
         def framework_block_node
