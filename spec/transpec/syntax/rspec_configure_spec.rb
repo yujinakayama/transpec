@@ -143,12 +143,57 @@ module Transpec
             end
           end
 
-          context "when ##{framework_block_method} block does not exist" do
-            pending
+          context "when ##{framework_block_method} { #syntax= } does not exist" do
+            let(:source) do
+              <<-END
+                RSpec.configure do |config|
+                  config.#{framework_block_method} :rspec do |c|
+                  end
+                end
+              END
+            end
+
+            let(:syntaxes) { :expect }
+
+            let(:expected_source) do
+              <<-END
+                RSpec.configure do |config|
+                  config.#{framework_block_method} :rspec do |c|
+                    c.syntax = :expect
+                  end
+                end
+              END
+            end
+
+            it 'adds #syntax= statement' do
+              rewritten_source.should == expected_source
+            end
           end
 
-          context "when ##{framework_block_method} { #syntax= } does not exist" do
-            pending
+          context "when ##{framework_block_method} block does not exist" do
+            let(:source) do
+              <<-END
+                RSpec.configure do |config|
+                end
+              END
+            end
+
+            let(:syntaxes) { :expect }
+
+            let(:expected_source) do
+              <<-END
+                RSpec.configure do |config|
+                  config.#{framework_block_method} :rspec do |c|
+                    c.syntax = :expect
+                  end
+                end
+              END
+            end
+
+            it "adds ##{framework_block_method} block " +
+               'and #syntax= statement' do
+              rewritten_source.should == expected_source
+            end
           end
         end
       end

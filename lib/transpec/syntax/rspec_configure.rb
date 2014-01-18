@@ -6,7 +6,7 @@ require 'transpec/util'
 module Transpec
   class Syntax
     class RSpecConfigure < Syntax
-      require 'transpec/syntax/rspec_configure/framework'
+      require 'transpec/syntax/rspec_configure/expectations'
       require 'transpec/syntax/rspec_configure/mocks'
 
       def self.target_node?(node, runtime_data = nil)
@@ -17,11 +17,11 @@ module Transpec
       end
 
       def expectations
-        @expectations ||= Framework.new(node, :expect_with, source_rewriter)
+        @expectations ||= Expectations.new(node, source_rewriter)
       end
 
       def mocks
-        @mocks ||= Mocks.new(node, :mock_with, source_rewriter)
+        @mocks ||= Mocks.new(node, source_rewriter)
       end
     end
   end
