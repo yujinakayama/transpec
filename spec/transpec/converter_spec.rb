@@ -877,8 +877,8 @@ module Transpec
           converter.stub(:need_to_modify_expectation_syntax_configuration?).and_return(true)
         end
 
-        it 'invokes RSpecConfigure#modify_expectation_syntaxes! with :expect' do
-          rspec_configure.should_receive(:modify_expectation_syntaxes!).with(:expect)
+        it 'invokes RSpecConfigure.expectations.syntaxes= with :expect' do
+          rspec_configure.expectations.should_receive(:syntaxes=).with(:expect)
           converter.process_rspec_configure(rspec_configure)
         end
       end
@@ -888,8 +888,8 @@ module Transpec
           converter.stub(:need_to_modify_expectation_syntax_configuration?).and_return(false)
         end
 
-        it 'does not invoke RSpecConfigure#modify_expectation_syntaxes!' do
-          rspec_configure.should_not_receive(:modify_expectation_syntaxes!)
+        it 'does not invoke RSpecConfigure.expectations.syntaxes=' do
+          rspec_configure.expectations.should_not_receive(:syntaxes=)
           converter.process_rspec_configure(rspec_configure)
         end
       end
@@ -899,8 +899,8 @@ module Transpec
           converter.stub(:need_to_modify_mock_syntax_configuration?).and_return(true)
         end
 
-        it 'invokes RSpecConfigure#modify_mock_syntaxes! with :expect' do
-          rspec_configure.should_receive(:modify_mock_syntaxes!).with(:expect)
+        it 'invokes RSpecConfigure.mocks.syntaxes= with :expect' do
+          rspec_configure.mocks.should_receive(:syntaxes=).with(:expect)
           converter.process_rspec_configure(rspec_configure)
         end
       end
@@ -910,18 +910,18 @@ module Transpec
           converter.stub(:need_to_modify_mock_syntax_configuration?).and_return(false)
         end
 
-        it 'does not invoke RSpecConfigure#modify_mock_syntaxes!' do
-          rspec_configure.should_not_receive(:modify_mock_syntaxes!)
+        it 'does not invoke RSpecConfigure.mocks.syntaxes=' do
+          rspec_configure.mocks.should_not_receive(:syntaxes=)
           converter.process_rspec_configure(rspec_configure)
         end
       end
     end
 
-    shared_examples 'syntaxes' do |syntaxes_reader, expectations|
+    shared_examples 'syntaxes' do |framework_type, expectations|
       expectations.each do |current_syntaxes, return_value|
-        context "and RSpecConfigure##{syntaxes_reader} returns #{current_syntaxes.inspect}" do
+        context "and RSpecConfigure.#{framework_type}.syntaxes returns #{current_syntaxes.inspect}" do
           before do
-            rspec_configure.stub(syntaxes_reader).and_return(current_syntaxes)
+            rspec_configure.stub_chain(framework_type, :syntaxes).and_return(current_syntaxes)
           end
 
           it "returns #{return_value}" do
@@ -930,9 +930,10 @@ module Transpec
         end
       end
 
-      context "and RSpecConfigure##{syntaxes_reader} raises UnknownSyntaxError" do
+      context "and RSpecConfigure.#{framework_type}.syntaxes raises UnknownSyntaxError" do
         before do
-          rspec_configure.stub(syntaxes_reader).and_raise(Syntax::RSpecConfigure::UnknownSyntaxError)
+          rspec_configure.stub_chain(framework_type, :syntaxes)
+            .and_raise(Syntax::RSpecConfigure::Framework::UnknownSyntaxError)
         end
 
         it 'returns false' do
@@ -948,7 +949,7 @@ module Transpec
       context 'when Configuration#convert_should? is true' do
         before { configuration.convert_should = true }
 
-        include_examples 'syntaxes', :expectation_syntaxes, {
+        include_examples 'syntaxes', :expectations, {
           []                 => false,
           [:should]          => true,
           [:expect]          => false,
@@ -959,7 +960,7 @@ module Transpec
       context 'when Configuration#convert_should? is false' do
         before { configuration.convert_should = false }
 
-        include_examples 'syntaxes', :expectation_syntaxes, {
+        include_examples 'syntaxes', :expectations, {
           []                 => false,
           [:should]          => false,
           [:expect]          => false,
@@ -978,7 +979,7 @@ module Transpec
         context 'and Configuration#convert_stub? is true' do
           before { configuration.convert_stub = true }
 
-          include_examples 'syntaxes', :mock_syntaxes, {
+          include_examples 'syntaxes', :mocks, {
             []                 => false,
             [:should]          => true,
             [:expect]          => false,
@@ -989,7 +990,7 @@ module Transpec
         context 'and Configuration#convert_stub? is false' do
           before { configuration.convert_stub = false }
 
-          include_examples 'syntaxes', :mock_syntaxes, {
+          include_examples 'syntaxes', :mocks, {
             []                 => false,
             [:should]          => true,
             [:expect]          => false,
@@ -1004,7 +1005,7 @@ module Transpec
         context 'and Configuration#convert_stub? is true' do
           before { configuration.convert_stub = true }
 
-          include_examples 'syntaxes', :mock_syntaxes, {
+          include_examples 'syntaxes', :mocks, {
             []                 => false,
             [:should]          => true,
             [:expect]          => false,
@@ -1015,7 +1016,7 @@ module Transpec
         context 'and Configuration#convert_stub? is false' do
           before { configuration.convert_stub = false }
 
-          include_examples 'syntaxes', :mock_syntaxes, {
+          include_examples 'syntaxes', :mocks, {
             []                 => false,
             [:should]          => false,
             [:expect]          => false,

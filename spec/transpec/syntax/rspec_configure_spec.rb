@@ -9,18 +9,15 @@ module Transpec
       include_context 'parsed objects'
       include_context 'syntax object', RSpecConfigure, :rspec_configure
 
-      [
-        [:expectation_syntaxes, :expect_with, 'RSpec::Matchers::Configuration'],
-        [:mock_syntaxes,        :mock_with,   'RSpec::Mocks::Configuration']
-      ].each do |subject_method, config_block_method, framework_config_class|
-        describe "##{subject_method}" do
-          subject { rspec_configure.send(subject_method) }
+      shared_examples '#syntaxes' do |framework_block_method|
+        describe '#syntaxes' do
+          subject { super().syntaxes }
 
           context 'when :should is enabled' do
             let(:source) do
               <<-END
                 RSpec.configure do |config|
-                  config.#{config_block_method} :rspec do |c|
+                  config.#{framework_block_method} :rspec do |c|
                     c.syntax = :should
                   end
                 end
@@ -36,7 +33,7 @@ module Transpec
             let(:source) do
               <<-END
                 RSpec.configure do |config|
-                  config.#{config_block_method} :rspec do |c|
+                  config.#{framework_block_method} :rspec do |c|
                     c.syntax = [:should, :expect]
                   end
                 end
@@ -52,7 +49,7 @@ module Transpec
             let(:source) do
               <<-END
                 RSpec.configure do |config|
-                  config.#{config_block_method} :rspec do |c|
+                  config.#{framework_block_method} :rspec do |c|
                     c.syntax = some_syntax
                   end
                 end
@@ -60,11 +57,11 @@ module Transpec
             end
 
             it 'raises error' do
-              -> { subject }.should raise_error(RSpecConfigure::UnknownSyntaxError)
+              -> { subject }.should raise_error(RSpecConfigure::Framework::UnknownSyntaxError)
             end
           end
 
-          context "when RSpec::Core::Configuration##{config_block_method} block does not exist" do
+          context "when ##{framework_block_method} block does not exist" do
             let(:source) do
               <<-END
                 RSpec.configure do |config|
@@ -77,11 +74,11 @@ module Transpec
             end
           end
 
-          context "when #{framework_config_class}#syntax= does not exist" do
+          context "when ##{framework_block_method} { #syntax= } does not exist" do
             let(:source) do
               <<-END
                 RSpec.configure do |config|
-                  config.#{config_block_method} :rspec do |c|
+                  config.#{framework_block_method} :rspec do |c|
                   end
                 end
               END
@@ -94,19 +91,16 @@ module Transpec
         end
       end
 
-      [
-        [:modify_expectation_syntaxes!, :expect_with, 'RSpec::Matchers::Configuration'],
-        [:modify_mock_syntaxes!,        :mock_with,   'RSpec::Mocks::Configuration']
-      ].each do |subject_method, config_block_method, framework_config_class|
-        describe "##{subject_method}" do
+      shared_examples '#syntaxes=' do |framework_block_method|
+        describe '#syntaxes=' do
           before do
-            rspec_configure.send(subject_method, syntaxes)
+            subject.syntaxes = syntaxes
           end
 
           let(:source) do
             <<-END
               RSpec.configure do |config|
-                config.#{config_block_method} :rspec do |c|
+                config.#{framework_block_method} :rspec do |c|
                   c.syntax = :should
                 end
               end
@@ -119,7 +113,7 @@ module Transpec
             let(:expected_source) do
               <<-END
               RSpec.configure do |config|
-                config.#{config_block_method} :rspec do |c|
+                config.#{framework_block_method} :rspec do |c|
                   c.syntax = :expect
                 end
               end
@@ -137,7 +131,7 @@ module Transpec
             let(:expected_source) do
               <<-END
               RSpec.configure do |config|
-                config.#{config_block_method} :rspec do |c|
+                config.#{framework_block_method} :rspec do |c|
                   c.syntax = [:should, :expect]
                 end
               end
@@ -149,14 +143,28 @@ module Transpec
             end
           end
 
-          context 'when RSpec::Core::Configuration#expect_with block does not exist' do
+          context "when ##{framework_block_method} block does not exist" do
             pending
           end
 
-          context "when #{framework_config_class}#syntax= does not exist" do
+          context "when ##{framework_block_method} { #syntax= } does not exist" do
             pending
           end
         end
+      end
+
+      describe '#expectations' do
+        subject { rspec_configure.expectations }
+
+        include_examples '#syntaxes', :expect_with
+        include_examples '#syntaxes=', :expect_with
+      end
+
+      describe '#mocks' do
+        subject { rspec_configure.mocks }
+
+        include_examples '#syntaxes', :mock_with
+        include_examples '#syntaxes=', :mock_with
       end
     end
   end

@@ -156,26 +156,26 @@ module Transpec
 
     def process_rspec_configure(rspec_configure)
       if need_to_modify_expectation_syntax_configuration?(rspec_configure)
-        rspec_configure.modify_expectation_syntaxes!(:expect)
+        rspec_configure.expectations.syntaxes = :expect
       end
 
       if need_to_modify_mock_syntax_configuration?(rspec_configure)
-        rspec_configure.modify_mock_syntaxes!(:expect)
+        rspec_configure.mocks.syntaxes = :expect
       end
     end
 
     def need_to_modify_expectation_syntax_configuration?(rspec_configure)
       return false unless @configuration.convert_should?
-      rspec_configure.expectation_syntaxes == [:should]
-    rescue Syntax::RSpecConfigure::UnknownSyntaxError
+      rspec_configure.expectations.syntaxes == [:should]
+    rescue Syntax::RSpecConfigure::Framework::UnknownSyntaxError
       false
     end
 
     def need_to_modify_mock_syntax_configuration?(rspec_configure)
       return false if !@configuration.convert_should_receive? &&
                       !@configuration.convert_stub?
-      rspec_configure.mock_syntaxes == [:should]
-    rescue Syntax::RSpecConfigure::UnknownSyntaxError
+      rspec_configure.mocks.syntaxes == [:should]
+    rescue Syntax::RSpecConfigure::Framework::UnknownSyntaxError
       false
     end
   end
