@@ -4,7 +4,7 @@
 # This group allows to skip running RuboCop if RSpec failed,
 # like Red > Green (RSpec) > Refactor (RuboCop).
 group :red_green_refactor, halt_on_fail: true do
-  guard :rspec, all_after_pass: true, all_on_start: true, cmd: 'bundle exec rspec' do
+  guard :rspec, all_on_start: true, cmd: 'bundle exec rspec' do
     watch(%r{^spec/.+_spec\.rb$})
     watch(%r{^lib/(.+)\.rb$})        { |m| "spec/#{m[1]}_spec.rb" }
     watch('spec/spec_helper.rb')     { "spec" }
