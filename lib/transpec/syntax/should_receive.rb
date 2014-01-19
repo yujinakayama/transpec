@@ -125,7 +125,7 @@ module Transpec
       #   (args
       #     (arg :block_arg)) nil)
       def block_node_taken_by_with_method_with_no_normal_args
-        each_following_chained_method_node do |chained_node, child_node|
+        each_chained_method_node do |chained_node, child_node|
           next unless chained_node.block_type?
           return nil unless child_node.children[1] == :with
           return nil if child_node.children[2]
@@ -144,7 +144,7 @@ module Transpec
       #     (args
       #       (arg :block_arg)) nil) :once)
       def block_node_following_message_expectation_method
-        each_following_chained_method_node do |chained_node, child_node|
+        each_chained_method_node do |chained_node, child_node|
           next unless chained_node.send_type?
           return child_node if child_node.block_type?
         end

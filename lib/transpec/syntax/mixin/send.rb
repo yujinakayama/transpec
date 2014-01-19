@@ -107,6 +107,19 @@ module Transpec
         def range_after_arg
           arg_range.end.join(expression_range.end)
         end
+
+        def each_chained_method_node
+          return to_enum(__method__) unless block_given?
+
+          @node.each_ancestor_node.reduce(@node) do |child_node, parent_node|
+            return unless [:send, :block].include?(parent_node.type)
+            return unless parent_node.children.first == child_node
+            yield parent_node, child_node
+            parent_node
+          end
+
+          nil
+        end
       end
     end
   end

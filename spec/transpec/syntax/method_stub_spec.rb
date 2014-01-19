@@ -1026,6 +1026,46 @@ module Transpec
           end
         end
       end
+
+      describe '#add_instance_arg_to_any_instance_implementation_block!' do
+        before do
+          method_stub_object.add_instance_arg_to_any_instance_implementation_block!
+        end
+
+        context 'when it is `Klass.any_instance.stub(:method) do |arg| .. end` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo' do
+                  Klass.any_instance.stub(:foo) do |arg|
+                  end
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo' do
+                  Klass.any_instance.stub(:foo) do |instance, arg|
+                  end
+                end
+              end
+            END
+          end
+
+          it 'converts into `Klass.any_instance.stub(:method) do |instance, arg| .. end` form' do
+            rewritten_source.should == expected_source
+          end
+
+          it 'adds record `Klass.any_instance.stub(:message) { |arg| }` ' +
+             '-> `Klass.any_instance.stub(:message) { |instance, arg| }`' do
+            record.original_syntax.should  == 'Klass.any_instance.stub(:message) { |arg| }'
+            record.converted_syntax.should == 'Klass.any_instance.stub(:message) { |instance, arg| }'
+          end
+        end
+      end
     end
   end
 end
