@@ -2,6 +2,8 @@
 
 ## Development
 
+* Support conversion of `any_instance` block
+
 ## v1.6.1
 
 * Handle deprecation messages from `rainbow` gem

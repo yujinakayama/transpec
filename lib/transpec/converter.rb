@@ -80,10 +80,11 @@ module Transpec
 
     def process_expect(expect)
       process_have(expect.have_matcher)
+      process_any_instance_block(expect.receive_matcher)
     end
 
-    def process_allow(expect)
-      # TODO
+    def process_allow(allow)
+      process_any_instance_block(allow.receive_matcher)
     end
 
     def process_should_receive(should_receive)
@@ -100,6 +101,8 @@ module Transpec
       elsif @configuration.convert_should_receive?
         should_receive.expectize!(@configuration.negative_form_of_to)
       end
+
+      process_any_instance_block(should_receive)
     end
 
     def process_double(double)
@@ -114,6 +117,8 @@ module Transpec
       end
 
       method_stub.remove_allowance_for_no_message! if @configuration.convert_deprecated_method?
+
+      process_any_instance_block(method_stub)
     end
 
     def process_be_boolean(be_boolean)
@@ -160,11 +165,25 @@ module Transpec
       if need_to_modify_mock_syntax_configuration?(rspec_configure)
         rspec_configure.mocks.syntaxes = :expect
       end
+
+      if rspec_version.migration_term_of_any_instance_implementation_block? &&
+           configuration.convert_deprecated_method?
+        should_yield = configuration.add_receiver_arg_to_any_instance_implementation_block?
+        rspec_configure.mocks.yield_receiver_to_any_instance_implementation_blocks = should_yield
+      end
     end
 
     def process_have(have)
       return if !have || !@configuration.convert_have_items?
       have.convert_to_standard_expectation!(@configuration.parenthesize_matcher_arg)
+    end
+
+    def process_any_instance_block(messaging_host)
+      return unless messaging_host
+      return unless rspec_version.migration_term_of_any_instance_implementation_block?
+      return unless configuration.convert_deprecated_method?
+      return unless configuration.add_receiver_arg_to_any_instance_implementation_block?
+      messaging_host.add_receiver_arg_to_any_instance_implementation_block!
     end
 
     def need_to_modify_expectation_syntax_configuration?(rspec_configure)

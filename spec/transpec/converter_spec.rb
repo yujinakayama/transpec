@@ -362,7 +362,8 @@ module Transpec
     end
 
     describe '#process_expect' do
-      let(:expect_object) { double('expect_object').as_null_object }
+      let(:expect_object) { double('expect_object', receive_matcher: receive_object).as_null_object }
+      let(:receive_object) { double('receive_object') }
 
       context 'when Configuration#convert_have_items? is true' do
         before { configuration.convert_have_items = true }
@@ -393,6 +394,21 @@ module Transpec
           expect_object.have_matcher.should_not_receive(:convert_to_standard_expectation!)
           converter.process_expect(expect_object)
         end
+      end
+
+      it "invokes #process_any_instance_block with the expect's #receive matcher" do
+        converter.should_receive(:process_any_instance_block).with(receive_object)
+        converter.process_expect(expect_object)
+      end
+    end
+
+    describe '#process_allow' do
+      let(:allow_object) { double('allow_object', receive_matcher: receive_object).as_null_object }
+      let(:receive_object) { double('receive_object') }
+
+      it "invokes #process_any_instance_block with the allow's #receive matcher" do
+        converter.should_receive(:process_any_instance_block).with(receive_object)
+        converter.process_allow(allow_object)
       end
     end
 
@@ -552,6 +568,11 @@ module Transpec
           end
         end
       end
+
+      it 'invokes #process_any_instance_block with the should_receive' do
+        converter.should_receive(:process_any_instance_block).with(should_receive_object)
+        converter.process_allow(should_receive_object)
+      end
     end
 
     describe '#process_method_stub' do
@@ -637,6 +658,11 @@ module Transpec
           include_examples 'does not invoke MethodStub#convert_deprecated_method!'
           include_examples 'does not invoke MethodStub#remove_allowance_for_no_message!'
         end
+      end
+
+      it 'invokes #process_any_instance_block with the method stub' do
+        converter.should_receive(:process_any_instance_block).with(method_stub_object)
+        converter.process_allow(method_stub_object)
       end
     end
 
@@ -913,6 +939,110 @@ module Transpec
         it 'does not invoke RSpecConfigure.mocks.syntaxes=' do
           rspec_configure.mocks.should_not_receive(:syntaxes=)
           converter.process_rspec_configure(rspec_configure)
+        end
+      end
+
+      context 'when RSpecVersion#migration_term_of_any_instance_implementation_block? returns true' do
+        before do
+          rspec_version.stub(:migration_term_of_any_instance_implementation_block?).and_return(true)
+        end
+
+        context 'and Configuration#convert_deprecated_method? returns true' do
+          before { configuration.convert_deprecated_method = true }
+
+          context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns true' do
+            before { configuration.add_receiver_arg_to_any_instance_implementation_block = true }
+
+            it 'invokes RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks= with true' do
+              rspec_configure.mocks.should_receive(:yield_receiver_to_any_instance_implementation_blocks=).with(true)
+              converter.process_rspec_configure(rspec_configure)
+            end
+          end
+
+          context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns false' do
+            before { configuration.add_receiver_arg_to_any_instance_implementation_block = false }
+
+            it 'invokes RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks= with false' do
+              rspec_configure.mocks.should_receive(:yield_receiver_to_any_instance_implementation_blocks=).with(false)
+              converter.process_rspec_configure(rspec_configure)
+            end
+          end
+        end
+
+        context 'and Configuration#convert_deprecated_method? returns false' do
+          before { configuration.convert_deprecated_method = false }
+
+          it 'does not invoke RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks=' do
+            rspec_configure.mocks.should_not_receive(:yield_receiver_to_any_instance_implementation_blocks=)
+            converter.process_rspec_configure(rspec_configure)
+          end
+        end
+      end
+
+      context 'when RSpecVersion#migration_term_of_any_instance_implementation_block? returns false' do
+        before do
+          rspec_version.stub(:migration_term_of_any_instance_implementation_block?).and_return(false)
+        end
+
+        it 'does not invoke RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks=' do
+          rspec_configure.mocks.should_not_receive(:yield_receiver_to_any_instance_implementation_blocks=)
+          converter.process_rspec_configure(rspec_configure)
+        end
+      end
+    end
+
+    describe '#process_any_instance_block' do
+      let(:messaging_host) { double('messaging host').as_null_object }
+
+      context 'when RSpecVersion#migration_term_of_any_instance_implementation_block? returns true' do
+        before do
+          rspec_version.stub(:migration_term_of_any_instance_implementation_block?).and_return(true)
+        end
+
+        context 'and Configuration#convert_deprecated_method? returns true' do
+          before { configuration.convert_deprecated_method = true }
+
+          context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns true' do
+            before { configuration.add_receiver_arg_to_any_instance_implementation_block = true }
+
+            it 'invokes #add_receiver_arg_to_any_instance_implementation_block!' do
+              messaging_host.should_receive(:add_receiver_arg_to_any_instance_implementation_block!)
+              converter.process_any_instance_block(messaging_host)
+            end
+          end
+
+          context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns false' do
+            before { configuration.add_receiver_arg_to_any_instance_implementation_block = false }
+
+            it 'does nothing' do
+              messaging_host.should_not_receive(:add_instance_arg_to_any_instance_implementation_block!)
+              converter.process_any_instance_block(messaging_host)
+            end
+          end
+        end
+
+        context 'and Configuration#convert_deprecated_method? returns false' do
+          before { configuration.convert_deprecated_method = false }
+
+          context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns true' do
+            before { configuration.add_receiver_arg_to_any_instance_implementation_block = true }
+
+            it 'does nothing' do
+              messaging_host.should_not_receive(:add_instance_arg_to_any_instance_implementation_block!)
+              converter.process_any_instance_block(messaging_host)
+            end
+          end
+        end
+      end
+
+      context 'when RSpecVersion#migration_term_of_any_instance_implementation_block? returns false' do
+        before do
+          rspec_version.stub(:migration_term_of_any_instance_implementation_block?).and_return(false)
+        end
+
+        it 'does nothing' do
+          messaging_host.should_not_receive(:add_instance_arg_to_any_instance_implementation_block!)
+          converter.process_any_instance_block(messaging_host)
         end
       end
     end

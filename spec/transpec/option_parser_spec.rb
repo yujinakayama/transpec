@@ -145,6 +145,16 @@ module Transpec
         end
       end
 
+      describe '-a/--no-yield-any-instance option' do
+        let(:args) { ['--no-yield-any-instance'] }
+
+        it 'sets Configuration#add_receiver_arg_to_any_instance_implementation_block? false' do
+          parser.parse(args)
+          configuration.add_receiver_arg_to_any_instance_implementation_block?
+            .should be_false
+        end
+      end
+
       describe '-p/--no-parentheses-matcher-arg option' do
         let(:args) { ['--no-parentheses-matcher-arg'] }
 

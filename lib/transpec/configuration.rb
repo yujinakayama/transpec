@@ -7,16 +7,17 @@ module Transpec
     BOOLEAN_MATCHER_TYPES = [:conditional, :exact].freeze
 
     PREDICATES = [
-      [:convert_should,            true],
-      [:convert_oneliner,          true],
-      [:convert_should_receive,    true],
-      [:convert_stub,              true],
-      [:convert_have_items,        true],
-      [:convert_its,               true],
-      [:convert_deprecated_method, true],
-      [:parenthesize_matcher_arg,  true],
-      [:forced,                    false],
-      [:skip_dynamic_analysis,     false]
+      [:convert_should,                                        true],
+      [:convert_oneliner,                                      true],
+      [:convert_should_receive,                                true],
+      [:convert_stub,                                          true],
+      [:convert_have_items,                                    true],
+      [:convert_its,                                           true],
+      [:convert_deprecated_method,                             true],
+      [:parenthesize_matcher_arg,                              true],
+      [:add_receiver_arg_to_any_instance_implementation_block, true],
+      [:forced,                                                false],
+      [:skip_dynamic_analysis,                                 false]
     ].freeze
 
     PREDICATES.each do |predicate, _|

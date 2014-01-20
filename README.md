@@ -259,6 +259,17 @@ $ transpec --boolean-matcher true,false
 
 See [Supported Conversions - Boolean matchers](#boolean-matchers) for more details.
 
+### `-a/--no-yield-any-instance`
+
+Suppress yielding receiver instances to `any_instance` implementation blocks as the first block argument.
+
+By default in RSpec 3, `any_instance` implementation blocks will be yielded the receiving
+instance as the first block argument, and by default Transpec converts specs by adding instance arguments to the blocks so that they conform to the behavior of RSpec 3.
+Specifying this option suppresses the conversion and keeps them compatible with RSpec 2.
+Note that this is not same as `--keep deprecated` since this configures `yield_receiver_to_any_instance_implementation_blocks` with `RSpec.configure`.
+
+See [Supported Conversions - `any_instance` implementation blocks](#any_instance-implementation-blocks) for more details.
+
 ### `-p/--no-parentheses-matcher-arg`
 
 Suppress parenthesizing arguments of matchers when converting
@@ -787,6 +798,85 @@ obj.stub(:foo) # with `--keep stub`
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 2.14, removed in RSpec 3.0
 * See also: [Don't allow at_least(0) · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/133)
+
+### `any_instance` implementation blocks
+
+**This conversion is available only if your project's RSpec is `>= 2.99.0.beta1` and `< 3.0.0.beta1`.**
+
+Targets:
+
+```ruby
+RSpec.configure do |rspec|
+end
+
+describe 'example' do
+  it 'is any_instance implementation block' do
+    Klass.any_instance.should_receive(:message) { |arg| puts arg }
+    Klass.any_instance.stub(:message) { |arg| puts arg }
+    expect_any_instance_of(Klass).to receive(:message) { |arg| puts arg }
+    allow_any_instance_of(Klass).to receive(:message) { |arg| puts arg }
+  end
+end
+```
+
+Will be converted to:
+
+```ruby
+RSpec.configure do |rspec|
+  rspec.mock_with :rspec do |mocks|
+    mocks.yield_receiver_to_any_instance_implementation_blocks = true
+  end
+end
+
+describe 'example' do
+  it 'is any_instance implementation block' do
+    expect_any_instance_of(Klass).to receive(:message) { |instance, arg| puts arg }
+    allow_any_instance_of(Klass).to receive(:message) { |instance, arg| puts arg }
+    expect_any_instance_of(Klass).to receive(:message) { |instance, arg| puts arg }
+    allow_any_instance_of(Klass).to receive(:message) { |instance, arg| puts arg }
+  end
+end
+
+# With `--no-yield-any-instance`
+RSpec.configure do |rspec|
+  rspec.mock_with :rspec do |mocks|
+    mocks.yield_receiver_to_any_instance_implementation_blocks = false
+  end
+end
+
+describe 'example' do
+  it 'is any_instance implementation block' do
+    expect_any_instance_of(Klass).to receive(:message) { |arg| puts arg }
+    allow_any_instance_of(Klass).to receive(:message) { |arg| puts arg }
+    expect_any_instance_of(Klass).to receive(:message) { |arg| puts arg }
+    allow_any_instance_of(Klass).to receive(:message) { |arg| puts arg }
+  end
+end
+```
+
+Here's an excerpt from [the warning for `any_instance` implementation blocks in RSpec 2.99](https://github.com/rspec/rspec-mocks/blob/aab8dc9/lib/rspec/mocks/message_expectation.rb#L478-L491):
+
+> In RSpec 3, `any_instance` implementation blocks will be yielded the receiving
+> instance as the first block argument to allow the implementation block to use
+> the state of the receiver.  To maintain compatibility with RSpec 3 you need to
+> either set rspec-mocks' `yield_receiver_to_any_instance_implementation_blocks`
+> config option to `false` OR set it to `true` and update your `any_instance`
+> implementation blocks to account for the first block argument being the receiving instance.
+>
+> To set the config option, use a snippet like:
+>
+> ```ruby
+> RSpec.configure do |rspec|
+>   rspec.mock_with :rspec do |mocks|
+>     mocks.yield_receiver_to_any_instance_implementation_blocks = false
+>   end
+> end
+> ```
+
+* This conversion can be disabled by: `--keep deprecated`
+* Deprecation: deprecated since RSpec 2.99
+* See also: [Mocks: `any_instance` block implementations will yield the receiver](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#mocks__block_implementations_will_yield_the_receiver)
+
 
 ### Deprecated test double aliases
 

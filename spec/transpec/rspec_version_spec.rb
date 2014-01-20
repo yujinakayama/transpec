@@ -7,7 +7,7 @@ module Transpec
   describe RSpecVersion do
     subject(:rspec_version) { RSpecVersion.new(version_string) }
 
-    shared_examples 'feature availability' do |method, expectations|
+    shared_examples 'version comparisons' do |method, expectations|
       describe "##{method}" do
         subject { rspec_version.send(method) }
 
@@ -23,8 +23,12 @@ module Transpec
       end
     end
 
-    [:be_truthy_available?, :yielded_example_available?].each do |method|
-      include_examples 'feature availability', method, [
+    [
+      :be_truthy_available?,
+      :yielded_example_available?,
+      :yielding_receiver_to_any_instance_implementation_block_available?
+    ].each do |method|
+      include_examples 'version comparisons', method, [
         ['2.14.0',       false],
         ['2.99.0.beta1', true],
         ['2.99.0.beta2', true],
@@ -36,7 +40,7 @@ module Transpec
     end
 
     [:oneliner_is_expected_available?].each do |method|
-      include_examples 'feature availability', method, [
+      include_examples 'version comparisons', method, [
         ['2.14.0',       false],
         ['2.99.0.beta1', false],
         ['2.99.0.beta2', true],
@@ -48,7 +52,7 @@ module Transpec
     end
 
     [:receive_messages_available?].each do |method|
-      include_examples 'feature availability', method, [
+      include_examples 'version comparisons', method, [
         ['2.14.0',       false],
         ['2.99.0.beta1', false],
         ['2.99.0.beta2', false],
@@ -60,7 +64,7 @@ module Transpec
     end
 
     [:receive_message_chain_available?, :non_should_matcher_protocol_available?].each do |method|
-      include_examples 'feature availability', method, [
+      include_examples 'version comparisons', method, [
         ['2.14.0',       false],
         ['2.99.0.beta1', false],
         ['2.99.0.beta2', false],
@@ -70,5 +74,15 @@ module Transpec
         ['3.0.0',        true]
       ]
     end
+
+    include_examples 'version comparisons', :migration_term_of_any_instance_implementation_block?, [
+      ['2.14.0',       false],
+      ['2.99.0.beta1', true],
+      ['2.99.0.beta2', true],
+      ['2.99.0',       true],
+      ['3.0.0.beta1',  false],
+      ['3.0.0.beta2',  false],
+      ['3.0.0',        false]
+    ]
   end
 end

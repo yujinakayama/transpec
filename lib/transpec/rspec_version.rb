@@ -43,9 +43,18 @@ module Transpec
 
     define_feature :be_truthy,                   '2.99.0.beta1'
     define_feature :yielded_example,             '2.99.0.beta1'
+    define_feature :yielding_receiver_to_any_instance_implementation_block, '2.99.0.beta1'
     define_feature :oneliner_is_expected,        '2.99.0.beta2', except: '3.0.0.beta1'
     define_feature :receive_messages,            '3.0.0.beta1'
     define_feature :receive_message_chain,       '3.0.0.beta2'
     define_feature :non_should_matcher_protocol, '3.0.0.beta2'
+
+    ANY_INSTANCE_IMPLEMENTATION_BLOCK_MIGRATION_BEGIN = new('2.99.0.beta1')
+    ANY_INSTANCE_IMPLEMENTATION_BLOCK_MIGRATION_EXCLUSIVE_END = new('3.0.0.beta1')
+
+    def migration_term_of_any_instance_implementation_block?
+      self >= ANY_INSTANCE_IMPLEMENTATION_BLOCK_MIGRATION_BEGIN &&
+        self < ANY_INSTANCE_IMPLEMENTATION_BLOCK_MIGRATION_EXCLUSIVE_END
+    end
   end
 end

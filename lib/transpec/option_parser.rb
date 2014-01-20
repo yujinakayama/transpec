@@ -6,6 +6,8 @@ require 'transpec/version'
 require 'optparse'
 require 'rainbow'
 
+# rubocop:disable ClassLength
+
 module Transpec
   class OptionParser
     CONFIG_ATTRS_FOR_KEEP_TYPES = {
@@ -80,6 +82,10 @@ module Transpec
         @configuration.form_of_be_falsey = type.include?('falsy') ? 'be_falsy' : 'be_falsey'
       end
 
+      define_option('-a', '--no-yield-any-instance') do
+        @configuration.add_receiver_arg_to_any_instance_implementation_block = false
+      end
+
       define_option('-p', '--no-parentheses-matcher-arg') do
         @configuration.parenthesize_matcher_arg = false
       end
@@ -150,6 +156,11 @@ module Transpec
           "  #{'truthy,falsy'.bright}  (alias of #{'falsey'.underline})",
           "  #{'true,false'.bright}    (exact equality)",
           "Default: #{'truthy,falsey'.bright}"
+        ],
+        '-a' => [
+          'Suppress yielding receiver instances to',
+          "#{'any_instance'.underline} implementation blocks as the",
+          'first block argument.'
         ],
         '-p' => [
           'Suppress parenthesizing arguments of matchers',
