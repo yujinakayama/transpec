@@ -1,7 +1,6 @@
 # coding: utf-8
 
 require 'transpec/syntax'
-require 'transpec/syntax/mixin/send'
 require 'transpec/syntax/mixin/monkey_patch'
 require 'transpec/syntax/mixin/allow_no_message'
 require 'transpec/syntax/mixin/monkey_patch_any_instance'
@@ -12,8 +11,8 @@ require 'English'
 module Transpec
   class Syntax
     class MethodStub < Syntax
-      include Mixin::Send, Mixin::MonkeyPatch, Mixin::AllowNoMessage,
-              Mixin::MonkeyPatchAnyInstance, Mixin::AnyInstanceBlock, Util
+      include Mixin::MonkeyPatch, Mixin::AllowNoMessage, Mixin::MonkeyPatchAnyInstance,
+              Mixin::AnyInstanceBlock, Util
 
       # rubocop:disable LineLength
       CLASSES_DEFINING_OWN_STUB_METHOD = [
