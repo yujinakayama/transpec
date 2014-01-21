@@ -1,9 +1,13 @@
 # coding: utf-8
 
+require 'active_support/concern'
+
 module Transpec
   class Syntax
     module Mixin
       module MonkeyPatch
+        extend ActiveSupport::Concern
+
         def register_request_of_syntax_availability_inspection(rewriter, key, methods)
           code = "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') }"
 

@@ -1,11 +1,13 @@
 # coding: utf-8
 
+require 'active_support/concern'
 require 'ast'
 
 module Transpec
   class Syntax
     module Mixin
       module AllowNoMessage
+        extend ActiveSupport::Concern
         include ::AST::Sexp
 
         def allow_no_message?

@@ -1,11 +1,14 @@
 # coding: utf-8
 
+require 'active_support/concern'
 require 'transpec/syntax/receive'
 
 module Transpec
   class Syntax
     module Mixin
       module ReceiveMatcherOwner
+        extend ActiveSupport::Concern
+
         def self.included(syntax)
           syntax.add_dynamic_analysis_request do |rewriter|
             if Receive.dynamic_analysis_target_node?(matcher_node)
