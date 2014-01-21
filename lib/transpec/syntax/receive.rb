@@ -27,7 +27,7 @@ module Transpec
         @report = report || Report.new
       end
 
-      def add_instance_arg_to_any_instance_implementation_block!
+      def add_receiver_arg_to_any_instance_implementation_block!
         added = super
         return unless added
         @report.records << Record.new(

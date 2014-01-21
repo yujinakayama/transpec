@@ -75,7 +75,7 @@ module Transpec
         register_record(StubRecord)
       end
 
-      def add_instance_arg_to_any_instance_implementation_block!
+      def add_receiver_arg_to_any_instance_implementation_block!
         super && register_record(AnyInstanceBlockRecord)
       end
 

@@ -937,9 +937,9 @@ module Transpec
         end
       end
 
-      describe '#add_instance_arg_to_any_instance_implementation_block!' do
+      describe '#add_receiver_arg_to_any_instance_implementation_block!' do
         before do
-          should_receive_object.add_instance_arg_to_any_instance_implementation_block!
+          should_receive_object.add_receiver_arg_to_any_instance_implementation_block!
         end
 
         context 'when it is `Klass.any_instance.should_receive(:method) do |arg| .. end` form' do

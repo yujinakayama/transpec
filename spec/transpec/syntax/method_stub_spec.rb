@@ -1027,9 +1027,9 @@ module Transpec
         end
       end
 
-      describe '#add_instance_arg_to_any_instance_implementation_block!' do
+      describe '#add_receiver_arg_to_any_instance_implementation_block!' do
         before do
-          method_stub_object.add_instance_arg_to_any_instance_implementation_block!
+          method_stub_object.add_receiver_arg_to_any_instance_implementation_block!
         end
 
         context 'when it is `Klass.any_instance.stub(:method) do |arg| .. end` form' do

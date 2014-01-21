@@ -80,7 +80,7 @@ module Transpec
         register_record(:deprecated)
       end
 
-      def add_instance_arg_to_any_instance_implementation_block!
+      def add_receiver_arg_to_any_instance_implementation_block!
         super && register_record(:any_instance_block)
       end
 

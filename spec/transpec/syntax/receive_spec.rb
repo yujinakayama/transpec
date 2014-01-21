@@ -12,11 +12,11 @@ module Transpec
       include_context 'syntax object', Expect, :expect_object
       include_context 'syntax object', Allow, :allow_object
 
-      describe '#add_instance_arg_to_any_instance_implementation_block!' do
+      describe '#add_receiver_arg_to_any_instance_implementation_block!' do
         let(:record) { receive_object.report.records.last }
 
         before do
-          receive_object.add_instance_arg_to_any_instance_implementation_block!
+          receive_object.add_receiver_arg_to_any_instance_implementation_block!
         end
 
         context 'with #expect' do
