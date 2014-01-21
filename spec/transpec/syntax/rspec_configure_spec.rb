@@ -194,6 +194,34 @@ module Transpec
                'and #syntax= statement' do
               rewritten_source.should == expected_source
             end
+
+            context 'when there are already some configurations' do
+              let(:source) do
+                <<-END
+                  RSpec.configure do |config|
+                    config.foo = 1
+                  end
+                END
+              end
+
+              let(:syntaxes) { :expect }
+
+              let(:expected_source) do
+                <<-END
+                  RSpec.configure do |config|
+                    config.foo = 1
+
+                    config.#{framework_block_method} :rspec do |c|
+                      c.syntax = :expect
+                    end
+                  end
+                END
+              end
+
+              it 'adds the block after a blank line' do
+                rewritten_source.should == expected_source
+              end
+            end
           end
         end
       end

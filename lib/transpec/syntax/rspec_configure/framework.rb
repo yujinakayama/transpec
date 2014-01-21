@@ -95,10 +95,12 @@ module Transpec
             lines << indentation + 'end'
           end
 
+          block_node = framework_block_node || @rspec_configure_node
+          insertion_position = beginning_of_line_range(block_node.loc.end)
+
+          lines.unshift('') unless (block_node.loc.end.line - block_node.loc.begin.line) <= 1
           lines.map! { |line| line + "\n" }
 
-          block_node = framework_block_node ? framework_block_node : @rspec_configure_node
-          insertion_position = beginning_of_line_range(block_node.loc.end)
           @source_rewriter.insert_before(insertion_position, lines.join(''))
         end
 
