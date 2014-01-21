@@ -1,9 +1,15 @@
 # coding: utf-8
 
+require 'active_support/concern'
+require 'transpec/syntax/mixin/send'
+
 module Transpec
   class Syntax
     module Mixin
       module AnyInstanceBlock
+        extend ActiveSupport::Concern
+        include Send
+
         def add_instance_arg_to_any_instance_implementation_block!
           return unless any_instance_block_node
           first_arg_node = any_instance_block_node.children[1].children[0]

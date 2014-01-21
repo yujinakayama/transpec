@@ -1,12 +1,15 @@
 # coding: utf-8
 
+require 'active_support/concern'
+require 'transpec/syntax/mixin/send'
 require 'ast'
 
 module Transpec
   class Syntax
     module Mixin
       module AllowNoMessage
-        include ::AST::Sexp
+        extend ActiveSupport::Concern
+        include Send, ::AST::Sexp
 
         def allow_no_message?
           any_number_of_times? || at_least_zero?

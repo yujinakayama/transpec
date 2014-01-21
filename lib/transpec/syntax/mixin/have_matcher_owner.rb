@@ -1,13 +1,16 @@
 # coding: utf-8
 
+require 'active_support/concern'
 require 'transpec/syntax/have'
 
 module Transpec
   class Syntax
     module Mixin
       module HaveMatcherOwner
-        def self.included(syntax)
-          syntax.add_dynamic_analysis_request do |rewriter|
+        extend ActiveSupport::Concern
+
+        included do
+          add_dynamic_analysis_request do |rewriter|
             if Have.dynamic_analysis_target_node?(matcher_node)
               create_have_matcher.register_request_for_dynamic_analysis(rewriter)
             end

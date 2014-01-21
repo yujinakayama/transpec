@@ -1,13 +1,19 @@
 # coding: utf-8
 
+require 'active_support/concern'
+require 'transpec/syntax/mixin/send'
+require 'transpec/syntax/mixin/have_matcher_owner'
 require 'transpec/syntax/operator_matcher'
 
 module Transpec
   class Syntax
     module Mixin
       module ShouldBase
-        def self.included(syntax)
-          syntax.add_dynamic_analysis_request do |rewriter|
+        extend ActiveSupport::Concern
+        include Send, HaveMatcherOwner
+
+        included do
+          add_dynamic_analysis_request do |rewriter|
             if OperatorMatcher.dynamic_analysis_target_node?(matcher_node)
               create_operator_matcher.register_request_for_dynamic_analysis(rewriter)
             end

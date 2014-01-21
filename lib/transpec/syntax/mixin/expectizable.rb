@@ -1,11 +1,14 @@
 # coding: utf-8
 
+require 'active_support/concern'
 require 'transpec/util'
 
 module Transpec
   class Syntax
     module Mixin
       module Expectizable
+        extend ActiveSupport::Concern
+
         def wrap_subject_in_expect!
           wrap_subject_with_method!('expect')
         end
