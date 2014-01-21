@@ -52,7 +52,7 @@ module Transpec
         end
 
         convert_to_syntax!('expect', negative_form)
-        register_record(:expect, negative_form)
+        register_record(ExpectRecord, negative_form)
       end
 
       def allowize_useless_expectation!(negative_form = 'not_to')
@@ -65,7 +65,7 @@ module Transpec
         convert_to_syntax!('allow', negative_form)
         remove_allowance_for_no_message!
 
-        register_record(:allow, negative_form)
+        register_record(AllowRecord, negative_form)
       end
 
       def stubize_useless_expectation!
@@ -74,16 +74,11 @@ module Transpec
         replace(selector_range, 'stub')
         remove_allowance_for_no_message!
 
-        register_record(:stub)
+        register_record(StubRecord)
       end
 
       def add_instance_arg_to_any_instance_implementation_block!
-        added = super
-        return unless added
-        @report.records << Record.new(
-          "Klass.any_instance.#{method_name}(:message) { |arg| }",
-          "Klass.any_instance.#{method_name}(:message) { |instance, arg| }"
-        )
+        super && register_record(AnyInstanceBlockRecord)
       end
 
       private
@@ -160,51 +155,94 @@ module Transpec
         end
       end
 
-      def register_record(conversion_type, negative_form_of_to = nil)
-        @report.records << Record.new(
-          original_syntax(conversion_type),
-          converted_syntax(conversion_type, negative_form_of_to)
-        )
+      def register_record(record_class, negative_form_of_to = nil)
+        @report.records << record_class.new(self, negative_form_of_to)
       end
 
-      def original_syntax(conversion_type)
-        syntax = if any_instance? && conversion_type != :stub
-                   'Klass.any_instance.'
-                 else
-                   'obj.'
-                 end
-
-        syntax << (positive? ? 'should_receive' : 'should_not_receive')
-        syntax << '(:message)'
-
-        if [:allow, :stub].include?(conversion_type)
-          syntax << '.any_number_of_times' if any_number_of_times?
-          syntax << '.at_least(0)' if at_least_zero?
+      class ExpectRecord < Record
+        def initialize(should_receive, negative_form_of_to)
+          @should_receive = should_receive
+          @negative_form_of_to = negative_form_of_to
         end
 
-        syntax
-      end
+        def original_syntax
+          syntax = if @should_receive.any_instance?
+                     'Klass.any_instance.'
+                   else
+                     'obj.'
+                   end
+          syntax << "#{@should_receive.method_name}(:message)"
+        end
 
-      def converted_syntax(conversion_type, negative_form_of_to)
-        return 'obj.stub(:message)' if conversion_type == :stub
-
-        syntax = case conversion_type
-                 when :expect
-                   if any_instance?
+        def converted_syntax
+          syntax = if @should_receive.any_instance?
                      'expect_any_instance_of(Klass).'
                    else
                      'expect(obj).'
                    end
-                 when :allow
-                   if any_instance?
+          syntax << (@should_receive.positive? ? 'to' : @negative_form_of_to)
+          syntax << ' receive(:message)'
+        end
+      end
+
+      class AllowRecord < Record
+        def initialize(should_receive, negative_form_of_to)
+          @should_receive = should_receive
+          @negative_form_of_to = negative_form_of_to
+        end
+
+        def original_syntax
+          syntax = if @should_receive.any_instance?
+                     'Klass.any_instance.'
+                   else
+                     'obj.'
+                   end
+          syntax << "#{@should_receive.method_name}(:message)"
+          syntax << '.any_number_of_times' if @should_receive.any_number_of_times?
+          syntax << '.at_least(0)' if @should_receive.at_least_zero?
+          syntax
+        end
+
+        def converted_syntax
+          syntax = if @should_receive.any_instance?
                      'allow_any_instance_of(Klass).'
                    else
                      'allow(obj).'
                    end
-                 end
+          syntax << (@should_receive.positive? ? 'to' : @negative_form_of_to)
+          syntax << ' receive(:message)'
+        end
+      end
 
-        syntax << (positive? ? 'to' : negative_form_of_to)
-        syntax << ' receive(:message)'
+      class StubRecord < Record
+        def initialize(should_receive, *)
+          @should_receive = should_receive
+        end
+
+        def original_syntax
+          syntax = "obj.#{@should_receive.method_name}(:message)"
+          syntax << '.any_number_of_times' if @should_receive.any_number_of_times?
+          syntax << '.at_least(0)' if @should_receive.at_least_zero?
+          syntax
+        end
+
+        def converted_syntax
+          'obj.stub(:message)'
+        end
+      end
+
+      class AnyInstanceBlockRecord < Record
+        def initialize(should_receive, *)
+          @should_receive = should_receive
+        end
+
+        def original_syntax
+          "Klass.any_instance.#{@should_receive.method_name}(:message) { |arg| }"
+        end
+
+        def converted_syntax
+          "Klass.any_instance.#{@should_receive.method_name}(:message) { |instance, arg| }"
+        end
       end
     end
   end

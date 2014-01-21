@@ -17,8 +17,6 @@ module Transpec
           remove_at_least_zero!
         end
 
-        private
-
         def any_number_of_times?
           !any_number_of_times_node.nil?
         end
@@ -26,6 +24,8 @@ module Transpec
         def at_least_zero?
           !at_least_zero_node.nil?
         end
+
+        private
 
         def remove_any_number_of_times!
           return unless any_number_of_times?

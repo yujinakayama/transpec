@@ -84,12 +84,7 @@ module Transpec
       end
 
       def add_instance_arg_to_any_instance_implementation_block!
-        added = super
-        return unless added
-        @report.records << Record.new(
-          "Klass.any_instance.#{method_name}(:message) { |arg| }",
-          "Klass.any_instance.#{method_name}(:message) { |instance, arg| }"
-        )
+        super && register_record(:any_instance_block)
       end
 
       private
@@ -165,49 +160,81 @@ module Transpec
       end
 
       def register_record(conversion_type)
-        @report.records << Record.new(original_syntax, converted_syntax(conversion_type))
+        record_class = case conversion_type
+                       when :deprecated
+                         DeprecatedRecord
+                       when :any_instance_block
+                         AnyInstanceBlockRecord
+                       else
+                         AllowRecord
+                       end
+        @report.records << record_class.new(self, conversion_type)
       end
 
-      def original_syntax
-        syntax = any_instance? ? 'Klass.any_instance' : 'obj'
-        syntax << ".#{method_name}"
+      class AllowRecord < Record
+        def initialize(method_stub, conversion_type)
+          @method_stub = method_stub
+          @conversion_type = conversion_type
+        end
 
-        if method_name == :stub_chain
-          syntax << '(:message1, :message2)'
-        else
-          syntax << (arg_node.hash_type? ? '(:message => value)' : '(:message)')
+        def original_syntax
+          syntax = @method_stub.any_instance? ? 'Klass.any_instance' : 'obj'
+          syntax << ".#{@method_stub.method_name}"
+
+          if @method_stub.method_name == :stub_chain
+            syntax << '(:message1, :message2)'
+          else
+            syntax << (@method_stub.arg_node.hash_type? ? '(:message => value)' : '(:message)')
+          end
+        end
+
+        def converted_syntax
+          syntax = @method_stub.any_instance? ? 'allow_any_instance_of(Klass)' : 'allow(obj)'
+          syntax << '.to '
+
+          case @conversion_type
+          when :allow_to_receive
+            syntax << 'receive(:message)'
+            syntax << '.and_return(value)' if @method_stub.arg_node.hash_type?
+          when :allow_to_receive_messages
+            syntax << 'receive_messages(:message => value)'
+          when :allow_to_receive_message_chain
+            syntax << 'receive_message_chain(:message1, :message2)'
+          end
+
+          syntax
         end
       end
 
-      def converted_syntax(conversion_type)
-        if conversion_type == :deprecated
-          converted_syntax_from_deprecated
-        else
-          allowized_syntax(conversion_type)
+      class DeprecatedRecord < Record
+        def initialize(method_stub, *)
+          @method_stub = method_stub
+        end
+
+        def original_syntax
+          syntax = @method_stub.any_instance? ? 'Klass.any_instance' : 'obj'
+          syntax << ".#{@method_stub.method_name}(:message)"
+        end
+
+        def converted_syntax
+          syntax = 'obj.'
+          syntax << @method_stub.send(:replacement_method_for_deprecated_method)
+          syntax << '(:message)'
         end
       end
 
-      def allowized_syntax(conversion_type)
-        syntax = any_instance? ? 'allow_any_instance_of(Klass)' : 'allow(obj)'
-        syntax << '.to '
-
-        case conversion_type
-        when :allow_to_receive
-          syntax << 'receive(:message)'
-          syntax << '.and_return(value)' if arg_node.hash_type?
-        when :allow_to_receive_messages
-          syntax << 'receive_messages(:message => value)'
-        when :allow_to_receive_message_chain
-          syntax << 'receive_message_chain(:message1, :message2)'
+      class AnyInstanceBlockRecord < Record
+        def initialize(method_stub, *)
+          @method_stub = method_stub
         end
 
-        syntax
-      end
+        def original_syntax
+          "Klass.any_instance.#{@method_stub.method_name}(:message) { |arg| }"
+        end
 
-      def converted_syntax_from_deprecated
-        syntax = 'obj.'
-        syntax << replacement_method_for_deprecated_method
-        syntax << '(:message)'
+        def converted_syntax
+          "Klass.any_instance.#{@method_stub.method_name}(:message) { |instance, arg| }"
+        end
       end
     end
   end
