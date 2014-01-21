@@ -581,7 +581,7 @@ Note: `rspec-rails` 3.0 [still uses `have(n).items` matcher with `rspec-collecti
 
 * This conversion can be disabled by: `--keep have_items`
 * Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
-* See also: [Expectations: have(x).items matchers will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#expectations__matchers_will_be_moved_into_an_external_gem)
+* See also: [Expectations: `have(x).items` matchers will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#expectations__matchers_will_be_moved_into_an_external_gem)
 
 ### One-liner expectations with `have(n).items` matcher
 
@@ -948,7 +948,7 @@ If you choose to do so, disable this conversion by either:
 
 * This conversion can be disabled by: `--keep its`
 * Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
-* See also: [Core: its will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#core__will_be_moved_into_an_external_gem)
+* See also: [Core: `its` will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#core__will_be_moved_into_an_external_gem)
 
 ### Current example object
 
