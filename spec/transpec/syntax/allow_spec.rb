@@ -1,27 +1,27 @@
 # coding: utf-8
 
 require 'spec_helper'
-require 'transpec/syntax/expect'
+require 'transpec/syntax/allow'
 
 module Transpec
   class Syntax
-    describe Expect do
+    describe Allow do
       include_context 'parsed objects'
-      include_context 'syntax object', Expect, :expect_object
+      include_context 'syntax object', Allow, :allow_object
 
       describe '#subject_node' do
         let(:source) do
           <<-END
             describe 'example' do
               it 'is empty' do
-                expect(subject).to be_empty
+                allow(subject).to be_empty
               end
             end
           END
         end
 
         it 'returns subject node' do
-          method_name = expect_object.subject_node.children[1]
+          method_name = allow_object.subject_node.children[1]
           method_name.should == :subject
         end
       end
@@ -32,14 +32,14 @@ module Transpec
             <<-END
               describe 'example' do
                 it 'is empty' do
-                  expect(subject).to receive(:foo) { }
+                  allow(subject).to receive(:foo) { }
                 end
               end
             END
           end
 
           it 'returns send node of the matcher' do
-            method_name = expect_object.matcher_node.children[1]
+            method_name = allow_object.matcher_node.children[1]
             method_name.should == :receive
           end
         end
@@ -49,64 +49,28 @@ module Transpec
             <<-END
               describe 'example' do
                 it 'is empty' do
-                  expect(subject).to be_empty
+                  allow(subject).to be_empty
                 end
               end
             END
           end
 
           it 'returns send node of the matcher' do
-            method_name = expect_object.matcher_node.children[1]
+            method_name = allow_object.matcher_node.children[1]
             method_name.should == :be_empty
           end
         end
       end
 
-      describe '#have_matcher' do
-        subject { expect_object.have_matcher }
-
-        context 'when it is taking #have matcher' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'has 2 items' do
-                  expect(subject).to have(2).items
-                end
-              end
-            END
-          end
-
-          it 'returns an instance of Have' do
-            should be_an(Have)
-          end
-        end
-
-        context 'when it is taking any other matcher' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'is empty' do
-                  expect(subject).to be_empty
-                end
-              end
-            END
-          end
-
-          it 'returns nil' do
-            should be_nil
-          end
-        end
-      end
-
       describe '#receive_matcher' do
-        subject { expect_object.receive_matcher }
+        subject { allow_object.receive_matcher }
 
         context 'when it is taking #receive matcher' do
           let(:source) do
             <<-END
               describe 'example' do
                 it 'receives :foo' do
-                  expect(subject).to receive(:foo)
+                  allow(subject).to receive(:foo)
                 end
               end
             END
@@ -122,7 +86,7 @@ module Transpec
             <<-END
               describe 'example' do
                 it 'is empty' do
-                  expect(subject).to be_empty
+                  allow(subject).to be_empty
                 end
               end
             END
@@ -135,14 +99,14 @@ module Transpec
       end
 
       describe '#block_node' do
-        subject { expect_object.block_node }
+        subject { allow_object.block_node }
 
         context 'when the #to is taking a block' do
           let(:source) do
             <<-END
               describe 'example' do
                 it 'receives :foo' do
-                  expect(subject).to receive(:foo) do |arg|
+                  allow(subject).to receive(:foo) do |arg|
                   end
                 end
               end
@@ -159,7 +123,7 @@ module Transpec
             <<-END
               describe 'example' do
                 it 'receives :foo' do
-                  expect(subject).to receive(:foo) { |arg|
+                  allow(subject).to receive(:foo) { |arg|
                   }
                 end
               end

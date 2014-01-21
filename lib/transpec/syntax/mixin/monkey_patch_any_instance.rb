@@ -5,12 +5,11 @@ require 'ast'
 module Transpec
   class Syntax
     module Mixin
-      module AnyInstance
+      module MonkeyPatchAnyInstance
         include ::AST::Sexp
 
         def self.included(syntax)
           syntax.add_dynamic_analysis_request do |rewriter|
-            key = :any_instance_target_class_name
             code = <<-END.gsub(/^\s+\|/, '').chomp
               |if self.class.name == 'RSpec::Mocks::AnyInstance::Recorder'
               |  if respond_to?(:klass)
@@ -24,7 +23,7 @@ module Transpec
               |  nil
               |end
             END
-            rewriter.register_request(subject_node, key, code)
+            rewriter.register_request(subject_node, :any_instance_target_class_name, code)
           end
         end
 
@@ -35,28 +34,7 @@ module Transpec
           !node_data[:any_instance_target_class_name].result.nil?
         end
 
-        def add_instance_arg_to_any_instance_implementation_block!
-          return unless any_instance_block_node
-          first_arg_node = any_instance_block_node.children[1].children[0]
-          return unless first_arg_node
-          first_arg_name = first_arg_node.children.first
-          return if first_arg_name == :instance
-          insert_before(first_arg_node.loc.expression, 'instance, ')
-
-          @report.records << Record.new(
-            "Klass.any_instance.#{method_name}(:message) { |arg| }",
-            "Klass.any_instance.#{method_name}(:message) { |instance, arg| }"
-          )
-        end
-
         private
-
-        def any_instance_block_node
-          return unless any_instance?
-          each_chained_method_node do |node, _|
-            return node if node.block_type?
-          end
-        end
 
         def any_instance_target_class_source
           return nil unless any_instance?

@@ -4,14 +4,16 @@ require 'transpec/syntax'
 require 'transpec/syntax/mixin/send'
 require 'transpec/syntax/mixin/monkey_patch'
 require 'transpec/syntax/mixin/allow_no_message'
-require 'transpec/syntax/mixin/any_instance'
+require 'transpec/syntax/mixin/monkey_patch_any_instance'
+require 'transpec/syntax/mixin/any_instance_block'
 require 'transpec/util'
 require 'English'
 
 module Transpec
   class Syntax
     class MethodStub < Syntax
-      include Mixin::Send, Mixin::MonkeyPatch, Mixin::AllowNoMessage, Mixin::AnyInstance, Util
+      include Mixin::Send, Mixin::MonkeyPatch, Mixin::AllowNoMessage,
+              Mixin::MonkeyPatchAnyInstance, Mixin::AnyInstanceBlock, Util
 
       # rubocop:disable LineLength
       CLASSES_DEFINING_OWN_STUB_METHOD = [
@@ -79,6 +81,15 @@ module Transpec
         replace(selector_range, replacement_method_for_deprecated_method)
 
         register_record(:deprecated)
+      end
+
+      def add_instance_arg_to_any_instance_implementation_block!
+        added = super
+        return unless added
+        @report.records << Record.new(
+          "Klass.any_instance.#{method_name}(:message) { |arg| }",
+          "Klass.any_instance.#{method_name}(:message) { |instance, arg| }"
+        )
       end
 
       private

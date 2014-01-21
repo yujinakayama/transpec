@@ -5,13 +5,14 @@ require 'transpec/syntax/mixin/send'
 require 'transpec/syntax/mixin/monkey_patch'
 require 'transpec/syntax/mixin/expectizable'
 require 'transpec/syntax/mixin/allow_no_message'
-require 'transpec/syntax/mixin/any_instance'
+require 'transpec/syntax/mixin/monkey_patch_any_instance'
+require 'transpec/syntax/mixin/any_instance_block'
 
 module Transpec
   class Syntax
     class ShouldReceive < Syntax
       include Mixin::Send, Mixin::MonkeyPatch, Mixin::Expectizable, Mixin::AllowNoMessage,
-              Mixin::AnyInstance
+              Mixin::MonkeyPatchAnyInstance, Mixin::AnyInstanceBlock
 
       alias_method :useless_expectation?, :allow_no_message?
 
@@ -74,6 +75,15 @@ module Transpec
         remove_allowance_for_no_message!
 
         register_record(:stub)
+      end
+
+      def add_instance_arg_to_any_instance_implementation_block!
+        added = super
+        return unless added
+        @report.records << Record.new(
+          "Klass.any_instance.#{method_name}(:message) { |arg| }",
+          "Klass.any_instance.#{method_name}(:message) { |instance, arg| }"
+        )
       end
 
       private

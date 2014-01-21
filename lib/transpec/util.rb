@@ -60,9 +60,12 @@ module Transpec
       source[0] == '(' && source[-1] == ')'
     end
 
-    def taking_block?(node)
+    def block_node_taken_by_method(node)
       parent_node = node.parent_node
-      parent_node && parent_node.block_type? && parent_node.children.first.equal?(node)
+      return nil unless parent_node
+      return nil unless parent_node.block_type?
+      return nil unless parent_node.children.first.equal?(node)
+      parent_node
     end
 
     def indentation_of_line(arg)

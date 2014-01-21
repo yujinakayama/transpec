@@ -2,17 +2,16 @@
 
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/send'
-require 'transpec/syntax/mixin/have_matcher_owner'
 require 'transpec/syntax/mixin/receive_matcher_owner'
 require 'transpec/util'
 
 module Transpec
   class Syntax
-    class Expect < Syntax
-      include Mixin::Send, Mixin::HaveMatcherOwner, Mixin::ReceiveMatcherOwner, Util
+    class Allow < Syntax
+      include Mixin::Send, Mixin::ReceiveMatcherOwner, Util
 
       def self.target_method?(receiver_node, method_name)
-        receiver_node.nil? && [:expect, :expect_any_instance_of].include?(method_name)
+        receiver_node.nil? && [:allow, :allow_any_instance_of].include?(method_name)
       end
 
       def current_syntax_type
@@ -45,7 +44,7 @@ module Transpec
       end
 
       def any_instance?
-        method_name == :expect_any_instance_of
+        method_name == :allow_any_instance_of
       end
     end
   end

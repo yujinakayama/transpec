@@ -61,8 +61,8 @@ module Transpec
       def inject_analysis_method(node, analysis_codes, source_rewriter)
         front, rear = build_wrapper_codes(node, analysis_codes)
 
-        source_range = if taking_block?(node)
-                         node.parent_node.loc.expression
+        source_range = if (block_node = block_node_taken_by_method(node))
+                         block_node.loc.expression
                        else
                          node.loc.expression
                        end

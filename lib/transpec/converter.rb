@@ -88,6 +88,10 @@ module Transpec
       end
     end
 
+    def process_allow(expect)
+      # TODO
+    end
+
     def process_should_receive(should_receive)
       if should_receive.useless_expectation?
         if @configuration.convert_deprecated_method?
