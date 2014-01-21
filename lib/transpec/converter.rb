@@ -54,10 +54,7 @@ module Transpec
         )
       end
 
-      if should.have_matcher && @configuration.convert_have_items?
-        parenthesize_matcher_arg = @configuration.parenthesize_matcher_arg
-        should.have_matcher.convert_to_standard_expectation!(parenthesize_matcher_arg)
-      end
+      process_have(should.have_matcher)
     end
 
     def process_oneliner_should(oneliner_should)
@@ -82,10 +79,7 @@ module Transpec
     end
 
     def process_expect(expect)
-      if expect.have_matcher && @configuration.convert_have_items?
-        parenthesize_matcher_arg = @configuration.parenthesize_matcher_arg
-        expect.have_matcher.convert_to_standard_expectation!(parenthesize_matcher_arg)
-      end
+      process_have(expect.have_matcher)
     end
 
     def process_allow(expect)
@@ -166,6 +160,11 @@ module Transpec
       if need_to_modify_mock_syntax_configuration?(rspec_configure)
         rspec_configure.mocks.syntaxes = :expect
       end
+    end
+
+    def process_have(have)
+      return if !have || !@configuration.convert_have_items?
+      have.convert_to_standard_expectation!(@configuration.parenthesize_matcher_arg)
     end
 
     def need_to_modify_expectation_syntax_configuration?(rspec_configure)
