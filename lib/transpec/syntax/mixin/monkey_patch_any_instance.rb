@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require 'active_support/concern'
+require 'transpec/syntax/mixin/monkey_patch'
 require 'ast'
 
 module Transpec
@@ -8,7 +9,7 @@ module Transpec
     module Mixin
       module MonkeyPatchAnyInstance
         extend ActiveSupport::Concern
-        include ::AST::Sexp
+        include MonkeyPatch, ::AST::Sexp
 
         included do
           add_dynamic_analysis_request do |rewriter|
