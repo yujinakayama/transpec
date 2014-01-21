@@ -836,7 +836,7 @@ Transpec::Converter.new(configuration, rspec_version).convert(any_instance_block
 -%>
 ```
 
-Here's an excerpt from [the warning for `any_instance` implementation blocks in RSpec 2.99](https://github.com/rspec/rspec-mocks/blob/aab8dc9/lib/rspec/mocks/message_expectation.rb#L478-L491):
+Here's an excerpt from [the warning](https://github.com/rspec/rspec-mocks/blob/aab8dc9/lib/rspec/mocks/message_expectation.rb#L478-L491) for `any_instance` implementation blocks in RSpec 2.99:
 
 > In RSpec 3, `any_instance` implementation blocks will be yielded the receiving
 > instance as the first block argument to allow the implementation block to use
@@ -858,7 +858,6 @@ Here's an excerpt from [the warning for `any_instance` implementation blocks in 
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 2.99
 * See also: [Mocks: `any_instance` block implementations will yield the receiver](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#mocks__block_implementations_will_yield_the_receiver)
-
 
 ### Deprecated test double aliases
 
@@ -951,7 +950,7 @@ Transpec::Converter.new(nil, rspec_version).convert(example_target)
 -%>
 ```
 
-Here's an excerpt from [the warning for `RSpec::Core::ExampleGroup#example` and `#running_example` in RSpec 2.99](https://github.com/rspec/rspec-core/blob/7d6d2ca/lib/rspec/core/example_group.rb#L513-L527):
+Here's an excerpt from [the warning](https://github.com/rspec/rspec-core/blob/7d6d2ca/lib/rspec/core/example_group.rb#L513-L527) for `RSpec::Core::ExampleGroup#example` and `#running_example` in RSpec 2.99:
 
 > `RSpec::Core::ExampleGroup#example` is deprecated and will be removed in RSpec 3. There are a few options for what you can use instead:
 >
