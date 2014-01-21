@@ -111,7 +111,7 @@ module Transpec
       Git.write_commit_message(commit_message.to_s)
 
       puts
-      puts 'A commit message that describes the conversion summary was generated to'.color(:cyan)
+      puts 'A commit message which describes the conversion summary was generated to'.color(:cyan)
       puts '.git/COMMIT_EDITMSG. To use the message, type the following command for'.color(:cyan)
       puts 'the next commit:'.color(:cyan)
       puts '    git commit -eF .git/COMMIT_EDITMSG'
