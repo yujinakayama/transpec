@@ -2,6 +2,8 @@
 
 ## Development
 
+## v1.7.0
+
 * Support conversion of `any_instance` block
 
 ## v1.6.1
