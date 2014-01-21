@@ -17,10 +17,20 @@ module Transpec
         |Convert specs to RSpec #{@rspec_version} syntax with Transpec
         |
         |This conversion is done by Transpec #{Transpec::Version} with the following command:
-        |    transpec #{@cli_args.join(' ')}
+        |    transpec #{smart_cli_args}
         |
         |#{conversion_summary}
       END
+    end
+
+    def smart_cli_args
+      @cli_args.map do |arg|
+        if arg.include?(' ')
+          arg.inspect
+        else
+          arg
+        end
+      end.join(' ')
     end
   end
 end

@@ -11,7 +11,7 @@ module Transpec
     subject(:commit_message) { CommitMessage.new(report, rspec_version, cli_args) }
     let(:report) { Report.new }
     let(:rspec_version) { RSpecVersion.new('2.99.0.beta1') }
-    let(:cli_args) { ['--force'] }
+    let(:cli_args) { ['--force', '--rspec-command', 'bundle exec rspec'] }
 
     before do
       report.records << Record.new('obj.stub(:message)', 'allow(obj).to receive(:message)')
@@ -47,7 +47,7 @@ module Transpec
           body_lines[0].chomp
             .should match(/^This conversion is done by Transpec \d+\.\d+\.\d+ with the following command:$/)
           body_lines[1].chomp
-            .should ==     '    transpec --force'
+            .should ==     '    transpec --force --rspec-command "bundle exec rspec"'
         end
 
         it 'has blank line after the preface' do
