@@ -9,6 +9,8 @@ module Transpec
       require 'transpec/syntax/rspec_configure/expectations'
       require 'transpec/syntax/rspec_configure/mocks'
 
+      include Util
+
       def self.target_node?(node, runtime_data = nil)
         return false unless node && node.block_type?
         send_node = node.children.first
@@ -17,11 +19,15 @@ module Transpec
       end
 
       def expectations
-        @expectations ||= Expectations.new(node, source_rewriter)
+        @expectations ||= Expectations.new(self, source_rewriter)
       end
 
       def mocks
-        @mocks ||= Mocks.new(node, source_rewriter)
+        @mocks ||= Mocks.new(self, source_rewriter)
+      end
+
+      def block_arg_name
+        first_block_arg_name(node)
       end
     end
   end

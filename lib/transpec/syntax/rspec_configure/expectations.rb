@@ -6,7 +6,7 @@ module Transpec
   class Syntax
     class RSpecConfigure
       class Expectations < Framework
-        def framework_block_method_name
+        def block_method_name
           :expect_with
         end
       end

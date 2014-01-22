@@ -6,7 +6,7 @@ module Transpec
   class Syntax
     class RSpecConfigure
       class Mocks < Framework
-        def framework_block_method_name
+        def block_method_name
           :mock_with
         end
 

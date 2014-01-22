@@ -60,6 +60,12 @@ module Transpec
       source[0] == '(' && source[-1] == ')'
     end
 
+    def first_block_arg_name(block_node)
+      args_node = block_node.children[1]
+      first_arg_node = args_node.children.first
+      first_arg_node.children.first
+    end
+
     def block_node_taken_by_method(node)
       parent_node = node.parent_node
       return nil unless parent_node
