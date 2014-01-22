@@ -2,11 +2,12 @@
 
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/send'
+require 'transpec/syntax/mixin/owned_matcher'
 
 module Transpec
   class Syntax
     class Have < Syntax
-      include Mixin::Send
+      include Mixin::Send, Mixin::OwnedMatcher
 
       # String#count is not query method, and there's no way to determine
       # whether a method is query method.
@@ -19,23 +20,11 @@ module Transpec
 
       attr_reader :expectation
 
-      def self.standalone?
-        false
-      end
-
       def self.target_method?(have_node, items_method_name)
         return false unless have_node
         have_receiver_node, have_method_name, *_ = *have_node
         return false if have_receiver_node
         [:have, :have_exactly, :have_at_least, :have_at_most].include?(have_method_name)
-      end
-
-      def initialize(node, expectation, source_rewriter = nil, runtime_data = nil, report = nil)
-        @node = node
-        @expectation = expectation
-        @source_rewriter = source_rewriter
-        @runtime_data = runtime_data
-        @report = report || Report.new
       end
 
       add_dynamic_analysis_request do |rewriter|
