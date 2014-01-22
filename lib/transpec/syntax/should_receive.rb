@@ -157,10 +157,14 @@ module Transpec
         @report.records << record_class.new(self, negative_form_of_to)
       end
 
-      class ExpectRecord < Record
+      class ExpectBaseRecord < Record
         def initialize(should_receive, negative_form_of_to)
           @should_receive = should_receive
           @negative_form_of_to = negative_form_of_to
+        end
+
+        def syntax_name
+          fail NotImplementedError
         end
 
         def original_syntax
@@ -174,41 +178,31 @@ module Transpec
 
         def converted_syntax
           syntax = if @should_receive.any_instance?
-                     'expect_any_instance_of(Klass).'
+                     "#{syntax_name}_any_instance_of(Klass)."
                    else
-                     'expect(obj).'
+                     "#{syntax_name}(obj)."
                    end
           syntax << (@should_receive.positive? ? 'to' : @negative_form_of_to)
           syntax << ' receive(:message)'
         end
       end
 
-      class AllowRecord < Record
-        def initialize(should_receive, negative_form_of_to)
-          @should_receive = should_receive
-          @negative_form_of_to = negative_form_of_to
+      class ExpectRecord < ExpectBaseRecord
+        def syntax_name
+          'expect'
+        end
+      end
+
+      class AllowRecord < ExpectBaseRecord
+        def syntax_name
+          'allow'
         end
 
         def original_syntax
-          syntax = if @should_receive.any_instance?
-                     'Klass.any_instance.'
-                   else
-                     'obj.'
-                   end
-          syntax << "#{@should_receive.method_name}(:message)"
+          syntax = super
           syntax << '.any_number_of_times' if @should_receive.any_number_of_times?
           syntax << '.at_least(0)' if @should_receive.at_least_zero?
           syntax
-        end
-
-        def converted_syntax
-          syntax = if @should_receive.any_instance?
-                     'allow_any_instance_of(Klass).'
-                   else
-                     'allow(obj).'
-                   end
-          syntax << (@should_receive.positive? ? 'to' : @negative_form_of_to)
-          syntax << ' receive(:message)'
         end
       end
 
