@@ -222,20 +222,6 @@ module Transpec
           'obj.stub(:message)'
         end
       end
-
-      class AnyInstanceBlockRecord < Record
-        def initialize(should_receive, *)
-          @should_receive = should_receive
-        end
-
-        def original_syntax
-          "Klass.any_instance.#{@should_receive.method_name}(:message) { |arg| }"
-        end
-
-        def converted_syntax
-          "Klass.any_instance.#{@should_receive.method_name}(:message) { |instance, arg| }"
-        end
-      end
     end
   end
 end

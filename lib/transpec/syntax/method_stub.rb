@@ -219,20 +219,6 @@ module Transpec
           syntax << '(:message)'
         end
       end
-
-      class AnyInstanceBlockRecord < Record
-        def initialize(method_stub, *)
-          @method_stub = method_stub
-        end
-
-        def original_syntax
-          "Klass.any_instance.#{@method_stub.method_name}(:message) { |arg| }"
-        end
-
-        def converted_syntax
-          "Klass.any_instance.#{@method_stub.method_name}(:message) { |instance, arg| }"
-        end
-      end
     end
   end
 end

@@ -28,6 +28,20 @@ module Transpec
             return node if node.block_type?
           end
         end
+
+        class AnyInstanceBlockRecord < Record
+          def initialize(host, *)
+            @host = host
+          end
+
+          def original_syntax
+            "Klass.any_instance.#{@host.method_name}(:message) { |arg| }"
+          end
+
+          def converted_syntax
+            "Klass.any_instance.#{@host.method_name}(:message) { |instance, arg| }"
+          end
+        end
       end
     end
   end
