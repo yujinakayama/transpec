@@ -24,7 +24,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'parser',        '>= 2.1.3', '< 3.0'
   spec.add_runtime_dependency 'bundler',       '~> 1.3'
-  spec.add_runtime_dependency 'rainbow',       '~> 2.0'
+  spec.add_runtime_dependency 'rainbow',       '>= 1.99.1', '< 3.0'
   spec.add_runtime_dependency 'json',          '~> 1.8'
   spec.add_runtime_dependency 'activesupport', '~> 4.0'
 

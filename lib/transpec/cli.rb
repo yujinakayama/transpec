@@ -8,7 +8,8 @@ require 'transpec/file_finder'
 require 'transpec/option_parser'
 require 'transpec/project'
 require 'transpec/report'
-require 'rainbow/ext/string'
+require 'rainbow'
+require 'rainbow/ext/string' unless String.respond_to?(:color)
 
 module Transpec
   class CLI

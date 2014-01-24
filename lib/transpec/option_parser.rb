@@ -4,7 +4,8 @@ require 'transpec/configuration'
 require 'transpec/git'
 require 'transpec/version'
 require 'optparse'
-require 'rainbow/ext/string'
+require 'rainbow'
+require 'rainbow/ext/string' unless String.respond_to?(:color)
 
 # rubocop:disable ClassLength
 
