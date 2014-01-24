@@ -8,7 +8,7 @@ require 'transpec/file_finder'
 require 'transpec/option_parser'
 require 'transpec/project'
 require 'transpec/report'
-require 'rainbow'
+require 'rainbow/ext/string'
 
 module Transpec
   class CLI
