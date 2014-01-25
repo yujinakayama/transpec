@@ -9,7 +9,7 @@ require 'transpec/option_parser'
 require 'transpec/project'
 require 'transpec/report'
 require 'rainbow'
-require 'rainbow/ext/string' unless String.respond_to?(:color)
+require 'rainbow/ext/string' unless String.method_defined?(:color)
 
 module Transpec
   class CLI
