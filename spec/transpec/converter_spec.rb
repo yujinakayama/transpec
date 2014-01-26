@@ -896,7 +896,13 @@ module Transpec
     end
 
     describe '#process_rspec_configure' do
-      let(:rspec_configure) { double('rspec_configure').as_null_object }
+      let(:rspec_configure) do
+        double(
+          'rspec_configure',
+          expectations: double('expectations').as_null_object,
+                 mocks: double('mocks').as_null_object
+        ).as_null_object
+      end
 
       context 'when #need_to_modify_expectation_syntax_configuration? returns true' do
         before do
