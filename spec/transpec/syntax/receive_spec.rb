@@ -49,7 +49,7 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            it 'adds record `expect_any_instance_of(Klass).to receive(:message) { |arg| }` ' +
+            it 'adds record `expect_any_instance_of(Klass).to receive(:message) { |arg| }` ' \
                '-> `Klass.any_instance.should_receive(:message) { |instance, arg| }`' do
               record.original_syntax.should  == 'expect_any_instance_of(Klass).to receive(:message) { |arg| }'
               record.converted_syntax.should == 'expect_any_instance_of(Klass).to receive(:message) { |instance, arg| }'
@@ -83,7 +83,7 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            it 'adds record `expect_any_instance_of(Klass).to receive(:message) { |arg| }` ' +
+            it 'adds record `expect_any_instance_of(Klass).to receive(:message) { |arg| }` ' \
                '-> `Klass.any_instance.should_receive(:message) { |instance, arg| }`' do
               record.original_syntax.should  == 'expect_any_instance_of(Klass).to receive(:message) { |arg| }'
               record.converted_syntax.should == 'expect_any_instance_of(Klass).to receive(:message) { |instance, arg| }'
@@ -172,7 +172,7 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            it 'adds record `allow_any_instance_of(Klass).to receive(:message) { |arg| }` ' +
+            it 'adds record `allow_any_instance_of(Klass).to receive(:message) { |arg| }` ' \
                '-> `Klass.any_instance.should_receive(:message) { |instance, arg| }`' do
               record.original_syntax.should  == 'allow_any_instance_of(Klass).to receive(:message) { |arg| }'
               record.converted_syntax.should == 'allow_any_instance_of(Klass).to receive(:message) { |instance, arg| }'
@@ -206,7 +206,7 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            it 'adds record `allow_any_instance_of(Klass).to receive(:message) { |arg| }` ' +
+            it 'adds record `allow_any_instance_of(Klass).to receive(:message) { |arg| }` ' \
                '-> `Klass.any_instance.should_receive(:message) { |instance, arg| }`' do
               record.original_syntax.should  == 'allow_any_instance_of(Klass).to receive(:message) { |arg| }'
               record.converted_syntax.should == 'allow_any_instance_of(Klass).to receive(:message) { |instance, arg| }'

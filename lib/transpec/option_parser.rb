@@ -191,7 +191,7 @@ module Transpec
       args.reject do |arg|
         case arg
         when '-m', '--generate-commit-message'
-          warn 'DEPRECATION: -m/--generate-commit-message option is deprecated. ' +
+          warn 'DEPRECATION: -m/--generate-commit-message option is deprecated. ' \
                'A commit message will always be generated.'
           true
         else

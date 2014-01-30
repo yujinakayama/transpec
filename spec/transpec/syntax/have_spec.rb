@@ -943,7 +943,7 @@ module Transpec
                 rewritten_source.should == expected_source
               end
 
-              it 'adds record ' +
+              it 'adds record ' \
                  '`expect(obj).to have(n).errors_on(...)` -> `expect(obj.errors_on(...).size).to eq(n)`' do
                 have_object.convert_to_standard_expectation!
                 record.original_syntax.should  == 'expect(obj).to have(n).errors_on(...)'
@@ -993,7 +993,7 @@ module Transpec
                 rewritten_source.should == expected_source
               end
 
-              it 'adds record ' +
+              it 'adds record ' \
                  '`expect(obj).to have(n).errors_on(...)` -> `expect(obj.send(:errors_on, ...).size).to eq(n)`' do
                 have_object.convert_to_standard_expectation!
                 record.original_syntax.should  == 'expect(obj).to have(n).errors_on(...)'
@@ -1040,7 +1040,7 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            it 'adds record ' +
+            it 'adds record ' \
                '`expect(obj).to have(n).errors_on(...)` -> `expect(obj.errors_on(...).size).to eq(n)`' do
               have_object.convert_to_standard_expectation!
               record.original_syntax.should  == 'expect(obj).to have(n).errors_on(...)'

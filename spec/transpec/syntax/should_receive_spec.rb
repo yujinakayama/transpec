@@ -178,7 +178,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record ' +
+          it 'adds record ' \
              '`obj.should_not_receive(:message)` -> `expect(obj).not_to receive(:message)`' do
             should_receive_object.expectize!
             record.original_syntax.should  == 'obj.should_not_receive(:message)'
@@ -201,7 +201,7 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            it 'adds record ' +
+            it 'adds record ' \
                '`obj.should_not_receive(:message)` -> `expect(obj).to_not receive(:message)`' do
               should_receive_object.expectize!('to_not')
               record.original_syntax.should  == 'obj.should_not_receive(:message)'
@@ -426,7 +426,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record `Klass.any_instance.should_receive(:message)` ' +
+          it 'adds record `Klass.any_instance.should_receive(:message)` ' \
              '-> `expect_any_instance_of(Klass).to receive(:message)`' do
             should_receive_object.expectize!
             record.original_syntax.should  == 'Klass.any_instance.should_receive(:message)'
@@ -500,7 +500,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record `Klass.any_instance.should_receive(:message)` ' +
+          it 'adds record `Klass.any_instance.should_receive(:message)` ' \
              '-> `expect_any_instance_of(Klass).to receive(:message)`' do
             should_receive_object.expectize!
             record.original_syntax.should  == 'Klass.any_instance.should_receive(:message)'
@@ -508,7 +508,7 @@ module Transpec
           end
         end
 
-        context 'when it is `variable.any_instance.should_receive(:method)` form ' +
+        context 'when it is `variable.any_instance.should_receive(:method)` form ' \
                 'and the variable is an AnyInstance::Recorder' do
           context 'with runtime information' do
             include_context 'dynamic analysis objects'
@@ -542,7 +542,7 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            it 'adds record `Klass.any_instance.should_receive(:message)` ' +
+            it 'adds record `Klass.any_instance.should_receive(:message)` ' \
                '-> `expect_any_instance_of(Klass).to receive(:message)`' do
               should_receive_object.expectize!
               record.original_syntax.should  == 'Klass.any_instance.should_receive(:message)'
@@ -653,7 +653,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record ' +
+          it 'adds record ' \
              '`obj.should_receive(:message).any_number_of_times` -> `allow(obj).to receive(:message)`' do
             should_receive_object.allowize_useless_expectation!
             record.original_syntax.should  == 'obj.should_receive(:message).any_number_of_times'
@@ -755,7 +755,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record `Klass.any_instance.should_receive(:message).any_number_of_times` ' +
+          it 'adds record `Klass.any_instance.should_receive(:message).any_number_of_times` ' \
              '-> `allow_any_instance_of(Klass).to receive(:message)`' do
             should_receive_object.allowize_useless_expectation!
             record.original_syntax.should  == 'Klass.any_instance.should_receive(:message).any_number_of_times'
@@ -789,7 +789,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record `Klass.any_instance.should_receive(:message).any_number_of_times` ' +
+          it 'adds record `Klass.any_instance.should_receive(:message).any_number_of_times` ' \
              '-> `allow_any_instance_of(Klass).to receive(:message)`' do
             should_receive_object.allowize_useless_expectation!
             record.original_syntax.should  == 'Klass.any_instance.should_receive(:message).any_number_of_times'
@@ -823,7 +823,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record ' +
+          it 'adds record ' \
              '`obj.should_receive(:message).at_least(0)` -> `allow(obj).to receive(:message)`' do
             should_receive_object.allowize_useless_expectation!
             record.original_syntax.should  == 'obj.should_receive(:message).at_least(0)'
@@ -857,7 +857,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record `Klass.any_instance.should_receive(:message).at_least(0)` ' +
+          it 'adds record `Klass.any_instance.should_receive(:message).at_least(0)` ' \
              '-> `allow_any_instance_of(Klass).to receive(:message)`' do
             should_receive_object.allowize_useless_expectation!
             record.original_syntax.should  == 'Klass.any_instance.should_receive(:message).at_least(0)'
@@ -913,7 +913,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record ' +
+          it 'adds record ' \
              '`obj.should_receive(:message).any_number_of_times` -> `obj.stub(:message)`' do
             record.original_syntax.should  == 'obj.should_receive(:message).any_number_of_times'
             record.converted_syntax.should == 'obj.stub(:message)'
@@ -969,7 +969,7 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record `Klass.any_instance.should_receive(:message) { |arg| }` ' +
+          it 'adds record `Klass.any_instance.should_receive(:message) { |arg| }` ' \
              '-> `Klass.any_instance.should_receive(:message) { |instance, arg| }`' do
             record.original_syntax.should  == 'Klass.any_instance.should_receive(:message) { |arg| }'
             record.converted_syntax.should == 'Klass.any_instance.should_receive(:message) { |instance, arg| }'

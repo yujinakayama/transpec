@@ -339,7 +339,7 @@ module Transpec
               END
             end
 
-            it 'adds #mock_with block ' +
+            it 'adds #mock_with block ' \
                'and #yield_receiver_to_any_instance_implementation_blocks= statement' do
               rewritten_source.should == expected_source
             end
