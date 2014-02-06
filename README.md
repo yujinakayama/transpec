@@ -43,7 +43,7 @@ describe Account do
   describe '#renew' do
     context 'when the account is renewable and not closed' do
       before do
-        account.stub(:renewable? => true, :closed? => false)
+        account.stub(:closed?).and_return(false)
       end
 
       it 'does not raise error' do
@@ -79,7 +79,7 @@ describe Account do
   describe '#renew' do
     context 'when the account is renewable and not closed' do
       before do
-        account.stub(:renewable? => true, :closed? => false)
+        allow(account).to receive(:closed?).and_return(false)
       end
 
       it 'does not raise error' do
