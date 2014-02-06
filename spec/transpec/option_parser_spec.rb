@@ -155,6 +155,15 @@ module Transpec
         end
       end
 
+      describe '-t/--convert-stub-with-hash option' do
+        let(:args) { ['--convert-stub-with-hash'] }
+
+        it 'sets Configuration#convert_stub_with_hash_to_stub_and_return? true' do
+          parser.parse(args)
+          configuration.convert_stub_with_hash_to_stub_and_return?.should be_true
+        end
+      end
+
       describe '-p/--no-parentheses-matcher-arg option' do
         let(:args) { ['--no-parentheses-matcher-arg'] }
 

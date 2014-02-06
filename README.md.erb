@@ -261,6 +261,14 @@ Note that this is not same as `--keep deprecated` since this configures `yield_r
 
 See [Supported Conversions - `any_instance` implementation blocks](#any_instance-implementation-blocks) for more details.
 
+### `-t/--convert-stub-with-hash`
+
+Enable conversion of `obj.stub(:message => value)` to `allow(obj).to receive(:message).and_return(value)` when `receive_messages(:message => value)` is unavailable (prior to RSpec 3.0).
+It will be converted to multiple statements if the hash includes multiple pairs.
+This conversion is disabled by default.
+
+See [Supported Conversions - Method stubs with a hash argument](#method-stubs-with-a-hash-argument) for more details.
+
 ### `-p/--no-parentheses-matcher-arg`
 
 Suppress parenthesizing arguments of matchers when converting
@@ -705,8 +713,6 @@ Targets:
 obj.stub(:foo)
 obj.stub!(:foo)
 
-obj.stub(:foo => 1, :bar => 2)
-
 obj.stub_chain(:foo, :bar, :baz)
 
 Klass.any_instance.stub(:foo)
@@ -717,13 +723,6 @@ Will be converted to:
 ```ruby
 allow(obj).to receive(:foo)
 
-# If the target project's RSpec is prior to <%= Transpec::RSpecVersion.receive_messages_available_version %>
-allow(obj).to receive(:foo).and_return(1)
-allow(obj).to receive(:bar).and_return(2)
-
-# If the target project's RSpec is <%= Transpec::RSpecVersion.receive_messages_available_version %> or later
-allow(obj).to receive_messages(:foo => 1, :bar => 2)
-
 # Conversion from `stub_chain` to `receive_message_chain` is available
 # only if the target project's RSpec is <%= Transpec::RSpecVersion.receive_message_chain_available_version %> (not yet released) or later
 allow(obj).to receive_message_chain(:foo, :bar, :baz)
@@ -731,29 +730,51 @@ allow(obj).to receive_message_chain(:foo, :bar, :baz)
 allow_any_instance_of(Klass).to receive(:foo)
 ```
 
-#### No replacement for `unstub`
-
 There's no replacement for `unstub` in the `expect` syntax. See [this discussion](https://github.com/rspec/rspec-mocks/issues/153#issuecomment-12208638) for more details.
-
-#### Steps to upgrade `obj.stub(:foo => 1, :bar => 2)`
-
-`allow(obj).to receive_messages(:foo => 1, :bar => 2)` which is designed to be the replacement for `obj.stub(:foo => 1, :bar => 2)` is available from RSpec 3.0 (though [it's now being considered to be backported to RSpec 2.99](https://github.com/rspec/rspec-mocks/issues/454)). So, in [the upgrade path to RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#the_upgrade_path), if you want to convert them with keeping the syntax correspondence, you need to follow these steps:
-
-1. Upgrade to RSpec 2.99
-2. Run `transpec --keep stub`
-3. Upgrade to RSpec 3.0
-4. Run `transpec`
-
-Otherwise `obj.stub(:foo => 1, :bar => 2)` will be converted to two `allow(obj).to receive(...).and_return(...)` expressions on RSpec 2.99.
-
----
 
 * This conversion can be disabled by: `--keep stub`
 * Deprecation: deprecated since RSpec 3.0
 * See also:
     * [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
-    * [allow receive with multiple methods · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/368)
     * [Bring back stub_chain (receive_message_chain) · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/464)
+
+### Method stubs with a hash argument
+
+Targets:
+
+```ruby
+obj.stub(:foo => 1, :bar => 2)
+```
+
+Will be converted to:
+
+```ruby
+# If the target project's RSpec is <%= Transpec::RSpecVersion.receive_messages_available_version %> or later
+allow(obj).to receive_messages(:foo => 1, :bar => 2)
+
+# If the target project's RSpec is prior to <%= Transpec::RSpecVersion.receive_messages_available_version %>
+obj.stub(:foo => 1, :bar => 2) # No conversion
+
+# If the target project's RSpec is prior to <%= Transpec::RSpecVersion.receive_messages_available_version %>
+# and `--convert-stub-with-hash` is specified
+allow(obj).to receive(:foo).and_return(1)
+allow(obj).to receive(:bar).and_return(2)
+```
+
+`allow(obj).to receive_messages(:foo => 1, :bar => 2)` which is designed to be the replacement for `obj.stub(:foo => 1, :bar => 2)` is available from RSpec 3.0.
+
+So, if you're going to use Transpec in [the upgrade path to RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#the_upgrade_path), you may need to follow these steps:
+
+1. Upgrade to RSpec 2.99
+2. Run `transpec` (at this time `obj.stub(:message => value)` won't be converted)
+3. Upgrade to RSpec 3.0
+4. Run `transpec` again to convert `obj.stub(:message => value)`
+
+Or if you're going to stay RSpec 2.14 for now but want to convert all `stub` to `allow` statements, run `transpec` with `--convert-stub-with-hash` option. Note that once the conversion is done, multiple statements cannot be merged into a `receive_messages`.
+
+* This conversion can be disabled by: `--keep stub`
+* Deprecation: deprecated since RSpec 3.0
+* See also: [allow receive with multiple methods · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/368)
 
 ### Deprecated method stub aliases
 

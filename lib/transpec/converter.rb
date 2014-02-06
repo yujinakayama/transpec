@@ -111,7 +111,13 @@ module Transpec
 
     def process_method_stub(method_stub)
       if @configuration.convert_stub?
-        method_stub.allowize!(@rspec_version)
+        if !method_stub.hash_arg? ||
+           @rspec_version.receive_messages_available? ||
+           @configuration.convert_stub_with_hash_to_stub_and_return?
+          method_stub.allowize!(@rspec_version)
+        elsif @configuration.convert_deprecated_method?
+          method_stub.convert_deprecated_method!
+        end
       elsif @configuration.convert_deprecated_method?
         method_stub.convert_deprecated_method!
       end

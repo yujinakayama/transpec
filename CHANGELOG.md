@@ -2,6 +2,8 @@
 
 ## Development
 
+* Conversion of `obj.stub(:message => value)` to `allow(obj).to receive(:message).and_return(value)` is now opt-in with `-t/--convert-stub-with-hash` option when `receive_messages` is unavailable
+
 ## v1.7.0
 
 * Support conversion of `any_instance` block

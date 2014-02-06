@@ -87,6 +87,10 @@ module Transpec
         @configuration.add_receiver_arg_to_any_instance_implementation_block = false
       end
 
+      define_option('-t', '--convert-stub-with-hash') do
+        @configuration.convert_stub_with_hash_to_stub_and_return = true
+      end
+
       define_option('-p', '--no-parentheses-matcher-arg') do
         @configuration.parenthesize_matcher_arg = false
       end
@@ -162,6 +166,15 @@ module Transpec
           'Suppress yielding receiver instances to',
           "#{'any_instance'.underline} implementation blocks as the",
           'first block argument.'
+        ],
+        '-t' => [
+          "Enable conversion of #{'obj.stub(:msg => val)'.underline} to",
+          "#{'allow(obj).to receive(:msg).and_return(val)'.underline}",
+          "when #{'receive_messages(:msg => val)'.underline} is",
+          'unavailable (prior to RSpec 3.0). It will be',
+          'converted to multiple statements if the hash',
+          'includes multiple pairs. This conversion is',
+          'disabled by default.'
         ],
         '-p' => [
           'Suppress parenthesizing arguments of matchers',

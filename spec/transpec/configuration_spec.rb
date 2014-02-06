@@ -18,6 +18,7 @@ module Transpec
         [:convert_deprecated_method?,                             true],
         [:parenthesize_matcher_arg?,                              true],
         [:add_receiver_arg_to_any_instance_implementation_block?, true],
+        [:convert_stub_with_hash_to_stub_and_return?,             false],
         [:forced?,                                                false],
         [:skip_dynamic_analysis?,                                 false],
         [:negative_form_of_to,                                    'not_to'],

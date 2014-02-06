@@ -78,6 +78,10 @@ module Transpec
           END
         end
 
+        before do
+          configuration.convert_stub_with_hash_to_stub_and_return = true
+        end
+
         it 'converts all targets properly' do
           should == expected_source
         end
@@ -626,13 +630,59 @@ module Transpec
         context 'and Configuration#convert_deprecated_method? is true' do
           before { configuration.convert_deprecated_method = true }
 
-          include_examples 'invokes MethodStub#allowize!'
-          include_examples 'does not invoke MethodStub#convert_deprecated_method!'
-          include_examples 'invokes MethodStub#remove_allowance_for_no_message!'
+          context 'and MethodStub#hash_arg? is false' do
+            before { method_stub_object.stub(:hash_arg?).and_return(false) }
+            include_examples 'invokes MethodStub#allowize!'
+            include_examples 'does not invoke MethodStub#convert_deprecated_method!'
+            include_examples 'invokes MethodStub#remove_allowance_for_no_message!'
+          end
+
+          context 'and MethodStub#hash_arg? is true' do
+            before { method_stub_object.stub(:hash_arg?).and_return(true) }
+
+            context 'and Configuration#convert_stub_with_hash_to_stub_and_return? is true' do
+              before { configuration.convert_stub_with_hash_to_stub_and_return = true }
+
+              context 'and RSpecVersion#receive_messages_available? is true' do
+                before { rspec_version.stub(:receive_messages_available?).and_return(true) }
+                include_examples 'invokes MethodStub#allowize!'
+                include_examples 'does not invoke MethodStub#convert_deprecated_method!'
+                include_examples 'invokes MethodStub#remove_allowance_for_no_message!'
+              end
+
+              context 'and RSpecVersion#receive_messages_available? is false' do
+                before { rspec_version.stub(:receive_messages_available?).and_return(false) }
+                include_examples 'invokes MethodStub#allowize!'
+                include_examples 'does not invoke MethodStub#convert_deprecated_method!'
+                include_examples 'invokes MethodStub#remove_allowance_for_no_message!'
+              end
+            end
+
+            context 'and Configuration#convert_stub_with_hash_to_stub_and_return? is false' do
+              before { configuration.convert_stub_with_hash_to_stub_and_return = false }
+
+              context 'and RSpecVersion#receive_messages_available? is true' do
+                before { rspec_version.stub(:receive_messages_available?).and_return(true) }
+                include_examples 'invokes MethodStub#allowize!'
+                include_examples 'does not invoke MethodStub#convert_deprecated_method!'
+                include_examples 'invokes MethodStub#remove_allowance_for_no_message!'
+              end
+
+              context 'and RSpecVersion#receive_messages_available? is false' do
+                before { rspec_version.stub(:receive_messages_available?).and_return(false) }
+                include_examples 'does not invoke MethodStub#allowize!'
+                include_examples 'invokes MethodStub#convert_deprecated_method!'
+                include_examples 'invokes MethodStub#remove_allowance_for_no_message!'
+              end
+            end
+          end
         end
 
         context 'and Configuration#convert_deprecated_method? is false' do
-          before { configuration.convert_deprecated_method = false }
+          before do
+            configuration.convert_deprecated_method = false
+            method_stub_object.stub(:hash_arg?).and_return(false)
+          end
 
           include_examples 'invokes MethodStub#allowize!'
           include_examples 'does not invoke MethodStub#convert_deprecated_method!'
