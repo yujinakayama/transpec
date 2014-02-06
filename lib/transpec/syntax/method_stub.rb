@@ -55,6 +55,10 @@ module Transpec
         check_syntax_availability(__method__)
       end
 
+      def hash_arg?
+        arg_node.hash_type?
+      end
+
       def allowize!(rspec_version)
         # There's no way of unstubbing in #allow syntax.
         return unless [:stub, :stub!, :stub_chain].include?(method_name)
@@ -90,7 +94,7 @@ module Transpec
         if method_name == :stub_chain
           [build_allow_to(:receive_message_chain), :allow_to_receive_message_chain]
         else
-          if arg_node.hash_type?
+          if hash_arg?
             if rspec_version.receive_messages_available?
               [build_allow_to(:receive_messages), :allow_to_receive_messages]
             else
@@ -181,7 +185,7 @@ module Transpec
           if @method_stub.method_name == :stub_chain
             syntax << '(:message1, :message2)'
           else
-            syntax << (@method_stub.arg_node.hash_type? ? '(:message => value)' : '(:message)')
+            syntax << (@method_stub.hash_arg? ? '(:message => value)' : '(:message)')
           end
         end
 
@@ -192,7 +196,7 @@ module Transpec
           case @conversion_type
           when :allow_to_receive
             syntax << 'receive(:message)'
-            syntax << '.and_return(value)' if @method_stub.arg_node.hash_type?
+            syntax << '.and_return(value)' if @method_stub.hash_arg?
           when :allow_to_receive_messages
             syntax << 'receive_messages(:message => value)'
           when :allow_to_receive_message_chain

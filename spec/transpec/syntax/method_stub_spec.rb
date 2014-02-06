@@ -151,6 +151,38 @@ module Transpec
         end
       end
 
+      describe '#hash_arg?' do
+        subject { method_stub_object.hash_arg? }
+
+        context 'when it is `subject.stub(:method => value)` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.stub(:foo => value)
+                end
+              end
+            END
+          end
+
+          it { should be_true }
+        end
+
+        context 'when it is `subject.stub(:method)` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo' do
+                  subject.stub(:foo)
+                end
+              end
+            END
+          end
+
+          it { should be_false }
+        end
+      end
+
       describe '#allowize!' do
         before do
           method_stub_object.allowize!(rspec_version) unless example.metadata[:no_before_allowize!]
