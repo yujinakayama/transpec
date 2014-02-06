@@ -408,6 +408,27 @@ The one-liner (implicit receiver) `should`:
 
 ## Supported Conversions
 
+* [Standard expectations](#standard-expectations)
+* [One-liner expectations](#one-liner-expectations)
+* [Operator matchers](#operator-matchers)
+* [Boolean matchers](#boolean-matchers)
+* [`be_close` matcher](#be_close-matcher)
+* [`have(n).items` matcher](#havenitems-matcher)
+* [One-liner expectations with `have(n).items` matcher](#one-liner-expectations-with-havenitems-matcher)
+* [Expectations on block](#expectations-on-block)
+* [Negative error expectations with specific error](#negative-error-expectations-with-specific-error)
+* [Message expectations](#message-expectations)
+* [Message expectations that are actually method stubs](#message-expectations-that-are-actually-method-stubs)
+* [Method stubs](#method-stubs)
+* [Method stubs with a hash argument](#method-stubs-with-a-hash-argument)
+* [Deprecated method stub aliases](#deprecated-method-stub-aliases)
+* [Method stubs with deprecated specification of number of times](#method-stubs-with-deprecated-specification-of-number-of-times)
+* [`any_instance` implementation blocks](#any_instance-implementation-blocks)
+* [Deprecated test double aliases](#deprecated-test-double-aliases)
+* [Expectations on attribute of subject with `its`](#expectations-on-attribute-of-subject-with-its)
+* [Current example object](#current-example-object)
+* [Custom matcher DSL](#custom-matcher-dsl)
+
 ### Standard expectations
 
 Targets:

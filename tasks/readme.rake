@@ -23,6 +23,7 @@ def generate_readme
   require 'erb'
   require 'transpec/cli'
 
-  erb = ERB.new(File.read('README.md.erb'), nil, '-')
+  text = File.read('README.md.erb')
+  erb = ERB.new(text, nil, '-')
   erb.result(binding)
 end
