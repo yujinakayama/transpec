@@ -23,7 +23,21 @@ def generate_readme
   require 'erb'
   require 'transpec/cli'
 
-  text = File.read('README.md.erb')
-  erb = ERB.new(text, nil, '-')
+  readme = File.read('README.md.erb')
+  erb = ERB.new(readme, nil, '-')
   erb.result(binding)
+end
+
+def table_of_contents(lines, header_level)
+  header_pattern = /^#{'#' * header_level}[^#]/
+
+  titles = lines.map do |line|
+    next unless line.match(header_pattern)
+    line.sub(/^[#\s]*/, '').chomp
+  end.compact
+
+  titles.map do |title|
+    anchor = '#' + title.gsub(/[^\w_\- ]/, '').downcase.gsub(' ', '-')
+    "* [#{title}](#{anchor})"
+  end.join("\n")
 end

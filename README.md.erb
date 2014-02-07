@@ -407,21 +407,13 @@ The one-liner (implicit receiver) `should`:
 
 <%=
 
-sections = text.each_line.slice_before(/^## /)
+sections = readme.each_line.slice_before(/^## /)
 
-supported_conversion_section = sections.find do |section|
+supported_conversions_section = sections.find do |section|
   section.first.include?('Supported Conversions')
 end
 
-titles = supported_conversion_section.map do |line|
-  next unless line.start_with?('### ')
-  line.sub(/^[#\s]*/, '').chomp
-end.compact
-
-titles.map do |title|
-  anchor = '#' + title.gsub(/[^\w_\- ]/, '').downcase.gsub(' ', '-')
-  "* [#{title}](#{anchor})"
-end.join("\n")
+table_of_contents(supported_conversions_section, 3)
 
 %>
 
