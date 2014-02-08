@@ -2,6 +2,8 @@
 
 ## Development
 
+## v1.9.0
+
 * Support conversion of `and_return { value }` and `and_return` without arguments
 * Fix a bug where conversion of `.any_number_of_times` and `at_least(0)` with `obj.stub(:message)` weren't reported in the final summary
 * Fix a bug where arguments of `any_instance` implementation blocks weren't converted when a `receive` matcher was chained by the fluent interface (e.g. `expect_any_instance_of(Klass).to receive(:message).once { |arg| }`)
