@@ -2,17 +2,14 @@
 
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/monkey_patch_any_instance'
-require 'transpec/syntax/mixin/any_instance_block'
-require 'transpec/syntax/mixin/no_message_allowance'
-require 'transpec/syntax/mixin/useless_and_return'
+require 'transpec/syntax/mixin/messaging_host'
 require 'transpec/util'
 require 'English'
 
 module Transpec
   class Syntax
     class MethodStub < Syntax
-      include Mixin::MonkeyPatchAnyInstance, Mixin::AnyInstanceBlock, Mixin::NoMessageAllowance,
-              Mixin::UselessAndReturn, Util
+      include Mixin::MonkeyPatchAnyInstance, Mixin::MessagingHost, Util
 
       # rubocop:disable LineLength
       CLASSES_DEFINING_OWN_STUB_METHOD = [

@@ -3,13 +3,12 @@
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/send'
 require 'transpec/syntax/mixin/owned_matcher'
-require 'transpec/syntax/mixin/any_instance_block'
-require 'transpec/syntax/mixin/useless_and_return'
+require 'transpec/syntax/mixin/messaging_host'
 
 module Transpec
   class Syntax
     class Receive < Syntax
-      include Mixin::Send, Mixin::OwnedMatcher, Mixin::AnyInstanceBlock, Mixin::UselessAndReturn
+      include Mixin::Send, Mixin::OwnedMatcher, Mixin::MessagingHost
 
       attr_reader :expectation
 

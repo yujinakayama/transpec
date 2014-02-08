@@ -3,16 +3,13 @@
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/expectizable'
 require 'transpec/syntax/mixin/monkey_patch_any_instance'
-require 'transpec/syntax/mixin/any_instance_block'
-require 'transpec/syntax/mixin/no_message_allowance'
-require 'transpec/syntax/mixin/useless_and_return'
+require 'transpec/syntax/mixin/messaging_host'
 require 'transpec/util'
 
 module Transpec
   class Syntax
     class ShouldReceive < Syntax
-      include Mixin::Expectizable, Mixin::MonkeyPatchAnyInstance, Mixin::AnyInstanceBlock,
-              Mixin::NoMessageAllowance, Mixin::UselessAndReturn, Util
+      include Mixin::Expectizable, Mixin::MonkeyPatchAnyInstance, Mixin::MessagingHost, Util
 
       alias_method :useless_expectation?, :allow_no_message?
 

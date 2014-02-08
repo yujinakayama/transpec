@@ -80,13 +80,11 @@ module Transpec
 
     def process_expect(expect)
       process_have(expect.have_matcher)
-      process_useless_and_return(expect.receive_matcher)
-      process_any_instance_block(expect.receive_matcher)
+      process_messaging_host(expect.receive_matcher)
     end
 
     def process_allow(allow)
-      process_useless_and_return(allow.receive_matcher)
-      process_any_instance_block(allow.receive_matcher)
+      process_messaging_host(allow.receive_matcher)
     end
 
     def process_should_receive(should_receive)
@@ -104,8 +102,7 @@ module Transpec
         should_receive.expectize!(@configuration.negative_form_of_to)
       end
 
-      process_useless_and_return(should_receive)
-      process_any_instance_block(should_receive)
+      process_messaging_host(should_receive)
     end
 
     def process_double(double)
@@ -127,8 +124,7 @@ module Transpec
 
       method_stub.remove_no_message_allowance! if @configuration.convert_deprecated_method?
 
-      process_useless_and_return(method_stub)
-      process_any_instance_block(method_stub)
+      process_messaging_host(method_stub)
     end
 
     def process_be_boolean(be_boolean)
@@ -186,6 +182,11 @@ module Transpec
     def process_have(have)
       return if !have || !@configuration.convert_have_items?
       have.convert_to_standard_expectation!(@configuration.parenthesize_matcher_arg)
+    end
+
+    def process_messaging_host(messaging_host)
+      process_useless_and_return(messaging_host)
+      process_any_instance_block(messaging_host)
     end
 
     def process_useless_and_return(messaging_host)
