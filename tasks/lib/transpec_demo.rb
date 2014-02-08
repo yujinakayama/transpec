@@ -28,7 +28,7 @@ class TranspecDemo < TranspecTest
   def run_demo(transpec_args = [])
     in_project_dir do
       with_clean_bundler_env do
-        sh File.join(Transpec.root, 'bin', 'transpec'), '--force'
+        sh File.join(Transpec.root, 'bin', 'transpec'), '--force', '--convert-stub-with-hash'
         sh 'bundle exec rspec'
         sh "git checkout --quiet -b #{DEMO_BRANCH}"
         sh 'git commit --all --file .git/COMMIT_EDITMSG'
