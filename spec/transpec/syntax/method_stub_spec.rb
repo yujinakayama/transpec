@@ -985,9 +985,9 @@ module Transpec
         end
       end
 
-      describe '#remove_allowance_for_no_message!' do
+      describe '#remove_no_message_allowance!' do
         before do
-          method_stub_object.remove_allowance_for_no_message!
+          method_stub_object.remove_no_message_allowance!
         end
 
         context 'when it is `subject.stub(:method).any_number_of_times` form' do

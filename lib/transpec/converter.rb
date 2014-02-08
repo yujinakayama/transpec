@@ -122,7 +122,7 @@ module Transpec
         method_stub.convert_deprecated_method!
       end
 
-      method_stub.remove_allowance_for_no_message! if @configuration.convert_deprecated_method?
+      method_stub.remove_no_message_allowance! if @configuration.convert_deprecated_method?
 
       process_any_instance_block(method_stub)
     end

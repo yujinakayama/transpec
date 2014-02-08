@@ -3,14 +3,14 @@
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/expectizable'
 require 'transpec/syntax/mixin/monkey_patch_any_instance'
-require 'transpec/syntax/mixin/allow_no_message'
 require 'transpec/syntax/mixin/any_instance_block'
+require 'transpec/syntax/mixin/no_message_allowance'
 
 module Transpec
   class Syntax
     class ShouldReceive < Syntax
       include Mixin::Expectizable, Mixin::MonkeyPatchAnyInstance, Mixin::AnyInstanceBlock,
-              Mixin::AllowNoMessage
+              Mixin::NoMessageAllowance
 
       alias_method :useless_expectation?, :allow_no_message?
 
@@ -61,7 +61,7 @@ module Transpec
         end
 
         convert_to_syntax!('allow', negative_form)
-        remove_allowance_for_no_message!
+        remove_no_message_allowance!
 
         register_record(AllowRecord, negative_form)
       end
@@ -70,7 +70,7 @@ module Transpec
         return unless useless_expectation?
 
         replace(selector_range, 'stub')
-        remove_allowance_for_no_message!
+        remove_no_message_allowance!
 
         register_record(StubRecord)
       end

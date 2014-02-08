@@ -7,7 +7,7 @@ require 'ast'
 module Transpec
   class Syntax
     module Mixin
-      module AllowNoMessage
+      module NoMessageAllowance
         extend ActiveSupport::Concern
         include Send, ::AST::Sexp
 
@@ -15,7 +15,7 @@ module Transpec
           any_number_of_times? || at_least_zero?
         end
 
-        def remove_allowance_for_no_message!
+        def remove_no_message_allowance!
           remove_any_number_of_times!
           remove_at_least_zero!
         end

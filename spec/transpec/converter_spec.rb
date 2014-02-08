@@ -610,16 +610,16 @@ module Transpec
         end
       end
 
-      shared_examples 'invokes MethodStub#remove_allowance_for_no_message!' do
-        it 'invokes MethodStub#remove_allowance_for_no_message!' do
-          method_stub_object.should_receive(:remove_allowance_for_no_message!)
+      shared_examples 'invokes MethodStub#remove_no_message_allowance!' do
+        it 'invokes MethodStub#remove_no_message_allowance!' do
+          method_stub_object.should_receive(:remove_no_message_allowance!)
           converter.process_method_stub(method_stub_object)
         end
       end
 
-      shared_examples 'does not invoke MethodStub#remove_allowance_for_no_message!' do
-        it 'does not invoke MethodStub#remove_allowance_for_no_message!' do
-          method_stub_object.should_not_receive(:remove_allowance_for_no_message!)
+      shared_examples 'does not invoke MethodStub#remove_no_message_allowance!' do
+        it 'does not invoke MethodStub#remove_no_message_allowance!' do
+          method_stub_object.should_not_receive(:remove_no_message_allowance!)
           converter.process_method_stub(method_stub_object)
         end
       end
@@ -634,7 +634,7 @@ module Transpec
             before { method_stub_object.stub(:hash_arg?).and_return(false) }
             include_examples 'invokes MethodStub#allowize!'
             include_examples 'does not invoke MethodStub#convert_deprecated_method!'
-            include_examples 'invokes MethodStub#remove_allowance_for_no_message!'
+            include_examples 'invokes MethodStub#remove_no_message_allowance!'
           end
 
           context 'and MethodStub#hash_arg? is true' do
@@ -647,14 +647,14 @@ module Transpec
                 before { rspec_version.stub(:receive_messages_available?).and_return(true) }
                 include_examples 'invokes MethodStub#allowize!'
                 include_examples 'does not invoke MethodStub#convert_deprecated_method!'
-                include_examples 'invokes MethodStub#remove_allowance_for_no_message!'
+                include_examples 'invokes MethodStub#remove_no_message_allowance!'
               end
 
               context 'and RSpecVersion#receive_messages_available? is false' do
                 before { rspec_version.stub(:receive_messages_available?).and_return(false) }
                 include_examples 'invokes MethodStub#allowize!'
                 include_examples 'does not invoke MethodStub#convert_deprecated_method!'
-                include_examples 'invokes MethodStub#remove_allowance_for_no_message!'
+                include_examples 'invokes MethodStub#remove_no_message_allowance!'
               end
             end
 
@@ -665,14 +665,14 @@ module Transpec
                 before { rspec_version.stub(:receive_messages_available?).and_return(true) }
                 include_examples 'invokes MethodStub#allowize!'
                 include_examples 'does not invoke MethodStub#convert_deprecated_method!'
-                include_examples 'invokes MethodStub#remove_allowance_for_no_message!'
+                include_examples 'invokes MethodStub#remove_no_message_allowance!'
               end
 
               context 'and RSpecVersion#receive_messages_available? is false' do
                 before { rspec_version.stub(:receive_messages_available?).and_return(false) }
                 include_examples 'does not invoke MethodStub#allowize!'
                 include_examples 'invokes MethodStub#convert_deprecated_method!'
-                include_examples 'invokes MethodStub#remove_allowance_for_no_message!'
+                include_examples 'invokes MethodStub#remove_no_message_allowance!'
               end
             end
           end
@@ -686,7 +686,7 @@ module Transpec
 
           include_examples 'invokes MethodStub#allowize!'
           include_examples 'does not invoke MethodStub#convert_deprecated_method!'
-          include_examples 'does not invoke MethodStub#remove_allowance_for_no_message!'
+          include_examples 'does not invoke MethodStub#remove_no_message_allowance!'
         end
       end
 
@@ -698,7 +698,7 @@ module Transpec
 
           include_examples 'does not invoke MethodStub#allowize!'
           include_examples 'invokes MethodStub#convert_deprecated_method!'
-          include_examples 'invokes MethodStub#remove_allowance_for_no_message!'
+          include_examples 'invokes MethodStub#remove_no_message_allowance!'
         end
 
         context 'and Configuration#convert_deprecated_method? is false' do
@@ -706,7 +706,7 @@ module Transpec
 
           include_examples 'does not invoke MethodStub#allowize!'
           include_examples 'does not invoke MethodStub#convert_deprecated_method!'
-          include_examples 'does not invoke MethodStub#remove_allowance_for_no_message!'
+          include_examples 'does not invoke MethodStub#remove_no_message_allowance!'
         end
       end
 
