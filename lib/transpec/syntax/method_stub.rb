@@ -181,7 +181,7 @@ module Transpec
                        when :useless_and_return
                          MonkeyPatchUselessAndReturnRecord
                        when :any_instance_block
-                         AnyInstanceBlockRecord
+                         MonkeyPatchAnyInstanceBlockRecord
                        else
                          AllowRecord
                        end

@@ -34,11 +34,21 @@ module Transpec
           end
 
           def original_syntax
-            "Klass.any_instance.#{@host.method_name}(:message) { |arg| }"
+            "#{base_syntax} { |arg| }"
           end
 
           def converted_syntax
-            "Klass.any_instance.#{@host.method_name}(:message) { |instance, arg| }"
+            "#{base_syntax} { |instance, arg| }"
+          end
+
+          def base_syntax
+            fail NotImplementedError
+          end
+        end
+
+        class MonkeyPatchAnyInstanceBlockRecord < AnyInstanceBlockRecord
+          def base_syntax
+            "Klass.any_instance.#{@host.method_name}(:message)"
           end
         end
       end

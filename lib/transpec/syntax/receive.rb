@@ -26,10 +26,7 @@ module Transpec
       def add_receiver_arg_to_any_instance_implementation_block!
         added = super
         return unless added
-        @report.records << Record.new(
-          "#{@expectation.method_name}(Klass).to receive(:message) { |arg| }",
-          "#{@expectation.method_name}(Klass).to receive(:message) { |instance, arg| }"
-        )
+        @report.records << ReceiveAnyInstanceBlockRecord.new(self)
       end
 
       def any_instance?
@@ -39,6 +36,12 @@ module Transpec
       def any_instance_block_node
         return unless any_instance?
         super || @expectation.block_node
+      end
+
+      class ReceiveAnyInstanceBlockRecord < AnyInstanceBlockRecord
+        def base_syntax
+          "#{@host.expectation.method_name}(Klass).to receive(:message)"
+        end
       end
 
       class ReceiveUselessAndReturnRecord < UselessAndReturnRecord

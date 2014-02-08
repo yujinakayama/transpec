@@ -82,7 +82,7 @@ module Transpec
       end
 
       def add_receiver_arg_to_any_instance_implementation_block!
-        super && register_record(AnyInstanceBlockRecord)
+        super && register_record(MonkeyPatchAnyInstanceBlockRecord)
       end
 
       private
