@@ -416,6 +416,7 @@ The one-liner (implicit receiver) `should`:
 * [`have(n).items` matcher](#havenitems-matcher)
 * [One-liner expectations with `have(n).items` matcher](#one-liner-expectations-with-havenitems-matcher)
 * [Expectations on block](#expectations-on-block)
+* [Expectations on attribute of subject with `its`](#expectations-on-attribute-of-subject-with-its)
 * [Negative error expectations with specific error](#negative-error-expectations-with-specific-error)
 * [Message expectations](#message-expectations)
 * [Message expectations that are actually method stubs](#message-expectations-that-are-actually-method-stubs)
@@ -426,7 +427,6 @@ The one-liner (implicit receiver) `should`:
 * [Useless `and_return`](#useless-and_return)
 * [`any_instance` implementation blocks](#any_instance-implementation-blocks)
 * [Deprecated test double aliases](#deprecated-test-double-aliases)
-* [Expectations on attribute of subject with `its`](#expectations-on-attribute-of-subject-with-its)
 * [Current example object](#current-example-object)
 * [Custom matcher DSL](#custom-matcher-dsl)
 
@@ -661,6 +661,59 @@ expect { do_something }.to raise_error
 * This conversion can be disabled by: `--keep should`
 * Deprecation: deprecated since RSpec 3.0
 * See also: [Unification of Block vs. Value Syntaxes - RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#unification_of_block_vs_value_syntaxes)
+
+### Expectations on attribute of subject with `its`
+
+**This conversion will be disabled automatically if `rspec-its` is loaded in your spec.**
+
+Targets:
+
+```ruby
+describe 'example' do
+  subject { { foo: 1, bar: 2 } }
+  its(:size) { should == 2 }
+  its([:foo]) { should == 1 }
+  its('keys.first') { should == :foo }
+end
+```
+
+Will be converted to:
+
+```ruby
+describe 'example' do
+  subject { { foo: 1, bar: 2 } }
+
+  describe '#size' do
+    subject { super().size }
+    it { should == 2 }
+  end
+
+  describe '[:foo]' do
+    subject { super()[:foo] }
+    it { should == 1 }
+  end
+
+  describe '#keys' do
+    subject { super().keys }
+    describe '#first' do
+      subject { super().first }
+      it { should == :foo }
+    end
+  end
+end
+```
+
+There's an option to continue using `its` with [rspec-its](https://github.com/rspec/rspec-its) which is a gem extracted from `rspec-core`.
+If you choose to do so, disable this conversion by either:
+
+* Specify `--keep its` option manually.
+* Require `rspec-its` in your spec so that Transpec automatically disables this conversion.
+
+---
+
+* This conversion can be disabled by: `--keep its`
+* Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
+* See also: [Core: `its` will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#core__will_be_moved_into_an_external_gem)
 
 ### Negative error expectations with specific error
 
@@ -963,59 +1016,6 @@ double('something')
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 2.14, removed in RSpec 3.0
 * See also: [myronmarston / why_double.md - Gist](https://gist.github.com/myronmarston/6576665)
-
-### Expectations on attribute of subject with `its`
-
-**This conversion will be disabled automatically if `rspec-its` is loaded in your spec.**
-
-Targets:
-
-```ruby
-describe 'example' do
-  subject { { foo: 1, bar: 2 } }
-  its(:size) { should == 2 }
-  its([:foo]) { should == 1 }
-  its('keys.first') { should == :foo }
-end
-```
-
-Will be converted to:
-
-```ruby
-describe 'example' do
-  subject { { foo: 1, bar: 2 } }
-
-  describe '#size' do
-    subject { super().size }
-    it { should == 2 }
-  end
-
-  describe '[:foo]' do
-    subject { super()[:foo] }
-    it { should == 1 }
-  end
-
-  describe '#keys' do
-    subject { super().keys }
-    describe '#first' do
-      subject { super().first }
-      it { should == :foo }
-    end
-  end
-end
-```
-
-There's an option to continue using `its` with [rspec-its](https://github.com/rspec/rspec-its) which is a gem extracted from `rspec-core`.
-If you choose to do so, disable this conversion by either:
-
-* Specify `--keep its` option manually.
-* Require `rspec-its` in your spec so that Transpec automatically disables this conversion.
-
----
-
-* This conversion can be disabled by: `--keep its`
-* Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
-* See also: [Core: `its` will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#core__will_be_moved_into_an_external_gem)
 
 ### Current example object
 
