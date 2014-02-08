@@ -689,15 +689,15 @@ lambda { do_something }.should_not raise_error # with `--keep should`
 Targets:
 
 ```ruby
-obj.should_receive(:foo)
-Klass.any_instance.should_receive(:foo)
+obj.should_receive(:message)
+Klass.any_instance.should_receive(:message)
 ```
 
 Will be converted to:
 
 ```ruby
-expect(obj).to receive(:foo)
-expect_any_instance_of(Klass).to receive(:foo)
+expect(obj).to receive(:message)
+expect_any_instance_of(Klass).to receive(:message)
 ```
 
 * This conversion can be disabled by: `--keep should_receive`
@@ -709,21 +709,21 @@ expect_any_instance_of(Klass).to receive(:foo)
 Targets:
 
 ```ruby
-obj.should_receive(:foo).any_number_of_times
-obj.should_receive(:foo).at_least(0)
+obj.should_receive(:message).any_number_of_times
+obj.should_receive(:message).at_least(0)
 
-Klass.any_instance.should_receive(:foo).any_number_of_times
-Klass.any_instance.should_receive(:foo).at_least(0)
+Klass.any_instance.should_receive(:message).any_number_of_times
+Klass.any_instance.should_receive(:message).at_least(0)
 ```
 
 Will be converted to:
 
 ```ruby
-allow(obj).to receive(:foo)
-obj.stub(:foo) # with `--keep stub`
+allow(obj).to receive(:message)
+obj.stub(:message) # with `--keep stub`
 
-allow_any_instance_of(Klass).to receive(:foo)
-Klass.any_instance.stub(:foo) # with `--keep stub`
+allow_any_instance_of(Klass).to receive(:message)
+Klass.any_instance.stub(:message) # with `--keep stub`
 ```
 
 * This conversion can be disabled by: `--keep deprecated`
@@ -735,24 +735,24 @@ Klass.any_instance.stub(:foo) # with `--keep stub`
 Targets:
 
 ```ruby
-obj.stub(:foo)
-obj.stub!(:foo)
+obj.stub(:message)
+obj.stub!(:message)
 
 obj.stub_chain(:foo, :bar, :baz)
 
-Klass.any_instance.stub(:foo)
+Klass.any_instance.stub(:message)
 ```
 
 Will be converted to:
 
 ```ruby
-allow(obj).to receive(:foo)
+allow(obj).to receive(:message)
 
 # Conversion from `stub_chain` to `receive_message_chain` is available
 # only if the target project's RSpec is 3.0.0.beta2 (not yet released) or later
 allow(obj).to receive_message_chain(:foo, :bar, :baz)
 
-allow_any_instance_of(Klass).to receive(:foo)
+allow_any_instance_of(Klass).to receive(:message)
 ```
 
 There's no replacement for `unstub` in the `expect` syntax. See [this discussion](https://github.com/rspec/rspec-mocks/issues/153#issuecomment-12208638) for more details.
@@ -806,15 +806,15 @@ Or if you're going to stay RSpec 2.14 for now but want to convert all `stub` to 
 Targets:
 
 ```ruby
-obj.stub!(:foo)
-obj.unstub!(:foo)
+obj.stub!(:message)
+obj.unstub!(:message)
 ```
 
 Will be converted to:
 
 ```ruby
-obj.stub(:foo) # with `--keep stub`
-obj.unstub(:foo)
+obj.stub(:message) # with `--keep stub`
+obj.unstub(:message)
 ```
 
 * This conversion can be disabled by: `--keep deprecated`
@@ -826,15 +826,15 @@ obj.unstub(:foo)
 Targets:
 
 ```ruby
-obj.stub(:foo).any_number_of_times
-obj.stub(:foo).at_least(0)
+obj.stub(:message).any_number_of_times
+obj.stub(:message).at_least(0)
 ```
 
 Will be converted to:
 
 ```ruby
-allow(obj).to receive(:foo)
-obj.stub(:foo) # with `--keep stub`
+allow(obj).to receive(:message)
+obj.stub(:message) # with `--keep stub`
 ```
 
 * This conversion can be disabled by: `--keep deprecated`
@@ -846,21 +846,21 @@ obj.stub(:foo) # with `--keep stub`
 Targets:
 
 ```ruby
-expect(obj).to receive(:foo).and_return { 1 }
-allow(obj).to receive(:foo).and_return { 1 }
+expect(obj).to receive(:message).and_return { 1 }
+allow(obj).to receive(:message).and_return { 1 }
 
-expect(obj).to receive(:foo).and_return
-allow(obj).to receive(:foo).and_return
+expect(obj).to receive(:message).and_return
+allow(obj).to receive(:message).and_return
 ```
 
 Will be converted to:
 
 ```ruby
-expect(obj).to receive(:foo) { 1 }
-allow(obj).to receive(:foo) { 1 }
+expect(obj).to receive(:message) { 1 }
+allow(obj).to receive(:message) { 1 }
 
-expect(obj).to receive(:foo)
-allow(obj).to receive(:foo)
+expect(obj).to receive(:message)
+allow(obj).to receive(:message)
 ```
 
 * This conversion can be disabled by: `--keep deprecated`
