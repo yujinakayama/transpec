@@ -367,7 +367,7 @@ module Transpec
 
     describe '#process_expect' do
       let(:expect_object) { double('expect_object', receive_matcher: receive_object).as_null_object }
-      let(:receive_object) { double('receive_object') }
+      let(:receive_object) { double('receive_object').as_null_object }
 
       context 'when Configuration#convert_have_items? is true' do
         before { configuration.convert_have_items = true }
@@ -400,6 +400,11 @@ module Transpec
         end
       end
 
+      it "invokes #process_useless_and_return with the expect's #receive matcher" do
+        converter.should_receive(:process_useless_and_return).with(receive_object)
+        converter.process_expect(expect_object)
+      end
+
       it "invokes #process_any_instance_block with the expect's #receive matcher" do
         converter.should_receive(:process_any_instance_block).with(receive_object)
         converter.process_expect(expect_object)
@@ -408,7 +413,12 @@ module Transpec
 
     describe '#process_allow' do
       let(:allow_object) { double('allow_object', receive_matcher: receive_object).as_null_object }
-      let(:receive_object) { double('receive_object') }
+      let(:receive_object) { double('receive_object').as_null_object }
+
+      it "invokes #process_useless_and_return with the allow's #receive matcher" do
+        converter.should_receive(:process_useless_and_return).with(receive_object)
+        converter.process_allow(allow_object)
+      end
 
       it "invokes #process_any_instance_block with the allow's #receive matcher" do
         converter.should_receive(:process_any_instance_block).with(receive_object)
@@ -573,9 +583,14 @@ module Transpec
         end
       end
 
+      it 'invokes #process_useless_and_return with the should_receive' do
+        converter.should_receive(:process_useless_and_return).with(should_receive_object)
+        converter.process_should_receive(should_receive_object)
+      end
+
       it 'invokes #process_any_instance_block with the should_receive' do
         converter.should_receive(:process_any_instance_block).with(should_receive_object)
-        converter.process_allow(should_receive_object)
+        converter.process_should_receive(should_receive_object)
       end
     end
 
@@ -710,9 +725,14 @@ module Transpec
         end
       end
 
+      it 'invokes #process_useless_and_return with the method stub' do
+        converter.should_receive(:process_useless_and_return).with(method_stub_object)
+        converter.process_method_stub(method_stub_object)
+      end
+
       it 'invokes #process_any_instance_block with the method stub' do
         converter.should_receive(:process_any_instance_block).with(method_stub_object)
-        converter.process_allow(method_stub_object)
+        converter.process_method_stub(method_stub_object)
       end
     end
 
@@ -1043,6 +1063,28 @@ module Transpec
         it 'does not invoke RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks=' do
           rspec_configure.mocks.should_not_receive(:yield_receiver_to_any_instance_implementation_blocks=)
           converter.process_rspec_configure(rspec_configure)
+        end
+      end
+    end
+
+    describe '#process_useless_and_return' do
+      let(:messaging_host) { double('messaging host').as_null_object }
+
+      context 'when Configuration#convert_deprecated_method? returns true' do
+        before { configuration.convert_deprecated_method = true }
+
+        it 'invokes #remove_useless_and_return!' do
+          messaging_host.should_receive(:remove_useless_and_return!)
+          converter.process_useless_and_return(messaging_host)
+        end
+      end
+
+      context 'when Configuration#convert_deprecated_method? returns false' do
+        before { configuration.convert_deprecated_method = false }
+
+        it 'does nothing' do
+          messaging_host.should_not_receive(:remove_useless_and_return!)
+          converter.process_useless_and_return(messaging_host)
         end
       end
     end

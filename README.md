@@ -423,6 +423,7 @@ The one-liner (implicit receiver) `should`:
 * [Method stubs with a hash argument](#method-stubs-with-a-hash-argument)
 * [Deprecated method stub aliases](#deprecated-method-stub-aliases)
 * [Method stubs with deprecated specification of number of times](#method-stubs-with-deprecated-specification-of-number-of-times)
+* [Useless `and_return`](#useless-and_return)
 * [`any_instance` implementation blocks](#any_instance-implementation-blocks)
 * [Deprecated test double aliases](#deprecated-test-double-aliases)
 * [Expectations on attribute of subject with `its`](#expectations-on-attribute-of-subject-with-its)
@@ -839,6 +840,32 @@ obj.stub(:foo) # with `--keep stub`
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 2.14, removed in RSpec 3.0
 * See also: [Don't allow at_least(0) · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/133)
+
+### Useless `and_return`
+
+Targets:
+
+```ruby
+expect(obj).to receive(:foo).and_return { 1 }
+allow(obj).to receive(:foo).and_return { 1 }
+
+expect(obj).to receive(:foo).and_return
+allow(obj).to receive(:foo).and_return
+```
+
+Will be converted to:
+
+```ruby
+expect(obj).to receive(:foo) { 1 }
+allow(obj).to receive(:foo) { 1 }
+
+expect(obj).to receive(:foo)
+allow(obj).to receive(:foo)
+```
+
+* This conversion can be disabled by: `--keep deprecated`
+* Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
+* See also: [Consider deprecating `and_return { value }` · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/558)
 
 ### `any_instance` implementation blocks
 

@@ -13,6 +13,10 @@ module Transpec
         receiver_node.nil? && [:expect, :expect_any_instance_of].include?(method_name)
       end
 
+      def method_name_for_instance
+        :expect
+      end
+
       def any_instance?
         method_name == :expect_any_instance_of
       end

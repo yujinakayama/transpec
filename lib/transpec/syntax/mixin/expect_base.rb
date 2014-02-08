@@ -27,6 +27,10 @@ module Transpec
           :expect
         end
 
+        def method_name_for_instance
+          fail NotImplementedError
+        end
+
         def positive?
           to_method_name = to_node.children[1]
           to_method_name == :to

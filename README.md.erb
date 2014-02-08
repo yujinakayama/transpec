@@ -828,6 +828,32 @@ obj.stub(:foo) # with `--keep stub`
 * Deprecation: deprecated since RSpec 2.14, removed in RSpec 3.0
 * See also: [Don't allow at_least(0) · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/133)
 
+### Useless `and_return`
+
+Targets:
+
+```ruby
+<%=
+useless_and_return_target = <<END
+expect(obj).to receive(:foo).and_return { 1 }
+allow(obj).to receive(:foo).and_return { 1 }
+
+expect(obj).to receive(:foo).and_return
+allow(obj).to receive(:foo).and_return
+END
+-%>
+```
+
+Will be converted to:
+
+```ruby
+<%= Transpec::Converter.new.convert(useless_and_return_target) -%>
+```
+
+* This conversion can be disabled by: `--keep deprecated`
+* Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
+* See also: [Consider deprecating `and_return { value }` · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/558)
+
 ### `any_instance` implementation blocks
 
 **This conversion is available only if your project's RSpec is `>= <%= Transpec::RSpecVersion::ANY_INSTANCE_IMPLEMENTATION_BLOCK_MIGRATION_BEGIN %>` and `< <%= Transpec::RSpecVersion::ANY_INSTANCE_IMPLEMENTATION_BLOCK_MIGRATION_EXCLUSIVE_END %>`.**

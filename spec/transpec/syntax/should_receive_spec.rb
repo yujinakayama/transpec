@@ -937,6 +937,44 @@ module Transpec
         end
       end
 
+      describe '#remove_useless_and_return!' do
+        before do
+          should_receive_object.remove_useless_and_return!
+        end
+
+        context 'when it is `subject.should_receive(:method).and_return { value }` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'receives #foo and returns 1' do
+                  subject.should_receive(:foo).and_return { 1 }
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'receives #foo and returns 1' do
+                  subject.should_receive(:foo) { 1 }
+                end
+              end
+            END
+          end
+
+          it 'converts into `subject.should_receive(:method) { value }` form' do
+            rewritten_source.should == expected_source
+          end
+
+          it 'adds record ' \
+             '`obj.should_receive(:message).and_return { value }` -> `obj.should_receive(:message) { value }`' do
+            record.original_syntax.should  == 'obj.should_receive(:message).and_return { value }'
+            record.converted_syntax.should == 'obj.should_receive(:message) { value }'
+          end
+        end
+      end
+
       describe '#add_receiver_arg_to_any_instance_implementation_block!' do
         before do
           should_receive_object.add_receiver_arg_to_any_instance_implementation_block!

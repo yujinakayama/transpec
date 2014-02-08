@@ -12,6 +12,10 @@ module Transpec
         receiver_node.nil? && [:allow, :allow_any_instance_of].include?(method_name)
       end
 
+      def method_name_for_instance
+        :allow
+      end
+
       def any_instance?
         method_name == :allow_any_instance_of
       end

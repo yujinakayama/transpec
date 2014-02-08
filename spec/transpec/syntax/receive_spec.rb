@@ -12,9 +12,203 @@ module Transpec
       include_context 'syntax object', Expect, :expect_object
       include_context 'syntax object', Allow, :allow_object
 
-      describe '#add_receiver_arg_to_any_instance_implementation_block!' do
-        let(:record) { receive_object.report.records.last }
+      let(:record) { receive_object.report.records.last }
 
+      describe '#remove_useless_and_return!' do
+        before do
+          receive_object.remove_useless_and_return!
+        end
+
+        context 'with #expect' do
+          let(:receive_object) { expect_object.receive_matcher }
+
+          context 'when it is `expect(obj).to receive(:method).and_return { value }` form' do
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'receives #foo and returns 1' do
+                    expect(subject).to receive(:foo).and_return { 1 }
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  it 'receives #foo and returns 1' do
+                    expect(subject).to receive(:foo) { 1 }
+                  end
+                end
+              END
+            end
+
+            it 'converts into `expect(obj).to receive(:method) { value }` form' do
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record `expect(obj).to receive(:message).and_return { value }` ' \
+               '-> `expect(obj).to receive(:message) { value }`' do
+              record.original_syntax.should  == 'expect(obj).to receive(:message).and_return { value }'
+              record.converted_syntax.should == 'expect(obj).to receive(:message) { value }'
+            end
+          end
+
+          context 'when it is `expect(obj).to receive(:method).and_return do value end` form' do
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'receives #foo and returns 1' do
+                    expect(subject).to receive(:foo).and_return do
+                      1
+                    end
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  it 'receives #foo and returns 1' do
+                    expect(subject).to receive(:foo) do
+                      1
+                    end
+                  end
+                end
+              END
+            end
+
+            it 'converts into `expect(obj).to receive(:method) do value end` form' do
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record `expect(obj).to receive(:message).and_return` ' \
+               '-> `expect(obj).to receive(:message)`' do
+              record.original_syntax.should  == 'expect(obj).to receive(:message).and_return'
+              record.converted_syntax.should == 'expect(obj).to receive(:message)'
+            end
+          end
+
+          context 'when it is `expect_any_instance_of(Klass).to receive(:method).and_return { value }` form' do
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'receives #foo and returns 1' do
+                    expect_any_instance_of(Klass).to receive(:foo).and_return { 1 }
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  it 'receives #foo and returns 1' do
+                    expect_any_instance_of(Klass).to receive(:foo) { 1 }
+                  end
+                end
+              END
+            end
+
+            it 'converts into `expect_any_instance_of(Klass).to receive(:method) { value }` form' do
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record `expect(obj).to receive(:message).and_return` ' \
+               '-> `expect(obj).to receive(:message)`' do
+              record.original_syntax.should  == 'expect(obj).to receive(:message).and_return { value }'
+              record.converted_syntax.should == 'expect(obj).to receive(:message) { value }'
+            end
+          end
+
+          context 'when it is `expect(obj).to receive(:method).and_return` form' do
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'responds to #foo' do
+                    expect(subject).to receive(:foo).and_return
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  it 'responds to #foo' do
+                    expect(subject).to receive(:foo)
+                  end
+                end
+              END
+            end
+
+            it 'converts into `expect(obj).to receive(:method)` form' do
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record `expect(obj).to receive(:message).and_return` -> `expect(obj).to receive(:message)`' do
+              record.original_syntax.should  == 'expect(obj).to receive(:message).and_return'
+              record.converted_syntax.should == 'expect(obj).to receive(:message)'
+            end
+          end
+
+          context 'when it is `expect(obj).to receive(:message).and_return(value)` form' do
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'responds to #foo and returns 1' do
+                    expect(obj).to receive(:message).and_return(1)
+                  end
+                end
+              END
+            end
+
+            it 'does nothing' do
+              rewritten_source.should == source
+              record.should be_nil
+            end
+          end
+        end
+
+        context 'with #allow' do
+          let(:receive_object) { allow_object.receive_matcher }
+
+          context 'when it is `allow(obj).to receive(:method).and_return { value }` form' do
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'responds to #foo and returns 1' do
+                    allow(subject).to receive(:foo).and_return { 1 }
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  it 'responds to #foo and returns 1' do
+                    allow(subject).to receive(:foo) { 1 }
+                  end
+                end
+              END
+            end
+
+            it 'converts into `allow(obj).to receive(:method) { value }` form' do
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record `allow(obj).to receive(:message).and_return { value }` ' \
+               '-> `allow(obj).to receive(:message) { value }`' do
+              record.original_syntax.should  == 'allow(obj).to receive(:message).and_return { value }'
+              record.converted_syntax.should == 'allow(obj).to receive(:message) { value }'
+            end
+          end
+        end
+      end
+
+      describe '#add_receiver_arg_to_any_instance_implementation_block!' do
         before do
           receive_object.add_receiver_arg_to_any_instance_implementation_block!
         end

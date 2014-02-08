@@ -4,6 +4,7 @@ require 'transpec/syntax'
 require 'transpec/syntax/mixin/monkey_patch_any_instance'
 require 'transpec/syntax/mixin/any_instance_block'
 require 'transpec/syntax/mixin/no_message_allowance'
+require 'transpec/syntax/mixin/useless_and_return'
 require 'transpec/util'
 require 'English'
 
@@ -11,7 +12,7 @@ module Transpec
   class Syntax
     class MethodStub < Syntax
       include Mixin::MonkeyPatchAnyInstance, Mixin::AnyInstanceBlock, Mixin::NoMessageAllowance,
-              Util
+              Mixin::UselessAndReturn, Util
 
       # rubocop:disable LineLength
       CLASSES_DEFINING_OWN_STUB_METHOD = [
@@ -89,6 +90,10 @@ module Transpec
         return unless allow_no_message?
         super
         register_record(:no_message_allowance)
+      end
+
+      def remove_useless_and_return!
+        super && register_record(:useless_and_return)
       end
 
       def add_receiver_arg_to_any_instance_implementation_block!
@@ -173,6 +178,8 @@ module Transpec
                          DeprecatedMethodRecord
                        when :no_message_allowance
                          NoMessageAllowanceRecord
+                       when :useless_and_return
+                         MonkeyPatchUselessAndReturnRecord
                        when :any_instance_block
                          AnyInstanceBlockRecord
                        else
