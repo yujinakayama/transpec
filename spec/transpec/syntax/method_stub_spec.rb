@@ -1014,6 +1014,12 @@ module Transpec
           it 'removes `.any_number_of_times`' do
             rewritten_source.should == expected_source
           end
+
+          it 'adds record ' \
+             '`obj.stub(:message).any_number_of_times` -> `obj.stub(:message)`' do
+            record.original_syntax.should  == 'obj.stub(:message).any_number_of_times'
+            record.converted_syntax.should == 'obj.stub(:message)'
+          end
         end
 
         context 'when it is `subject.stub(:method).at_least(0)` form' do
@@ -1039,6 +1045,12 @@ module Transpec
 
           it 'removes `.at_least(0)`' do
             rewritten_source.should == expected_source
+          end
+
+          it 'adds record ' \
+             '`obj.stub(:message).at_least(0)` -> `obj.stub(:message)`' do
+            record.original_syntax.should  == 'obj.stub(:message).at_least(0)'
+            record.converted_syntax.should == 'obj.stub(:message)'
           end
         end
 

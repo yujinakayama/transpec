@@ -2,6 +2,8 @@
 
 ## Development
 
+* Fix a bug where conversion of `.any_number_of_times` and `at_least(0)` with `obj.stub(:message)` weren't reported in the final summary
+
 ## v1.8.0
 
 * Conversion of `obj.stub(:message => value)` to `allow(obj).to receive(:message).and_return(value)` is now opt-in with `-t/--convert-stub-with-hash` option when `receive_messages` is unavailable

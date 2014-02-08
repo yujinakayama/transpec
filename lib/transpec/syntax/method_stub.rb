@@ -85,6 +85,12 @@ module Transpec
         register_record(:deprecated)
       end
 
+      def remove_no_message_allowance!
+        return unless allow_no_message?
+        super
+        register_record(:no_message_allowance)
+      end
+
       def add_receiver_arg_to_any_instance_implementation_block!
         super && register_record(:any_instance_block)
       end
@@ -164,7 +170,9 @@ module Transpec
       def register_record(conversion_type)
         record_class = case conversion_type
                        when :deprecated
-                         DeprecatedRecord
+                         DeprecatedMethodRecord
+                       when :no_message_allowance
+                         NoMessageAllowanceRecord
                        when :any_instance_block
                          AnyInstanceBlockRecord
                        else
@@ -208,7 +216,7 @@ module Transpec
         end
       end
 
-      class DeprecatedRecord < Record
+      class DeprecatedMethodRecord < Record
         def initialize(method_stub, *)
           @method_stub = method_stub
         end
@@ -222,6 +230,29 @@ module Transpec
           syntax = 'obj.'
           syntax << @method_stub.send(:replacement_method_for_deprecated_method)
           syntax << '(:message)'
+        end
+      end
+
+      class NoMessageAllowanceRecord < Record
+        def initialize(method_stub, *)
+          @method_stub = method_stub
+        end
+
+        def original_syntax
+          syntax = base_syntax
+          syntax << '.any_number_of_times' if @method_stub.any_number_of_times?
+          syntax << '.at_least(0)' if @method_stub.at_least_zero?
+          syntax
+        end
+
+        def converted_syntax
+          base_syntax
+        end
+
+        private
+
+        def base_syntax
+          "obj.#{@method_stub.method_name}(:message)"
         end
       end
     end
