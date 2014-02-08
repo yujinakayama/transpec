@@ -49,7 +49,7 @@ module Transpec
       unless @configuration.skip_dynamic_analysis?
         puts 'Copying the project for dynamic analysis...'
         DynamicAnalyzer.new(rspec_command: @configuration.rspec_command) do |analyzer|
-          puts "Running dynamic analysis with command \"#{analyzer.rspec_command}\"..."
+          puts "Running dynamic analysis with command #{analyzer.rspec_command.inspect}..."
           runtime_data = analyzer.analyze(paths)
         end
         puts
