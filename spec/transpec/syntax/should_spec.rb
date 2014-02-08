@@ -12,7 +12,9 @@ module Transpec
       let(:record) { should_object.report.records.first }
 
       describe '#matcher_node' do
-        context 'when it is taking operator matcher' do
+        let(:matcher_name) { should_object.matcher_node.children[1] }
+
+        context 'when the matcher is operator' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -23,22 +25,12 @@ module Transpec
             END
           end
 
-          # (block
-          #   (send nil :it
-          #     (str "is 1"))
-          #   (args)
-          #   (send
-          #     (send
-          #       (send nil :subject) :should) :==
-          #     (int 1)))
-
-          it 'returns its parent node' do
-            should_object.parent_node.children[1].should == :==
-            should_object.matcher_node.should == should_object.parent_node
+          it 'returns the matcher node' do
+            matcher_name.should == :==
           end
         end
 
-        context 'when it is taking non-operator matcher without argument' do
+        context 'when the matcher is not operator' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -49,43 +41,40 @@ module Transpec
             END
           end
 
-          # (block
-          #   (send nil :it
-          #     (str "is empty"))
-          #   (args)
-          #   (send
-          #     (send nil :subject) :should
-          #     (send nil :be_empty)))
-
-          it 'returns its argument node' do
-            should_object.arg_node.children[1].should == :be_empty
-            should_object.matcher_node.should == should_object.arg_node
+          it 'returns the matcher node' do
+            matcher_name.should == :be_empty
           end
         end
 
-        context 'when it is taking non-operator matcher with argument' do
+        context 'when the matcher is chained by another method' do
           let(:source) do
             <<-END
               describe 'example' do
-                it 'is 1' do
-                  subject.should eq(1)
+                it 'has 2 items' do
+                  subject.should have(2).items
                 end
               end
             END
           end
 
-          # (block
-          #   (send nil :it
-          #     (str "is 1"))
-          #   (args)
-          #   (send
-          #     (send nil :subject) :should
-          #     (send nil :eq
-          #       (int 1))))
+          it 'returns the matcher node' do
+            matcher_name.should == :have
+          end
+        end
 
-          it 'returns its argument node' do
-            should_object.arg_node.children[1].should == :eq
-            should_object.matcher_node.should == should_object.arg_node
+        context 'when the matcher is chained by another method that is taking a block' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'has 2 items' do
+                  subject.should have(2).items { }
+                end
+              end
+            END
+          end
+
+          it 'returns the first node of the chain' do
+            matcher_name.should == :have
           end
         end
       end

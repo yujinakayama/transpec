@@ -74,6 +74,52 @@ module Transpec
       parent_node
     end
 
+    def each_forward_chained_node(origin_node, mode = nil)
+      return to_enum(__method__, origin_node, mode) unless block_given?
+
+      yield origin_node if mode == :include_origin
+
+      parent_node = origin_node
+
+      loop do
+        child_node = parent_node.children.first
+
+        return unless child_node
+        return unless [:send, :block].include?(child_node.type)
+
+        if mode == :parent_as_second_arg
+          yield child_node, parent_node
+        else
+          yield child_node
+        end
+
+        parent_node = child_node
+      end
+
+      nil
+    end
+
+    def each_backward_chained_node(origin_node, mode = nil)
+      return to_enum(__method__, origin_node, mode) unless block_given?
+
+      yield origin_node if mode == :include_origin
+
+      origin_node.each_ancestor_node.reduce(origin_node) do |child_node, parent_node|
+        return unless [:send, :block].include?(parent_node.type)
+        return unless parent_node.children.first.equal?(child_node)
+
+        if mode == :child_as_second_arg
+          yield parent_node, child_node
+        else
+          yield parent_node
+        end
+
+        parent_node
+      end
+
+      nil
+    end
+
     def indentation_of_line(arg)
       line = case arg
              when AST::Node             then arg.loc.expression.source_line

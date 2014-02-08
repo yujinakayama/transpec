@@ -8,22 +8,38 @@ require 'ast'
 module Transpec
   class Syntax
     class OperatorMatcher < Syntax
-      include Mixin::Send, Util, ::AST::Sexp
+      extend ::AST::Sexp
+      include Mixin::Send, Util
 
       OPERATORS = [:==, :===, :<, :<=, :>, :>=, :=~].freeze
+      BE_NODE = s(:send, nil, :be)
 
       def self.standalone?
         false
       end
 
-      def self.target_method?(receiver_node, method_name)
-        !receiver_node.nil? && OPERATORS.include?(method_name)
+      def self.target_node?(node, runtime_data = nil)
+        node = node.parent_node if node == BE_NODE
+        receiver_node, method_name, *_ = *node
+        return false if receiver_node.nil?
+        return false unless OPERATORS.include?(method_name)
+        check_target_node_dynamically(node, runtime_data)
       end
 
       add_dynamic_analysis_request do |rewriter|
         if method_name == :=~
           rewriter.register_request(arg_node, :arg_is_enumerable?, 'is_a?(Enumerable)')
         end
+      end
+
+      def initialize(node, source_rewriter = nil, runtime_data = nil, report = nil)
+        operator_node = if node == BE_NODE
+                          node.parent_node
+                        else
+                          node
+                        end
+
+        super(operator_node, source_rewriter, runtime_data, report)
       end
 
       def convert_operator!(parenthesize_arg = true)
@@ -126,7 +142,7 @@ module Transpec
       end
 
       def be_node
-        if receiver_node == s(:send, nil, :be)
+        if receiver_node == BE_NODE
           receiver_node
         else
           nil

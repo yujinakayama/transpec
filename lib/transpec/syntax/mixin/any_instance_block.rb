@@ -2,6 +2,7 @@
 
 require 'active_support/concern'
 require 'transpec/syntax/mixin/send'
+require 'transpec/util'
 
 module Transpec
   class Syntax
@@ -24,9 +25,7 @@ module Transpec
 
         def any_instance_block_node
           return unless any_instance?
-          each_chained_method_node do |node, _|
-            return node if node.block_type?
-          end
+          Util.each_backward_chained_node(node).find(&:block_type?)
         end
 
         class AnyInstanceBlockRecord < Record

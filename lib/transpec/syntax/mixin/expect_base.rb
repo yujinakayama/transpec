@@ -34,11 +34,8 @@ module Transpec
 
         def matcher_node
           to_arg_node = to_node.children[2]
-          if to_arg_node.block_type?
-            to_arg_node.children.first
-          else
-            to_arg_node
-          end
+          Util.each_forward_chained_node(to_arg_node, :include_origin)
+            .select(&:send_type?).to_a.last
         end
 
         def block_node

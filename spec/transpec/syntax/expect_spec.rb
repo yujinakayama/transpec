@@ -27,22 +27,7 @@ module Transpec
       end
 
       describe '#matcher_node' do
-        context 'when the matcher is taking a block' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'is empty' do
-                  expect(subject).to receive(:foo) { }
-                end
-              end
-            END
-          end
-
-          it 'returns send node of the matcher' do
-            method_name = expect_object.matcher_node.children[1]
-            method_name.should == :receive
-          end
-        end
+        let(:matcher_name) { expect_object.matcher_node.children[1] }
 
         context 'when the matcher is not taking a block' do
           let(:source) do
@@ -56,8 +41,55 @@ module Transpec
           end
 
           it 'returns send node of the matcher' do
-            method_name = expect_object.matcher_node.children[1]
-            method_name.should == :be_empty
+            matcher_name.should == :be_empty
+          end
+        end
+
+        context 'when the matcher is taking a block' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'receives :foo' do
+                  expect(subject).to receive(:foo) { }
+                end
+              end
+            END
+          end
+
+          it 'returns send node of the matcher' do
+            matcher_name.should == :receive
+          end
+        end
+
+        context 'when the matcher is chained by another method' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'receives :foo twice' do
+                  expect(subject).to receive(:foo).twice
+                end
+              end
+            END
+          end
+
+          it 'returns the first node of the chain' do
+            matcher_name.should == :receive
+          end
+        end
+
+        context 'when the matcher is chained by another method that is taking a block' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'receives :foo twice' do
+                  expect(subject).to receive(:foo).twice { }
+                end
+              end
+            END
+          end
+
+          it 'returns the first node of the chain' do
+            matcher_name.should == :receive
           end
         end
       end

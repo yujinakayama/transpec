@@ -11,61 +11,22 @@ module Transpec
       include_context 'parsed objects'
       include_context 'syntax object', Should, :should_object
 
-      subject(:matcher) do
-        OperatorMatcher.new(should_object.matcher_node, source_rewriter, runtime_data)
-      end
-
+      subject(:matcher) { should_object.operator_matcher }
       let(:record) { matcher.report.records.first }
 
       describe '#method_name' do
-        context 'when it is operator matcher' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'is 1' do
-                  subject.should == 1
-                end
+        let(:source) do
+          <<-END
+            describe 'example' do
+              it 'is 1' do
+                subject.should == 1
               end
-            END
-          end
-
-          # (block
-          #   (send nil :it
-          #     (str "is 1"))
-          #   (args)
-          #   (send
-          #     (send
-          #       (send nil :subject) :should) :==
-          #     (int 1)))
-
-          it 'returns the method name' do
-            matcher.method_name.should == :==
-          end
+            end
+          END
         end
 
-        context 'when it is non-operator matcher' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'is 1' do
-                  subject.should eq(1)
-                end
-              end
-            END
-          end
-
-          # (block
-          #   (send nil :it
-          #     (str "is 1"))
-          #   (args)
-          #   (send
-          #     (send nil :subject) :should
-          #     (send nil :eq
-          #       (int 1))))
-
-          it 'returns the method name' do
-            matcher.method_name.should == :eq
-          end
+        it 'returns the method name' do
+          matcher.method_name.should == :==
         end
       end
 
@@ -665,7 +626,7 @@ module Transpec
             <<-END
               describe 'example' do
                 it 'is 1' do
-                  subject.should eq(1)
+                  subject.should ==(1)
                 end
               end
             END
@@ -681,7 +642,7 @@ module Transpec
             <<-END
               describe 'example' do
                 it 'is 1' do
-                  subject.should eq 1
+                  subject.should == 1
                 end
               end
             END
@@ -694,7 +655,7 @@ module Transpec
               <<-END
               describe 'example' do
                 it 'is 1' do
-                  subject.should eq(1)
+                  subject.should ==(1)
                 end
               end
               END
@@ -712,7 +673,7 @@ module Transpec
               <<-END
               describe 'example' do
                 it 'is 1' do
-                  subject.should eq 1
+                  subject.should == 1
                 end
               end
               END
@@ -724,38 +685,12 @@ module Transpec
           end
         end
 
-        context 'when its multiple arguments are not in parentheses' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'contains 1 and 2' do
-                  subject.should include 1, 2
-                end
-              end
-            END
-          end
-
-          let(:expected_source) do
-            <<-END
-              describe 'example' do
-                it 'contains 1 and 2' do
-                  subject.should include(1, 2)
-                end
-              end
-            END
-          end
-
-          it 'inserts parentheses' do
-            rewritten_source.should == expected_source
-          end
-        end
-
         context 'when its argument is a string literal' do
           let(:source) do
             <<-END
               describe 'example' do
                 it "is 'string'" do
-                  subject.should eq 'string'
+                  subject.should == 'string'
                 end
               end
             END
@@ -765,7 +700,7 @@ module Transpec
             <<-END
               describe 'example' do
                 it "is 'string'" do
-                  subject.should eq('string')
+                  subject.should ==('string')
                 end
               end
             END
@@ -781,7 +716,7 @@ module Transpec
             <<-END
               describe 'example' do
                 it 'returns the document' do
-                  subject.should eq <<-HEREDOC
+                  subject.should == <<-HEREDOC
                   foo
                   HEREDOC
                 end
@@ -808,7 +743,7 @@ module Transpec
             <<-END
               describe 'example' do
                 it 'returns the document' do
-                  subject.should eq <<-HEREDOC.gsub('foo', 'bar')
+                  subject.should == <<-HEREDOC.gsub('foo', 'bar')
                   foo
                   HEREDOC
                 end
@@ -838,7 +773,7 @@ module Transpec
             <<-'END'
               it 'returns the document' do
                 string = 'foo'
-                subject.should eq <<-HEREDOC
+                subject.should == <<-HEREDOC
                 #{string}
                 HEREDOC
               end

@@ -2,6 +2,7 @@
 
 require 'active_support/concern'
 require 'transpec/syntax/mixin/send'
+require 'transpec/util'
 require 'ast'
 
 module Transpec
@@ -47,14 +48,14 @@ module Transpec
         end
 
         def any_number_of_times_node
-          each_chained_method_node do |chained_node|
+          Util.each_backward_chained_node(node) do |chained_node|
             method_name = chained_node.children[1]
             return chained_node if method_name == :any_number_of_times
           end
         end
 
         def at_least_zero_node
-          each_chained_method_node do |chained_node|
+          Util.each_backward_chained_node(node) do |chained_node|
             _, method_name, arg_node = *chained_node
             next unless method_name == :at_least
             return chained_node if arg_node == s(:int, 0)

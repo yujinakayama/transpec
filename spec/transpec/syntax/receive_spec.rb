@@ -56,6 +56,41 @@ module Transpec
             end
           end
 
+          context 'when it is `expect_any_instance_of(Klass).to receive(:method).once do |arg| .. end` form' do
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'receives #foo' do
+                    expect_any_instance_of(Klass).to receive(:foo).once do |arg|
+                    end
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  it 'receives #foo' do
+                    expect_any_instance_of(Klass).to receive(:foo).once do |instance, arg|
+                    end
+                  end
+                end
+              END
+            end
+
+            it 'converts into ' \
+               '`expect_any_instance_of(Klass).to receive(:method).once do |instance, arg| .. end` form' do
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record `expect_any_instance_of(Klass).to receive(:message) { |arg| }` ' \
+               '-> `Klass.any_instance.should_receive(:message) { |instance, arg| }`' do
+              record.original_syntax.should  == 'expect_any_instance_of(Klass).to receive(:message) { |arg| }'
+              record.converted_syntax.should == 'expect_any_instance_of(Klass).to receive(:message) { |instance, arg| }'
+            end
+          end
+
           context 'when it is `expect_any_instance_of(Klass).to receive(:method) { |arg| .. }` form' do
             let(:source) do
               <<-END

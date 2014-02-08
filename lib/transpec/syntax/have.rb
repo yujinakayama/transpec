@@ -20,11 +20,9 @@ module Transpec
 
       attr_reader :expectation
 
-      def self.target_method?(have_node, items_method_name)
-        return false unless have_node
-        have_receiver_node, have_method_name, *_ = *have_node
-        return false if have_receiver_node
-        [:have, :have_exactly, :have_at_least, :have_at_most].include?(have_method_name)
+      def self.target_method?(receiver_node, method_name)
+        receiver_node.nil? &&
+          [:have, :have_exactly, :have_at_least, :have_at_most].include?(method_name)
       end
 
       add_dynamic_analysis_request do |rewriter|
@@ -34,7 +32,7 @@ module Transpec
       def convert_to_standard_expectation!(parenthesize_matcher_arg = true)
         return if project_requires_collection_matcher?
         replace(@expectation.subject_range, replacement_subject_source) if explicit_subject?
-        replace(expression_range, replacement_matcher_source(parenthesize_matcher_arg))
+        replace(matcher_range, replacement_matcher_source(parenthesize_matcher_arg))
         register_record if explicit_subject?
       end
 
@@ -42,15 +40,12 @@ module Transpec
         @expectation.respond_to?(:subject_node)
       end
 
-      def have_node # rubocop:disable PredicateName
-        node.children.first
-      end
+      alias_method :have_node, :node
+      alias_method :items_node, :parent_node
 
       def size_node
         have_node.children[2]
       end
-
-      alias_method :items_node, :node
 
       def items_method_has_arguments?
         items_node.children.size > 2
@@ -107,10 +102,10 @@ module Transpec
         if subject_is_owner_of_collection?
           if collection_accessor_is_private?
             source << ".send(#{collection_accessor.inspect}"
-            source << ", #{args_range.source}" if items_method_has_arguments?
+            source << ", #{collection_accessor_args_body_source}" if items_method_has_arguments?
             source << ')'
           else
-            source << ".#{collection_accessor}#{parentheses_range.source}"
+            source << ".#{collection_accessor}#{collection_accessor_args_parentheses_source}"
           end
         end
         source << ".#{query_method}"
@@ -162,6 +157,22 @@ module Transpec
         when :have_at_most
           "be <= #{size_source}"
         end
+      end
+
+      def matcher_range
+        expression_range.join(items_node.loc.expression)
+      end
+
+      def collection_accessor_args_parentheses_source
+        map = items_node.loc
+        range = map.selector.end.join(map.expression.end)
+        range.source
+      end
+
+      def collection_accessor_args_body_source
+        arg_nodes = items_node.children[2..-1]
+        range = arg_nodes.first.loc.expression.begin.join(arg_nodes.last.loc.expression.end)
+        range.source
       end
 
       def register_record

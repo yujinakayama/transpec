@@ -4,6 +4,7 @@ require 'active_support/concern'
 require 'transpec/syntax/mixin/send'
 require 'transpec/syntax/mixin/have_matcher_owner'
 require 'transpec/syntax/operator_matcher'
+require 'transpec/util'
 
 module Transpec
   class Syntax
@@ -25,7 +26,12 @@ module Transpec
         end
 
         def matcher_node
-          arg_node || parent_node
+          if arg_node
+            Util.each_forward_chained_node(arg_node, :include_origin)
+              .select(&:send_type?).to_a.last
+          else
+            parent_node
+          end
         end
 
         def should_range

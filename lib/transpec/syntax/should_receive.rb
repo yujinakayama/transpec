@@ -5,12 +5,13 @@ require 'transpec/syntax/mixin/expectizable'
 require 'transpec/syntax/mixin/monkey_patch_any_instance'
 require 'transpec/syntax/mixin/any_instance_block'
 require 'transpec/syntax/mixin/no_message_allowance'
+require 'transpec/util'
 
 module Transpec
   class Syntax
     class ShouldReceive < Syntax
       include Mixin::Expectizable, Mixin::MonkeyPatchAnyInstance, Mixin::AnyInstanceBlock,
-              Mixin::NoMessageAllowance
+              Mixin::NoMessageAllowance, Util
 
       alias_method :useless_expectation?, :allow_no_message?
 
@@ -112,7 +113,7 @@ module Transpec
       def broken_block_nodes
         @broken_block_nodes ||= [
           block_node_taken_by_with_method_with_no_normal_args,
-          block_node_following_message_expectation_method
+          block_node_followed_by_fluent_method
         ].compact.uniq
       end
 
@@ -128,7 +129,7 @@ module Transpec
       #   (args
       #     (arg :block_arg)) nil)
       def block_node_taken_by_with_method_with_no_normal_args
-        each_chained_method_node do |chained_node, child_node|
+        each_backward_chained_node(node, :child_as_second_arg) do |chained_node, child_node|
           next unless chained_node.block_type?
           return nil unless child_node.children[1] == :with
           return nil if child_node.children[2]
@@ -146,8 +147,8 @@ module Transpec
       #       (sym :method_name))
       #     (args
       #       (arg :block_arg)) nil) :once)
-      def block_node_following_message_expectation_method
-        each_chained_method_node do |chained_node, child_node|
+      def block_node_followed_by_fluent_method
+        each_backward_chained_node(node, :child_as_second_arg) do |chained_node, child_node|
           next unless chained_node.send_type?
           return child_node if child_node.block_type?
         end
