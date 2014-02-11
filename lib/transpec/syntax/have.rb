@@ -368,21 +368,26 @@ module Transpec
         end
 
         def build_converted_subject(subject)
+          if have.subject_is_owner_of_collection?
+            converted_owner_of_collection(subject)
+          else
+            subject << ".#{have.default_query_method}"
+          end
+        end
+
+        def converted_owner_of_collection(subject)
           subject << '.'
 
-          if have.subject_is_owner_of_collection?
-            if have.collection_accessor_is_private?
-              subject << "send(#{have.collection_accessor.inspect}"
-              subject << ', ...' if have.items_method_has_arguments?
-              subject << ')'
-            else
-              subject << "#{have.collection_accessor}"
-              subject << '(...)' if have.items_method_has_arguments?
-            end
-            subject << ".#{have.query_method}"
+          if have.collection_accessor_is_private?
+            subject << "send(#{have.collection_accessor.inspect}"
+            subject << ', ...' if have.items_method_has_arguments?
+            subject << ')'
           else
-            subject << "#{have.default_query_method}"
+            subject << "#{have.collection_accessor}"
+            subject << '(...)' if have.items_method_has_arguments?
           end
+
+          subject << ".#{have.query_method}"
         end
 
         def source_builder
