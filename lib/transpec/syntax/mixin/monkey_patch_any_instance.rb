@@ -12,7 +12,7 @@ module Transpec
         include MonkeyPatch, ::AST::Sexp
 
         included do
-          add_dynamic_analysis_request do |rewriter|
+          define_dynamic_analysis_request do |rewriter|
             code = <<-END.gsub(/^\s+\|/, '').chomp
               |if self.class.name == 'RSpec::Mocks::AnyInstance::Recorder'
               |  if respond_to?(:klass)

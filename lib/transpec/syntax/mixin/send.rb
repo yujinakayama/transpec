@@ -45,7 +45,7 @@ module Transpec
         end
 
         included do
-          add_dynamic_analysis_request do |rewriter|
+          define_dynamic_analysis_request do |rewriter|
             if receiver_node
               target_node = receiver_node
               target_object_type = :object

@@ -25,7 +25,7 @@ module Transpec
           [:have, :have_exactly, :have_at_least, :have_at_most].include?(method_name)
       end
 
-      add_dynamic_analysis_request do |rewriter|
+      define_dynamic_analysis_request do |rewriter|
         DynamicInspector.register_request(self, rewriter)
       end
 

@@ -42,7 +42,7 @@ module Transpec
         !receiver_node.nil? && [:stub, :stub!, :stub_chain, :unstub, :unstub!].include?(method_name)
       end
 
-      add_dynamic_analysis_request do |rewriter|
+      define_dynamic_analysis_request do |rewriter|
         register_request_of_syntax_availability_inspection(
           rewriter,
           :allow_to_receive_available?,

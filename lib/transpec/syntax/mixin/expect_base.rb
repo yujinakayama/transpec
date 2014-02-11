@@ -13,7 +13,7 @@ module Transpec
         include Send
 
         included do
-          add_dynamic_analysis_request do |rewriter|
+          define_dynamic_analysis_request do |rewriter|
             if Receive.dynamic_analysis_target_node?(matcher_node)
               create_receive_matcher.register_request_for_dynamic_analysis(rewriter)
             end

@@ -61,7 +61,7 @@ module Transpec
       extend ActiveSupport::Concern
 
       module ClassMethods
-        def add_dynamic_analysis_request(&block)
+        def define_dynamic_analysis_request(&block)
           dynamic_analysis_requests << block
         end
 

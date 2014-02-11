@@ -10,7 +10,7 @@ module Transpec
         extend ActiveSupport::Concern
 
         included do
-          add_dynamic_analysis_request do |rewriter|
+          define_dynamic_analysis_request do |rewriter|
             if Have.dynamic_analysis_target_node?(matcher_node)
               create_have_matcher.register_request_for_dynamic_analysis(rewriter)
             end

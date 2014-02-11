@@ -22,7 +22,7 @@ module Transpec
         @current_syntax_type = :should
       end
 
-      add_dynamic_analysis_request do |rewriter|
+      define_dynamic_analysis_request do |rewriter|
         register_request_of_syntax_availability_inspection(
           rewriter,
           :expect_available?,

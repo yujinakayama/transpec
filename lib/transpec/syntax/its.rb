@@ -13,7 +13,7 @@ module Transpec
         receiver_node.nil? && method_name == :its
       end
 
-      add_dynamic_analysis_request do |rewriter|
+      define_dynamic_analysis_request do |rewriter|
         key = :project_requires_its?
         code = 'defined?(RSpec::Its)'
         rewriter.register_request(@node, key, code, :context)

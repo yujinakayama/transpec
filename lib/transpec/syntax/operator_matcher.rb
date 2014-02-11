@@ -26,7 +26,7 @@ module Transpec
         check_target_node_dynamically(node, runtime_data)
       end
 
-      add_dynamic_analysis_request do |rewriter|
+      define_dynamic_analysis_request do |rewriter|
         if method_name == :=~
           rewriter.register_request(arg_node, :arg_is_enumerable?, 'is_a?(Enumerable)')
         end
