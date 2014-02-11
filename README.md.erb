@@ -80,13 +80,13 @@ Simply install `transpec` with `gem` command:
 $ gem install transpec
 ```
 
-Usually you don't need to add `transpec` to your `*.gemspec` or `Gemfile` since this isn't a tool to be used daily.
+Normally you don't need to add `transpec` to your `Gemfile` or `*.gemspec` since this isn't a tool to be used daily.
 
 ## Basic Usage
 
 Before converting your specs:
 
-* Make sure your project has `rspec` gem dependency **<%= Transpec.required_rspec_version %>** or later. If not, change your `*.gemspec` or `Gemfile` to do so.
+* Make sure your project has `rspec` gem dependency **<%= Transpec.required_rspec_version %>** or later. If not, change your `Gemfile` or `*.gemspec` to do so.
 * Run `rspec` and check if all the specs pass.
 * Ensure the Git repository is clean. (You don't want to mix up your changes and Transpec's changes, do you?)
 
