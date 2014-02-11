@@ -38,7 +38,7 @@ module Transpec
 
         insert_example_description!
 
-        subject_source = have_matcher.build_replacement_subject_source('subject')
+        subject_source = have_matcher.replacement_subject_source('subject')
         insert_before(expression_range, "#{subject_source}.")
 
         have_matcher.convert_to_standard_expectation!
@@ -53,7 +53,7 @@ module Transpec
 
         insert_example_description!
 
-        subject_source = have_matcher.build_replacement_subject_source('subject')
+        subject_source = have_matcher.replacement_subject_source('subject')
         expect_to_source = "expect(#{subject_source})."
         expect_to_source << (positive? ? 'to' : negative_form)
         replace(should_range, expect_to_source)
@@ -72,7 +72,7 @@ module Transpec
       def build_description(size)
         description = positive? ? 'has ' : 'does not have '
 
-        case have_matcher.have_method_name
+        case have_matcher.method_name
         when :have_at_least then description << 'at least '
         when :have_at_most  then description << 'at most '
         end
@@ -161,17 +161,19 @@ module Transpec
       end
 
       class OnelinerShouldHaveRecord < Have::HaveRecord
+        attr_reader :should, :negative_form_of_to
+
         def initialize(should, have, negative_form_of_to = nil)
+          super(have)
           @should = should
-          @have = have
           @negative_form_of_to = negative_form_of_to
         end
 
         def original_syntax
           @original_syntax ||= begin
-            syntax = @should.example_has_description? ? "it '...' do" : 'it {'
-            syntax << " #{@should.method_name} #{@have.have_method_name}(n).#{original_items} "
-            syntax << (@should.example_has_description? ? 'end' : '}')
+            syntax = should.example_has_description? ? "it '...' do" : 'it {'
+            syntax << " #{should.method_name} #{have.method_name}(n).#{original_items} "
+            syntax << (should.example_has_description? ? 'end' : '}')
           end
         end
 
@@ -181,25 +183,25 @@ module Transpec
             syntax << ' '
             syntax << converted_expectation
             syntax << ' '
-            syntax << @have.build_replacement_matcher_source('n')
+            syntax << source_builder.replacement_matcher_source
             syntax << ' end'
           end
         end
 
         def converted_description
-          if @should.example_has_description?
+          if should.example_has_description?
             "it '...' do"
           else
-            "it '#{@should.build_description('n')}' do"
+            "it '#{should.build_description('n')}' do"
           end
         end
 
         def converted_expectation
-          case @should.current_syntax_type
+          case should.current_syntax_type
           when :should
-            "#{converted_subject}.#{@should.method_name}"
+            "#{converted_subject}.#{should.method_name}"
           when :expect
-            "expect(#{converted_subject})." + (@should.positive? ? 'to' : @negative_form_of_to)
+            "expect(#{converted_subject})." + (should.positive? ? 'to' : negative_form_of_to)
           end
         end
 

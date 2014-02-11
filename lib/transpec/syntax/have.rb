@@ -31,13 +31,15 @@ module Transpec
 
       def convert_to_standard_expectation!(parenthesize_matcher_arg = true)
         return if project_requires_collection_matcher?
-        replace(@expectation.subject_range, replacement_subject_source) if explicit_subject?
-        replace(matcher_range, replacement_matcher_source(parenthesize_matcher_arg))
+
+        replace(expectation.subject_range, replacement_subject_source) if explicit_subject?
+        replace(matcher_range, source_builder.replacement_matcher_source(parenthesize_matcher_arg))
+
         register_record if explicit_subject?
       end
 
       def explicit_subject?
-        @expectation.respond_to?(:subject_node)
+        expectation.respond_to?(:subject_node)
       end
 
       alias_method :have_node, :node
@@ -49,10 +51,6 @@ module Transpec
 
       def items_method_has_arguments?
         items_node.children.size > 2
-      end
-
-      def have_method_name # rubocop:disable PredicateName
-        have_node.children[1]
       end
 
       def items_name
@@ -93,35 +91,9 @@ module Transpec
         QUERY_METHOD_PRIORITIES.first
       end
 
-      def replacement_subject_source
-        build_replacement_subject_source(@expectation.subject_range.source)
-      end
-
-      def build_replacement_subject_source(original_subject_source)
-        source = original_subject_source.dup
-        if subject_is_owner_of_collection?
-          if collection_accessor_is_private?
-            source << ".send(#{collection_accessor.inspect}"
-            source << ", #{collection_accessor_args_body_source}" if items_method_has_arguments?
-            source << ')'
-          else
-            source << ".#{collection_accessor}#{collection_accessor_args_parentheses_source}"
-          end
-        end
-        source << ".#{query_method}"
-      end
-
-      def replacement_matcher_source(parenthesize_arg)
-        build_replacement_matcher_source(size_source, parenthesize_arg)
-      end
-
-      def build_replacement_matcher_source(size_source, parenthesize_arg = true)
-        case @expectation.current_syntax_type
-        when :should
-          build_replacement_matcher_source_for_should(size_source)
-        when :expect
-          build_replacement_matcher_source_for_expect(size_source, parenthesize_arg)
-        end
+      def replacement_subject_source(original_subject_source = nil)
+        original_subject_source ||= expectation.subject_range.source
+        source_builder.replacement_subject_source(original_subject_source)
       end
 
       def size_source
@@ -130,53 +102,91 @@ module Transpec
 
       private
 
+      def source_builder
+        @source_builder ||= SourceBuilder.new(self, size_source)
+      end
+
       def runtime_subject_data
         return @runtime_subject_data if instance_variable_defined?(:@runtime_subject_data)
-        node = explicit_subject? ? @expectation.subject_node : @expectation.node
+        node = explicit_subject? ? expectation.subject_node : expectation.node
         @runtime_subject_data = runtime_node_data(node)
-      end
-
-      def build_replacement_matcher_source_for_should(size_source)
-        case have_method_name
-        when :have, :have_exactly then "== #{size_source}"
-        when :have_at_least       then ">= #{size_source}"
-        when :have_at_most        then "<= #{size_source}"
-        end
-      end
-
-      def build_replacement_matcher_source_for_expect(size_source, parenthesize_arg)
-        case have_method_name
-        when :have, :have_exactly
-          if parenthesize_arg
-            "eq(#{size_source})"
-          else
-            "eq #{size_source}"
-          end
-        when :have_at_least
-          "be >= #{size_source}"
-        when :have_at_most
-          "be <= #{size_source}"
-        end
       end
 
       def matcher_range
         expression_range.join(items_node.loc.expression)
       end
 
-      def collection_accessor_args_parentheses_source
-        map = items_node.loc
-        range = map.selector.end.join(map.expression.end)
-        range.source
-      end
-
-      def collection_accessor_args_body_source
-        arg_nodes = items_node.children[2..-1]
-        range = arg_nodes.first.loc.expression.begin.join(arg_nodes.last.loc.expression.end)
-        range.source
-      end
-
       def register_record
         @report.records << HaveRecord.new(self)
+      end
+
+      class SourceBuilder
+        attr_reader :have, :size_source
+
+        def initialize(have, size_source)
+          @have = have
+          @size_source = size_source
+        end
+
+        def replacement_subject_source(original_subject_source)
+          source = original_subject_source
+          if have.subject_is_owner_of_collection?
+            if have.collection_accessor_is_private?
+              source << ".send(#{have.collection_accessor.inspect}"
+              if have.items_method_has_arguments?
+                source << ", #{collection_accessor_args_body_source}"
+              end
+              source << ')'
+            else
+              source << ".#{have.collection_accessor}#{collection_accessor_args_parentheses_source}"
+            end
+          end
+          source << ".#{have.query_method}"
+        end
+
+        def replacement_matcher_source(parenthesize_arg = true)
+          case have.expectation.current_syntax_type
+          when :should
+            replacement_matcher_source_for_should
+          when :expect
+            replacement_matcher_source_for_expect(parenthesize_arg)
+          end
+        end
+
+        def replacement_matcher_source_for_should
+          case have.method_name
+          when :have, :have_exactly then "== #{size_source}"
+          when :have_at_least       then ">= #{size_source}"
+          when :have_at_most        then "<= #{size_source}"
+          end
+        end
+
+        def replacement_matcher_source_for_expect(parenthesize_arg)
+          case have.method_name
+          when :have, :have_exactly
+            if parenthesize_arg
+              "eq(#{size_source})"
+            else
+              "eq #{size_source}"
+            end
+          when :have_at_least
+            "be >= #{size_source}"
+          when :have_at_most
+            "be <= #{size_source}"
+          end
+        end
+
+        def collection_accessor_args_parentheses_source
+          map = have.items_node.loc
+          range = map.selector.end.join(map.expression.end)
+          range.source
+        end
+
+        def collection_accessor_args_body_source
+          arg_nodes = have.items_node.children[2..-1]
+          range = arg_nodes.first.loc.expression.begin.join(arg_nodes.last.loc.expression.end)
+          range.source
+        end
       end
 
       class DynamicInspector
@@ -184,21 +194,23 @@ module Transpec
           new(have, rewriter).register_request
         end
 
+        attr_reader :have, :rewriter
+
         def initialize(have, rewriter)
           @have = have
           @rewriter = rewriter
         end
 
         def target_node
-          if @have.explicit_subject?
-            @have.expectation.subject_node
+          if have.explicit_subject?
+            have.expectation.subject_node
           else
-            @have.expectation.node
+            have.expectation.node
           end
         end
 
         def target_type
-          if @have.explicit_subject?
+          if have.explicit_subject?
             :object
           else
             :context
@@ -208,27 +220,27 @@ module Transpec
         def register_request
           key = :collection_accessor
           code = collection_accessor_inspection_code
-          @rewriter.register_request(target_node, key, code, target_type)
+          rewriter.register_request(target_node, key, code, target_type)
 
           # Give up inspecting query methods of collection accessor with arguments
           # (e.g. have(2).errors_on(variable)) since this is a context of #instance_eval.
-          unless @have.items_method_has_arguments?
+          unless have.items_method_has_arguments?
             key = :available_query_methods
             code = available_query_methods_inspection_code
-            @rewriter.register_request(target_node, key, code, target_type)
+            rewriter.register_request(target_node, key, code, target_type)
           end
 
           key = :collection_accessor_is_private?
-          code = "#{subject_code}.private_methods.include?(#{@have.items_name.inspect})"
-          @rewriter.register_request(target_node, key, code, target_type)
+          code = "#{subject_code}.private_methods.include?(#{have.items_name.inspect})"
+          rewriter.register_request(target_node, key, code, target_type)
 
           key = :project_requires_collection_matcher?
           code = 'defined?(RSpec::Rails) || defined?(RSpec::CollectionMatchers)'
-          @rewriter.register_request(target_node, key, code, :context)
+          rewriter.register_request(target_node, key, code, :context)
         end
 
         def subject_code
-          @have.explicit_subject? ? 'self' : 'subject'
+          have.explicit_subject? ? 'self' : 'subject'
         end
 
         # rubocop:disable MethodLength
@@ -241,7 +253,7 @@ module Transpec
           # rubocop:enable LineLength
           @collection_accessor_inspection_code ||= <<-END.gsub(/^\s+\|/, '').chomp
             |begin
-            |  exact_name = #{@have.items_name.inspect}
+            |  exact_name = #{have.items_name.inspect}
             |
             |  inflector = if defined?(ActiveSupport::Inflector) &&
             |                   ActiveSupport::Inflector.respond_to?(:pluralize)
@@ -288,23 +300,25 @@ module Transpec
       end
 
       class HaveRecord < Record
+        attr_reader :have
+
         def initialize(have)
           @have = have
         end
 
         def original_syntax
           @original_syntax ||= begin
-            type = @have.expectation.class.snake_case_name.to_sym
+            type = have.expectation.class.snake_case_name.to_sym
             syntax = build_expectation(original_subject, type)
-            syntax << " #{@have.have_method_name}(n).#{original_items}"
+            syntax << " #{have.method_name}(n).#{original_items}"
           end
         end
 
         def converted_syntax
           @converted_syntax ||= begin
-            type = @have.expectation.current_syntax_type
+            type = have.expectation.current_syntax_type
             syntax = build_expectation(converted_subject, type)
-            syntax << " #{@have.build_replacement_matcher_source('n')}"
+            syntax << " #{source_builder.replacement_matcher_source}"
           end
         end
 
@@ -322,11 +336,11 @@ module Transpec
         end
 
         def positive?
-          @have.expectation.positive?
+          have.expectation.positive?
         end
 
         def original_subject
-          if @have.subject_is_owner_of_collection?
+          if have.subject_is_owner_of_collection?
             'obj'
           else
             'collection'
@@ -334,11 +348,11 @@ module Transpec
         end
 
         def original_items
-          if @have.subject_is_owner_of_collection?
-            if @have.items_method_has_arguments?
-              "#{@have.collection_accessor}(...)"
+          if have.subject_is_owner_of_collection?
+            if have.items_method_has_arguments?
+              "#{have.collection_accessor}(...)"
             else
-              @have.collection_accessor
+              have.collection_accessor
             end
           else
             'items'
@@ -356,19 +370,23 @@ module Transpec
         def build_converted_subject(subject)
           subject << '.'
 
-          if @have.subject_is_owner_of_collection?
-            if @have.collection_accessor_is_private?
-              subject << "send(#{@have.collection_accessor.inspect}"
-              subject << ', ...' if @have.items_method_has_arguments?
+          if have.subject_is_owner_of_collection?
+            if have.collection_accessor_is_private?
+              subject << "send(#{have.collection_accessor.inspect}"
+              subject << ', ...' if have.items_method_has_arguments?
               subject << ')'
             else
-              subject << "#{@have.collection_accessor}"
-              subject << '(...)' if @have.items_method_has_arguments?
+              subject << "#{have.collection_accessor}"
+              subject << '(...)' if have.items_method_has_arguments?
             end
-            subject << ".#{@have.query_method}"
+            subject << ".#{have.query_method}"
           else
-            subject << "#{@have.default_query_method}"
+            subject << "#{have.default_query_method}"
           end
+        end
+
+        def source_builder
+          @source_builder ||= SourceBuilder.new(have, 'n')
         end
       end
     end
