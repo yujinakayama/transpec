@@ -2,6 +2,8 @@
 
 ## Development
 
+## v1.9.1
+
 * Fix crash on `expect(obj).to non_matcher_object` in dynamic analysis ([#39](https://github.com/yujinakayama/transpec/issues/39))
 
 ## v1.9.0
