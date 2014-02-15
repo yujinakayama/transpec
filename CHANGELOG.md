@@ -2,6 +2,8 @@
 
 ## Development
 
+* Fix crash on `expect(obj).to non_matcher_object` in dynamic analysis ([#39](https://github.com/yujinakayama/transpec/issues/39))
+
 ## v1.9.0
 
 * Support conversion of `and_return { value }` and `and_return` without arguments

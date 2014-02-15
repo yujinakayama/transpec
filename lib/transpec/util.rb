@@ -84,7 +84,7 @@ module Transpec
       loop do
         child_node = parent_node.children.first
 
-        return unless child_node
+        return if !child_node || !child_node.is_a?(AST::Node)
         return unless [:send, :block].include?(child_node.type)
 
         if mode == :parent_as_second_arg

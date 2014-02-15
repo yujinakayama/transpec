@@ -47,6 +47,22 @@ module Transpec
       end
     end
 
+    describe '#each_forward_chained_node' do
+      context 'when a non-send node is passed' do
+        let(:source) { ':foo' }
+
+        it 'does not yield' do
+          yielded = false
+
+          Util.each_forward_chained_node(ast) do
+            yielded = true
+          end
+
+          yielded.should be_false
+        end
+      end
+    end
+
     describe '#expand_range_to_adjacent_whitespaces' do
       let(:node) { ast.each_node.find(&:block_type?) }
       let(:range) { node.loc.begin }
