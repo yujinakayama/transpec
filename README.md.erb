@@ -406,15 +406,8 @@ The one-liner (implicit receiver) `should`:
 ## Supported Conversions
 
 <%=
-
-sections = readme.each_line.slice_before(/^## /)
-
-supported_conversions_section = sections.find do |section|
-  section.first.include?('Supported Conversions')
-end
-
+supported_conversions_section = select_sections(readme, 2, 'Supported Conversions').first
 table_of_contents(supported_conversions_section, 3)
-
 %>
 
 ### Standard expectations

@@ -28,8 +28,18 @@ def generate_readme
   erb.result(binding)
 end
 
+def select_sections(content, header_level, *section_names)
+  header_pattern = pattern_for_header_level(header_level)
+  sections = content.each_line.slice_before(header_pattern)
+
+  sections.select do |section|
+    header_line = section.first
+    section_names.any? { |name| header_line.include?(name) }
+  end
+end
+
 def table_of_contents(lines, header_level)
-  header_pattern = /^#{'#' * header_level}[^#]/
+  header_pattern = pattern_for_header_level(header_level)
 
   titles = lines.map do |line|
     next unless line.match(header_pattern)
@@ -40,4 +50,8 @@ def table_of_contents(lines, header_level)
     anchor = '#' + title.gsub(/[^\w_\- ]/, '').downcase.gsub(' ', '-')
     "* [#{title}](#{anchor})"
   end.join("\n")
+end
+
+def pattern_for_header_level(level)
+  /^#{'#' * level}[^#]/
 end
