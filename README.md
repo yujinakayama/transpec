@@ -404,7 +404,7 @@ The one-liner (implicit receiver) `should`:
 * Is provided by `rspec-core` gem.
 * Is _not_ deprecated in RSpec 3.
 * Does _not_ have the issue with delegate/proxy objects.
-* There's the alternative syntax [`is_expected.to`](#one-liner-expectations) since RSpec 2.99.beta2 (not yet released).
+* There's the alternative syntax [`is_expected.to`](#one-liner-expectations) since RSpec 2.99.beta2.
 
 ## Supported Conversions
 
@@ -453,7 +453,7 @@ expect(obj).to_not matcher # with `--negative-form to_not`
 
 ### One-liner expectations
 
-**This conversion is available only if your project's RSpec is `2.99.0.beta2` (not yet released) or later.**
+**This conversion is available only if your project's RSpec is `2.99.0.beta2` or later.**
 
 Targets:
 
@@ -802,7 +802,7 @@ Will be converted to:
 allow(obj).to receive(:message)
 
 # Conversion from `stub_chain` to `receive_message_chain` is available
-# only if the target project's RSpec is 3.0.0.beta2 (not yet released) or later
+# only if the target project's RSpec is 3.0.0.beta2 or later
 allow(obj).to receive_message_chain(:foo, :bar, :baz)
 
 allow_any_instance_of(Klass).to receive(:message)
@@ -1079,7 +1079,7 @@ Here's an excerpt from [the warning](https://github.com/rspec/rspec-core/blob/7d
 
 ### Custom matcher DSL
 
-**This conversion is available only if your project's RSpec is `3.0.0.beta2` (not yet released) or later.**
+**This conversion is available only if your project's RSpec is `3.0.0.beta2` or later.**
 
 Targets:
 
