@@ -8,6 +8,10 @@ module Transpec
       module OwnedMatcher
         extend ActiveSupport::Concern
 
+        included do
+          attr_reader :expectation
+        end
+
         module ClassMethods
           def standalone?
             false

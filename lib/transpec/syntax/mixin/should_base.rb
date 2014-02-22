@@ -2,7 +2,8 @@
 
 require 'active_support/concern'
 require 'transpec/syntax/mixin/send'
-require 'transpec/syntax/mixin/have_matcher_owner'
+require 'transpec/syntax/mixin/matcher_owner'
+require 'transpec/syntax/have'
 require 'transpec/syntax/operator'
 require 'transpec/util'
 
@@ -11,14 +12,11 @@ module Transpec
     module Mixin
       module ShouldBase
         extend ActiveSupport::Concern
-        include Send, HaveMatcherOwner
+        include Send, MatcherOwner
 
         included do
-          define_dynamic_analysis_request do |rewriter|
-            if Operator.dynamic_analysis_target_node?(matcher_node)
-              create_operator_matcher.register_request_for_dynamic_analysis(rewriter)
-            end
-          end
+          add_matcher Have
+          add_matcher Operator
         end
 
         def positive?
@@ -40,24 +38,6 @@ module Transpec
           else
             selector_range.join(expression_range.end)
           end
-        end
-
-        def operator_matcher
-          return @operator_matcher if instance_variable_defined?(:@operator_matcher)
-
-          @operator_matcher ||= begin
-            if Operator.conversion_target_node?(matcher_node, @runtime_data)
-              create_operator_matcher
-            else
-              nil
-            end
-          end
-        end
-
-        private
-
-        def create_operator_matcher
-          Operator.new(matcher_node, @source_rewriter, @runtime_data, @report)
         end
       end
     end

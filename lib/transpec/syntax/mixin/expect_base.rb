@@ -2,6 +2,7 @@
 
 require 'active_support/concern'
 require 'transpec/syntax/mixin/send'
+require 'transpec/syntax/mixin/matcher_owner'
 require 'transpec/syntax/receive'
 require 'transpec/util'
 
@@ -10,15 +11,10 @@ module Transpec
     module Mixin
       module ExpectBase
         extend ActiveSupport::Concern
-        include Send
+        include Send, MatcherOwner
 
         included do
-          define_dynamic_analysis_request do |rewriter|
-            if Receive.dynamic_analysis_target_node?(matcher_node)
-              create_receive_matcher.register_request_for_dynamic_analysis(rewriter)
-            end
-          end
-
+          add_matcher Receive
           alias_method :subject_node, :arg_node
           alias_method :to_node, :parent_node
         end
@@ -48,22 +44,6 @@ module Transpec
 
         def subject_range
           subject_node.loc.expression
-        end
-
-        def receive_matcher
-          return @receive_matcher if instance_variable_defined?(:@receive_matcher)
-
-          @receive_matcher ||= if Receive.conversion_target_node?(matcher_node, @runtime_data)
-                                 create_receive_matcher
-                               else
-                                 nil
-                               end
-        end
-
-        private
-
-        def create_receive_matcher
-          Receive.new(matcher_node, self, @source_rewriter, @runtime_data, @report)
         end
       end
     end
