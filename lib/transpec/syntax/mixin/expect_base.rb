@@ -15,8 +15,6 @@ module Transpec
 
         included do
           add_matcher Receive
-          alias_method :subject_node, :arg_node
-          alias_method :to_node, :parent_node
         end
 
         def current_syntax_type
@@ -30,6 +28,18 @@ module Transpec
         def positive?
           to_method_name = to_node.children[1]
           to_method_name == :to
+        end
+
+        def subject_node
+          arg_node || parent_node
+        end
+
+        def to_node
+          if parent_node.block_type? && parent_node.children.first.equal?(node)
+            parent_node.parent_node
+          else
+            parent_node
+          end
         end
 
         def matcher_node

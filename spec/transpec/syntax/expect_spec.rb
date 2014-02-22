@@ -10,19 +10,73 @@ module Transpec
       include_context 'syntax object', Expect, :expect_object
 
       describe '#subject_node' do
-        let(:source) do
-          <<-END
-            describe 'example' do
-              it 'is empty' do
-                expect(subject).to be_empty
+        context 'when the subject is a normal argument' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'is empty' do
+                  expect(subject).to be_empty
+                end
               end
-            end
-          END
+            END
+          end
+
+          it 'returns the subject node' do
+            method_name = expect_object.subject_node.children[1]
+            method_name.should == :subject
+          end
         end
 
-        it 'returns subject node' do
-          method_name = expect_object.subject_node.children[1]
-          method_name.should == :subject
+        context 'when the subject is a block' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'raises error' do
+                  expect { do_something }.to raise_error
+                end
+              end
+            END
+          end
+
+          it 'returns the block node' do
+            expect_object.subject_node.should be_block_type
+          end
+        end
+      end
+
+      describe '#to_node' do
+        context 'when the subject is a normal argument' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'is empty' do
+                  expect(subject).to be_empty
+                end
+              end
+            END
+          end
+
+          it 'returns #to node' do
+            method_name = expect_object.to_node.children[1]
+            method_name.should == :to
+          end
+        end
+
+        context 'when the subject is a block' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'raises error' do
+                  expect { do_something }.to raise_error
+                end
+              end
+            END
+          end
+
+          it 'returns #to node' do
+            method_name = expect_object.to_node.children[1]
+            method_name.should == :to
+          end
         end
       end
 
