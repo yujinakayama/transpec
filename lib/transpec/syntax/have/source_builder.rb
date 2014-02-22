@@ -13,8 +13,13 @@ module Transpec
           @size_source = size_source
         end
 
-        def replacement_subject_source(original_subject_source)
-          source = original_subject_source
+        def replacement_subject_source(base_subject)
+          source = case base_subject
+                   when String    then base_subject
+                   when AST::Node then base_subject_source(base_subject)
+                   else fail "Invalid base subject #{base_subject}"
+                   end
+
           if have.subject_is_owner_of_collection?
             if have.collection_accessor_is_private?
               source << ".send(#{have.collection_accessor.inspect}"
@@ -26,7 +31,24 @@ module Transpec
               source << ".#{have.collection_accessor}#{collection_accessor_args_parentheses_source}"
             end
           end
+
           source << ".#{have.query_method}"
+        end
+
+        def base_subject_source(node)
+          if node.send_type? && (arg_node = node.children[2])
+            left_of_arg_source = node.loc.selector.end.join(arg_node.loc.expression.begin).source
+
+            if left_of_arg_source.match(/\A\s*\Z/)
+              source = node.loc.expression.begin.join(node.loc.selector.end).source
+              source << '('
+              source << arg_node.loc.expression.begin.join(node.loc.expression.end).source
+              source << ')'
+              return source
+            end
+          end
+
+          node.loc.expression.source
         end
 
         def replacement_matcher_source(parenthesize_arg = true)

@@ -2,6 +2,8 @@
 
 ## Development
 
+* Fix a bug where `expect(method_returns_collection :some_arg).to have(2).items` was converted to `expect(method_returns_collection :some_arg.size).to eq(2)` ([#43](https://github.com/yujinakayama/transpec/issues/43))
+
 ## v1.9.1
 
 * Fix crash on `expect(obj).to non_matcher_object` in dynamic analysis ([#39](https://github.com/yujinakayama/transpec/issues/39))

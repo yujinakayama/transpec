@@ -95,9 +95,9 @@ module Transpec
         QUERY_METHOD_PRIORITIES.first
       end
 
-      def replacement_subject_source(original_subject_source = nil)
-        original_subject_source ||= expectation.subject_range.source
-        source_builder.replacement_subject_source(original_subject_source)
+      def replacement_subject_source(base_subject = nil)
+        base_subject ||= expectation.subject_node
+        source_builder.replacement_subject_source(base_subject)
       end
 
       def size_source

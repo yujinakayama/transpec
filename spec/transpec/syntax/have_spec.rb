@@ -1049,6 +1049,64 @@ module Transpec
           end
         end
 
+        context 'when it is `expect(method_returns_collection :some_arg).to have(2).items` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'has 2 items' do
+                  expect(method_returns_collection :some_arg).to have(2).items
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'has 2 items' do
+                  expect(method_returns_collection(:some_arg).size).to eq(2)
+                end
+              end
+            END
+          end
+
+          let(:have_object) { expect_object.have_matcher }
+
+          it 'converts into `expect(method_returns_collection(:some_arg).size).to eq(2)` form' do
+            have_object.convert_to_standard_expectation!
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'when it is `expect(method_returns_collection(:some_arg) { do_something }).to have(2).items` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'has 2 items' do
+                  expect(method_returns_collection(:some_arg) { do_something }).to have(2).items
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'has 2 items' do
+                  expect(method_returns_collection(:some_arg) { do_something }.size).to eq(2)
+                end
+              end
+            END
+          end
+
+          let(:have_object) { expect_object.have_matcher }
+
+          it 'converts into `expect(method_returns_collection(:some_arg) { do_something }.size).to eq(2)` form' do
+            have_object.convert_to_standard_expectation!
+            rewritten_source.should == expected_source
+          end
+        end
+
         context 'when it is `it { should have(2).items }` form' do
           let(:source) do
             <<-END
