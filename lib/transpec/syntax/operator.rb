@@ -7,7 +7,7 @@ require 'ast'
 
 module Transpec
   class Syntax
-    class OperatorMatcher < Syntax
+    class Operator < Syntax
       extend ::AST::Sexp
       include Mixin::Send, Util
 

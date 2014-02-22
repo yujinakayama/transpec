@@ -1,12 +1,12 @@
 # coding: utf-8
 
 require 'spec_helper'
-require 'transpec/syntax/operator_matcher'
+require 'transpec/syntax/operator'
 require 'transpec/syntax/should'
 
 module Transpec
   class Syntax
-    describe OperatorMatcher do
+    describe Operator do
       include ::AST::Sexp
       include_context 'parsed objects'
       include_context 'syntax object', Should, :should_object
