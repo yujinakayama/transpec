@@ -2,12 +2,15 @@
 
 require 'spec_helper'
 require 'transpec/syntax/raise_error'
+require 'transpec/syntax/should'
+require 'transpec/syntax/expect'
 
 module Transpec
   class Syntax
     describe RaiseError do
       include_context 'parsed objects'
-      include_context 'syntax object', RaiseError, :raise_error_object
+      include_context 'syntax object', Should, :should_object
+      include_context 'syntax object', Expect, :expect_object
 
       let(:record) { raise_error_object.report.records.first }
 
@@ -25,6 +28,8 @@ module Transpec
             END
           end
 
+          let(:raise_error_object) { should_object.raise_error_matcher }
+
           it { should be_true }
         end
 
@@ -38,6 +43,8 @@ module Transpec
               end
             END
           end
+
+          let(:raise_error_object) { expect_object.raise_error_matcher }
 
           it { should be_true }
         end
@@ -53,6 +60,8 @@ module Transpec
             END
           end
 
+          let(:raise_error_object) { should_object.raise_error_matcher }
+
           it { should be_true }
         end
 
@@ -66,6 +75,8 @@ module Transpec
               end
             END
           end
+
+          let(:raise_error_object) { expect_object.raise_error_matcher }
 
           it { should be_true }
         end
@@ -81,6 +92,8 @@ module Transpec
             END
           end
 
+          let(:raise_error_object) { should_object.raise_error_matcher }
+
           it { should be_false }
         end
 
@@ -95,6 +108,8 @@ module Transpec
             END
           end
 
+          let(:raise_error_object) { expect_object.raise_error_matcher }
+
           it { should be_false }
         end
 
@@ -108,6 +123,8 @@ module Transpec
               end
             END
           end
+
+          let(:raise_error_object) { expect_object.raise_error_matcher }
 
           it { should be_false }
         end
@@ -129,6 +146,8 @@ module Transpec
             END
           end
 
+          let(:raise_error_object) { should_object.raise_error_matcher }
+
           it 'does nothing' do
             rewritten_source.should == source
           end
@@ -148,6 +167,8 @@ module Transpec
               end
             END
           end
+
+          let(:raise_error_object) { expect_object.raise_error_matcher }
 
           it 'does nothing' do
             rewritten_source.should == source
@@ -169,6 +190,8 @@ module Transpec
             END
           end
 
+          let(:raise_error_object) { should_object.raise_error_matcher }
+
           it 'does nothing' do
             rewritten_source.should == source
           end
@@ -188,6 +211,8 @@ module Transpec
               end
             END
           end
+
+          let(:raise_error_object) { expect_object.raise_error_matcher }
 
           it 'does nothing' do
             rewritten_source.should == source
@@ -218,6 +243,8 @@ module Transpec
               end
             END
           end
+
+          let(:raise_error_object) { should_object.raise_error_matcher }
 
           it 'converts into `lambda { }.should_not raise_error` form' do
             rewritten_source.should == expected_source
@@ -251,6 +278,8 @@ module Transpec
             END
           end
 
+          let(:raise_error_object) { expect_object.raise_error_matcher }
+
           it 'converts into `expect { }.not_to raise_error` form' do
             rewritten_source.should == expected_source
           end
@@ -276,6 +305,8 @@ module Transpec
               end
             END
           end
+
+          let(:raise_error_object) { expect_object.raise_error_matcher }
 
           it 'converts into `expect { }.to_not raise_error` form' do
             rewritten_source.should == expected_source
@@ -309,6 +340,8 @@ module Transpec
             END
           end
 
+          let(:raise_error_object) { expect_object.raise_error_matcher }
+
           it 'converts into `expect { }.not_to raise_error` form' do
             rewritten_source.should == expected_source
           end
@@ -341,6 +374,8 @@ module Transpec
             END
           end
 
+          let(:raise_error_object) { expect_object.raise_error_matcher }
+
           it 'converts into `expect { }.not_to raise_error` form' do
             rewritten_source.should == expected_source
           end
@@ -372,6 +407,8 @@ module Transpec
               end
             END
           end
+
+          let(:raise_error_object) { expect_object.raise_error_matcher }
 
           it 'converts into `expect { }.not_to raise_error` form' do
             rewritten_source.should == expected_source

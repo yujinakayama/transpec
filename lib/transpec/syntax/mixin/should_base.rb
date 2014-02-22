@@ -5,6 +5,7 @@ require 'transpec/syntax/mixin/send'
 require 'transpec/syntax/mixin/matcher_owner'
 require 'transpec/syntax/have'
 require 'transpec/syntax/operator'
+require 'transpec/syntax/raise_error'
 require 'transpec/util'
 
 module Transpec
@@ -17,6 +18,7 @@ module Transpec
         included do
           add_matcher Have
           add_matcher Operator
+          add_matcher RaiseError
         end
 
         def positive?

@@ -3,6 +3,7 @@
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/expect_base'
 require 'transpec/syntax/have'
+require 'transpec/syntax/raise_error'
 
 module Transpec
   class Syntax
@@ -10,6 +11,7 @@ module Transpec
       include Mixin::ExpectBase
 
       add_matcher Have
+      add_matcher RaiseError
 
       def self.target_method?(receiver_node, method_name)
         receiver_node.nil? && [:expect, :expect_any_instance_of].include?(method_name)
