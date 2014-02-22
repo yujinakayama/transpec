@@ -22,8 +22,6 @@ module Transpec
       # for String (String responds to #size).
       QUERY_METHOD_PRIORITIES = [:size, :count, :length].freeze
 
-      attr_reader :expectation
-
       def self.target_method?(receiver_node, method_name)
         receiver_node.nil? &&
           [:have, :have_exactly, :have_at_least, :have_at_most].include?(method_name)

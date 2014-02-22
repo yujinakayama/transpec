@@ -2,18 +2,19 @@
 
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/send'
+require 'transpec/syntax/mixin/owned_matcher'
 
 module Transpec
   class Syntax
     class RaiseError < Syntax
-      include Mixin::Send
+      include Mixin::Send, Mixin::OwnedMatcher
 
       def self.target_method?(receiver_node, method_name)
         receiver_node.nil? && method_name == :raise_error
       end
 
       def remove_error_specification_with_negative_expectation!
-        return if positive?
+        return if expectation.positive?
 
         _receiver_node, _method_name, *arg_nodes = *node
         return if arg_nodes.empty?
@@ -21,16 +22,6 @@ module Transpec
         remove(parentheses_range)
 
         register_record
-      end
-
-      def positive?
-        @node.each_ancestor_node do |ancestor_node|
-          next unless ancestor_node.send_type?
-          expectation_method_name = ancestor_node.children[1]
-          return [:should, :to].include?(expectation_method_name)
-        end
-
-        false
       end
 
       private

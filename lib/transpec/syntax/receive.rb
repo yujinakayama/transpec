@@ -10,8 +10,6 @@ module Transpec
     class Receive < Syntax
       include Mixin::Send, Mixin::OwnedMatcher, Mixin::MessagingHost
 
-      attr_reader :expectation
-
       def self.target_method?(receiver_node, method_name)
         receiver_node.nil? && method_name == :receive
       end

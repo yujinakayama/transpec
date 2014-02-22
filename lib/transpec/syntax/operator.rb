@@ -2,14 +2,15 @@
 
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/send'
+require 'transpec/syntax/mixin/owned_matcher'
 require 'transpec/util'
 require 'ast'
 
 module Transpec
   class Syntax
-    class OperatorMatcher < Syntax
+    class Operator < Syntax
       extend ::AST::Sexp
-      include Mixin::Send, Util
+      include Mixin::Send, Mixin::OwnedMatcher, Util
 
       OPERATORS = [:==, :===, :<, :<=, :>, :>=, :=~].freeze
       BE_NODE = s(:send, nil, :be)
@@ -32,14 +33,14 @@ module Transpec
         end
       end
 
-      def initialize(node, source_rewriter = nil, runtime_data = nil, report = nil)
+      def initialize(node, expectation, source_rewriter = nil, runtime_data = nil, report = nil)
         operator_node = if node == BE_NODE
                           node.parent_node
                         else
                           node
                         end
 
-        super(operator_node, source_rewriter, runtime_data, report)
+        super(operator_node, expectation, source_rewriter, runtime_data, report)
       end
 
       def convert_operator!(parenthesize_arg = true)

@@ -121,7 +121,8 @@ module Transpec
     end
 
     describe '#process_should' do
-      let(:should_object) { double('should_object').as_null_object }
+      let(:should_object) { double('should_object', raise_error_matcher: raise_error_object).as_null_object }
+      let(:raise_error_object) { double('raise_error_object').as_null_object }
 
       context 'when Configuration#convert_should? is true' do
         before { configuration.convert_should = true }
@@ -212,10 +213,16 @@ module Transpec
           converter.process_should(should_object)
         end
       end
+
+      it 'invokes #process_raise_error with its #raise_error_matcher' do
+        converter.should_receive(:process_raise_error).with(raise_error_object)
+        converter.process_should(should_object)
+      end
     end
 
     describe '#process_oneliner_should' do
-      let(:should_object) { double('oneliner_should_object').as_null_object }
+      let(:should_object) { double('oneliner_should_object', raise_error_matcher: raise_error_object).as_null_object }
+      let(:raise_error_object) { double('raise_error_object').as_null_object }
 
       shared_examples 'does nothing' do
         it 'does nothing' do
@@ -363,11 +370,22 @@ module Transpec
           end
         end
       end
+
+      it 'invokes #process_raise_error with its #raise_error_matcher' do
+        converter.should_receive(:process_raise_error).with(raise_error_object)
+        converter.process_oneliner_should(should_object)
+      end
     end
 
     describe '#process_expect' do
-      let(:expect_object) { double('expect_object', receive_matcher: receive_object).as_null_object }
+      let(:expect_object) do
+        double('expect_object',
+               receive_matcher: receive_object,
+           raise_error_matcher: raise_error_object
+        ).as_null_object
+      end
       let(:receive_object) { double('receive_object').as_null_object }
+      let(:raise_error_object) { double('raise_error_object').as_null_object }
 
       context 'when Configuration#convert_have_items? is true' do
         before { configuration.convert_have_items = true }
@@ -407,6 +425,11 @@ module Transpec
 
       it "invokes #process_any_instance_block with the expect's #receive matcher" do
         converter.should_receive(:process_any_instance_block).with(receive_object)
+        converter.process_expect(expect_object)
+      end
+
+      it 'invokes #process_raise_error with its #raise_error_matcher' do
+        converter.should_receive(:process_raise_error).with(raise_error_object)
         converter.process_expect(expect_object)
       end
     end

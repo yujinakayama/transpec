@@ -55,6 +55,7 @@ module Transpec
       end
 
       process_have(should.have_matcher)
+      process_raise_error(should.raise_error_matcher)
     end
 
     def process_oneliner_should(oneliner_should)
@@ -76,10 +77,13 @@ module Transpec
       elsif @configuration.convert_oneliner? && @rspec_version.oneliner_is_expected_available?
         oneliner_should.expectize!(negative_form, parenthesize)
       end
+
+      process_raise_error(oneliner_should.raise_error_matcher)
     end
 
     def process_expect(expect)
       process_have(expect.have_matcher)
+      process_raise_error(expect.raise_error_matcher)
       process_messaging_host(expect.receive_matcher)
     end
 
@@ -144,6 +148,7 @@ module Transpec
     end
 
     def process_raise_error(raise_error)
+      return unless raise_error
       if @configuration.convert_deprecated_method?
         raise_error.remove_error_specification_with_negative_expectation!
       end

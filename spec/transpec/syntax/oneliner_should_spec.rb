@@ -70,8 +70,8 @@ module Transpec
             END
           end
 
-          it 'returns an instance of OperatorMatcher' do
-            should be_an(OperatorMatcher)
+          it 'returns an instance of Operator' do
+            should be_an(Operator)
           end
         end
 
@@ -146,7 +146,7 @@ module Transpec
             END
           end
 
-          it 'invokes OperatorMatcher#convert_operator!' do
+          it 'invokes Operator#convert_operator!' do
             should_object.operator_matcher.should_receive(:convert_operator!)
             should_object.expectize!
           end
