@@ -14,122 +14,6 @@ module Transpec
 
       let(:record) { raise_error_object.report.records.first }
 
-      describe '#positive?' do
-        subject { raise_error_object.positive? }
-
-        context 'when it is `lambda { }.should raise_error` form' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'raises error' do
-                  lambda { do_something }.should raise_error
-                end
-              end
-            END
-          end
-
-          let(:raise_error_object) { should_object.raise_error_matcher }
-
-          it { should be_true }
-        end
-
-        context 'when it is `expect { }.to raise_error` form' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'raises error' do
-                  expect { do_something }.to raise_error
-                end
-              end
-            END
-          end
-
-          let(:raise_error_object) { expect_object.raise_error_matcher }
-
-          it { should be_true }
-        end
-
-        context 'when it is `lambda { }.should raise_error { |error| ... }` form' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'raises error' do
-                  lambda { do_something }.should raise_error { |error| do_anything }
-                end
-              end
-            END
-          end
-
-          let(:raise_error_object) { should_object.raise_error_matcher }
-
-          it { should be_true }
-        end
-
-        context 'when it is `expect { }.to raise_error { |error| ... }` form' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'raises error' do
-                  expect { do_something }.to raise_error { |error| do_anything }
-                end
-              end
-            END
-          end
-
-          let(:raise_error_object) { expect_object.raise_error_matcher }
-
-          it { should be_true }
-        end
-
-        context 'when it is `lambda { }.should_not raise_error` form' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'does not raise error' do
-                  lambda { do_something }.should_not raise_error
-                end
-              end
-            END
-          end
-
-          let(:raise_error_object) { should_object.raise_error_matcher }
-
-          it { should be_false }
-        end
-
-        context 'when it is `expect { }.not_to raise_error` form' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'does not raise error' do
-                  expect { do_something }.not_to raise_error
-                end
-              end
-            END
-          end
-
-          let(:raise_error_object) { expect_object.raise_error_matcher }
-
-          it { should be_false }
-        end
-
-        context 'when it is `expect { }.to_not raise_error` form' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'does not raise error' do
-                  expect { do_something }.to_not raise_error
-                end
-              end
-            END
-          end
-
-          let(:raise_error_object) { expect_object.raise_error_matcher }
-
-          it { should be_false }
-        end
-      end
-
       describe '#remove_error_specification_with_negative_expectation!' do
         before do
           raise_error_object.remove_error_specification_with_negative_expectation!
@@ -207,6 +91,28 @@ module Transpec
               describe 'example' do
                 it 'raises SpecificErrorClass' do
                   expect { do_something }.to raise_error(SpecificErrorClass) { |error| do_anything }
+                end
+              end
+            END
+          end
+
+          let(:raise_error_object) { expect_object.raise_error_matcher }
+
+          it 'does nothing' do
+            rewritten_source.should == source
+          end
+
+          it 'reports nothing' do
+            raise_error_object.report.records.should be_empty
+          end
+        end
+
+        context 'when it is `expect { }.to raise_error(SpecificErrorClass).with_message(message)` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'raises SpecificErrorClass with message' do
+                  expect { do_something }.to raise_error(SpecificErrorClass).with_message(message)
                 end
               end
             END

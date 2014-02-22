@@ -3,6 +3,7 @@
 ## Development
 
 * Fix a bug where `expect(method_returns_collection :some_arg).to have(2).items` was converted to `expect(method_returns_collection :some_arg.size).to eq(2)` ([#43](https://github.com/yujinakayama/transpec/issues/43))
+* Fix false positive conversion of `raise_error` with `with_message` ([#41](https://github.com/yujinakayama/transpec/issues/41))
 
 ## v1.9.1
 

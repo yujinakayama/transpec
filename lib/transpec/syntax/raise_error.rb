@@ -14,7 +14,7 @@ module Transpec
       end
 
       def remove_error_specification_with_negative_expectation!
-        return if positive?
+        return if expectation.positive?
 
         _receiver_node, _method_name, *arg_nodes = *node
         return if arg_nodes.empty?
@@ -22,16 +22,6 @@ module Transpec
         remove(parentheses_range)
 
         register_record
-      end
-
-      def positive?
-        @node.each_ancestor_node do |ancestor_node|
-          next unless ancestor_node.send_type?
-          expectation_method_name = ancestor_node.children[1]
-          return [:should, :to].include?(expectation_method_name)
-        end
-
-        false
       end
 
       private
