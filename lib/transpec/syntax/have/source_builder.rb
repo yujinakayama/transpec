@@ -35,22 +35,6 @@ module Transpec
           source << ".#{have.query_method}"
         end
 
-        def base_subject_source(node)
-          if node.send_type? && (arg_node = node.children[2])
-            left_of_arg_source = node.loc.selector.end.join(arg_node.loc.expression.begin).source
-
-            if left_of_arg_source.match(/\A\s*\Z/)
-              source = node.loc.expression.begin.join(node.loc.selector.end).source
-              source << '('
-              source << arg_node.loc.expression.begin.join(node.loc.expression.end).source
-              source << ')'
-              return source
-            end
-          end
-
-          node.loc.expression.source
-        end
-
         def replacement_matcher_source(parenthesize_arg = true)
           case have.expectation.current_syntax_type
           when :should
@@ -58,6 +42,24 @@ module Transpec
           when :expect
             replacement_matcher_source_for_expect(parenthesize_arg)
           end
+        end
+
+        private
+
+        def base_subject_source(node)
+          map = node.loc
+          source = map.expression.source
+
+          if node.send_type? && (arg_node = node.children[2])
+            left_of_arg_range = map.selector.end.join(arg_node.loc.expression.begin)
+            unless left_of_arg_range.source.include?('(')
+              relative_index = left_of_arg_range.begin_pos - map.expression.begin_pos
+              source[relative_index, left_of_arg_range.length] = '('
+              source << ')'
+            end
+          end
+
+          source
         end
 
         def replacement_matcher_source_for_should
