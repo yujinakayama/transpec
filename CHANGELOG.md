@@ -2,6 +2,8 @@
 
 ## Development
 
+## v1.9.3
+
 * Handle `variable.any_instance` ([#46](https://github.com/yujinakayama/transpec/issues/46))
 * Fix a bug where the DSL `example` (an alias of `it`) was confused with current example object (e.g. `example 'it does something' do ... end` was converted to `example 'it does something' do |example| ... end`)
 
