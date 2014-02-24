@@ -197,6 +197,22 @@ module Transpec
           end
         end
 
+        context "when it is `example 'it does something' do do_something end` form", :no_auto_convert do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                example 'it does something' do
+                  do_something
+                end
+              end
+            END
+          end
+
+          it 'does nothing' do
+            rewritten_source.should == source
+          end
+        end
+
         context 'when it is `def helper_method example; end` form' do
           let(:source) do
             <<-END

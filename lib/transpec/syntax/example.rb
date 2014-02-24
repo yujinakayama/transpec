@@ -12,6 +12,14 @@ module Transpec
 
       METHODS_YIELD_EXAMPLE = (EXAMPLE_METHODS + HOOK_METHODS + HELPER_METHODS).freeze
 
+      def self.target_node?(node, runtime_data = nil)
+        receiver_node, method_name, *_ = *node
+        return false if receiver_node
+        return false unless [:example, :running_example].include?(method_name)
+        return false if Util.block_node_taken_by_method(node)
+        check_target_node_dynamically(node, runtime_data)
+      end
+
       def self.target_method?(receiver_node, method_name)
         receiver_node.nil? && [:example, :running_example].include?(method_name)
       end
