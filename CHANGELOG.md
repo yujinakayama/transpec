@@ -2,6 +2,8 @@
 
 ## Development
 
+* Handle `variable.any_instance` ([#46](https://github.com/yujinakayama/transpec/issues/46))
+
 ## v1.9.2
 
 * Fix a bug where `expect(method_returns_collection :some_arg).to have(2).items` was converted to `expect(method_returns_collection :some_arg.size).to eq(2)` ([#43](https://github.com/yujinakayama/transpec/issues/43))

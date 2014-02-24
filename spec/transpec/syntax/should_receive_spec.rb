@@ -508,7 +508,45 @@ module Transpec
           end
         end
 
-        context 'when it is `variable.any_instance.should_receive(:method)` form ' \
+        context 'when it is `variable.any_instance.should_receive(:method)` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'receives #foo' do
+                  variable = String
+                  variable.any_instance.should_receive(:foo)
+                  'string'.foo
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'receives #foo' do
+                  variable = String
+                  expect_any_instance_of(variable).to receive(:foo)
+                  'string'.foo
+                end
+              end
+            END
+          end
+
+          it 'converts into `expect_any_instance_of(variable).to receive(:method)` form' do
+            should_receive_object.expectize!
+            rewritten_source.should == expected_source
+          end
+
+          it 'adds record `Klass.any_instance.should_receive(:message)` ' \
+             '-> `expect_any_instance_of(Klass).to receive(:message)`' do
+            should_receive_object.expectize!
+            record.original_syntax.should  == 'Klass.any_instance.should_receive(:message)'
+            record.converted_syntax.should == 'expect_any_instance_of(Klass).to receive(:message)'
+          end
+        end
+
+        context 'when it is `variable.should_receive(:method)` form ' \
                 'and the variable is an AnyInstance::Recorder' do
           context 'with runtime information' do
             include_context 'dynamic analysis objects'
