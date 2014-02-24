@@ -10,7 +10,7 @@ module Transpec
     def command_available?
       ENV['PATH'].split(File::PATH_SEPARATOR).any? do |path|
         git_path = File.join(path, GIT)
-        File.exists?(git_path)
+        File.exist?(git_path)
       end
     end
 
