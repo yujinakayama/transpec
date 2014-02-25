@@ -207,6 +207,12 @@ Transpec needs to run your specs in a copied project directory for dynamic analy
 If your project requires some special setup or commands to run specs, use this option.
 `bundle exec rspec` is used by default.
 
+Note that the command to run dynamic analysis does _not_ affect to the files or specs to be converted.
+This means that even if you specify a command that only runs a subset of the files in your spec suite or a subset of the specs in a file, every spec will be converted.
+For this reason, it's recommended to provide a command that runs full spec suite to `-c/--rspec-command`.
+If you want to convert only a subset of the files in a spec suite, pass the paths to `transpec`.
+See [Advanced Usage](#advanced-usage) for more details.
+
 ```bash
 $ transpec --rspec-command "./special_setup.sh && bundle exec rspec"
 ```
