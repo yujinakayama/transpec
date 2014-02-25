@@ -242,6 +242,68 @@ module Transpec
           cli.convert_file(file_path)
         end
       end
+
+      context 'when it did a less accurate conversion due to a lack of runtime information' do
+        let(:source) do
+          <<-END
+            describe 'example group' do
+              it 'is an example' do
+                expect(obj).to have(2).items
+              end
+            end
+          END
+        end
+
+        it 'warns to user' do
+          cli.should_receive(:warn) do |message|
+            message.should =~ /converted.+but.+incorrect/i
+          end
+
+          cli.convert_file(file_path)
+        end
+      end
+
+      context 'when both conversion errors and less accurate records are reported' do
+        let(:source) do
+          <<-END
+            describe 'example group' do
+              it 'is first' do
+                expect(obj).to have(1).item
+              end
+
+              class Klass
+                def second
+                  2.should == 2
+                end
+              end
+
+              it 'is an example' do
+                Klass.new.some_method
+              end
+
+              it 'is third' do
+                expect(obj).to have(3).items
+              end
+            end
+          END
+        end
+
+        it 'displays them in order of line number' do
+          times = 1
+
+          cli.should_receive(:warn).exactly(3).times do |message|
+            line_number = case times
+                          when 1 then 3
+                          when 2 then 8
+                          when 3 then 17
+                          end
+            message.should include(":#{line_number}:")
+            times += 1
+          end
+
+          cli.convert_file(file_path)
+        end
+      end
     end
   end
 end

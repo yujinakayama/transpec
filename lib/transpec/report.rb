@@ -4,12 +4,19 @@ require 'rainbow'
 
 module Transpec
   class Report
-    attr_reader :records, :context_errors, :syntax_errors
+    attr_reader :records, :conversion_errors, :syntax_errors
 
     def initialize
       @records = []
-      @context_errors = []
+      @conversion_errors = []
       @syntax_errors = []
+    end
+
+    def <<(other)
+      records.concat(other.records)
+      conversion_errors.concat(other.conversion_errors)
+      syntax_errors.concat(other.syntax_errors)
+      self
     end
 
     def unique_record_counts
@@ -40,7 +47,15 @@ module Transpec
     end
 
     def colored_stats
-      convertion_and_incomplete_stats + error_stats
+      base_color = if !conversion_errors.empty?
+                     :magenta
+                   elsif annotation_count.nonzero?
+                     :yellow
+                   else
+                     :green
+                   end
+
+      convertion_incomplete_caution_stats(base_color) + error_stats(base_color)
     end
 
     def stats
@@ -78,21 +93,18 @@ module Transpec
       text << indentation + '    ' + colorize('to: ', :cyan) + record.converted_syntax + "\n"
     end
 
-    def convertion_and_incomplete_stats
-      color = context_errors.empty? ? :green : :yellow
-
+    def convertion_incomplete_caution_stats(color)
       text = pluralize(records.count, 'conversion') + ', '
-      text << pluralize(context_errors.count, 'incomplete') + ', '
+      text << pluralize(conversion_errors.count, 'incomplete') + ', '
+      text << pluralize(annotation_count, 'caution') + ', '
       colorize(text, color)
     end
 
-    def error_stats
-      color = if !syntax_errors.empty?
-                :red
-              elsif context_errors.empty?
-                :green
+    def error_stats(base_color)
+      color = if syntax_errors.empty?
+                base_color
               else
-                :yellow
+                :red
               end
 
       colorize(pluralize(syntax_errors.count, 'error'), color)
@@ -111,6 +123,10 @@ module Transpec
       text << 's' unless number == 1
 
       text
+    end
+
+    def annotation_count
+      records.count(&:annotation)
     end
   end
 end

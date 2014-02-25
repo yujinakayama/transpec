@@ -319,38 +319,7 @@ module Transpec
         end
 
         context 'when it is `expect(collection).to have(2).items` form' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'has 2 items' do
-                  expect(collection).to have(2).items
-                end
-              end
-            END
-          end
-
-          let(:expected_source) do
-            <<-END
-              describe 'example' do
-                it 'has 2 items' do
-                  expect(collection.size).to eq(2)
-                end
-              end
-            END
-          end
-
           let(:have_object) { expect_object.have_matcher }
-
-          it 'converts into `expect(collection.size).to eq(2)` form' do
-            have_object.convert_to_standard_expectation!
-            rewritten_source.should == expected_source
-          end
-
-          it 'adds record `expect(collection).to have(n).items` -> `expect(collection.size).to eq(n)`' do
-            have_object.convert_to_standard_expectation!
-            record.original_syntax.should  == 'expect(collection).to have(n).items'
-            record.converted_syntax.should == 'expect(collection.size).to eq(n)'
-          end
 
           context 'with runtime information' do
             include_context 'dynamic analysis objects'
@@ -393,11 +362,53 @@ module Transpec
                 rewritten_source.should == expected_source
               end
 
-              it 'adds record `expect(collection).to have(n).items` -> `expect(collection.size).to eq(n)`' do
+              it 'adds record `expect(collection).to have(n).items` -> `expect(collection.size).to eq(n)` ' \
+                 'without annotation' do
                 have_object.convert_to_standard_expectation!
                 record.original_syntax.should  == 'expect(collection).to have(n).items'
                 record.converted_syntax.should == 'expect(collection.size).to eq(n)'
+                record.annotation.should be_nil
               end
+            end
+          end
+
+          context 'without runtime information' do
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'has 2 items' do
+                    expect(collection).to have(2).items
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  it 'has 2 items' do
+                    expect(collection.size).to eq(2)
+                  end
+                end
+              END
+            end
+
+            it 'converts into `expect(collection.size).to eq(2)` form' do
+              have_object.convert_to_standard_expectation!
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record `expect(collection).to have(n).items` -> `expect(collection.size).to eq(n)` ' \
+               'with annotation' do
+              have_object.convert_to_standard_expectation!
+
+              record.original_syntax.should  == 'expect(collection).to have(n).items'
+              record.converted_syntax.should == 'expect(collection.size).to eq(n)'
+
+              record.annotation.message.should ==
+                'The `have(2).items` has been converted but it might possibly be incorrect ' \
+                "due to a lack of runtime information. It's recommended to review the change carefully."
+              record.annotation.source_range.source.should == 'have(2).items'
             end
           end
         end

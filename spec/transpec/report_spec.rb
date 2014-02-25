@@ -10,10 +10,10 @@ module Transpec
     subject(:report) { Report.new }
 
     before do
-      report.records << Record.new('obj.stub(:message)', 'allow(obj).to receive(:message)')
+      report.records << Record.new('obj.stub(:message)', 'allow(obj).to receive(:message)', double('annotation'))
       report.records << Record.new('obj.should', 'expect(obj).to')
-      report.records << Record.new('obj.should', 'expect(obj).to')
-      report.context_errors << ContextError.new(double('range'), '#should', '#expect')
+      report.records << Record.new('obj.should', 'expect(obj).to', double('annotation'))
+      report.conversion_errors << ContextError.new('#should', '#expect', double('range'))
     end
 
     describe '#unique_record_counts' do
@@ -81,7 +81,36 @@ module Transpec
 
     describe '#stats' do
       it 'returns stats string' do
-        report.stats.should == '3 conversions, 1 incomplete, 0 errors'
+        report.stats.should == '3 conversions, 1 incomplete, 2 cautions, 0 errors'
+      end
+    end
+
+    describe '#<<' do
+      subject(:concated_report) { report << another_report }
+
+      let(:another_report) do
+        report = Report.new
+        report.records << Record.new('obj.stub(:message)', 'allow(obj).to receive(:message)')
+        report.conversion_errors << ContextError.new('#should', '#expect', double('range'))
+        report.conversion_errors << ContextError.new('#stub', '#allow', double('range'))
+        report.syntax_errors << double('syntax error')
+        report
+      end
+
+      it 'returns the receiver' do
+        concated_report.should equal(report)
+      end
+
+      it 'concats records' do
+        concated_report.should have(4).records
+      end
+
+      it 'concats conversion errors' do
+        concated_report.should have(3).conversion_errors
+      end
+
+      it 'concats syntax errors' do
+        concated_report.should have(1).syntax_errors
       end
     end
   end

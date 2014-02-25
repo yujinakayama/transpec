@@ -94,10 +94,12 @@ module Transpec
 
         # Need to register record after all source rewrites are done
         # to avoid false record when failed with overlapped rewrite.
+        accurate = !arg_is_enumerable?.nil?
+
         if arg_is_enumerable?
-          register_record('=~ [1, 2]', 'match_array([1, 2])')
+          register_record('=~ [1, 2]', 'match_array([1, 2])', accurate)
         else
-          register_record('=~ /pattern/', 'match(/pattern/)')
+          register_record('=~ /pattern/', 'match(/pattern/)', accurate)
         end
       end
 
@@ -110,9 +112,15 @@ module Transpec
       end
 
       def arg_is_enumerable?
-        return true if arg_node.array_type?
-        node_data = runtime_node_data(arg_node)
-        node_data && node_data[:arg_is_enumerable?].result
+        case arg_node.type
+        when :array
+          true
+        when :regexp
+          false
+        else
+          node_data = runtime_node_data(arg_node)
+          node_data && node_data[:arg_is_enumerable?].result
+        end
       end
 
       def parenthesize_single_line!(always)
@@ -150,9 +158,18 @@ module Transpec
         end
       end
 
-      def register_record(original_syntax, converted_syntax)
+      def matcher_range
+        if be_node
+          expression_range
+        else
+          selector_range.join(expression_range.end)
+        end
+      end
+
+      def register_record(original_syntax, converted_syntax, accurate = true)
         original_syntax ||= "#{method_name} expected"
-        report.records << Record.new(original_syntax, converted_syntax)
+        annotation = AccuracyAnnotation.new(matcher_range) unless accurate
+        report.records << Record.new(original_syntax, converted_syntax, annotation)
       end
     end
   end

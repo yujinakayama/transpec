@@ -65,6 +65,7 @@ module Transpec
           it 'adds record `== expected` -> `eq(expected)`' do
             record.original_syntax.should == '== expected'
             record.converted_syntax.should == 'eq(expected)'
+            record.annotation.should be_nil
           end
 
           # Operator methods allow their argument to be in the next line,
@@ -185,6 +186,7 @@ module Transpec
           it 'adds record `== expected` -> `eq(expected)`' do
             record.original_syntax.should == '== expected'
             record.converted_syntax.should == 'eq(expected)'
+            record.annotation.should be_nil
           end
         end
 
@@ -335,6 +337,7 @@ module Transpec
             it "adds record `#{operator} expected` -> `be #{operator} expected`" do
               record.original_syntax.should == "#{operator} expected"
               record.converted_syntax.should == "be #{operator} expected"
+              record.annotation.should be_nil
             end
           end
 
@@ -384,9 +387,10 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record `=~ /pattern/` -> `match(/pattern/)`' do
+          it 'adds record `=~ /pattern/` -> `match(/pattern/)` without annotation' do
             record.original_syntax.should == '=~ /pattern/'
             record.converted_syntax.should == 'match(/pattern/)'
+            record.annotation.should be_nil
           end
         end
 
@@ -467,9 +471,10 @@ module Transpec
             rewritten_source.should == expected_source
           end
 
-          it 'adds record `=~ [1, 2]` -> `match_array([1, 2])`' do
+          it 'adds record `=~ [1, 2]` -> `match_array([1, 2])` without annotation' do
             record.original_syntax.should == '=~ [1, 2]'
             record.converted_syntax.should == 'match_array([1, 2])'
+            record.annotation.should be_nil
           end
         end
 
@@ -554,6 +559,12 @@ module Transpec
             it 'converts into `match_array(variable)` form' do
               rewritten_source.should == expected_source
             end
+
+            it 'adds record `=~ [1, 2]` -> `match_array([1, 2])` without annotation' do
+              record.original_syntax.should == '=~ [1, 2]'
+              record.converted_syntax.should == 'match_array([1, 2])'
+              record.annotation.should be_nil
+            end
           end
 
           context 'and runtime type of the variable is regular expression' do
@@ -584,6 +595,12 @@ module Transpec
             it 'converts into `match(variable)` form' do
               rewritten_source.should == expected_source
             end
+
+            it 'adds record `=~ /pattern/` -> `match(/pattern/)` without annotation' do
+              record.original_syntax.should == '=~ /pattern/'
+              record.converted_syntax.should == 'match(/pattern/)'
+              record.annotation.should be_nil
+            end
           end
 
           context 'and no runtime type information is provided' do
@@ -609,6 +626,54 @@ module Transpec
 
             it 'converts into `match(variable)` form' do
               rewritten_source.should == expected_source
+            end
+
+            it 'adds record `=~ /pattern/` -> `match(/pattern/)` with annotation' do
+              record.original_syntax.should == '=~ /pattern/'
+              record.converted_syntax.should == 'match(/pattern/)'
+
+              record.annotation.message.should ==
+                'The `=~ variable` has been converted but it might possibly be incorrect ' \
+                "due to a lack of runtime information. It's recommended to review the change carefully."
+              record.annotation.source_range.source.should == '=~ variable'
+            end
+          end
+        end
+
+        context 'when it is `be =~ variable` form' do
+          context 'and no runtime type information is provided' do
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'matches the pattern' do
+                    subject.should be =~ variable
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  it 'matches the pattern' do
+                    subject.should match(variable)
+                  end
+                end
+              END
+            end
+
+            it 'converts into `match(variable)` form' do
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record `=~ /pattern/` -> `match(/pattern/)` with annotation' do
+              record.original_syntax.should == '=~ /pattern/'
+              record.converted_syntax.should == 'match(/pattern/)'
+
+              record.annotation.message.should ==
+                'The `be =~ variable` has been converted but it might possibly be incorrect ' \
+                "due to a lack of runtime information. It's recommended to review the change carefully."
+              record.annotation.source_range.source.should == 'be =~ variable'
             end
           end
         end

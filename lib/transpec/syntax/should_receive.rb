@@ -45,7 +45,7 @@ module Transpec
 
       def expectize!(negative_form = 'not_to')
         unless expect_to_receive_available?
-          fail ContextError.new(selector_range, "##{method_name}", '#expect')
+          fail ContextError.new("##{method_name}", '#expect', selector_range)
         end
 
         convert_to_syntax!('expect', negative_form)
@@ -56,7 +56,7 @@ module Transpec
         return unless useless_expectation?
 
         unless allow_to_receive_available?
-          fail ContextError.new(selector_range, "##{method_name}", '#allow')
+          fail ContextError.new("##{method_name}", '#allow', selector_range)
         end
 
         convert_to_syntax!('allow', negative_form)

@@ -35,7 +35,7 @@ module Transpec
       end
 
       def expectize!(negative_form = 'not_to', parenthesize_matcher_arg = true)
-        fail ContextError.new(selector_range, "##{method_name}", '#expect') unless expect_available?
+        fail ContextError.new("##{method_name}", '#expect', selector_range) unless expect_available?
 
         if proc_literal?(subject_node)
           replace(range_of_subject_method_taking_block, 'expect')

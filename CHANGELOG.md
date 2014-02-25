@@ -2,6 +2,8 @@
 
 ## Development
 
+* Display cautions for less-accurate conversions caused by a lack of runtime information ([#42](https://github.com/yujinakayama/transpec/issues/42))
+
 ## v1.9.3
 
 * Handle `variable.any_instance` ([#46](https://github.com/yujinakayama/transpec/issues/46))

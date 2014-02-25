@@ -10,17 +10,16 @@ Transpec::Syntax.require_all
 
 module Transpec
   class Converter < BaseRewriter
-    attr_reader :configuration, :rspec_version, :runtime_data, :report, :context_errors
+    attr_reader :configuration, :rspec_version, :runtime_data, :report
 
     alias_method :convert_file!, :rewrite_file!
     alias_method :convert, :rewrite
 
-    def initialize(configuration = nil, rspec_version = nil, runtime_data = nil, report = nil)
+    def initialize(configuration = nil, rspec_version = nil, runtime_data = nil)
       @configuration = configuration || Configuration.new
       @rspec_version = rspec_version || Transpec.current_rspec_version
       @runtime_data = runtime_data
-      @report = report || Report.new
-      @context_errors = []
+      @report = Report.new
     end
 
     def process(ast, source_rewriter)
@@ -42,8 +41,8 @@ module Transpec
         break
       end
     rescue OverlappedRewriteError # rubocop:disable HandleExceptions
-    rescue ContextError => error
-      context_errors << error
+    rescue ConversionError => error
+      report.conversion_errors << error
     end
 
     def process_should(should)
