@@ -185,7 +185,7 @@ module Transpec
         let(:args) { ['--skip-dynamic-analysis', file_path] }
 
         it 'skips dynamic analysis' do
-          DynamicAnalyzer.any_instance.should_not_receive(:analysis)
+          DynamicAnalyzer.any_instance.should_not_receive(:analyze)
           cli.should_receive(:convert_file)
           cli.run(args)
         end
