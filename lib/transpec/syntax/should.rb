@@ -74,7 +74,7 @@ module Transpec
           converted_syntax << negative_form_of_to
         end
 
-        @report.records << Record.new(original_syntax, converted_syntax)
+        report.records << Record.new(original_syntax, converted_syntax)
       end
     end
   end

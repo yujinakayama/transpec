@@ -34,11 +34,11 @@ module Transpec
     end
 
     def <=>(other)
-      @gem_version <=> other.gem_version
+      gem_version <=> other.gem_version
     end
 
     def to_s
-      @gem_version.to_s
+      gem_version.to_s
     end
 
     define_feature :be_truthy,                   '2.99.0.beta1'

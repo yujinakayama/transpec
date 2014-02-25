@@ -25,7 +25,7 @@ module Transpec
                 return instance_variable_get(matcher_ivar_name)
               end
 
-              if matcher_class.conversion_target_node?(matcher_node, @runtime_data)
+              if matcher_class.conversion_target_node?(matcher_node, runtime_data)
                 instance_variable_set(matcher_ivar_name, send(matcher_creator_name))
               else
                 instance_variable_set(matcher_ivar_name, nil)
@@ -33,7 +33,7 @@ module Transpec
             end
 
             define_method(matcher_creator_name) do
-              matcher_class.new(matcher_node, self, @source_rewriter, @runtime_data, @report)
+              matcher_class.new(matcher_node, self, source_rewriter, runtime_data, report)
             end
           end
         end

@@ -43,7 +43,7 @@ module Transpec
 
         have_matcher.convert_to_standard_expectation!
 
-        @report.records << OnelinerShouldHaveRecord.new(self, have_matcher)
+        report.records << OnelinerShouldHaveRecord.new(self, have_matcher)
       end
 
       # rubocop:disable LineLength
@@ -61,7 +61,7 @@ module Transpec
         @current_syntax_type = :expect
         have_matcher.convert_to_standard_expectation!
 
-        @report.records << OnelinerShouldHaveRecord.new(self, have_matcher, negative_form)
+        report.records << OnelinerShouldHaveRecord.new(self, have_matcher, negative_form)
       end
 
       def example_has_description?
@@ -111,7 +111,7 @@ module Transpec
       def example_block_node
         return @example_block_node if instance_variable_defined?(:@example_block_node)
 
-        @example_block_node = @node.each_ancestor_node.find do |node|
+        @example_block_node = node.each_ancestor_node.find do |node|
           next false unless node.block_type?
           send_node = node.children.first
           receiver_node, method_name, = *send_node
@@ -157,7 +157,7 @@ module Transpec
           syntax << ' ... }'
         end
 
-        @report.records << Record.new(original_syntax, converted_syntax)
+        report.records << Record.new(original_syntax, converted_syntax)
       end
 
       class OnelinerShouldHaveRecord < Have::HaveRecord

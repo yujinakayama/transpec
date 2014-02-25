@@ -50,7 +50,7 @@ module Transpec
               target_node = receiver_node
               target_object_type = :object
             else
-              target_node = @node
+              target_node = node
               target_object_type = :context
             end
 
@@ -61,23 +61,23 @@ module Transpec
         end
 
         def receiver_node
-          @node.children[0]
+          node.children[0]
         end
 
         def method_name
-          @node.children[1]
+          node.children[1]
         end
 
         def arg_node
-          @node.children[2]
+          node.children[2]
         end
 
         def arg_nodes
-          @node.children[2..-1]
+          node.children[2..-1]
         end
 
         def selector_range
-          @node.loc.selector
+          node.loc.selector
         end
 
         def receiver_range

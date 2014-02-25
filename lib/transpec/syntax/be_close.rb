@@ -29,7 +29,7 @@ module Transpec
       private
 
       def register_record
-        @report.records << Record.new('be_close(expected, delta)', 'be_within(delta).of(expected)')
+        report.records << Record.new('be_close(expected, delta)', 'be_within(delta).of(expected)')
       end
     end
   end

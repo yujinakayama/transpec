@@ -121,7 +121,7 @@ module Transpec
         hash_node.children.each_with_index do |pair_node, index|
           key_node, value_node = *pair_node
           expression = build_allow_to_receive(key_node, value_node, false)
-          expression.prepend(indentation_of_line(@node)) if index > 0
+          expression.prepend(indentation_of_line(node)) if index > 0
           expressions << expression
         end
 
@@ -182,7 +182,7 @@ module Transpec
                        else
                          AllowRecord
                        end
-        @report.records << record_class.new(self, conversion_type)
+        report.records << record_class.new(self, conversion_type)
       end
 
       class AllowRecord < Record

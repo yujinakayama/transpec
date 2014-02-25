@@ -31,7 +31,7 @@ module Transpec
       private
 
       def register_record(converted_syntax)
-        @report.records << Record.new(method_name.to_s, converted_syntax)
+        report.records << Record.new(method_name.to_s, converted_syntax)
       end
     end
   end

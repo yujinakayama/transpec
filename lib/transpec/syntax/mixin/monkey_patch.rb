@@ -17,11 +17,11 @@ module Transpec
             code << " && respond_to?(#{method.inspect})"
           end
 
-          rewriter.register_request(@node, key, code, :context)
+          rewriter.register_request(node, key, code, :context)
         end
 
         def check_syntax_availability(key)
-          node_data = runtime_node_data(@node)
+          node_data = runtime_node_data(node)
 
           if node_data
             node_data[key].result

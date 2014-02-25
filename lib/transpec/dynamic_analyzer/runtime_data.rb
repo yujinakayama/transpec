@@ -20,7 +20,7 @@ module Transpec
       end
 
       def [](node)
-        @data[node_id(node)]
+        data[node_id(node)]
       end
 
       def node_id(node)

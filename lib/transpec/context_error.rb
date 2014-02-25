@@ -10,7 +10,7 @@ module Transpec
     end
 
     def source_buffer
-      @source_range.source_buffer
+      source_range.source_buffer
     end
 
     private

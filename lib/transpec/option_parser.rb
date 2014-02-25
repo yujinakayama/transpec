@@ -51,27 +51,27 @@ module Transpec
       @parser = create_parser
 
       define_option('-f', '--force') do
-        @configuration.forced = true
+        configuration.forced = true
       end
 
       define_option('-s', '--skip-dynamic-analysis') do
-        @configuration.skip_dynamic_analysis = true
+        configuration.skip_dynamic_analysis = true
       end
 
       define_option('-c', '--rspec-command COMMAND') do |command|
-        @configuration.rspec_command = command
+        configuration.rspec_command = command
       end
 
       define_option('-k', '--keep TYPE[,TYPE...]') do |types|
         types.split(',').each do |type|
           config_attr = CONFIG_ATTRS_FOR_KEEP_TYPES[type.to_sym]
           fail ArgumentError, "Unknown syntax type #{type.inspect}" unless config_attr
-          @configuration.send(config_attr, false)
+          configuration.send(config_attr, false)
         end
       end
 
       define_option('-n', '--negative-form FORM') do |form|
-        @configuration.negative_form_of_to = form
+        configuration.negative_form_of_to = form
       end
 
       define_option('-b', '--boolean-matcher TYPE') do |type|
@@ -79,20 +79,20 @@ module Transpec
           types = VALID_BOOLEAN_MATCHER_TYPES.map(&:inspect).join(', ')
           fail ArgumentError, "Boolean matcher type must be any of #{types}"
         end
-        @configuration.boolean_matcher_type = type.include?('truthy') ? :conditional : :exact
-        @configuration.form_of_be_falsey = type.include?('falsy') ? 'be_falsy' : 'be_falsey'
+        configuration.boolean_matcher_type = type.include?('truthy') ? :conditional : :exact
+        configuration.form_of_be_falsey = type.include?('falsy') ? 'be_falsy' : 'be_falsey'
       end
 
       define_option('-a', '--no-yield-any-instance') do
-        @configuration.add_receiver_arg_to_any_instance_implementation_block = false
+        configuration.add_receiver_arg_to_any_instance_implementation_block = false
       end
 
       define_option('-t', '--convert-stub-with-hash') do
-        @configuration.convert_stub_with_hash_to_stub_and_return = true
+        configuration.convert_stub_with_hash_to_stub_and_return = true
       end
 
       define_option('-p', '--no-parentheses-matcher-arg') do
-        @configuration.parenthesize_matcher_arg = false
+        configuration.parenthesize_matcher_arg = false
       end
 
       define_option('--no-color') do

@@ -17,22 +17,22 @@ module Transpec
       def remove_useless_and_return!
         removed = super
         return unless removed
-        @report.records << ReceiveUselessAndReturnRecord.new(self)
+        report.records << ReceiveUselessAndReturnRecord.new(self)
       end
 
       def add_receiver_arg_to_any_instance_implementation_block!
         added = super
         return unless added
-        @report.records << ReceiveAnyInstanceBlockRecord.new(self)
+        report.records << ReceiveAnyInstanceBlockRecord.new(self)
       end
 
       def any_instance?
-        @expectation.any_instance?
+        expectation.any_instance?
       end
 
       def any_instance_block_node
         return unless any_instance?
-        super || @expectation.block_node
+        super || expectation.block_node
       end
 
       class ReceiveAnyInstanceBlockRecord < AnyInstanceBlockRecord

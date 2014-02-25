@@ -93,7 +93,7 @@ module Transpec
     end
 
     def default_rspec_command
-      if @project.require_bundler?
+      if project.require_bundler?
         'bundle exec rspec'
       else
         'rspec'
@@ -128,9 +128,9 @@ module Transpec
       @in_copied_project = true
 
       Dir.mktmpdir do |tmpdir|
-        copy_recursively(@project.path, tmpdir)
-        @copied_project_path = File.join(tmpdir, @project.basename)
-        Dir.chdir(@copied_project_path) do
+        copy_recursively(project.path, tmpdir)
+        copied_project_path = File.join(tmpdir, project.basename)
+        Dir.chdir(copied_project_path) do
           yield
         end
       end
@@ -139,7 +139,7 @@ module Transpec
     end
 
     def run_rspec(paths)
-      @project.with_bundler_clean_env do
+      project.with_bundler_clean_env do
         ENV['SPEC_OPTS'] = ['-r', "./#{HELPER_FILE}"].shelljoin
 
         command = "#{rspec_command} #{paths.shelljoin}"

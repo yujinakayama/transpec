@@ -38,7 +38,7 @@ module Transpec
 
         original_syntax << ')'
 
-        @report.records << Record.new(original_syntax, 'expect { }.not_to raise_error')
+        report.records << Record.new(original_syntax, 'expect { }.not_to raise_error')
       end
     end
   end

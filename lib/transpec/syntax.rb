@@ -37,19 +37,19 @@ module Transpec
       private
 
       def remove(range)
-        @source_rewriter.remove(range)
+        source_rewriter.remove(range)
       end
 
       def insert_before(range, content)
-        @source_rewriter.insert_before(range, content)
+        source_rewriter.insert_before(range, content)
       end
 
       def insert_after(range, content)
-        @source_rewriter.insert_after(range, content)
+        source_rewriter.insert_after(range, content)
       end
 
       def replace(range, content)
-        @source_rewriter.replace(range, content)
+        source_rewriter.replace(range, content)
       end
     end
   end
@@ -119,21 +119,21 @@ module Transpec
     end
 
     def static_context_inspector
-      @static_context_inspector ||= StaticContextInspector.new(@node)
+      @static_context_inspector ||= StaticContextInspector.new(node)
     end
 
     def parent_node
-      @node.parent_node
+      node.parent_node
     end
 
     def expression_range
-      @node.loc.expression
+      node.loc.expression
     end
 
     private
 
     def runtime_node_data(node)
-      @runtime_data && @runtime_data[node]
+      runtime_data && runtime_data[node]
     end
   end
 end

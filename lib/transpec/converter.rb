@@ -32,9 +32,9 @@ module Transpec
 
     def dispatch_node(node, source_rewriter)
       Syntax.standalone_syntaxes.each do |syntax_class|
-        next unless syntax_class.conversion_target_node?(node, @runtime_data)
+        next unless syntax_class.conversion_target_node?(node, runtime_data)
 
-        syntax = syntax_class.new(node, source_rewriter, @runtime_data, @report)
+        syntax = syntax_class.new(node, source_rewriter, runtime_data, report)
 
         handler_name = "process_#{syntax_class.snake_case_name}"
         send(handler_name, syntax)
@@ -43,14 +43,14 @@ module Transpec
       end
     rescue OverlappedRewriteError # rubocop:disable HandleExceptions
     rescue ContextError => error
-      @context_errors << error
+      context_errors << error
     end
 
     def process_should(should)
-      if @configuration.convert_should?
+      if configuration.convert_should?
         should.expectize!(
-          @configuration.negative_form_of_to,
-          @configuration.parenthesize_matcher_arg?
+          configuration.negative_form_of_to,
+          configuration.parenthesize_matcher_arg?
         )
       end
 
@@ -59,22 +59,22 @@ module Transpec
     end
 
     def process_oneliner_should(oneliner_should)
-      negative_form = @configuration.negative_form_of_to
-      parenthesize = @configuration.parenthesize_matcher_arg?
+      negative_form = configuration.negative_form_of_to
+      parenthesize = configuration.parenthesize_matcher_arg?
 
       # TODO: Referencing oneliner_should.have_matcher.project_requires_collection_matcher?
       #   from this converter is considered bad design.
-      should_convert_have_items = @configuration.convert_have_items? &&
+      should_convert_have_items = configuration.convert_have_items? &&
                                   oneliner_should.have_matcher &&
                                   !oneliner_should.have_matcher.project_requires_collection_matcher?
 
       if should_convert_have_items
-        if @configuration.convert_should?
+        if configuration.convert_should?
           oneliner_should.convert_have_items_to_standard_expect!(negative_form, parenthesize)
         else
           oneliner_should.convert_have_items_to_standard_should!
         end
-      elsif @configuration.convert_oneliner? && @rspec_version.oneliner_is_expected_available?
+      elsif configuration.convert_oneliner? && rspec_version.oneliner_is_expected_available?
         oneliner_should.expectize!(negative_form, parenthesize)
       end
 
@@ -93,79 +93,79 @@ module Transpec
 
     def process_should_receive(should_receive)
       if should_receive.useless_expectation?
-        if @configuration.convert_deprecated_method?
-          if @configuration.convert_stub?
-            should_receive.allowize_useless_expectation!(@configuration.negative_form_of_to)
+        if configuration.convert_deprecated_method?
+          if configuration.convert_stub?
+            should_receive.allowize_useless_expectation!(configuration.negative_form_of_to)
           else
             should_receive.stubize_useless_expectation!
           end
-        elsif @configuration.convert_should_receive?
-          should_receive.expectize!(@configuration.negative_form_of_to)
+        elsif configuration.convert_should_receive?
+          should_receive.expectize!(configuration.negative_form_of_to)
         end
-      elsif @configuration.convert_should_receive?
-        should_receive.expectize!(@configuration.negative_form_of_to)
+      elsif configuration.convert_should_receive?
+        should_receive.expectize!(configuration.negative_form_of_to)
       end
 
       process_messaging_host(should_receive)
     end
 
     def process_double(double)
-      double.convert_to_double! if @configuration.convert_deprecated_method?
+      double.convert_to_double! if configuration.convert_deprecated_method?
     end
 
     def process_method_stub(method_stub)
-      if @configuration.convert_stub?
+      if configuration.convert_stub?
         if !method_stub.hash_arg? ||
-           @rspec_version.receive_messages_available? ||
-           @configuration.convert_stub_with_hash_to_stub_and_return?
-          method_stub.allowize!(@rspec_version)
-        elsif @configuration.convert_deprecated_method?
+           rspec_version.receive_messages_available? ||
+           configuration.convert_stub_with_hash_to_stub_and_return?
+          method_stub.allowize!(rspec_version)
+        elsif configuration.convert_deprecated_method?
           method_stub.convert_deprecated_method!
         end
-      elsif @configuration.convert_deprecated_method?
+      elsif configuration.convert_deprecated_method?
         method_stub.convert_deprecated_method!
       end
 
-      method_stub.remove_no_message_allowance! if @configuration.convert_deprecated_method?
+      method_stub.remove_no_message_allowance! if configuration.convert_deprecated_method?
 
       process_messaging_host(method_stub)
     end
 
     def process_be_boolean(be_boolean)
-      return unless @rspec_version.be_truthy_available?
-      return unless @configuration.convert_deprecated_method?
+      return unless rspec_version.be_truthy_available?
+      return unless configuration.convert_deprecated_method?
 
-      case @configuration.boolean_matcher_type
+      case configuration.boolean_matcher_type
       when :conditional
-        be_boolean.convert_to_conditional_matcher!(@configuration.form_of_be_falsey)
+        be_boolean.convert_to_conditional_matcher!(configuration.form_of_be_falsey)
       when :exact
         be_boolean.convert_to_exact_matcher!
       end
     end
 
     def process_be_close(be_close)
-      be_close.convert_to_be_within! if @configuration.convert_deprecated_method?
+      be_close.convert_to_be_within! if configuration.convert_deprecated_method?
     end
 
     def process_raise_error(raise_error)
       return unless raise_error
-      if @configuration.convert_deprecated_method?
+      if configuration.convert_deprecated_method?
         raise_error.remove_error_specification_with_negative_expectation!
       end
     end
 
     def process_its(its)
-      its.convert_to_describe_subject_it! if @configuration.convert_its?
+      its.convert_to_describe_subject_it! if configuration.convert_its?
     end
 
     def process_example(example)
-      return unless @rspec_version.yielded_example_available?
-      example.convert! if @configuration.convert_deprecated_method?
+      return unless rspec_version.yielded_example_available?
+      example.convert! if configuration.convert_deprecated_method?
     end
 
     def process_matcher_definition(matcher_definition)
-      return unless @rspec_version.non_should_matcher_protocol_available?
-      matcher_definition.convert_deprecated_method! if @configuration.convert_deprecated_method?
+      return unless rspec_version.non_should_matcher_protocol_available?
+      matcher_definition.convert_deprecated_method! if configuration.convert_deprecated_method?
     end
 
     def process_rspec_configure(rspec_configure)
@@ -185,8 +185,8 @@ module Transpec
     end
 
     def process_have(have)
-      return if !have || !@configuration.convert_have_items?
-      have.convert_to_standard_expectation!(@configuration.parenthesize_matcher_arg)
+      return if !have || !configuration.convert_have_items?
+      have.convert_to_standard_expectation!(configuration.parenthesize_matcher_arg)
     end
 
     def process_messaging_host(messaging_host)
@@ -209,15 +209,15 @@ module Transpec
     end
 
     def need_to_modify_expectation_syntax_configuration?(rspec_configure)
-      return false unless @configuration.convert_should?
+      return false unless configuration.convert_should?
       rspec_configure.expectations.syntaxes == [:should]
     rescue Syntax::RSpecConfigure::Framework::UnknownSyntaxError
       false
     end
 
     def need_to_modify_mock_syntax_configuration?(rspec_configure)
-      return false if !@configuration.convert_should_receive? &&
-                      !@configuration.convert_stub?
+      return false if !configuration.convert_should_receive? &&
+                      !configuration.convert_stub?
       rspec_configure.mocks.syntaxes == [:should]
     rescue Syntax::RSpecConfigure::Framework::UnknownSyntaxError
       false

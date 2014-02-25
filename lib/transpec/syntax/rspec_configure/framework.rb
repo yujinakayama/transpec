@@ -9,7 +9,7 @@ module Transpec
       class Framework
         include Util, ::AST::Sexp
 
-        attr_reader :rspec_configure
+        attr_reader :rspec_configure, :source_rewriter
 
         def initialize(rspec_configure, source_rewriter)
           @rspec_configure = rspec_configure
@@ -27,7 +27,7 @@ module Transpec
 
           if setter_node
             arg_node = setter_node.children[2]
-            @source_rewriter.replace(arg_node.loc.expression, value.to_s)
+            source_rewriter.replace(arg_node.loc.expression, value.to_s)
           else
             add_configuration!(config_name, value)
           end
@@ -77,7 +77,7 @@ module Transpec
             lines.map! { |line| line + "\n" }
 
             insertion_position = beginning_of_line_range(block_node_to_insert_code.loc.end)
-            @source_rewriter.insert_before(insertion_position, lines.join(''))
+            source_rewriter.insert_before(insertion_position, lines.join(''))
           end
 
           def config_variable_name

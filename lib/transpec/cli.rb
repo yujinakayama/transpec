@@ -27,7 +27,7 @@ module Transpec
 
     def run(args)
       begin
-        paths = OptionParser.new(@configuration).parse(args)
+        paths = OptionParser.new(configuration).parse(args)
         fail_if_should_not_continue!
       rescue => error
         warn error.message
@@ -46,9 +46,9 @@ module Transpec
     def process(paths)
       runtime_data = nil
 
-      unless @configuration.skip_dynamic_analysis?
+      unless configuration.skip_dynamic_analysis?
         puts 'Copying the project for dynamic analysis...'
-        DynamicAnalyzer.new(rspec_command: @configuration.rspec_command) do |analyzer|
+        DynamicAnalyzer.new(rspec_command: configuration.rspec_command) do |analyzer|
           puts "Running dynamic analysis with command #{analyzer.rspec_command.inspect}..."
           runtime_data = analyzer.analyze(paths)
         end
@@ -63,52 +63,52 @@ module Transpec
     def convert_file(file_path, runtime_data = nil)
       puts "Converting #{file_path}"
 
-      converter = Converter.new(@configuration, @project.rspec_version, runtime_data, @report)
+      converter = Converter.new(configuration, project.rspec_version, runtime_data, report)
       converter.convert_file!(file_path)
 
-      @report.context_errors.concat(converter.context_errors)
+      report.context_errors.concat(converter.context_errors)
 
       converter.context_errors.each do |error|
         warn_invalid_context_error(error)
       end
     rescue Parser::SyntaxError => error
-      @report.syntax_errors << error
+      report.syntax_errors << error
       warn_syntax_error(error)
     end
 
     private
 
     def fail_if_should_not_continue!
-      unless @configuration.forced?
+      unless configuration.forced?
         if Git.command_available? && Git.inside_of_repository? && !Git.clean?
           fail 'The current Git repository is not clean. Aborting.'
         end
       end
 
-      if @project.rspec_version < Transpec.required_rspec_version
+      if project.rspec_version < Transpec.required_rspec_version
         fail "Your project must have rspec gem dependency #{Transpec.required_rspec_version} " +
-             "or later but currently it's #{@project.rspec_version}. Aborting."
+             "or later but currently it's #{project.rspec_version}. Aborting."
       end
     end
 
     def display_summary
       puts
 
-      unless @report.records.empty?
+      unless report.records.empty?
         puts 'Summary:'
         puts
-        puts @report.colored_summary
+        puts report.colored_summary
         puts
       end
 
-      puts @report.colored_stats
+      puts report.colored_stats
     end
 
     def generate_commit_message
-      return if @report.records.empty?
+      return if report.records.empty?
       return unless Git.command_available? && Git.inside_of_repository?
 
-      commit_message = CommitMessage.new(@report, @project.rspec_version, ARGV)
+      commit_message = CommitMessage.new(report, project.rspec_version, ARGV)
       Git.write_commit_message(commit_message.to_s)
 
       puts
@@ -119,7 +119,7 @@ module Transpec
     end
 
     def display_final_guide
-      return if @report.records.empty?
+      return if report.records.empty?
 
       puts
       puts "Done! Now run #{'rspec'.bright} and check if everything is green."

@@ -16,7 +16,7 @@ module Transpec
       define_dynamic_analysis_request do |rewriter|
         key = :project_requires_its?
         code = 'defined?(RSpec::Its)'
-        rewriter.register_request(@node, key, code, :context)
+        rewriter.register_request(node, key, code, :context)
       end
 
       def convert_to_describe_subject_it!
@@ -42,11 +42,11 @@ module Transpec
       alias_method :attribute_node, :arg_node
 
       def block_node
-        @node.parent_node
+        node.parent_node
       end
 
       def project_requires_its?
-        node_data = runtime_node_data(@node)
+        node_data = runtime_node_data(node)
         node_data && node_data[:project_requires_its?].result
       end
 
@@ -89,11 +89,11 @@ module Transpec
       end
 
       def base_indentation
-        @base_indentation ||= indentation_of_line(@node)
+        @base_indentation ||= indentation_of_line(node)
       end
 
       def register_record
-        @report.records << Record.new(original_syntax, converted_syntax)
+        report.records << Record.new(original_syntax, converted_syntax)
       end
 
       def original_syntax
@@ -113,16 +113,18 @@ module Transpec
       end
 
       class AttributeExpression
+        attr_reader :node
+
         def initialize(node)
           @node = node
         end
 
         def brackets?
-          @node.array_type?
+          node.array_type?
         end
 
         def literal?
-          Util.literal?(@node)
+          Util.literal?(node)
         end
 
         def attributes
@@ -136,20 +138,20 @@ module Transpec
         private
 
         def brackets_attributes
-          selector = @node.loc.expression.source
+          selector = node.loc.expression.source
           description = literal? ? quote(selector) : selector
           [Attribute.new(selector, description)]
         end
 
         def non_brackets_attributes
           if literal?
-            expression = @node.children.first.to_s
+            expression = node.children.first.to_s
             chained_names = expression.split('.')
             chained_names.map do |name|
               Attribute.new(".#{name}", quote("##{name}"))
             end
           else
-            source = @node.loc.expression.source
+            source = node.loc.expression.source
             selector = ".send(#{source})"
             [Attribute.new(selector, source)]
           end

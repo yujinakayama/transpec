@@ -157,7 +157,7 @@ module Transpec
       end
 
       def register_record(record_class, negative_form_of_to = nil)
-        @report.records << record_class.new(self, negative_form_of_to)
+        report.records << record_class.new(self, negative_form_of_to)
       end
 
       class ExpectBaseRecord < Record

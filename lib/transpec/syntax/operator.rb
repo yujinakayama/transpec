@@ -128,7 +128,7 @@ module Transpec
 
       def parenthesize_multi_line!(linefeed)
         insert_before(range_in_between_selector_and_arg, '(')
-        matcher_line_indentation = indentation_of_line(@node)
+        matcher_line_indentation = indentation_of_line(node)
         right_parenthesis = "#{linefeed}#{matcher_line_indentation})"
         insert_after(expression_range, right_parenthesis)
       end
@@ -152,7 +152,7 @@ module Transpec
 
       def register_record(original_syntax, converted_syntax)
         original_syntax ||= "#{method_name} expected"
-        @report.records << Record.new(original_syntax, converted_syntax)
+        report.records << Record.new(original_syntax, converted_syntax)
       end
     end
   end

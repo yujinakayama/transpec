@@ -12,11 +12,11 @@ module Transpec
     end
 
     def basename
-      File.basename(@path)
+      File.basename(path)
     end
 
     def require_bundler?
-      gemfile_path = File.join(@path, 'Gemfile')
+      gemfile_path = File.join(path, 'Gemfile')
       File.exist?(gemfile_path)
     end
 
@@ -44,7 +44,7 @@ module Transpec
 
       output = nil
 
-      Dir.chdir(@path) do
+      Dir.chdir(path) do
         with_bundler_clean_env do
           IO.popen(command) do |io|
             output = io.read

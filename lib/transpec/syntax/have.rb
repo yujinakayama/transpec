@@ -119,7 +119,7 @@ module Transpec
       end
 
       def register_record
-        @report.records << HaveRecord.new(self)
+        report.records << HaveRecord.new(self)
       end
     end
   end

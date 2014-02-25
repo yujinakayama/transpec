@@ -19,11 +19,8 @@ module Transpec
         end
 
         def initialize(node, expectation, source_rewriter = nil, runtime_data = nil, report = nil)
-          @node = node
+          super(node, source_rewriter, runtime_data, report)
           @expectation = expectation
-          @source_rewriter = source_rewriter
-          @runtime_data = runtime_data
-          @report = report || Report.new
         end
       end
     end
