@@ -66,10 +66,7 @@ module Transpec
       converter = Converter.new(configuration, project.rspec_version, runtime_data)
       converter.convert_file!(file_path)
 
-      converter.report.conversion_errors.each do |error|
-        warn_conversion_error(error)
-      end
-
+      warn_annotations(converter.report)
       report << converter.report
     rescue Parser::SyntaxError => error
       report.syntax_errors << error
@@ -129,19 +126,30 @@ module Transpec
       warn "Syntax error at #{error.diagnostic.location}. Skipping the file.".color(:red)
     end
 
-    def warn_conversion_error(error)
-      message = error.message.color(:yellow) + $RS
-      message << highlighted_source(error)
+    def warn_annotations(report)
+      annotations = report.records.map(&:annotation).compact
+      annotations.concat(report.conversion_errors)
+      annotations.sort_by! { |a| a.source_range.line }
+
+      annotations.each do |annotation|
+        warn_annotation(annotation)
+      end
+    end
+
+    def warn_annotation(annotation)
+      color = annotation.is_a?(Annotation) ? :yellow : :magenta
+      message = annotation.message.color(color) + $RS
+      message << highlighted_source(annotation)
       warn message
     end
 
-    def highlighted_source(error)
-      filename = error.source_buffer.name.color(:cyan)
+    def highlighted_source(annotation)
+      filename = annotation.source_buffer.name.color(:cyan)
 
-      line_number = error.source_range.line
+      line_number = annotation.source_range.line
 
-      source = error.source_range.source_line
-      highlight_range = error.source_range.column_range
+      source = annotation.source_range.source_line
+      highlight_range = annotation.source_range.column_range
       source[highlight_range] = source[highlight_range].underline
 
       [filename, line_number, source].join(':')

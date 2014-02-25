@@ -47,7 +47,15 @@ module Transpec
     end
 
     def colored_stats
-      convertion_and_incomplete_stats + error_stats
+      base_color = if !conversion_errors.empty?
+                     :magenta
+                   elsif annotation_count.nonzero?
+                     :yellow
+                   else
+                     :green
+                   end
+
+      convertion_incomplete_caution_stats(base_color) + error_stats(base_color)
     end
 
     def stats
@@ -85,21 +93,18 @@ module Transpec
       text << indentation + '    ' + colorize('to: ', :cyan) + record.converted_syntax + "\n"
     end
 
-    def convertion_and_incomplete_stats
-      color = conversion_errors.empty? ? :green : :yellow
-
+    def convertion_incomplete_caution_stats(color)
       text = pluralize(records.count, 'conversion') + ', '
       text << pluralize(conversion_errors.count, 'incomplete') + ', '
+      text << pluralize(annotation_count, 'caution') + ', '
       colorize(text, color)
     end
 
-    def error_stats
-      color = if !syntax_errors.empty?
-                :red
-              elsif conversion_errors.empty?
-                :green
+    def error_stats(base_color)
+      color = if syntax_errors.empty?
+                base_color
               else
-                :yellow
+                :red
               end
 
       colorize(pluralize(syntax_errors.count, 'error'), color)
@@ -118,6 +123,10 @@ module Transpec
       text << 's' unless number == 1
 
       text
+    end
+
+    def annotation_count
+      records.count(&:annotation)
     end
   end
 end

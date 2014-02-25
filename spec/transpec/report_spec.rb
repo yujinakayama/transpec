@@ -10,9 +10,9 @@ module Transpec
     subject(:report) { Report.new }
 
     before do
-      report.records << Record.new('obj.stub(:message)', 'allow(obj).to receive(:message)')
+      report.records << Record.new('obj.stub(:message)', 'allow(obj).to receive(:message)', double('annotation'))
       report.records << Record.new('obj.should', 'expect(obj).to')
-      report.records << Record.new('obj.should', 'expect(obj).to')
+      report.records << Record.new('obj.should', 'expect(obj).to', double('annotation'))
       report.conversion_errors << ContextError.new('#should', '#expect', double('range'))
     end
 
@@ -81,7 +81,7 @@ module Transpec
 
     describe '#stats' do
       it 'returns stats string' do
-        report.stats.should == '3 conversions, 1 incomplete, 0 errors'
+        report.stats.should == '3 conversions, 1 incomplete, 2 cautions, 0 errors'
       end
     end
 
