@@ -13,7 +13,7 @@ module Transpec
       report.records << Record.new('obj.stub(:message)', 'allow(obj).to receive(:message)')
       report.records << Record.new('obj.should', 'expect(obj).to')
       report.records << Record.new('obj.should', 'expect(obj).to')
-      report.context_errors << ContextError.new(double('range'), '#should', '#expect')
+      report.conversion_errors << ContextError.new('#should', '#expect', double('range'))
     end
 
     describe '#unique_record_counts' do

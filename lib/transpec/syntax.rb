@@ -1,6 +1,6 @@
 # coding: utf-8
 
-require 'transpec/context_error'
+require 'transpec/conversion_error'
 require 'transpec/static_context_inspector'
 require 'transpec/record'
 require 'transpec/report'

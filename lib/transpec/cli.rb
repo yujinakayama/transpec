@@ -66,10 +66,10 @@ module Transpec
       converter = Converter.new(configuration, project.rspec_version, runtime_data, report)
       converter.convert_file!(file_path)
 
-      report.context_errors.concat(converter.context_errors)
+      report.conversion_errors.concat(converter.conversion_errors)
 
-      converter.context_errors.each do |error|
-        warn_invalid_context_error(error)
+      converter.conversion_errors.each do |error|
+        warn_conversion_error(error)
       end
     rescue Parser::SyntaxError => error
       report.syntax_errors << error
@@ -129,7 +129,7 @@ module Transpec
       warn "Syntax error at #{error.diagnostic.location}. Skipping the file.".color(:red)
     end
 
-    def warn_invalid_context_error(error)
+    def warn_conversion_error(error)
       message = error.message.color(:yellow) + $RS
       message << highlighted_source(error)
       warn message
