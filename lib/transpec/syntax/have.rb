@@ -102,6 +102,14 @@ module Transpec
         size_node.loc.expression.source
       end
 
+      def accurate_conversion?
+        !runtime_subject_data.nil?
+      end
+
+      def matcher_range
+        expression_range.join(items_node.loc.expression)
+      end
+
       private
 
       def source_builder
@@ -112,10 +120,6 @@ module Transpec
         return @runtime_subject_data if instance_variable_defined?(:@runtime_subject_data)
         node = explicit_subject? ? expectation.subject_node : expectation.node
         @runtime_subject_data = runtime_node_data(node)
-      end
-
-      def matcher_range
-        expression_range.join(items_node.loc.expression)
       end
 
       def register_record

@@ -28,6 +28,18 @@ module Transpec
           end
         end
 
+        def annotation
+          return @annotation if instance_variable_defined?(:@annotation)
+
+          @annotation = if have.accurate_conversion?
+                          nil
+                        else
+                          AccuracyAnnotation.new(have.matcher_range)
+                        end
+        end
+
+        private
+
         def build_expectation(subject, type)
           case type
           when :should
