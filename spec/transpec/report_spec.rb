@@ -84,5 +84,34 @@ module Transpec
         report.stats.should == '3 conversions, 1 incomplete, 0 errors'
       end
     end
+
+    describe '#<<' do
+      subject(:concated_report) { report << another_report }
+
+      let(:another_report) do
+        report = Report.new
+        report.records << Record.new('obj.stub(:message)', 'allow(obj).to receive(:message)')
+        report.conversion_errors << ContextError.new('#should', '#expect', double('range'))
+        report.conversion_errors << ContextError.new('#stub', '#allow', double('range'))
+        report.syntax_errors << double('syntax error')
+        report
+      end
+
+      it 'returns the receiver' do
+        concated_report.should equal(report)
+      end
+
+      it 'concats records' do
+        concated_report.should have(4).records
+      end
+
+      it 'concats conversion errors' do
+        concated_report.should have(3).conversion_errors
+      end
+
+      it 'concats syntax errors' do
+        concated_report.should have(1).syntax_errors
+      end
+    end
   end
 end

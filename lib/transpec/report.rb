@@ -12,6 +12,13 @@ module Transpec
       @syntax_errors = []
     end
 
+    def <<(other)
+      records.concat(other.records)
+      conversion_errors.concat(other.conversion_errors)
+      syntax_errors.concat(other.syntax_errors)
+      self
+    end
+
     def unique_record_counts
       record_counts = Hash.new(0)
 

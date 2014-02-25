@@ -117,6 +117,11 @@ module Transpec
         it 'does not convert the expectation to non-monkey-patch syntax' do
           should == source
         end
+
+        it 'adds the conversion error to the report' do
+          converter.convert(source)
+          converter.report.should have(1).conversion_error
+        end
       end
     end
 

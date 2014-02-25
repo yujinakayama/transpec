@@ -63,14 +63,14 @@ module Transpec
     def convert_file(file_path, runtime_data = nil)
       puts "Converting #{file_path}"
 
-      converter = Converter.new(configuration, project.rspec_version, runtime_data, report)
+      converter = Converter.new(configuration, project.rspec_version, runtime_data)
       converter.convert_file!(file_path)
 
-      report.conversion_errors.concat(converter.conversion_errors)
-
-      converter.conversion_errors.each do |error|
+      converter.report.conversion_errors.each do |error|
         warn_conversion_error(error)
       end
+
+      report << converter.report
     rescue Parser::SyntaxError => error
       report.syntax_errors << error
       warn_syntax_error(error)
