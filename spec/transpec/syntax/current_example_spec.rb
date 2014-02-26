@@ -1,19 +1,19 @@
 # coding: utf-8
 
 require 'spec_helper'
-require 'transpec/syntax/example'
+require 'transpec/syntax/current_example'
 
 module Transpec
   class Syntax
-    describe Example do
+    describe CurrentExample do
       include_context 'parsed objects'
-      include_context 'syntax object', Example, :example_object
+      include_context 'syntax object', CurrentExample, :current_example_object
 
-      let(:record) { example_object.report.records.last }
+      let(:record) { current_example_object.report.records.last }
 
       describe '#convert!' do
         before do
-          example_object.convert! unless example.metadata[:no_auto_convert]
+          current_example_object.convert! unless example.metadata[:no_auto_convert]
         end
 
         (RSpecDSL::EXAMPLE_METHODS + RSpecDSL::HOOK_METHODS).each do |method|
@@ -157,16 +157,18 @@ module Transpec
             END
           end
 
-          let(:example_objects) do
+          let(:current_example_objects) do
             ast.each_node.reduce([]) do |objects, node|
-              objects << Example.new(node, source_rewriter, runtime_data) if Example.conversion_target_node?(node)
+              if CurrentExample.conversion_target_node?(node)
+                objects << CurrentExample.new(node, source_rewriter, runtime_data)
+              end
               objects
             end
           end
 
           it 'adds only a block argument' do
-            example_objects.size.should eq(2)
-            example_objects.each(&:convert!)
+            current_example_objects.size.should eq(2)
+            current_example_objects.each(&:convert!)
             rewritten_source.should == expected_source
           end
         end

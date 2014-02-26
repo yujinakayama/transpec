@@ -7,7 +7,7 @@ require 'transpec/util'
 
 module Transpec
   class Syntax
-    class Example < Syntax
+    class CurrentExample < Syntax
       include Mixin::Send, RSpecDSL, Util
 
       METHODS_YIELD_EXAMPLE = (EXAMPLE_METHODS + HOOK_METHODS + HELPER_METHODS).freeze

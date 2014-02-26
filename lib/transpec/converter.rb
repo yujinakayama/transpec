@@ -157,9 +157,9 @@ module Transpec
       its.convert_to_describe_subject_it! if configuration.convert_its?
     end
 
-    def process_example(example)
+    def process_current_example(current_example)
       return unless rspec_version.yielded_example_available?
-      example.convert! if configuration.convert_deprecated_method?
+      current_example.convert! if configuration.convert_deprecated_method?
     end
 
     def process_matcher_definition(matcher_definition)
