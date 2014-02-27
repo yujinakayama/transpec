@@ -220,6 +220,14 @@ module Transpec
             record.converted_syntax.should == 'allow(obj).to receive(:message)'
           end
 
+          context 'with runtime information' do
+            include_context 'dynamic analysis objects'
+
+            it 'converts into `allow(subject).to receive(:method)` form' do
+              rewritten_source.should == expected_source
+            end
+          end
+
           context 'and #allow and #receive are not available in the context', :no_before_allowize! do
             context 'and the context is determinable statically' do
               let(:source) do
