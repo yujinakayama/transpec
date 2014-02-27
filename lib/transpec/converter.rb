@@ -9,7 +9,7 @@ require 'transpec/syntax'
 Transpec::Syntax.require_all
 
 module Transpec
-  class Converter < BaseRewriter
+  class Converter < BaseRewriter # rubocop:disable ClassLength
     attr_reader :configuration, :rspec_version, :runtime_data, :report
 
     alias_method :convert_file!, :rewrite_file!
@@ -155,6 +155,10 @@ module Transpec
 
     def process_its(its)
       its.convert_to_describe_subject_it! if configuration.convert_its?
+    end
+
+    def process_example(example)
+      # TODO
     end
 
     def process_current_example(current_example)

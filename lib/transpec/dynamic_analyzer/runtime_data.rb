@@ -29,6 +29,10 @@ module Transpec
         node_data[key]
       end
 
+      def run?(node)
+        !self[node].nil?
+      end
+
       def present?(node, key)
         node_data = self[node]
         return false unless node_data
