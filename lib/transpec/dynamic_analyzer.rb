@@ -41,25 +41,21 @@ module Transpec
       end
 
       def #{ANALYSIS_METHOD}(object, context, node_id, analysis_codes)
-        pair_array = analysis_codes.map do |key, (target_type, code)|
+        node_data = {}
+
+        analysis_codes.each do |key, (target_type, code)|
           target = case target_type
                    when :object  then object
                    when :context then context
                    end
 
-          eval_data = {}
-
           begin
-            eval_data[:result] = target.instance_eval(code)
-          rescue Exception => error
-            eval_data[:error] = error
+            node_data[key] = target.instance_eval(code)
+          rescue Exception
           end
-
-          [key, eval_data]
         end
 
-        object_data = Hash[pair_array]
-        TranspecAnalysis.data[node_id] = object_data
+        TranspecAnalysis.data[node_id] = node_data
 
         object
       end

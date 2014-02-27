@@ -24,7 +24,7 @@ module Transpec
           node_data = runtime_node_data(node)
 
           if node_data
-            node_data[key].result
+            node_data[key]
           else
             static_context_inspector.send(key)
           end

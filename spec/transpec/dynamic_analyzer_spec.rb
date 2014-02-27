@@ -164,7 +164,7 @@ module Transpec
         runtime_data.should be_an(DynamicAnalyzer::RuntimeData)
       end
 
-      describe 'its element' do
+      describe 'an element of the runtime data' do
         let(:ast) do
           source_buffer = Parser::Source::Buffer.new(file_path)
           source_buffer.source = source
@@ -188,7 +188,7 @@ module Transpec
         end
 
         it 'has result of requested analysis' do
-          element[:available_query_methods].result.should =~ %w(size count length)
+          element[:available_query_methods].should =~ %w(size count length)
         end
       end
     end

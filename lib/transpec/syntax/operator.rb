@@ -119,7 +119,7 @@ module Transpec
           false
         else
           node_data = runtime_node_data(arg_node)
-          node_data && node_data[:arg_is_enumerable?].result
+          node_data && node_data[:arg_is_enumerable?]
         end
       end
 

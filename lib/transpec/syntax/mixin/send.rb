@@ -35,8 +35,7 @@ module Transpec
             receiver_node, method_name, *_ = *node
             target_node = receiver_node ? receiver_node : node
             return unless (node_data = runtime_data[target_node])
-            return unless (eval_data = node_data[source_location_key(method_name)])
-            eval_data.result
+            node_data[source_location_key(method_name)]
           end
 
           def source_location_key(method_name)
