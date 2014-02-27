@@ -19,10 +19,6 @@ module Transpec
       ]
       # rubocop:enable LineLength
 
-      def self.dynamic_analysis_target_node?(node)
-        target_node?(node)
-      end
-
       def self.conversion_target_node?(node, runtime_data = nil)
         return false unless check_target_node_statically(node)
 

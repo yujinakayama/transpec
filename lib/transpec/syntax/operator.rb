@@ -19,12 +19,12 @@ module Transpec
         false
       end
 
-      def self.target_node?(node, runtime_data = nil)
+      def self.check_target_node_statically(node)
         node = node.parent_node if node == BE_NODE
+        return false unless node && node.send_type?
         receiver_node, method_name, *_ = *node
         return false if receiver_node.nil?
-        return false unless OPERATORS.include?(method_name)
-        check_target_node_dynamically(node, runtime_data)
+        OPERATORS.include?(method_name)
       end
 
       define_dynamic_analysis_request do |rewriter|
