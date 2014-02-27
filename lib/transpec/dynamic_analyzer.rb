@@ -20,7 +20,7 @@ module Transpec
       require 'pathname'
 
       module TranspecAnalysis
-        base_path = Dir.pwd
+        @base_path = Dir.pwd
 
         def self.data
           @data ||= {}
@@ -33,7 +33,7 @@ module Transpec
           # * Singleton method information won't be serialized.
           #   (With Marshal.load, `singleton can't be dumped (TypeError)` will be raised.)
           require 'json'
-          path = File.join(base_path, '#{RESULT_FILE}')
+          path = File.join(@base_path, '#{RESULT_FILE}')
           File.open(path, 'w') do |file|
             JSON.dump(data, file)
           end
