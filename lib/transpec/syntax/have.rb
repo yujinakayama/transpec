@@ -60,12 +60,12 @@ module Transpec
       end
 
       def project_requires_collection_matcher?
-        runtime_subject_data && runtime_subject_data[:project_requires_collection_matcher?]
+        runtime_subject_data(:project_requires_collection_matcher?)
       end
 
       def collection_accessor
-        if runtime_subject_data && runtime_subject_data[:collection_accessor]
-          runtime_subject_data[:collection_accessor].to_sym
+        if runtime_subject_data(:collection_accessor)
+          runtime_subject_data(:collection_accessor).to_sym
         else
           items_name
         end
@@ -73,16 +73,15 @@ module Transpec
 
       def subject_is_owner_of_collection?
         return true if items_method_has_arguments?
-        runtime_subject_data && !runtime_subject_data[:collection_accessor].nil?
+        !runtime_subject_data(:collection_accessor).nil?
       end
 
       def collection_accessor_is_private?
-        runtime_subject_data && runtime_subject_data[:collection_accessor_is_private?]
+        runtime_subject_data(:collection_accessor_is_private?)
       end
 
       def query_method
-        if runtime_subject_data && runtime_subject_data[:available_query_methods]
-          available_query_methods = runtime_subject_data[:available_query_methods]
+        if (available_query_methods = runtime_subject_data(:available_query_methods))
           (QUERY_METHOD_PRIORITIES & available_query_methods.map(&:to_sym)).first
         else
           default_query_method
@@ -116,10 +115,19 @@ module Transpec
         @source_builder ||= SourceBuilder.new(self, size_source)
       end
 
-      def runtime_subject_data
-        return @runtime_subject_data if instance_variable_defined?(:@runtime_subject_data)
-        node = explicit_subject? ? expectation.subject_node : expectation.node
-        @runtime_subject_data = runtime_node_data(node)
+      def runtime_subject_data(key = nil)
+        unless instance_variable_defined?(:@runtime_subject_data)
+          node = explicit_subject? ? expectation.subject_node : expectation.node
+          @runtime_subject_data = runtime_data[node]
+        end
+
+        return @runtime_subject_data unless key
+
+        if @runtime_subject_data
+          @runtime_subject_data[key]
+        else
+          nil
+        end
       end
 
       def register_record

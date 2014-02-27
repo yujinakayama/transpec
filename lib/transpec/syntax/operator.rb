@@ -118,8 +118,7 @@ module Transpec
         when :regexp
           false
         else
-          node_data = runtime_node_data(arg_node)
-          node_data && node_data[:arg_is_enumerable?]
+          runtime_data[arg_node, :arg_is_enumerable?]
         end
       end
 

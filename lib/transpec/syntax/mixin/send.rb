@@ -34,8 +34,7 @@ module Transpec
             return unless runtime_data
             receiver_node, method_name, *_ = *node
             target_node = receiver_node ? receiver_node : node
-            return unless (node_data = runtime_data[target_node])
-            node_data[source_location_key(method_name)]
+            runtime_data[target_node, source_location_key(method_name)]
           end
 
           def source_location_key(method_name)

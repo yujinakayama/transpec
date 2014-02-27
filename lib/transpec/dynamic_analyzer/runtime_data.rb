@@ -22,8 +22,17 @@ module Transpec
         @data = data
       end
 
-      def [](node)
-        data[node_id(node)]
+      def [](node, key = nil)
+        node_data = data[node_id(node)]
+        return nil unless node_data
+        return node_data unless key
+        node_data[key]
+      end
+
+      def present?(node, key)
+        node_data = self[node]
+        return false unless node_data
+        node_data.respond_to?(key)
       end
 
       class CompatibleOpenStruct < OpenStruct
