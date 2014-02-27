@@ -2,9 +2,11 @@
 
 # This context requires `source` to be defined with #let.
 shared_context 'parsed objects' do
+  let(:source_path) { '(string)' }
+
   let(:source_buffer) do
     require 'parser'
-    buffer = Parser::Source::Buffer.new('(string)')
+    buffer = Parser::Source::Buffer.new(source_path)
     buffer.source = source
     buffer
   end
@@ -33,13 +35,6 @@ shared_context 'dynamic analysis objects' do
   include_context 'isolated environment'
 
   let(:source_path) { 'spec/example_spec.rb' }
-
-  let(:source_buffer) do
-    require 'parser'
-    buffer = Parser::Source::Buffer.new(source_path)
-    buffer.source = source
-    buffer
-  end
 
   runtime_data_cache = {}
 
