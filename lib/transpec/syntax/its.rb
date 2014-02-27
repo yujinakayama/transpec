@@ -46,8 +46,7 @@ module Transpec
       end
 
       def project_requires_its?
-        node_data = runtime_node_data(node)
-        node_data && node_data[:project_requires_its?].result
+        runtime_data[node, :project_requires_its?]
       end
 
       private

@@ -1,7 +1,6 @@
 # coding: utf-8
 
 require 'transpec/base_rewriter'
-require 'transpec/dynamic_analyzer'
 require 'transpec/syntax'
 require 'transpec/util'
 
@@ -54,11 +53,11 @@ module Transpec
 
       def process_requests(source_rewriter)
         requests.each do |node, analysis_codes|
-          inject_analysis_method(node, analysis_codes, source_rewriter)
+          inject_analysis_code(node, analysis_codes, source_rewriter)
         end
       end
 
-      def inject_analysis_method(node, analysis_codes, source_rewriter)
+      def inject_analysis_code(node, analysis_codes, source_rewriter)
         front, rear = build_wrapper_codes(node, analysis_codes)
 
         source_range = if (block_node = block_node_taken_by_method(node))
@@ -73,15 +72,8 @@ module Transpec
       end
 
       def build_wrapper_codes(node, analysis_codes)
-        source_range = node.loc.expression
-
         front = "#{ANALYSIS_METHOD}(("
-
-        rear = format(
-          '), self, %s, __FILE__, %d, %d)',
-          hash_literal(analysis_codes), source_range.begin_pos, source_range.end_pos
-        )
-
+        rear = format('), self, %s, %s)', node_id(node).inspect, hash_literal(analysis_codes))
         [front, rear]
       end
 

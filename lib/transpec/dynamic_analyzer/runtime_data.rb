@@ -1,5 +1,6 @@
 # coding: utf-8
 
+require 'transpec/util'
 require 'json'
 require 'ostruct'
 require 'pathname'
@@ -7,6 +8,8 @@ require 'pathname'
 module Transpec
   class DynamicAnalyzer
     class RuntimeData
+      include Util
+
       attr_reader :data
 
       def self.load(string_or_io)
@@ -19,16 +22,17 @@ module Transpec
         @data = data
       end
 
-      def [](node)
-        data[node_id(node)]
+      def [](node, key = nil)
+        node_data = data[node_id(node)]
+        return nil unless node_data
+        return node_data unless key
+        node_data[key]
       end
 
-      def node_id(node)
-        source_range = node.loc.expression
-        source_buffer = source_range.source_buffer
-        absolute_path = File.expand_path(source_buffer.name)
-        relative_path = Pathname.new(absolute_path).relative_path_from(Pathname.pwd).to_s
-        [relative_path, source_range.begin_pos, source_range.end_pos].join('_')
+      def present?(node, key)
+        node_data = self[node]
+        return false unless node_data
+        node_data.respond_to?(key)
       end
 
       class CompatibleOpenStruct < OpenStruct

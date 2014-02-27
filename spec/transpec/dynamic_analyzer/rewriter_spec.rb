@@ -25,7 +25,7 @@ module Transpec
         let(:expected_source) do
           <<-END
             it 'is foo' do
-              transpec_analysis((transpec_analysis((subject), self, { :should_source_location => [:object, "method(:should).source_location"] }, __FILE__, 41, 48).should be(foo)), self, { :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] }, __FILE__, 41, 63)
+              transpec_analyze((transpec_analyze((subject), self, "(string)_41_48", { :should_source_location => [:object, "method(:should).source_location"] }).should be(foo)), self, "(string)_41_63", { :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] })
             end
           END
         end
@@ -50,7 +50,7 @@ module Transpec
           let(:expected_source) do
             <<-END
               it 'matches to foo' do
-                transpec_analysis((transpec_analysis((subject), self, { :should_source_location => [:object, "method(:should).source_location"] }, __FILE__, 53, 60).should), self, { :"=~_source_location" => [:object, "method(:=~).source_location"], :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] }, __FILE__, 53, 67) =~ transpec_analysis((<<-HEREDOC.gsub('foo', 'bar')), self, { :arg_is_enumerable? => [:object, "is_a?(Enumerable)"] }, __FILE__, 71, 100)
+                transpec_analyze((transpec_analyze((subject), self, "(string)_53_60", { :should_source_location => [:object, "method(:should).source_location"] }).should), self, "(string)_53_67", { :"=~_source_location" => [:object, "method(:=~).source_location"], :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] }) =~ transpec_analyze((<<-HEREDOC.gsub('foo', 'bar')), self, "(string)_71_100", { :arg_is_enumerable? => [:object, "is_a?(Enumerable)"] })
                 foo
                 HEREDOC
               end
@@ -76,7 +76,7 @@ module Transpec
           let(:expected_source) do
             <<-END
               it 'raises error' do
-                transpec_analysis((expect { do_something }), self, { :expect_source_location => [:context, "method(:expect).source_location"] }, __FILE__, 51, 57).to throw_symbol
+                transpec_analyze((expect { do_something }), self, "(string)_51_57", { :expect_source_location => [:context, "method(:expect).source_location"] }).to throw_symbol
               end
             END
           end
@@ -100,7 +100,7 @@ module Transpec
           let(:expected_source) do
             <<-END
               it 'raises error' do
-                transpec_analysis((expect), self, { :expect_source_location => [:context, "method(:expect).source_location"] }, __FILE__, 51, 57)
+                transpec_analyze((expect), self, "(string)_51_57", { :expect_source_location => [:context, "method(:expect).source_location"] })
               end
             END
           end
@@ -124,7 +124,7 @@ module Transpec
           let(:expected_source) do
             <<-END
               it 'raises error' do
-                transpec_analysis((expect subject), self, { :expect_source_location => [:context, "method(:expect).source_location"] }, __FILE__, 51, 65)
+                transpec_analyze((expect subject), self, "(string)_51_65", { :expect_source_location => [:context, "method(:expect).source_location"] })
               end
             END
           end

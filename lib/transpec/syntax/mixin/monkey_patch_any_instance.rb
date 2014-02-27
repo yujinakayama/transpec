@@ -32,9 +32,7 @@ module Transpec
 
         def any_instance?
           return true unless any_instance_target_node.nil?
-          node_data = runtime_node_data(subject_node)
-          return false unless node_data && node_data[:any_instance_target_class_name]
-          !node_data[:any_instance_target_class_name].result.nil?
+          runtime_data.present?(subject_node, :any_instance_target_class_name)
         end
 
         private
@@ -45,7 +43,7 @@ module Transpec
           if any_instance_target_node
             any_instance_target_node.loc.expression.source
           else
-            runtime_node_data(subject_node)[:any_instance_target_class_name].result
+            runtime_data[subject_node, :any_instance_target_class_name]
           end
         end
 

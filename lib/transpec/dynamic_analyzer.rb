@@ -13,27 +13,17 @@ require 'English'
 
 module Transpec
   class DynamicAnalyzer
-    ANALYSIS_METHOD = 'transpec_analysis'
+    ANALYSIS_METHOD = 'transpec_analyze'
     HELPER_FILE = 'transpec_analysis_helper.rb'
     RESULT_FILE = 'transpec_analysis_result.json'
     HELPER_SOURCE = <<-END
       require 'pathname'
 
       module TranspecAnalysis
-        @base_path = Dir.pwd
+        base_path = Dir.pwd
 
         def self.data
           @data ||= {}
-        end
-
-        def self.node_id(filename, begin_pos, end_pos)
-          absolute_path = File.expand_path(filename)
-          relative_path = Pathname.new(absolute_path).relative_path_from(base_pathname).to_s
-          [relative_path, begin_pos, end_pos].join('_')
-        end
-
-        def self.base_pathname
-          @base_pathname ||= Pathname.new(@base_path)
         end
 
         at_exit do
@@ -43,35 +33,29 @@ module Transpec
           # * Singleton method information won't be serialized.
           #   (With Marshal.load, `singleton can't be dumped (TypeError)` will be raised.)
           require 'json'
-          path = File.join(@base_path, '#{RESULT_FILE}')
+          path = File.join(base_path, '#{RESULT_FILE}')
           File.open(path, 'w') do |file|
             JSON.dump(data, file)
           end
         end
       end
 
-      def #{ANALYSIS_METHOD}(object, context, analysis_codes, filename, begin_pos, end_pos)
-        pair_array = analysis_codes.map do |key, (target_type, code)|
+      def #{ANALYSIS_METHOD}(object, context, node_id, analysis_codes)
+        node_data = {}
+
+        analysis_codes.each do |key, (target_type, code)|
           target = case target_type
                    when :object  then object
                    when :context then context
                    end
 
-          eval_data = {}
-
           begin
-            eval_data[:result] = target.instance_eval(code)
-          rescue Exception => error
-            eval_data[:error] = error
+            node_data[key] = target.instance_eval(code)
+          rescue Exception
           end
-
-          [key, eval_data]
         end
 
-        object_data = Hash[pair_array]
-
-        id = TranspecAnalysis.node_id(filename, begin_pos, end_pos)
-        TranspecAnalysis.data[id] = object_data
+        TranspecAnalysis.data[node_id] = node_data
 
         object
       end

@@ -1,9 +1,10 @@
 # coding: utf-8
 
 require 'transpec/conversion_error'
-require 'transpec/static_context_inspector'
+require 'transpec/dynamic_analyzer/runtime_data'
 require 'transpec/record'
 require 'transpec/report'
+require 'transpec/static_context_inspector'
 require 'active_support/concern'
 
 module Transpec
@@ -114,7 +115,7 @@ module Transpec
     def initialize(node, source_rewriter = nil, runtime_data = nil, report = nil)
       @node = node
       @source_rewriter = source_rewriter
-      @runtime_data = runtime_data
+      @runtime_data = runtime_data || DynamicAnalyzer::RuntimeData.new
       @report = report || Report.new
     end
 
@@ -128,12 +129,6 @@ module Transpec
 
     def expression_range
       node.loc.expression
-    end
-
-    private
-
-    def runtime_node_data(node)
-      runtime_data && runtime_data[node]
     end
   end
 end

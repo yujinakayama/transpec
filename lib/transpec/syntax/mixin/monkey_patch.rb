@@ -21,10 +21,8 @@ module Transpec
         end
 
         def check_syntax_availability(key)
-          node_data = runtime_node_data(node)
-
-          if node_data
-            node_data[key].result
+          if runtime_data.present?(node, key)
+            runtime_data[node, key]
           else
             static_context_inspector.send(key)
           end
