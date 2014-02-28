@@ -12,10 +12,9 @@ module Transpec
       def self.conversion_target_node?(node, runtime_data = nil)
         return false unless target_node?(node, runtime_data)
 
-        # Check whether the context is example group of example
-        # to differenciate RSpec::Core::ExampleGroup.pending (relative of #it)
-        # and RSpec::Core::ExampleGroup#pending (mark the example pending
-        # in #it block).
+        # Check whether the context is example group to differenciate
+        # RSpec::Core::ExampleGroup.pending (a relative of #it) and
+        # RSpec::Core::ExampleGroup#pending (marks the example as pending in #it block).
         if runtime_data && runtime_data.run?(node)
           # If we have runtime data, check with it.
           runtime_data[node, :example_group_context?]
