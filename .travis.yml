@@ -5,4 +5,4 @@ rvm:
   - 2.1.1
   - jruby
 before_install: gem update --remote bundler
-script: bundle exec rake travis
+script: bundle exec rake ci

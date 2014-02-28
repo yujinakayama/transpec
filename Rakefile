@@ -11,4 +11,4 @@ end
 
 task default: %w(spec style readme)
 
-task travis: %w(spec style readme:check test:all)
+task ci: %w(spec style readme:check test:all)
