@@ -1046,9 +1046,9 @@ module Transpec
         end
       end
 
-      context 'when RSpecVersion#migration_term_of_any_instance_implementation_block? returns true' do
+      context 'when RSpecVersion#rspec_2_99? returns true' do
         before do
-          rspec_version.stub(:migration_term_of_any_instance_implementation_block?).and_return(true)
+          rspec_version.stub(:rspec_2_99?).and_return(true)
         end
 
         context 'and Configuration#convert_deprecated_method? returns true' do
@@ -1083,9 +1083,9 @@ module Transpec
         end
       end
 
-      context 'when RSpecVersion#migration_term_of_any_instance_implementation_block? returns false' do
+      context 'when RSpecVersion#rspec_2_99? returns false' do
         before do
-          rspec_version.stub(:migration_term_of_any_instance_implementation_block?).and_return(false)
+          rspec_version.stub(:rspec_2_99?).and_return(false)
         end
 
         it 'does not invoke RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks=' do
@@ -1120,9 +1120,9 @@ module Transpec
     describe '#process_any_instance_block' do
       let(:messaging_host) { double('messaging host').as_null_object }
 
-      context 'when RSpecVersion#migration_term_of_any_instance_implementation_block? returns true' do
+      context 'when RSpecVersion#rspec_2_99? returns true' do
         before do
-          rspec_version.stub(:migration_term_of_any_instance_implementation_block?).and_return(true)
+          rspec_version.stub(:rspec_2_99?).and_return(true)
         end
 
         context 'and Configuration#convert_deprecated_method? returns true' do
@@ -1161,9 +1161,9 @@ module Transpec
         end
       end
 
-      context 'when RSpecVersion#migration_term_of_any_instance_implementation_block? returns false' do
+      context 'when RSpecVersion#rspec_2_99? returns false' do
         before do
-          rspec_version.stub(:migration_term_of_any_instance_implementation_block?).and_return(false)
+          rspec_version.stub(:rspec_2_99?).and_return(false)
         end
 
         it 'does nothing' do

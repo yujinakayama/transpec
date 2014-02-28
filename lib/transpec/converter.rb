@@ -184,7 +184,7 @@ module Transpec
         rspec_configure.mocks.syntaxes = :expect
       end
 
-      if rspec_version.migration_term_of_any_instance_implementation_block? &&
+      if rspec_version.rspec_2_99? &&
            configuration.convert_deprecated_method?
         should_yield = configuration.add_receiver_arg_to_any_instance_implementation_block?
         rspec_configure.mocks.yield_receiver_to_any_instance_implementation_blocks = should_yield
@@ -209,7 +209,7 @@ module Transpec
 
     def process_any_instance_block(messaging_host)
       return unless messaging_host
-      return unless rspec_version.migration_term_of_any_instance_implementation_block?
+      return unless rspec_version.rspec_2_99?
       return unless configuration.convert_deprecated_method?
       return unless configuration.add_receiver_arg_to_any_instance_implementation_block?
       messaging_host.add_receiver_arg_to_any_instance_implementation_block!

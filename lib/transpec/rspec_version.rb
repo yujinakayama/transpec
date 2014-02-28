@@ -49,12 +49,11 @@ module Transpec
     define_feature :receive_message_chain,       '3.0.0.beta2'
     define_feature :non_should_matcher_protocol, '3.0.0.beta2'
 
-    ANY_INSTANCE_IMPLEMENTATION_BLOCK_MIGRATION_BEGIN = new('2.99.0.beta1')
-    ANY_INSTANCE_IMPLEMENTATION_BLOCK_MIGRATION_EXCLUSIVE_END = new('3.0.0.beta1')
+    RSPEC_2_99 = new('2.99.0.beta1')
+    RSPEC_3_0  = new('3.0.0.beta1')
 
-    def migration_term_of_any_instance_implementation_block?
-      self >= ANY_INSTANCE_IMPLEMENTATION_BLOCK_MIGRATION_BEGIN &&
-        self < ANY_INSTANCE_IMPLEMENTATION_BLOCK_MIGRATION_EXCLUSIVE_END
+    def rspec_2_99?
+      RSPEC_2_99 <= self && self < RSPEC_3_0
     end
   end
 end
