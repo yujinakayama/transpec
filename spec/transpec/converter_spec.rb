@@ -915,6 +915,92 @@ module Transpec
       end
     end
 
+    describe '#process_example' do
+      let(:example_object) { double('example_object').as_null_object }
+
+      shared_examples 'does nothing' do
+        it 'does nothing' do
+          example_object.should_not_receive(:convert_pending_to_skip!)
+          converter.process_example(example_object)
+        end
+      end
+
+      context 'when RSpecVersion#rspec_2_99? returns true' do
+        before { rspec_version.stub(:rspec_2_99?).and_return(true) }
+
+        context 'and Configuration#convert_deprecated_method? returns true' do
+          before { configuration.convert_deprecated_method = true }
+
+          it 'invokes Example#convert_pending_to_skip!' do
+            example_object.should_receive(:convert_pending_to_skip!)
+            converter.process_example(example_object)
+          end
+        end
+
+        context 'and Configuration#convert_deprecated_method? returns false' do
+          before { configuration.convert_deprecated_method = false }
+          include_examples 'does nothing'
+        end
+      end
+
+      context 'when RSpecVersion#rspec_2_99? returns false' do
+        before { rspec_version.stub(:rspec_2_99?).and_return(false) }
+
+        context 'and Configuration#convert_deprecated_method? returns true' do
+          before { configuration.convert_deprecated_method = true }
+          include_examples 'does nothing'
+        end
+
+        context 'and Configuration#convert_deprecated_method? returns false' do
+          before { configuration.convert_deprecated_method = false }
+          include_examples 'does nothing'
+        end
+      end
+    end
+
+    describe '#process_pending' do
+      let(:pending_object) { double('pending_object').as_null_object }
+
+      shared_examples 'does nothing' do
+        it 'does nothing' do
+          pending_object.should_not_receive(:convert_deprecated_syntax!)
+          converter.process_pending(pending_object)
+        end
+      end
+
+      context 'when RSpecVersion#rspec_2_99? returns true' do
+        before { rspec_version.stub(:rspec_2_99?).and_return(true) }
+
+        context 'and Configuration#convert_deprecated_method? returns true' do
+          before { configuration.convert_deprecated_method = true }
+
+          it 'invokes Example#convert_deprecated_syntax!' do
+            pending_object.should_receive(:convert_deprecated_syntax!)
+            converter.process_pending(pending_object)
+          end
+        end
+
+        context 'and Configuration#convert_deprecated_method? returns false' do
+          before { configuration.convert_deprecated_method = false }
+          include_examples 'does nothing'
+        end
+      end
+
+      context 'when RSpecVersion#rspec_2_99? returns false' do
+        before { rspec_version.stub(:rspec_2_99?).and_return(false) }
+
+        context 'and Configuration#convert_deprecated_method? returns true' do
+          before { configuration.convert_deprecated_method = true }
+          include_examples 'does nothing'
+        end
+
+        context 'and Configuration#convert_deprecated_method? returns false' do
+          before { configuration.convert_deprecated_method = false }
+          include_examples 'does nothing'
+        end
+      end
+    end
+
     describe '#process_current_example' do
       let(:current_example_object) { double('current_example_object').as_null_object }
 

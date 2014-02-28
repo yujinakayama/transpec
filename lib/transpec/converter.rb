@@ -158,11 +158,13 @@ module Transpec
     end
 
     def process_example(example)
-      # TODO
+      return if !rspec_version.rspec_2_99? || !configuration.convert_deprecated_method?
+      example.convert_pending_to_skip!
     end
 
     def process_pending(pending)
-      # TODO
+      return if !rspec_version.rspec_2_99? || !configuration.convert_deprecated_method?
+      pending.convert_deprecated_syntax!
     end
 
     def process_current_example(current_example)

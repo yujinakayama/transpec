@@ -39,7 +39,10 @@ module Transpec
       ]
     end
 
-    [:oneliner_is_expected_available?].each do |method|
+    [
+      :oneliner_is_expected_available?,
+      :skip_available?
+    ].each do |method|
       include_examples 'version comparisons', method, [
         ['2.14.0',       false],
         ['2.99.0.beta1', false],
