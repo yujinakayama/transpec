@@ -25,6 +25,10 @@ class TranspecDemo < TranspecTest
     git_branch_delete(DEMO_BRANCH) if git_local_branch_exist?(DEMO_BRANCH)
   end
 
+  def shallow_clone?
+    false
+  end
+
   def run_demo(transpec_args = [])
     in_project_dir do
       with_clean_bundler_env do

@@ -114,12 +114,19 @@ class TranspecTest
   def git_clone
     Dir.chdir(self.class.base_dir) do
       # Disabling checkout here to suppress "detached HEAD" warning.
-      sh "git clone --no-checkout --depth 1 --branch #{ref} #{url}"
+      command = %w(git clone --no-checkout)
+      command.concat(%w(--depth 1)) if shallow_clone?
+      command.concat(['--branch', ref, url])
+      sh command.join(' ')
     end
 
     in_project_dir do
       sh "git checkout --quiet #{ref}"
     end
+  end
+
+  def shallow_clone?
+    true
   end
 
   def bundle_install
