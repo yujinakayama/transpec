@@ -65,8 +65,9 @@ module Transpec
           ['oneliner',       :convert_oneliner?],
           ['should_receive', :convert_should_receive?],
           ['stub',           :convert_stub?],
-          ['have_items',     :convert_have_items],
-          ['its',            :convert_its],
+          ['have_items',     :convert_have_items?],
+          ['its',            :convert_its?],
+          ['pending',        :convert_pending?],
           ['deprecated',     :convert_deprecated_method?]
         ].each do |cli_type, config_attr|
           context "when #{cli_type.inspect} is specified" do

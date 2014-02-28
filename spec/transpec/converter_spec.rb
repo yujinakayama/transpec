@@ -928,8 +928,8 @@ module Transpec
       context 'when RSpecVersion#rspec_2_99? returns true' do
         before { rspec_version.stub(:rspec_2_99?).and_return(true) }
 
-        context 'and Configuration#convert_deprecated_method? returns true' do
-          before { configuration.convert_deprecated_method = true }
+        context 'and Configuration#convert_pending? returns true' do
+          before { configuration.convert_pending = true }
 
           it 'invokes Example#convert_pending_to_skip!' do
             example_object.should_receive(:convert_pending_to_skip!)
@@ -937,8 +937,8 @@ module Transpec
           end
         end
 
-        context 'and Configuration#convert_deprecated_method? returns false' do
-          before { configuration.convert_deprecated_method = false }
+        context 'and Configuration#convert_pending? returns false' do
+          before { configuration.convert_pending = false }
           include_examples 'does nothing'
         end
       end
@@ -946,13 +946,13 @@ module Transpec
       context 'when RSpecVersion#rspec_2_99? returns false' do
         before { rspec_version.stub(:rspec_2_99?).and_return(false) }
 
-        context 'and Configuration#convert_deprecated_method? returns true' do
-          before { configuration.convert_deprecated_method = true }
+        context 'and Configuration#convert_pending? returns true' do
+          before { configuration.convert_pending = true }
           include_examples 'does nothing'
         end
 
-        context 'and Configuration#convert_deprecated_method? returns false' do
-          before { configuration.convert_deprecated_method = false }
+        context 'and Configuration#convert_pending? returns false' do
+          before { configuration.convert_pending = false }
           include_examples 'does nothing'
         end
       end
@@ -971,8 +971,8 @@ module Transpec
       context 'when RSpecVersion#rspec_2_99? returns true' do
         before { rspec_version.stub(:rspec_2_99?).and_return(true) }
 
-        context 'and Configuration#convert_deprecated_method? returns true' do
-          before { configuration.convert_deprecated_method = true }
+        context 'and Configuration#convert_pending? returns true' do
+          before { configuration.convert_pending = true }
 
           it 'invokes Example#convert_deprecated_syntax!' do
             pending_object.should_receive(:convert_deprecated_syntax!)
@@ -980,8 +980,8 @@ module Transpec
           end
         end
 
-        context 'and Configuration#convert_deprecated_method? returns false' do
-          before { configuration.convert_deprecated_method = false }
+        context 'and Configuration#convert_pending? returns false' do
+          before { configuration.convert_pending = false }
           include_examples 'does nothing'
         end
       end
@@ -989,13 +989,13 @@ module Transpec
       context 'when RSpecVersion#rspec_2_99? returns false' do
         before { rspec_version.stub(:rspec_2_99?).and_return(false) }
 
-        context 'and Configuration#convert_deprecated_method? returns true' do
-          before { configuration.convert_deprecated_method = true }
+        context 'and Configuration#convert_pending? returns true' do
+          before { configuration.convert_pending = true }
           include_examples 'does nothing'
         end
 
-        context 'and Configuration#convert_deprecated_method? returns false' do
-          before { configuration.convert_deprecated_method = false }
+        context 'and Configuration#convert_pending? returns false' do
+          before { configuration.convert_pending = false }
           include_examples 'does nothing'
         end
       end

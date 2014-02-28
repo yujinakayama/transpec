@@ -238,6 +238,7 @@ Type             | Target Syntax                  | Converted Syntax
 `stub`           | `obj.stub(:message)`           | `allow(obj).to receive(:message)`
 `have_items`     | `expect(obj).to have(n).items` | `expect(obj.size).to eq(n)`
 `its`            | `its(:attr) { }`               | `describe '#attr' { subject { }; it { } }`
+`pending`        | `pending 'is an example' { }`  | `skip 'is an example' { }`
 `deprecated`     | All other deprecated syntaxes  | Latest syntaxes
 
 See [Supported Conversions](#supported-conversions) for more details.
@@ -1089,7 +1090,7 @@ Here's an excerpt from [the warning](https://github.com/rspec/rspec-core/blob/v2
 > want the new RSpec 3 behavior, you can safely ignore this warning and continue
 > to upgrade to RSpec 3 without addressing it.
 
-* This conversion can be disabled by: `--keep deprecated`
+* This conversion can be disabled by: `--keep pending`
 * Deprecation: not deprecated but the behavior changes in RSpec 3.0
 * See also: [Feature request: shortcut for pending-block within it · rspec/rspec-core](https://github.com/rspec/rspec-core/issues/1208)
 
