@@ -55,9 +55,11 @@ module Transpec
         arg_node.hash_type?
       end
 
+      def unstub?
+        [:unstub, :unstub!].include?(method_name)
+      end
+
       def allowize!(rspec_version)
-        # There's no way of unstubbing in #allow syntax.
-        return unless [:stub, :stub!, :stub_chain].include?(method_name)
         return if method_name == :stub_chain && !rspec_version.receive_message_chain_available?
 
         unless allow_to_receive_available?
@@ -133,6 +135,7 @@ module Transpec
         expression << message_source(message_node)
         expression << (keep_form_around_arg ? range_after_arg.source : ')')
         expression << ".and_return(#{value_node.loc.expression.source})" if value_node
+        expression << '.and_call_original' if unstub?
         expression
       end
 
@@ -202,6 +205,7 @@ module Transpec
           when :allow_to_receive
             syntax << 'receive(:message)'
             syntax << '.and_return(value)' if @method_stub.hash_arg?
+            syntax << '.and_call_original' if @method_stub.unstub?
           when :allow_to_receive_messages
             syntax << 'receive_messages(:message => value)'
           when :allow_to_receive_message_chain

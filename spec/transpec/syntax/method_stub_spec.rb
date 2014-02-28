@@ -684,12 +684,23 @@ module Transpec
               END
             end
 
-            it 'does nothing' do
-              rewritten_source.should == source
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  it 'does not respond to #foo' do
+                    allow(subject).to receive(:foo).and_call_original
+                  end
+                end
+              END
             end
 
-            it 'reports nothing' do
-              method_stub_object.report.records.should be_empty
+            it 'converts to `allow(subject).to receive(:method).and_call_original`' do
+              rewritten_source.should == expected_source
+            end
+
+            it "adds record `obj.#{method}(:message)` -> `allow(obj).to receive(:message).and_call_original`" do
+              record.original_syntax.should  == "obj.#{method}(:message)"
+              record.converted_syntax.should == 'allow(obj).to receive(:message).and_call_original'
             end
           end
         end
@@ -848,12 +859,24 @@ module Transpec
               END
             end
 
-            it 'does nothing' do
-              rewritten_source.should == source
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  it 'does not respond to #foo' do
+                    allow_any_instance_of(Klass).to receive(:foo).and_call_original
+                  end
+                end
+              END
             end
 
-            it 'reports nothing' do
-              method_stub_object.report.records.should be_empty
+            it 'converts to `allow(subject).to receive(:method).and_call_original`' do
+              rewritten_source.should == expected_source
+            end
+
+            it "adds record `Klass.any_instance.#{method}(:message)` " \
+               '-> `allow_any_instance_of(Klass).to receive(:message).and_call_original`' do
+              record.original_syntax.should  == "Klass.any_instance.#{method}(:message)"
+              record.converted_syntax.should == 'allow_any_instance_of(Klass).to receive(:message).and_call_original'
             end
           end
         end

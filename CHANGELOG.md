@@ -2,6 +2,8 @@
 
 ## Development
 
+* Support conversion of `unstub` ([#49](https://github.com/yujinakayama/transpec/issues/49))
+
 ## v1.10.4
 
 * Avoid confusing methods defined with `#let` or `#subject` by user with RSpec built-in methods ([#55](https://github.com/yujinakayama/transpec/issues/55))
