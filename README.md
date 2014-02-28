@@ -802,6 +802,9 @@ obj.stub!(:message)
 obj.stub_chain(:foo, :bar, :baz)
 
 Klass.any_instance.stub(:message)
+
+obj.unstub(:message)
+obj.unstub!(:message)
 ```
 
 Will be converted to:
@@ -814,9 +817,9 @@ allow(obj).to receive(:message)
 allow(obj).to receive_message_chain(:foo, :bar, :baz)
 
 allow_any_instance_of(Klass).to receive(:message)
-```
 
-There's no replacement for `unstub` in the `expect` syntax. See [this discussion](https://github.com/rspec/rspec-mocks/issues/153#issuecomment-12208638) for more details.
+allow(obj).to receive(:message).and_call_original
+```
 
 * This conversion can be disabled by: `--keep stub`
 * Deprecation: deprecated since RSpec 3.0
@@ -875,7 +878,7 @@ Will be converted to:
 
 ```ruby
 obj.stub(:message) # with `--keep stub`
-obj.unstub(:message)
+obj.unstub(:message) # with `--keep stub`
 ```
 
 * This conversion can be disabled by: `--keep deprecated`
