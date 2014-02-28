@@ -9,7 +9,7 @@ require 'transpec/syntax'
 Transpec::Syntax.require_all
 
 module Transpec
-  class Converter < BaseRewriter
+  class Converter < BaseRewriter # rubocop:disable ClassLength
     attr_reader :configuration, :rspec_version, :runtime_data, :report
 
     alias_method :convert_file!, :rewrite_file!
@@ -158,8 +158,18 @@ module Transpec
     end
 
     def process_example(example)
+      return if !rspec_version.rspec_2_99? || !configuration.convert_pending?
+      example.convert_pending_to_skip!
+    end
+
+    def process_pending(pending)
+      return if !rspec_version.rspec_2_99? || !configuration.convert_pending?
+      pending.convert_deprecated_syntax!
+    end
+
+    def process_current_example(current_example)
       return unless rspec_version.yielded_example_available?
-      example.convert! if configuration.convert_deprecated_method?
+      current_example.convert! if configuration.convert_deprecated_method?
     end
 
     def process_matcher_definition(matcher_definition)
@@ -176,7 +186,7 @@ module Transpec
         rspec_configure.mocks.syntaxes = :expect
       end
 
-      if rspec_version.migration_term_of_any_instance_implementation_block? &&
+      if rspec_version.rspec_2_99? &&
            configuration.convert_deprecated_method?
         should_yield = configuration.add_receiver_arg_to_any_instance_implementation_block?
         rspec_configure.mocks.yield_receiver_to_any_instance_implementation_blocks = should_yield
@@ -201,7 +211,7 @@ module Transpec
 
     def process_any_instance_block(messaging_host)
       return unless messaging_host
-      return unless rspec_version.migration_term_of_any_instance_implementation_block?
+      return unless rspec_version.rspec_2_99?
       return unless configuration.convert_deprecated_method?
       return unless configuration.add_receiver_arg_to_any_instance_implementation_block?
       messaging_host.add_receiver_arg_to_any_instance_implementation_block!

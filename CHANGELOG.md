@@ -2,6 +2,7 @@
 
 ## Development
 
+* Support conversion of pending examples
 * Display cautions for less-accurate conversions caused by a lack of runtime information ([#42](https://github.com/yujinakayama/transpec/issues/42))
 
 ## v1.9.3

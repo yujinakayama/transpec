@@ -238,6 +238,7 @@ Type             | Target Syntax                  | Converted Syntax
 `stub`           | `obj.stub(:message)`           | `allow(obj).to receive(:message)`
 `have_items`     | `expect(obj).to have(n).items` | `expect(obj.size).to eq(n)`
 `its`            | `its(:attr) { }`               | `describe '#attr' { subject { }; it { } }`
+`pending`        | `pending 'is an example' { }`  | `skip 'is an example' { }`
 `deprecated`     | All other deprecated syntaxes  | Latest syntaxes
 
 See [Supported Conversions](#supported-conversions) for more details.
@@ -433,6 +434,7 @@ The one-liner (implicit receiver) `should`:
 * [Useless `and_return`](#useless-and_return)
 * [`any_instance` implementation blocks](#any_instance-implementation-blocks)
 * [Deprecated test double aliases](#deprecated-test-double-aliases)
+* [Pending examples](#pending-examples)
 * [Current example object](#current-example-object)
 * [Custom matcher DSL](#custom-matcher-dsl)
 
@@ -1022,6 +1024,75 @@ double('something')
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 2.14, removed in RSpec 3.0
 * See also: [myronmarston / why_double.md - Gist](https://gist.github.com/myronmarston/6576665)
+
+### Pending examples
+
+**This conversion is available only if your project's RSpec is `>= 2.99.0.beta1` and `< 3.0.0.beta1`.**
+
+Targets:
+
+```ruby
+describe 'example' do
+  it 'is skipped', :pending => true do
+    do_something_possibly_fail # This won't be run
+  end
+
+  pending 'is skipped' do
+    do_something_possibly_fail # This won't be run
+  end
+
+  it 'is skipped' do
+    pending
+    do_something_possibly_fail # This won't be run
+  end
+
+  it 'is run and expected to fail' do
+    pending do
+      do_something_surely_fail # This will be run and expected to fail
+    end
+  end
+end
+```
+
+Will be converted to:
+
+```ruby
+describe 'example' do
+  it 'is skipped', :skip => true do
+    do_something_possibly_fail # This won't be run
+  end
+
+  skip 'is skipped' do
+    do_something_possibly_fail # This won't be run
+  end
+
+  it 'is skipped' do
+    skip
+    do_something_possibly_fail # This won't be run
+  end
+
+  it 'is run and expected to fail' do
+    pending # #pending with block is no longer supported
+    do_something_surely_fail # This will be run and expected to fail
+  end
+end
+```
+
+Here's an excerpt from [the warning](https://github.com/rspec/rspec-core/blob/v2.99.0.beta2/lib/rspec/core/example_group.rb#L67-L75) for pending examples in RSpec 2.99:
+
+> The semantics of `RSpec::Core::ExampleGroup#pending` are changing in RSpec 3.
+> In RSpec 2.x, it caused the example to be skipped. In RSpec 3, the example will
+> still be run but is expected to fail, and will be marked as a failure (rather
+> than as pending) if the example passes, just like how `pending` with a block
+> from within an example already works.
+>
+> To keep the same skip semantics, change `pending` to `skip`.  Otherwise, if you
+> want the new RSpec 3 behavior, you can safely ignore this warning and continue
+> to upgrade to RSpec 3 without addressing it.
+
+* This conversion can be disabled by: `--keep pending`
+* Deprecation: not deprecated but the behavior changes in RSpec 3.0
+* See also: [Feature request: shortcut for pending-block within it · rspec/rspec-core](https://github.com/rspec/rspec-core/issues/1208)
 
 ### Current example object
 

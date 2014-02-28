@@ -48,10 +48,6 @@ module Transpec
       end
     end
 
-    def inside_of_example_group?
-      scopes.include?(:example_group)
-    end
-
     def non_monkey_patch_expectation_available?
       return @expectation_available if instance_variable_defined?(:@expectation_available)
       @expectation_available = match_scopes(NON_MONKEY_PATCH_EXPECTATION_AVAILABLE_CONTEXT)

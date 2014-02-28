@@ -2,118 +2,164 @@
 
 require 'spec_helper'
 require 'transpec/syntax/example'
+require 'ast'
 
 module Transpec
   class Syntax
     describe Example do
+      include ::AST::Sexp
       include_context 'parsed objects'
       include_context 'syntax object', Example, :example_object
 
       let(:record) { example_object.report.records.last }
 
-      describe '#convert!' do
+      describe '.conversion_target_node?' do
+        subject { Example.conversion_target_node?(pending_node, runtime_data) }
+
+        let(:pending_node) do
+          ast.each_descendent_node do |node|
+            next unless node.send_type?
+            method_name = node.children[1]
+            return node if method_name == :pending
+          end
+          fail 'No #pending node is found!'
+        end
+
+        context 'when #pending example node is passed' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                pending 'will be skipped' do
+                end
+              end
+            END
+          end
+
+          context 'without runtime information' do
+            it { should be_true }
+          end
+
+          context 'with runtime information' do
+            include_context 'dynamic analysis objects'
+            it { should be_true }
+          end
+        end
+
+        context 'when #pending specification node inside of an example is passed' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'will be skipped' do
+                  pending
+                end
+              end
+            END
+          end
+
+          context 'without runtime information' do
+            it { should be_false }
+          end
+
+          context 'with runtime information' do
+            include_context 'dynamic analysis objects'
+            it { should be_false }
+          end
+        end
+      end
+
+      describe '#metadata_key_nodes' do
+        subject { example_object.metadata_key_nodes }
+
+        context 'when it is `it { }` form' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it { do_something }
+              end
+            END
+          end
+
+          it 'returns empty array' do
+            should be_empty
+          end
+        end
+
+        context "when it is `it 'description' { }` form" do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'is an example' do
+                  do_something
+                end
+              end
+            END
+          end
+
+          it 'returns empty array' do
+            should be_empty
+          end
+        end
+
+        context "when it is `it 'description', :foo { }` form" do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'is an example', :foo do
+                  do_something
+                end
+              end
+            END
+          end
+
+          it 'returns [(sym :foo)]' do
+            should == [s(:sym, :foo)]
+          end
+        end
+
+        context "when it is `it 'description', foo: true { }` form" do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'is an example', foo: true do
+                  do_something
+                end
+              end
+            END
+          end
+
+          it 'returns [(sym :foo)]' do
+            should == [s(:sym, :foo)]
+          end
+        end
+
+        context "when it is `it 'description', :foo, :bar, baz: true { }` form" do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'is an example', :foo, :bar, baz: true do
+                  do_something
+                end
+              end
+            END
+          end
+
+          it 'returns [s(:sym, :foo), s(:sym, :bar), s(:sym, :baz)]' do
+            should == [s(:sym, :foo), s(:sym, :bar), s(:sym, :baz)]
+          end
+        end
+      end
+
+      describe '#convert_pending_to_skip!' do
         before do
-          example_object.convert! unless example.metadata[:no_auto_convert]
+          example_object.convert_pending_to_skip!
         end
 
-        (RSpecDSL::EXAMPLE_METHODS + RSpecDSL::HOOK_METHODS).each do |method|
-          context "when it is `#{method} do example end` form" do
-            let(:source) do
-              <<-END
-                describe 'example' do
-                  #{method} do
-                    do_something if example.metadata[:foo]
-                  end
-                end
-              END
-            end
-
-            let(:expected_source) do
-              <<-END
-                describe 'example' do
-                  #{method} do |example|
-                    do_something if example.metadata[:foo]
-                  end
-                end
-              END
-            end
-
-            it "converts into `#{method} do |example| example end` form" do
-              rewritten_source.should == expected_source
-            end
-
-            it "adds record `#{method} { example }` -> `#{method} { |example| example }`" do
-              record.original_syntax.should  == "#{method} { example }"
-              record.converted_syntax.should == "#{method} { |example| example }"
-            end
-          end
-        end
-
-        RSpecDSL::HELPER_METHODS.each do |method|
-          context "when it is `#{method}(:name) do example end` form" do
-            let(:source) do
-              <<-END
-                describe 'example' do
-                  #{method}(:name) do
-                    do_something if example.metadata[:foo]
-                  end
-                end
-              END
-            end
-
-            let(:expected_source) do
-              <<-END
-                describe 'example' do
-                  #{method}(:name) do |example|
-                    do_something if example.metadata[:foo]
-                  end
-                end
-              END
-            end
-
-            it "converts into `#{method}(:name) do |example| example end` form" do
-              rewritten_source.should == expected_source
-            end
-
-            it "adds record `#{method}(:name) { example }` -> `#{method}(:name) { |example| example }`" do
-              record.original_syntax.should  == "#{method}(:name) { example }"
-              record.converted_syntax.should == "#{method}(:name) { |example| example }"
-            end
-          end
-        end
-
-        context 'when it is `after { example }` form' do
+        context "when it is `pending 'is an example' { }` form" do
           let(:source) do
             <<-END
               describe 'example' do
-                after {
-                  do_something if example.metadata[:foo]
-                }
-              end
-            END
-          end
-
-          let(:expected_source) do
-            <<-END
-              describe 'example' do
-                after { |example|
-                  do_something if example.metadata[:foo]
-                }
-              end
-            END
-          end
-
-          it 'converts into `after { |example| example }` form' do
-            rewritten_source.should == expected_source
-          end
-        end
-
-        context 'when it is `after do running_example end` form' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                after do
-                  do_something if running_example.metadata[:foo]
+                pending 'will be skipped' do
+                  do_something
                 end
               end
             END
@@ -122,86 +168,28 @@ module Transpec
           let(:expected_source) do
             <<-END
               describe 'example' do
-                after do |example|
-                  do_something if example.metadata[:foo]
+                skip 'will be skipped' do
+                  do_something
                 end
               end
             END
           end
 
-          it 'converts into `after do |example| example end` form' do
+          it "converts into `skip 'is an example' { }` form" do
             rewritten_source.should == expected_source
+          end
+
+          it "adds record `pending 'is an example' { }` -> `skip 'is an example' { }`" do
+            record.original_syntax.should  == "pending 'is an example' { }"
+            record.converted_syntax.should == "skip 'is an example' { }"
           end
         end
 
-        context 'when the wrapper block contains multiple invocation of `example`', :no_auto_convert do
+        context "when it is `it 'is an example' { }` form" do
           let(:source) do
             <<-END
               describe 'example' do
-                after do
-                  do_something if example.metadata[:foo]
-                  puts example.description
-                end
-              end
-            END
-          end
-
-          let(:expected_source) do
-            <<-END
-              describe 'example' do
-                after do |example|
-                  do_something if example.metadata[:foo]
-                  puts example.description
-                end
-              end
-            END
-          end
-
-          let(:example_objects) do
-            ast.each_node.reduce([]) do |objects, node|
-              objects << Example.new(node, source_rewriter, runtime_data) if Example.conversion_target_node?(node)
-              objects
-            end
-          end
-
-          it 'adds only a block argument' do
-            example_objects.size.should eq(2)
-            example_objects.each(&:convert!)
-            rewritten_source.should == expected_source
-          end
-        end
-
-        context 'when it is `around do |ex| example end` form' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                around do |ex|
-                  do_something if example.metadata[:foo]
-                end
-              end
-            END
-          end
-
-          let(:expected_source) do
-            <<-END
-              describe 'example' do
-                around do |ex|
-                  do_something if ex.metadata[:foo]
-                end
-              end
-            END
-          end
-
-          it 'converts into `around do |ex| ex end` form' do
-            rewritten_source.should == expected_source
-          end
-        end
-
-        context "when it is `example 'it does something' do do_something end` form", :no_auto_convert do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                example 'it does something' do
+                it 'is normal example' do
                   do_something
                 end
               end
@@ -213,20 +201,12 @@ module Transpec
           end
         end
 
-        context 'when it is `def helper_method example; end` form' do
+        context "when it is `it 'is an example', :pending { }` form" do
           let(:source) do
             <<-END
-              module Helper
-                def display_description
-                  puts example.description
-                end
-              end
-
               describe 'example' do
-                include Helper
-
-                after do
-                  display_description
+                it 'will be skipped', :pending do
+                  do_something
                 end
               end
             END
@@ -234,29 +214,83 @@ module Transpec
 
           let(:expected_source) do
             <<-END
-              module Helper
-                def display_description
-                  puts RSpec.current_example.description
-                end
-              end
-
               describe 'example' do
-                include Helper
-
-                after do
-                  display_description
+                it 'will be skipped', :skip do
+                  do_something
                 end
               end
             END
           end
 
-          it 'converts into `def helper_method RSpec.current_example; end` form' do
+          it "converts into `it 'is an example', :skip { }` form" do
             rewritten_source.should == expected_source
           end
 
-          it 'adds record `def helper_method example; end` -> `def helper_method RSpec.current_example; end`' do
-            record.original_syntax.should  == 'def helper_method example; end'
-            record.converted_syntax.should == 'def helper_method RSpec.current_example; end'
+          it "adds record `it 'is an example', :pending { }` -> `it 'is an example', :skip { }`" do
+            record.original_syntax.should  == "it 'is an example', :pending { }"
+            record.converted_syntax.should == "it 'is an example', :skip { }"
+          end
+        end
+
+        context "when it is `it 'description', :pending => true { }` form" do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'will be skipped', :pending => true do
+                  do_something
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'will be skipped', :skip => true do
+                  do_something
+                end
+              end
+            END
+          end
+
+          it "converts into `it 'description', :skip => true { }` form" do
+            rewritten_source.should == expected_source
+          end
+
+          it "adds record `it 'is an example', :pending => value { }` -> `it 'is an example', :skip => value { }`" do
+            record.original_syntax.should  == "it 'is an example', :pending => value { }"
+            record.converted_syntax.should == "it 'is an example', :skip => value { }"
+          end
+        end
+
+        context "when it is `it 'description', pending: true { }` form" do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'will be skipped', pending: true do
+                  do_something
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'will be skipped', skip: true do
+                  do_something
+                end
+              end
+            END
+          end
+
+          it "converts into `it 'description', skip: true { }` form" do
+            rewritten_source.should == expected_source
+          end
+
+          it "adds record `it 'is an example', :pending => value { }` -> `it 'is an example', :skip => value { }`" do
+            record.original_syntax.should  == "it 'is an example', :pending => value { }"
+            record.converted_syntax.should == "it 'is an example', :skip => value { }"
           end
         end
       end

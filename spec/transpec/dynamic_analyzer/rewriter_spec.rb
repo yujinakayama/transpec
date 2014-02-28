@@ -15,18 +15,14 @@ module Transpec
 
         let(:source) do
           <<-END
-            it 'is foo' do
-              subject.should be(foo)
-            end
+            subject.should be(foo)
           END
         end
 
         # rubocop:disable LineLength
         let(:expected_source) do
           <<-END
-            it 'is foo' do
-              transpec_analyze((transpec_analyze((subject), self, "(string)_41_48", { :should_source_location => [:object, "method(:should).source_location"] }).should be(foo)), self, "(string)_41_63", { :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] })
-            end
+            transpec_analyze((transpec_analyze((subject), self, "(string)_12_19", { :should_source_location => [:object, "method(:should).source_location"] }).should be(foo)), self, "(string)_12_34", { :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] })
           END
         end
         # rubocop:enable LineLength
@@ -38,22 +34,18 @@ module Transpec
         context 'when the target includes here document' do
           let(:source) do
             <<-END
-              it 'matches to foo' do
-                subject.should =~ <<-HEREDOC.gsub('foo', 'bar')
-                foo
-                HEREDOC
-              end
+              subject.should =~ <<-HEREDOC.gsub('foo', 'bar')
+              foo
+              HEREDOC
             END
           end
 
           # rubocop:disable LineLength
           let(:expected_source) do
             <<-END
-              it 'matches to foo' do
-                transpec_analyze((transpec_analyze((subject), self, "(string)_53_60", { :should_source_location => [:object, "method(:should).source_location"] }).should), self, "(string)_53_67", { :"=~_source_location" => [:object, "method(:=~).source_location"], :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] }) =~ transpec_analyze((<<-HEREDOC.gsub('foo', 'bar')), self, "(string)_71_100", { :arg_is_enumerable? => [:object, "is_a?(Enumerable)"] })
-                foo
-                HEREDOC
-              end
+              transpec_analyze((transpec_analyze((subject), self, "(string)_14_21", { :should_source_location => [:object, "method(:should).source_location"] }).should), self, "(string)_14_28", { :"=~_source_location" => [:object, "method(:=~).source_location"], :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] }) =~ transpec_analyze((<<-HEREDOC.gsub('foo', 'bar')), self, "(string)_32_61", { :arg_is_enumerable? => [:object, "is_a?(Enumerable)"] })
+              foo
+              HEREDOC
             END
           end
           # rubocop:enable LineLength
@@ -66,18 +58,14 @@ module Transpec
         context 'when the target takes block' do
           let(:source) do
             <<-END
-              it 'raises error' do
-                expect { do_something }.to throw_symbol
-              end
+              expect { do_something }.to throw_symbol
             END
           end
 
           # rubocop:disable LineLength
           let(:expected_source) do
             <<-END
-              it 'raises error' do
-                transpec_analyze((expect { do_something }), self, "(string)_51_57", { :expect_source_location => [:context, "method(:expect).source_location"] }).to throw_symbol
-              end
+              transpec_analyze((expect { do_something }), self, "(string)_14_20", { :expect_source_location => [:context, "method(:expect).source_location"] }).to throw_symbol
             END
           end
           # rubocop:enable LineLength
@@ -87,45 +75,17 @@ module Transpec
           end
         end
 
-        context 'when the target is only the expression in a block' do
-          let(:source) do
-            <<-END
-              it 'raises error' do
-                expect
-              end
-            END
-          end
-
-          # rubocop:disable LineLength
-          let(:expected_source) do
-            <<-END
-              it 'raises error' do
-                transpec_analyze((expect), self, "(string)_51_57", { :expect_source_location => [:context, "method(:expect).source_location"] })
-              end
-            END
-          end
-          # rubocop:enable LineLength
-
-          it 'wraps the target properly' do
-            should == expected_source
-          end
-        end
-
         context 'when the target is method invocation without parentheses' do
           let(:source) do
             <<-END
-              it 'raises error' do
-                expect subject
-              end
+              double 'something'
             END
           end
 
           # rubocop:disable LineLength
           let(:expected_source) do
             <<-END
-              it 'raises error' do
-                transpec_analyze((expect subject), self, "(string)_51_65", { :expect_source_location => [:context, "method(:expect).source_location"] })
-              end
+              transpec_analyze((double 'something'), self, "(string)_14_32", { :double_source_location => [:context, "method(:double).source_location"] })
             END
           end
           # rubocop:enable LineLength

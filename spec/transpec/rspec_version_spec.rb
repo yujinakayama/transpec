@@ -39,7 +39,10 @@ module Transpec
       ]
     end
 
-    [:oneliner_is_expected_available?].each do |method|
+    [
+      :oneliner_is_expected_available?,
+      :skip_available?
+    ].each do |method|
       include_examples 'version comparisons', method, [
         ['2.14.0',       false],
         ['2.99.0.beta1', false],
@@ -75,7 +78,7 @@ module Transpec
       ]
     end
 
-    include_examples 'version comparisons', :migration_term_of_any_instance_implementation_block?, [
+    include_examples 'version comparisons', :rspec_2_99?, [
       ['2.14.0',       false],
       ['2.99.0.beta1', true],
       ['2.99.0.beta2', true],

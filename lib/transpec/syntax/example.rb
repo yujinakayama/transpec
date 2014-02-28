@@ -3,84 +3,95 @@
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/send'
 require 'transpec/rspec_dsl'
-require 'transpec/util'
 
 module Transpec
   class Syntax
     class Example < Syntax
-      include Mixin::Send, RSpecDSL, Util
+      include Mixin::Send, RSpecDSL
 
-      METHODS_YIELD_EXAMPLE = (EXAMPLE_METHODS + HOOK_METHODS + HELPER_METHODS).freeze
+      def self.conversion_target_node?(node, runtime_data = nil)
+        return false unless target_node?(node, runtime_data)
 
-      def self.check_target_node_statically(node)
-        super(node) && Util.block_node_taken_by_method(node).nil?
+        # Check whether the context is example group of example
+        # to differenciate RSpec::Core::ExampleGroup.pending (relative of #it)
+        # and RSpec::Core::ExampleGroup#pending (mark the example pending
+        # in #it block).
+        if runtime_data && runtime_data.run?(node)
+          # If we have runtime data, check with it.
+          runtime_data[node, :example_group_context?]
+        else
+          # Otherwise check statically.
+          inspector = StaticContextInspector.new(node)
+          inspector.scopes.last == :example_group
+        end
       end
 
       def self.target_method?(receiver_node, method_name)
-        receiver_node.nil? && [:example, :running_example].include?(method_name)
+        receiver_node.nil? && EXAMPLE_METHODS.include?(method_name)
       end
 
-      def convert!
-        if block_node
-          insert_after(block_node.loc.begin, " |#{block_arg_name}|") unless block_has_argument?
-          replace(selector_range, block_arg_name.to_s) unless method_name == block_arg_name
-          block_node.metadata[:added_example_block_arg] = true
-        else
-          replace(selector_range, 'RSpec.current_example')
-        end
+      define_dynamic_analysis_request do |rewriter|
+        code = "is_a?(Class) && ancestors.any? { |a| a.name == 'RSpec::Core::ExampleGroup' }"
+        rewriter.register_request(node, :example_group_context?, code, :context)
+      end
 
-        register_record
+      def convert_pending_to_skip!
+        convert_pending_selector_to_skip!
+        convert_pending_metadata_to_skip!
+      end
+
+      def metadata_key_nodes
+        metadata_nodes.each_with_object([]) do |node, key_nodes|
+          if node.hash_type?
+            key_nodes.concat(node.children.map { |pair_node| pair_node.children.first })
+          else
+            key_nodes << node
+          end
+        end
       end
 
       private
 
-      def block_has_argument?
-        block_arg_node || block_node.metadata[:added_example_block_arg]
+      def convert_pending_selector_to_skip!
+        return unless method_name == :pending
+        replace(selector_range, 'skip')
+        register_record("pending 'is an example' { }", "skip 'is an example' { }")
       end
 
-      def block_node
-        return @block_node if instance_variable_defined?(:@block_node)
-
-        @block_node ||= node.each_ancestor_node.find do |ancestor_node|
-          next false unless ancestor_node.block_type?
-          method_name = method_name_of_block_node(ancestor_node)
-          METHODS_YIELD_EXAMPLE.include?(method_name)
+      def convert_pending_metadata_to_skip!
+        metadata_key_nodes.each do |node|
+          next unless pending_symbol?(node)
+          replace(symbol_range_without_colon(node), 'skip')
+          if node.parent_node.pair_type?
+            register_record("it 'is an example', :pending => value { }",
+                            "it 'is an example', :skip => value { }")
+          else
+            register_record("it 'is an example', :pending { }",
+                            "it 'is an example', :skip { }")
+          end
         end
       end
 
-      def block_method_name
-        method_name_of_block_node(block_node)
+      def pending_symbol?(node)
+        return false unless node.sym_type?
+        key = node.children.first
+        key == :pending
       end
 
-      def block_arg_node
-        args_node = block_node.children[1]
-        args_node.children.first
-      end
-
-      def block_arg_name
-        if block_arg_node
-          block_arg_node.children.first
+      def symbol_range_without_colon(node)
+        range = node.loc.expression
+        if range.source.start_with?(':')
+          Parser::Source::Range.new(range.source_buffer, range.begin_pos + 1, range.end_pos)
         else
-          :example
+          range
         end
       end
 
-      def method_name_of_block_node(block_node)
-        send_node = block_node.children.first
-        send_node.children[1]
+      def metadata_nodes
+        arg_nodes[1..-1] || []
       end
 
-      def register_record
-        if block_node
-          prefix = "#{block_method_name}"
-          prefix << '(:name)' if HELPER_METHODS.include?(block_method_name)
-          original_syntax = "#{prefix} { example }"
-          converted_syntax = "#{prefix} { |example| example }"
-        else
-          original_syntax = 'def helper_method example; end'
-          converted_syntax = 'def helper_method RSpec.current_example; end'
-        end
-
+      def register_record(original_syntax, converted_syntax)
         report.records << Record.new(original_syntax, converted_syntax)
       end
     end

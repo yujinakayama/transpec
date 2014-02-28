@@ -918,15 +918,101 @@ module Transpec
     describe '#process_example' do
       let(:example_object) { double('example_object').as_null_object }
 
+      shared_examples 'does nothing' do
+        it 'does nothing' do
+          example_object.should_not_receive(:convert_pending_to_skip!)
+          converter.process_example(example_object)
+        end
+      end
+
+      context 'when RSpecVersion#rspec_2_99? returns true' do
+        before { rspec_version.stub(:rspec_2_99?).and_return(true) }
+
+        context 'and Configuration#convert_pending? returns true' do
+          before { configuration.convert_pending = true }
+
+          it 'invokes Example#convert_pending_to_skip!' do
+            example_object.should_receive(:convert_pending_to_skip!)
+            converter.process_example(example_object)
+          end
+        end
+
+        context 'and Configuration#convert_pending? returns false' do
+          before { configuration.convert_pending = false }
+          include_examples 'does nothing'
+        end
+      end
+
+      context 'when RSpecVersion#rspec_2_99? returns false' do
+        before { rspec_version.stub(:rspec_2_99?).and_return(false) }
+
+        context 'and Configuration#convert_pending? returns true' do
+          before { configuration.convert_pending = true }
+          include_examples 'does nothing'
+        end
+
+        context 'and Configuration#convert_pending? returns false' do
+          before { configuration.convert_pending = false }
+          include_examples 'does nothing'
+        end
+      end
+    end
+
+    describe '#process_pending' do
+      let(:pending_object) { double('pending_object').as_null_object }
+
+      shared_examples 'does nothing' do
+        it 'does nothing' do
+          pending_object.should_not_receive(:convert_deprecated_syntax!)
+          converter.process_pending(pending_object)
+        end
+      end
+
+      context 'when RSpecVersion#rspec_2_99? returns true' do
+        before { rspec_version.stub(:rspec_2_99?).and_return(true) }
+
+        context 'and Configuration#convert_pending? returns true' do
+          before { configuration.convert_pending = true }
+
+          it 'invokes Example#convert_deprecated_syntax!' do
+            pending_object.should_receive(:convert_deprecated_syntax!)
+            converter.process_pending(pending_object)
+          end
+        end
+
+        context 'and Configuration#convert_pending? returns false' do
+          before { configuration.convert_pending = false }
+          include_examples 'does nothing'
+        end
+      end
+
+      context 'when RSpecVersion#rspec_2_99? returns false' do
+        before { rspec_version.stub(:rspec_2_99?).and_return(false) }
+
+        context 'and Configuration#convert_pending? returns true' do
+          before { configuration.convert_pending = true }
+          include_examples 'does nothing'
+        end
+
+        context 'and Configuration#convert_pending? returns false' do
+          before { configuration.convert_pending = false }
+          include_examples 'does nothing'
+        end
+      end
+    end
+
+    describe '#process_current_example' do
+      let(:current_example_object) { double('current_example_object').as_null_object }
+
       context 'when RSpecVersion#yielded_example_available? returns true' do
         before { rspec_version.stub(:yielded_example_available?).and_return(true) }
 
         context 'and Configuration#convert_deprecated_method? is true' do
           before { configuration.convert_deprecated_method = true }
 
-          it 'invokes Example#convert!' do
-            example_object.should_receive(:convert!)
-            converter.process_example(example_object)
+          it 'invokes CurrentExample#convert!' do
+            current_example_object.should_receive(:convert!)
+            converter.process_current_example(current_example_object)
           end
         end
 
@@ -934,8 +1020,8 @@ module Transpec
           before { configuration.convert_deprecated_method = false }
 
           it 'does nothing' do
-            example_object.should_not_receive(:convert!)
-            converter.process_example(example_object)
+            current_example_object.should_not_receive(:convert!)
+            converter.process_current_example(current_example_object)
           end
         end
       end
@@ -947,8 +1033,8 @@ module Transpec
           before { configuration.convert_deprecated_method = true }
 
           it 'does nothing' do
-            example_object.should_not_receive(:convert!)
-            converter.process_example(example_object)
+            current_example_object.should_not_receive(:convert!)
+            converter.process_current_example(current_example_object)
           end
         end
       end
@@ -1046,9 +1132,9 @@ module Transpec
         end
       end
 
-      context 'when RSpecVersion#migration_term_of_any_instance_implementation_block? returns true' do
+      context 'when RSpecVersion#rspec_2_99? returns true' do
         before do
-          rspec_version.stub(:migration_term_of_any_instance_implementation_block?).and_return(true)
+          rspec_version.stub(:rspec_2_99?).and_return(true)
         end
 
         context 'and Configuration#convert_deprecated_method? returns true' do
@@ -1083,9 +1169,9 @@ module Transpec
         end
       end
 
-      context 'when RSpecVersion#migration_term_of_any_instance_implementation_block? returns false' do
+      context 'when RSpecVersion#rspec_2_99? returns false' do
         before do
-          rspec_version.stub(:migration_term_of_any_instance_implementation_block?).and_return(false)
+          rspec_version.stub(:rspec_2_99?).and_return(false)
         end
 
         it 'does not invoke RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks=' do
@@ -1120,9 +1206,9 @@ module Transpec
     describe '#process_any_instance_block' do
       let(:messaging_host) { double('messaging host').as_null_object }
 
-      context 'when RSpecVersion#migration_term_of_any_instance_implementation_block? returns true' do
+      context 'when RSpecVersion#rspec_2_99? returns true' do
         before do
-          rspec_version.stub(:migration_term_of_any_instance_implementation_block?).and_return(true)
+          rspec_version.stub(:rspec_2_99?).and_return(true)
         end
 
         context 'and Configuration#convert_deprecated_method? returns true' do
@@ -1161,9 +1247,9 @@ module Transpec
         end
       end
 
-      context 'when RSpecVersion#migration_term_of_any_instance_implementation_block? returns false' do
+      context 'when RSpecVersion#rspec_2_99? returns false' do
         before do
-          rspec_version.stub(:migration_term_of_any_instance_implementation_block?).and_return(false)
+          rspec_version.stub(:rspec_2_99?).and_return(false)
         end
 
         it 'does nothing' do

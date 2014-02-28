@@ -15,6 +15,7 @@ module Transpec
         [:convert_stub?,                                          true],
         [:convert_have_items?,                                    true],
         [:convert_its?,                                           true],
+        [:convert_pending?,                                       true],
         [:convert_deprecated_method?,                             true],
         [:parenthesize_matcher_arg?,                              true],
         [:add_receiver_arg_to_any_instance_implementation_block?, true],
