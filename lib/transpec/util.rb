@@ -141,14 +141,38 @@ module Transpec
     end
 
     def beginning_of_line_range(arg)
-      range = case arg
-              when AST::Node             then arg.loc.expression
-              when Parser::Source::Range then arg
-              else fail ArgumentError, "Invalid argument #{arg}"
-              end
-
+      range = range_from_arg(arg)
       begin_pos = range.begin_pos - range.column
       Parser::Source::Range.new(range.source_buffer, begin_pos, begin_pos)
+    end
+
+    def end_of_line_range(arg)
+      range = range_from_arg(arg)
+      begin_pos = beginning_of_line_range(range).begin_pos + range.source_line.size
+      Parser::Source::Range.new(range.source_buffer, begin_pos, begin_pos)
+    end
+
+    def line_range(arg)
+      range = range_from_arg(arg)
+      beginning_of_line_range(range).resize(range.source_line.size + 1)
+    end
+
+    def each_line_range(arg)
+      multiline_range = range_from_arg(arg)
+      range = line_range(multiline_range)
+
+      while range.line <= multiline_range.end.line
+        yield range
+        range = line_range(range.end)
+      end
+    end
+
+    def range_from_arg(arg)
+      case arg
+      when AST::Node             then arg.loc.expression
+      when Parser::Source::Range then arg
+      else fail ArgumentError, "Invalid argument #{arg}"
+      end
     end
 
     def literal?(node)

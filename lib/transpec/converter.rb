@@ -161,6 +161,10 @@ module Transpec
       # TODO
     end
 
+    def process_pending(pending)
+      # TODO
+    end
+
     def process_current_example(current_example)
       return unless rspec_version.yielded_example_available?
       current_example.convert! if configuration.convert_deprecated_method?
