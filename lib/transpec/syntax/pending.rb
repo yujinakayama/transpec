@@ -9,8 +9,29 @@ module Transpec
     class Pending < Syntax
       include Mixin::Send, Util
 
+      def self.conversion_target_node?(node, runtime_data = nil)
+        return false unless target_node?(node, runtime_data)
+
+        # Check whether the context is example group to differenciate
+        # RSpec::Core::ExampleGroup.pending (a relative of #it) and
+        # RSpec::Core::ExampleGroup#pending (marks the example as pending in #it block).
+        if runtime_data && runtime_data.run?(node)
+          # If we have runtime data, check with it.
+          runtime_data[node, :example_context?]
+        else
+          # Otherwise check statically.
+          inspector = StaticContextInspector.new(node)
+          inspector.scopes.last == :example
+        end
+      end
+
       def self.target_method?(receiver_node, method_name)
         receiver_node.nil? && method_name == :pending
+      end
+
+      define_dynamic_analysis_request do |rewriter|
+        code = 'is_a?(RSpec::Core::ExampleGroup)'
+        rewriter.register_request(node, :example_context?, code, :context)
       end
 
       def convert_deprecated_syntax!
