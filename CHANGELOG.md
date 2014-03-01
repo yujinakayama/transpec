@@ -130,7 +130,7 @@
 
 ## v0.2.5
 
-* Do not touch file if the source does need to be rewritten
+* Do not touch file if the source does not need to be rewritten
 
 ## v0.2.4
 
