@@ -157,6 +157,11 @@ module Transpec
           it 'converts into `pending; do_something_fail` form' do
             rewritten_source.should == expected_source
           end
+
+          it 'adds record `pending { do_something_fail }` -> `pending; do_something_fail`' do
+            record.original_syntax.should  == 'pending { do_something_fail }'
+            record.converted_syntax.should == 'pending; do_something_fail'
+          end
         end
 
         context "when it is singleline `pending('some reason') { do_something_fail }` form" do
