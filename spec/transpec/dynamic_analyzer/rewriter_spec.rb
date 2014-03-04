@@ -43,7 +43,7 @@ module Transpec
           # rubocop:disable LineLength
           let(:expected_source) do
             <<-END
-              transpec_analyze((transpec_analyze((subject), self, "(string)_14_21", { :should_source_location => [:object, "method(:should).source_location"] }).should), self, "(string)_14_28", { :"=~_source_location" => [:object, "method(:=~).source_location"], :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] }) =~ transpec_analyze((<<-HEREDOC.gsub('foo', 'bar')), self, "(string)_32_61", { :arg_is_enumerable? => [:object, "is_a?(Enumerable)"] })
+              transpec_analyze((transpec_analyze((subject), self, "(string)_14_21", { :should_source_location => [:object, "method(:should).source_location"] }).should), self, "(string)_14_28", { :"=~_source_location" => [:object, "method(:=~).source_location"], :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] }) =~ transpec_analyze((<<-HEREDOC.gsub('foo', 'bar')), self, "(string)_32_61", { :enumerable_arg? => [:object, "is_a?(Enumerable)"] })
               foo
               HEREDOC
             END
