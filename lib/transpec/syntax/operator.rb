@@ -21,15 +21,16 @@ module Transpec
 
       def self.check_target_node_statically(node)
         node = node.parent_node if node == BE_NODE
-        return false unless node && node.send_type?
-        receiver_node, method_name, *_ = *node
-        return false if receiver_node.nil?
-        OPERATORS.include?(method_name)
+        super(node)
+      end
+
+      def self.target_method?(receiver_node, method_name)
+        !receiver_node.nil? && OPERATORS.include?(method_name)
       end
 
       define_dynamic_analysis_request do |rewriter|
         if method_name == :=~
-          rewriter.register_request(arg_node, :arg_is_enumerable?, 'is_a?(Enumerable)')
+          rewriter.register_request(arg_node, :enumerable_arg?, 'is_a?(Enumerable)')
         end
       end
 
@@ -47,10 +48,10 @@ module Transpec
         case method_name
         when :==
           convert_to_eq!(parenthesize_arg)
-        when :===, :<, :<=, :>, :>=
-          convert_to_be_operator!
         when :=~
           convert_to_match!(parenthesize_arg)
+        else
+          convert_to_be_operator!
         end
       end
 
@@ -84,7 +85,7 @@ module Transpec
       def convert_to_match!(parenthesize_arg)
         handle_anterior_of_operator!
 
-        if arg_is_enumerable?
+        if enumerable_arg?
           replace(selector_range, 'match_array')
         else
           replace(selector_range, 'match')
@@ -92,11 +93,11 @@ module Transpec
 
         parenthesize!(parenthesize_arg)
 
+        accurate = !enumerable_arg?.nil?
+
         # Need to register record after all source rewrites are done
         # to avoid false record when failed with overlapped rewrite.
-        accurate = !arg_is_enumerable?.nil?
-
-        if arg_is_enumerable?
+        if enumerable_arg?
           register_record('=~ [1, 2]', 'match_array([1, 2])', accurate)
         else
           register_record('=~ /pattern/', 'match(/pattern/)', accurate)
@@ -111,14 +112,14 @@ module Transpec
         end
       end
 
-      def arg_is_enumerable?
+      def enumerable_arg?
         case arg_node.type
         when :array
           true
         when :regexp
           false
         else
-          runtime_data[arg_node, :arg_is_enumerable?]
+          runtime_data[arg_node, :enumerable_arg?]
         end
       end
 
