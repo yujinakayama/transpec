@@ -2,6 +2,8 @@
 
 ## Development
 
+## v1.10.2
+
 * Fix a bug where `expect(an_array + another_array).to have(2).items` was converted to `expect((an_array +(another_array).size).to eq(2)`
 
 ## v1.10.1
