@@ -92,5 +92,24 @@ module Transpec
         end
       end
     end
+
+    describe '#chainable_source' do
+      subject { Util.chainable_source(ast) }
+
+      [
+        ['receiver.do_something(arg1, arg2)', 'receiver.do_something(arg1, arg2)'],
+        ['receiver.do_something arg1, arg2',  'receiver.do_something(arg1, arg2)'],
+        ['receiver[arg1, arg2]',              'receiver[arg1, arg2]'],
+        ['receiver + arg',                    '(receiver + arg)']
+      ].each do |original, expected|
+        context "when the invocation is `#{original}` form" do
+          let(:source) { original }
+
+          it "returns `#{expected}`" do
+            should == expected
+          end
+        end
+      end
+    end
   end
 end

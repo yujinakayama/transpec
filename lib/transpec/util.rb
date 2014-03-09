@@ -226,5 +226,28 @@ module Transpec
         end
       end
     end
+
+    def chainable_source(node)
+      fail "Invalid argument #{node}" unless node.send_type?
+
+      map = node.loc
+      source = map.expression.source
+
+      return source if map.selector.source.start_with?('[')
+
+      arg_node = node.children[2]
+      return source unless arg_node
+
+      left_of_arg_range = map.selector.end.join(arg_node.loc.expression.begin)
+      return source if left_of_arg_range.source.include?('(')
+
+      if map.selector.source.match(/^\w/)
+        relative_index = left_of_arg_range.begin_pos - map.expression.begin_pos
+        source[relative_index, left_of_arg_range.length] = '('
+        source << ')'
+      else
+        "(#{source})"
+      end
+    end
   end
 end

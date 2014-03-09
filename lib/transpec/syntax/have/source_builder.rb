@@ -6,6 +6,8 @@ module Transpec
   class Syntax
     class Have
       class SourceBuilder
+        include Util
+
         attr_reader :have, :size_source
 
         def initialize(have, size_source)
@@ -47,19 +49,11 @@ module Transpec
         private
 
         def base_subject_source(node)
-          map = node.loc
-          source = map.expression.source
-
-          if node.send_type? && (arg_node = node.children[2])
-            left_of_arg_range = map.selector.end.join(arg_node.loc.expression.begin)
-            if !map.selector.source.start_with?('[') && !left_of_arg_range.source.include?('(')
-              relative_index = left_of_arg_range.begin_pos - map.expression.begin_pos
-              source[relative_index, left_of_arg_range.length] = '('
-              source << ')'
-            end
+          if node.send_type?
+            chainable_source(node)
+          else
+            node.loc.expression.source
           end
-
-          source
         end
 
         def replacement_matcher_source_for_should

@@ -2,6 +2,8 @@
 
 ## Development
 
+* Fix a bug where `expect(an_array + another_array).to have(2).items` was converted to `expect((an_array +(another_array).size).to eq(2)`
+
 ## v1.10.1
 
 * Fix a bug where `expect(hash['some_key']).to have(2).items` was converted to `expect(hash[().size).to eq(2)` ([#51](https://github.com/yujinakayama/transpec/issues/51))
