@@ -1118,6 +1118,35 @@ module Transpec
           end
         end
 
+        context "when it is `expect(hash['some_key']).to have(2).items` form" do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'has 2 items' do
+                  expect(hash['some_key']).to have(2).items
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'has 2 items' do
+                  expect(hash['some_key'].size).to eq(2)
+                end
+              end
+            END
+          end
+
+          let(:have_object) { expect_object.have_matcher }
+
+          fit "converts into `expect(hash['some_key'].size).to eq(2)` form" do
+            have_object.convert_to_standard_expectation!
+            rewritten_source.should == expected_source
+          end
+        end
+
         context 'when it is `it { should have(2).items }` form' do
           let(:source) do
             <<-END

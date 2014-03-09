@@ -2,6 +2,8 @@
 
 ## Development
 
+* Fix a bug where `expect(hash['some_key']).to have(2).items` was converted to `expect(hash[().size).to eq(2)` ([#51](https://github.com/yujinakayama/transpec/issues/51))
+
 ## v1.10.0
 
 * Support conversion of pending examples

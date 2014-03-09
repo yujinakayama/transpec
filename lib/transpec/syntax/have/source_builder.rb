@@ -52,7 +52,7 @@ module Transpec
 
           if node.send_type? && (arg_node = node.children[2])
             left_of_arg_range = map.selector.end.join(arg_node.loc.expression.begin)
-            unless left_of_arg_range.source.include?('(')
+            if !map.selector.source.start_with?('[') && !left_of_arg_range.source.include?('(')
               relative_index = left_of_arg_range.begin_pos - map.expression.begin_pos
               source[relative_index, left_of_arg_range.length] = '('
               source << ')'
