@@ -9,7 +9,7 @@ module Transpec
       include Mixin::Send
 
       CONVERSION_CORRESPONDENCE = {
-                      match_for_should: :match,
+                      match_for_should: :match, # rubocop:disable IndentHash
                   match_for_should_not: :match_when_negated,
             failure_message_for_should: :failure_message,
         failure_message_for_should_not: :failure_message_when_negated
