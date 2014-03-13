@@ -20,7 +20,7 @@ module Transpec
 
     def base_paths(paths)
       if paths.empty?
-        if Dir.exists?('spec')
+        if Dir.exist?('spec')
           ['spec']
         else
           fail ArgumentError, 'Specify target files or directories.'
