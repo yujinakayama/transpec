@@ -83,7 +83,7 @@ module Transpec
       end
 
       if project.rspec_version < Transpec.required_rspec_version
-        fail "Your project must have rspec gem dependency #{Transpec.required_rspec_version} " +
+        fail "Your project must have rspec gem dependency #{Transpec.required_rspec_version} " \
              "or later but currently it's #{project.rspec_version}. Aborting."
       end
     end

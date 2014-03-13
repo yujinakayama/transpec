@@ -899,7 +899,7 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            it 'adds record ' +
+            it 'adds record ' \
                "`obj.#{method}(:message)` -> `obj.#{replacement_method}(:message)`" do
               record.original_syntax.should  == "obj.#{method}(:message)"
               record.converted_syntax.should == "obj.#{replacement_method}(:message)"

@@ -16,7 +16,7 @@ module Transpec
     private
 
     def build_message(original_syntax, target_syntax)
-      "Cannot convert #{original_syntax} into #{target_syntax} " +
+      "Cannot convert #{original_syntax} into #{target_syntax} " \
       "since #{target_syntax} is not available in the context."
     end
   end

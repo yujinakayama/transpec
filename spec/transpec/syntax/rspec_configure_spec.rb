@@ -190,7 +190,7 @@ module Transpec
               END
             end
 
-            it "adds ##{framework_block_method} block " +
+            it "adds ##{framework_block_method} block " \
                'and #syntax= statement' do
               rewritten_source.should == expected_source
             end
