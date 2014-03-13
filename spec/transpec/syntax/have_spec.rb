@@ -127,7 +127,7 @@ module Transpec
           end
         end
 
-        context 'when it is `collection.should have(2).items` form' do
+        context 'with expression `collection.should have(2).items`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -150,7 +150,7 @@ module Transpec
 
           let(:have_object) { should_object.have_matcher }
 
-          it 'converts into `collection.size.should == 2` form' do
+          it 'converts to `collection.size.should == 2` form' do
             have_object.convert_to_standard_expectation!
             rewritten_source.should == expected_source
           end
@@ -179,7 +179,7 @@ module Transpec
               should_object.have_matcher.convert_to_standard_expectation!(parenthesize_matcher_arg)
             end
 
-            it 'converts into `expect(collection.size).to eq(2)` form' do
+            it 'converts to `expect(collection.size).to eq(2)` form' do
               rewritten_source.should == expected_source
             end
 
@@ -201,7 +201,7 @@ module Transpec
                 END
               end
 
-              it 'converts into `expect(collection.size).to eq 2` form' do
+              it 'converts to `expect(collection.size).to eq 2` form' do
                 rewritten_source.should == expected_source
               end
 
@@ -213,7 +213,7 @@ module Transpec
           end
         end
 
-        context 'when it is `collection.should_not have(2).items` form' do
+        context 'with expression `collection.should_not have(2).items`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -236,7 +236,7 @@ module Transpec
 
           let(:have_object) { should_object.have_matcher }
 
-          it 'converts into `collection.size.should_not == 2` form' do
+          it 'converts to `collection.size.should_not == 2` form' do
             have_object.convert_to_standard_expectation!
             rewritten_source.should == expected_source
           end
@@ -248,7 +248,7 @@ module Transpec
           end
         end
 
-        context 'when it is `collection.should have_at_least(2).items` form' do
+        context 'with expression `collection.should have_at_least(2).items`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -271,7 +271,7 @@ module Transpec
 
           let(:have_object) { should_object.have_matcher }
 
-          it 'converts into `collection.size.should >= 2` form' do
+          it 'converts to `collection.size.should >= 2` form' do
             have_object.convert_to_standard_expectation!
             rewritten_source.should == expected_source
           end
@@ -283,7 +283,7 @@ module Transpec
           end
         end
 
-        context 'when it is `collection.should have_at_most(2).items` form' do
+        context 'with expression `collection.should have_at_most(2).items`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -306,7 +306,7 @@ module Transpec
 
           let(:have_object) { should_object.have_matcher }
 
-          it 'converts into `collection.size.should >= 2` form' do
+          it 'converts to `collection.size.should >= 2` form' do
             have_object.convert_to_standard_expectation!
             rewritten_source.should == expected_source
           end
@@ -318,7 +318,7 @@ module Transpec
           end
         end
 
-        context 'when it is `expect(collection).to have(2).items` form' do
+        context 'with expression `expect(collection).to have(2).items`' do
           let(:have_object) { expect_object.have_matcher }
 
           context 'with runtime information' do
@@ -357,7 +357,7 @@ module Transpec
                 END
               end
 
-              it 'converts into `expect(collection.count).to eq(2)` form' do
+              it 'converts to `expect(collection.count).to eq(2)` form' do
                 have_object.convert_to_standard_expectation!
                 rewritten_source.should == expected_source
               end
@@ -393,7 +393,7 @@ module Transpec
               END
             end
 
-            it 'converts into `expect(collection.size).to eq(2)` form' do
+            it 'converts to `expect(collection.size).to eq(2)` form' do
               have_object.convert_to_standard_expectation!
               rewritten_source.should == expected_source
             end
@@ -413,7 +413,7 @@ module Transpec
           end
         end
 
-        context 'when it is `expect(collection).not_to have(2).items` form' do
+        context 'with expression `expect(collection).not_to have(2).items`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -436,7 +436,7 @@ module Transpec
 
           let(:have_object) { expect_object.have_matcher }
 
-          it 'converts into `expect(collection.size).not_to eq(2)` form' do
+          it 'converts to `expect(collection.size).not_to eq(2)` form' do
             have_object.convert_to_standard_expectation!
             rewritten_source.should == expected_source
           end
@@ -448,7 +448,7 @@ module Transpec
           end
         end
 
-        context 'when it is `expect(collection).to have_at_least(2).items` form' do
+        context 'with expression `expect(collection).to have_at_least(2).items`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -471,7 +471,7 @@ module Transpec
 
           let(:have_object) { expect_object.have_matcher }
 
-          it 'converts into `expect(collection.size).to be >= 2` form' do
+          it 'converts to `expect(collection.size).to be >= 2` form' do
             have_object.convert_to_standard_expectation!
             rewritten_source.should == expected_source
           end
@@ -483,7 +483,7 @@ module Transpec
           end
         end
 
-        context 'when it is `expect(collection).to have_at_most(2).items` form' do
+        context 'with expression `expect(collection).to have_at_most(2).items`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -506,7 +506,7 @@ module Transpec
 
           let(:have_object) { expect_object.have_matcher }
 
-          it 'converts into `expect(collection.size).to be <= 2` form' do
+          it 'converts to `expect(collection.size).to be <= 2` form' do
             have_object.convert_to_standard_expectation!
             rewritten_source.should == expected_source
           end
@@ -518,7 +518,7 @@ module Transpec
           end
         end
 
-        context 'when it is `expect(subject).to have(2).words` form' do
+        context 'with expression `expect(obj).to have(2).words`' do
           let(:have_object) { expect_object.have_matcher }
 
           context 'with runtime information' do
@@ -558,7 +558,7 @@ module Transpec
                   END
                 end
 
-                it 'converts into `expect(subject.words.size).to eq(2)` form' do
+                it 'converts to `expect(obj.words.size).to eq(2)` form' do
                   have_object.convert_to_standard_expectation!
                   rewritten_source.should == expected_source
                 end
@@ -615,7 +615,7 @@ module Transpec
                   END
                 end
 
-                it 'converts into `expect(subject.words.count).to eq(2)` form' do
+                it 'converts to `expect(obj.words.count).to eq(2)` form' do
                   have_object.convert_to_standard_expectation!
                   rewritten_source.should == expected_source
                 end
@@ -650,7 +650,7 @@ module Transpec
                   END
                 end
 
-                it 'converts into `expect(subject.size).to eq(2)` form' do
+                it 'converts to `expect(obj.size).to eq(2)` form' do
                   have_object.convert_to_standard_expectation!
                   rewritten_source.should == expected_source
                 end
@@ -697,7 +697,7 @@ module Transpec
                   END
                 end
 
-                it 'converts into `expect(subject.send(:words).size).to eq(2)` form' do
+                it 'converts to `expect(obj.send(:words).size).to eq(2)` form' do
                   have_object.convert_to_standard_expectation!
                   rewritten_source.should == expected_source
                 end
@@ -744,7 +744,7 @@ module Transpec
               END
             end
 
-            it 'converts into `expect(subject.size).to eq(2)` form' do
+            it 'converts to `expect(obj.size).to eq(2)` form' do
               have_object.convert_to_standard_expectation!
               rewritten_source.should == expected_source
             end
@@ -757,7 +757,7 @@ module Transpec
           end
         end
 
-        context 'when it is `expect(subject).to have(1).word` form' do
+        context 'with expression `expect(obj).to have(1).word`' do
           let(:have_object) { expect_object.have_matcher }
 
           context 'with runtime information' do
@@ -801,7 +801,7 @@ module Transpec
                   END
                 end
 
-                it 'converts into `expect(subject.words.size).to eq(1)` form' do
+                it 'converts to `expect(obj.words.size).to eq(1)` form' do
                   have_object.convert_to_standard_expectation!
                   rewritten_source.should == expected_source
                 end
@@ -846,7 +846,7 @@ module Transpec
                   END
                 end
 
-                it 'converts into `expect(subject.size).to eq(1)` form' do
+                it 'converts to `expect(obj.size).to eq(1)` form' do
                   have_object.convert_to_standard_expectation!
                   rewritten_source.should == expected_source
                 end
@@ -897,7 +897,7 @@ module Transpec
               END
             end
 
-            it 'converts into `expect(subject.size).to eq(1)` form' do
+            it 'converts to `expect(obj.size).to eq(1)` form' do
               have_object.convert_to_standard_expectation!
               rewritten_source.should == expected_source
             end
@@ -910,7 +910,7 @@ module Transpec
           end
         end
 
-        context 'when it is `expect(subject).to have(2).errors_on(:name)` form' do
+        context 'with expression `expect(obj).to have(2).errors_on(:name)`' do
           let(:have_object) { expect_object.have_matcher }
 
           context 'with runtime information' do
@@ -949,7 +949,7 @@ module Transpec
                 END
               end
 
-              it 'converts into `expect(subject.errors_on(:name).size).to eq(2)` form' do
+              it 'converts to `expect(obj.errors_on(:name).size).to eq(2)` form' do
                 have_object.convert_to_standard_expectation!
                 rewritten_source.should == expected_source
               end
@@ -999,7 +999,7 @@ module Transpec
                 END
               end
 
-              it 'converts into `expect(subject.send(:errors_on, :name).size).to eq(2)` form' do
+              it 'converts to `expect(obj.send(:errors_on, :name).size).to eq(2)` form' do
                 have_object.convert_to_standard_expectation!
                 rewritten_source.should == expected_source
               end
@@ -1046,7 +1046,7 @@ module Transpec
               END
             end
 
-            it 'converts into `expect(subject.errors_on(:name).size).to eq(2)` form' do
+            it 'converts to `expect(obj.errors_on(:name).size).to eq(2)` form' do
               have_object.convert_to_standard_expectation!
               rewritten_source.should == expected_source
             end
@@ -1060,7 +1060,7 @@ module Transpec
           end
         end
 
-        context 'when it is `expect(method_returns_collection :some_arg).to have(2).items` form' do
+        context 'with expression `expect(method_returns_collection :some_arg).to have(2).items`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -1083,13 +1083,13 @@ module Transpec
 
           let(:have_object) { expect_object.have_matcher }
 
-          it 'converts into `expect(method_returns_collection(:some_arg).size).to eq(2)` form' do
+          it 'converts to `expect(method_returns_collection(:some_arg).size).to eq(2)` form' do
             have_object.convert_to_standard_expectation!
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is `expect(method_returns_collection(:some_arg) { do_something }).to have(2).items` form' do
+        context 'with expression `expect(method_returns_collection(:some_arg) { do_something }).to have(2).items`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -1112,13 +1112,13 @@ module Transpec
 
           let(:have_object) { expect_object.have_matcher }
 
-          it 'converts into `expect(method_returns_collection(:some_arg) { do_something }.size).to eq(2)` form' do
+          it 'converts to `expect(method_returns_collection(:some_arg) { do_something }.size).to eq(2)` form' do
             have_object.convert_to_standard_expectation!
             rewritten_source.should == expected_source
           end
         end
 
-        context "when it is `expect(hash['some_key']).to have(2).items` form" do
+        context "with expression `expect(hash['some_key']).to have(2).items`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -1141,13 +1141,13 @@ module Transpec
 
           let(:have_object) { expect_object.have_matcher }
 
-          fit "converts into `expect(hash['some_key'].size).to eq(2)` form" do
+          fit "converts to `expect(hash['some_key'].size).to eq(2)` form" do
             have_object.convert_to_standard_expectation!
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is `it { should have(2).items }` form' do
+        context 'with expression `it { should have(2).items }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -1166,7 +1166,7 @@ module Transpec
 
           let(:have_object) { oneliner_should_object.have_matcher }
 
-          it "converts into `it { should == 2 }` form since there's no subject" do
+          it "converts to `it { should == 2 }` form since there's no subject" do
             have_object.convert_to_standard_expectation!
             rewritten_source.should == expected_source
           end

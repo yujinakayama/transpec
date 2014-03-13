@@ -19,7 +19,7 @@ module Transpec
           raise_error_object.remove_error_specification_with_negative_expectation!
         end
 
-        context 'when it is `lambda { }.should raise_error(SpecificErrorClass)` form' do
+        context 'with expression `lambda { }.should raise_error(SpecificErrorClass)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -41,7 +41,7 @@ module Transpec
           end
         end
 
-        context 'when it is `expect { }.to raise_error(SpecificErrorClass)` form' do
+        context 'with expression `expect { }.to raise_error(SpecificErrorClass)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -63,7 +63,7 @@ module Transpec
           end
         end
 
-        context 'when it is `lambda { }.should raise_error(SpecificErrorClass) { |error| ... }` form' do
+        context 'with expression `lambda { }.should raise_error(SpecificErrorClass) { |error| ... }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -85,7 +85,7 @@ module Transpec
           end
         end
 
-        context 'when it is `expect { }.to raise_error(SpecificErrorClass) { |error| ... }` form' do
+        context 'with expression `expect { }.to raise_error(SpecificErrorClass) { |error| ... }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -107,7 +107,7 @@ module Transpec
           end
         end
 
-        context 'when it is `expect { }.to raise_error(SpecificErrorClass).with_message(message)` form' do
+        context 'with expression `expect { }.to raise_error(SpecificErrorClass).with_message(message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -129,7 +129,7 @@ module Transpec
           end
         end
 
-        context 'when it is `lambda { }.should_not raise_error(SpecificErrorClass)` form' do
+        context 'with expression `lambda { }.should_not raise_error(SpecificErrorClass)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -152,7 +152,7 @@ module Transpec
 
           let(:raise_error_object) { should_object.raise_error_matcher }
 
-          it 'converts into `lambda { }.should_not raise_error` form' do
+          it 'converts to `lambda { }.should_not raise_error` form' do
             rewritten_source.should == expected_source
           end
 
@@ -163,7 +163,7 @@ module Transpec
           end
         end
 
-        context 'when it is `expect { }.not_to raise_error(SpecificErrorClass)` form' do
+        context 'with expression `expect { }.not_to raise_error(SpecificErrorClass)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -186,12 +186,12 @@ module Transpec
 
           let(:raise_error_object) { expect_object.raise_error_matcher }
 
-          it 'converts into `expect { }.not_to raise_error` form' do
+          it 'converts to `expect { }.not_to raise_error` form' do
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is `expect { }.to_not raise_error(SpecificErrorClass)` form' do
+        context 'with expression `expect { }.to_not raise_error(SpecificErrorClass)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -214,7 +214,7 @@ module Transpec
 
           let(:raise_error_object) { expect_object.raise_error_matcher }
 
-          it 'converts into `expect { }.to_not raise_error` form' do
+          it 'converts to `expect { }.to_not raise_error` form' do
             rewritten_source.should == expected_source
           end
 
@@ -225,7 +225,7 @@ module Transpec
           end
         end
 
-        context 'when it is `expect { }.not_to raise_error SpecificErrorClass` form' do
+        context 'with expression `expect { }.not_to raise_error SpecificErrorClass`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -248,7 +248,7 @@ module Transpec
 
           let(:raise_error_object) { expect_object.raise_error_matcher }
 
-          it 'converts into `expect { }.not_to raise_error` form' do
+          it 'converts to `expect { }.not_to raise_error` form' do
             rewritten_source.should == expected_source
           end
 
@@ -259,7 +259,7 @@ module Transpec
           end
         end
 
-        context 'when it is `expect { }.not_to raise_error(SpecificErrorClass, message)` form' do
+        context 'with expression `expect { }.not_to raise_error(SpecificErrorClass, message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -282,7 +282,7 @@ module Transpec
 
           let(:raise_error_object) { expect_object.raise_error_matcher }
 
-          it 'converts into `expect { }.not_to raise_error` form' do
+          it 'converts to `expect { }.not_to raise_error` form' do
             rewritten_source.should == expected_source
           end
 
@@ -293,7 +293,7 @@ module Transpec
           end
         end
 
-        context 'when it is `expect { }.not_to raise_error(message)` form' do
+        context 'with expression `expect { }.not_to raise_error(message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -316,7 +316,7 @@ module Transpec
 
           let(:raise_error_object) { expect_object.raise_error_matcher }
 
-          it 'converts into `expect { }.not_to raise_error` form' do
+          it 'converts to `expect { }.not_to raise_error` form' do
             rewritten_source.should == expected_source
           end
 

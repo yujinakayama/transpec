@@ -117,7 +117,7 @@ module Transpec
         end
 
         [:mock, :stub].each do |method|
-          context "when it is ##{method}" do
+          context "with expression `#{method}('something')`" do
             let(:source) do
               <<-END
                 describe 'example' do
@@ -140,7 +140,7 @@ module Transpec
               END
             end
 
-            it 'replaces with #double' do
+            it "converts to `#{method}('something')`" do
               rewritten_source.should == expected_source
             end
 
@@ -152,7 +152,7 @@ module Transpec
           end
         end
 
-        context 'when it is #double' do
+        context "with expression `double('something')`" do
           let(:source) do
             <<-END
               describe 'example' do

@@ -37,7 +37,7 @@ module Transpec
 
         let(:parenthesize_arg) { true }
 
-        context 'when it is `== 1` form' do
+        context 'with expression `== 1`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -58,7 +58,7 @@ module Transpec
             END
           end
 
-          it 'converts into `eq(1)` form' do
+          it 'converts to `eq(1)` form' do
             rewritten_source.should == expected_source
           end
 
@@ -114,7 +114,7 @@ module Transpec
           end
         end
 
-        context 'when it is `==1` form' do
+        context 'with expression `==1`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -135,7 +135,7 @@ module Transpec
             END
           end
 
-          it 'converts into `eq(1)` form' do
+          it 'converts to `eq(1)` form' do
             rewritten_source.should == expected_source
           end
 
@@ -152,13 +152,13 @@ module Transpec
               END
             end
 
-            it 'converts into `eq 1` form' do
+            it 'converts to `eq 1` form' do
               rewritten_source.should == expected_source
             end
           end
         end
 
-        context 'when it is `be == 1` form' do
+        context 'with expression `be == 1`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -179,7 +179,7 @@ module Transpec
             END
           end
 
-          it 'converts into `eq(1)` form' do
+          it 'converts to `eq(1)` form' do
             rewritten_source.should == expected_source
           end
 
@@ -190,7 +190,7 @@ module Transpec
           end
         end
 
-        context 'when it is `be.==(1)` form' do
+        context 'with expression `be.==(1)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -211,12 +211,12 @@ module Transpec
             END
           end
 
-          it 'converts into `eq(1)` form' do
+          it 'converts to `eq(1)` form' do
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is `== (2 - 1)` form' do
+        context 'with expression `== (2 - 1)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -237,12 +237,12 @@ module Transpec
             END
           end
 
-          it 'converts into `eq(2 - 1)` form without superfluous parentheses' do
+          it 'converts to `eq(2 - 1)` form without superfluous parentheses' do
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is `== (5 - 3) / (4 - 2)` form' do
+        context 'with expression `== (5 - 3) / (4 - 2)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -263,12 +263,12 @@ module Transpec
             END
           end
 
-          it 'converts into `eq((5 - 3) / (4 - 2))` form' do
+          it 'converts to `eq((5 - 3) / (4 - 2))` form' do
             rewritten_source.should == expected_source
           end
         end
 
-        context "when it is `== { 'key' => 'value' }` form" do
+        context "with expression `== { 'key' => 'value' }`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -289,7 +289,7 @@ module Transpec
             END
           end
 
-          it "converts into `eq({ 'key' => 'value' })` form" do
+          it "converts to `eq({ 'key' => 'value' })` form" do
             rewritten_source.should == expected_source
           end
 
@@ -309,7 +309,7 @@ module Transpec
           [:>,   'is greater than'],
           [:>=,  'is greater than or equals to']
         ].each do |operator, description|
-          context "when it is `#{operator} 1` form" do
+          context "with expression `#{operator} 1`" do
             let(:source) do
               <<-END
                 describe 'example' do
@@ -330,7 +330,7 @@ module Transpec
               END
             end
 
-            it "converts into `be #{operator} 1` form" do
+            it "converts to `be #{operator} 1` form" do
               rewritten_source.should == expected_source
             end
 
@@ -341,7 +341,7 @@ module Transpec
             end
           end
 
-          context "when it is `be #{operator} 1` form" do
+          context "with expression `be #{operator} 1`" do
             let(:source) do
               <<-END
                 describe 'example' do
@@ -362,7 +362,7 @@ module Transpec
           end
         end
 
-        context 'when it is `=~ /pattern/` form' do
+        context 'with expression `=~ /pattern/`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -383,7 +383,7 @@ module Transpec
             END
           end
 
-          it 'converts into `match(/pattern/)` form' do
+          it 'converts to `match(/pattern/)` form' do
             rewritten_source.should == expected_source
           end
 
@@ -394,7 +394,7 @@ module Transpec
           end
         end
 
-        context 'when it is `=~/pattern/` form' do
+        context 'with expression `=~/pattern/`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -415,12 +415,12 @@ module Transpec
             END
           end
 
-          it 'converts into `match(/pattern/)` form' do
+          it 'converts to `match(/pattern/)` form' do
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is `be =~ /pattern/` form' do
+        context 'with expression `be =~ /pattern/`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -441,12 +441,12 @@ module Transpec
             END
           end
 
-          it 'converts into `match(/pattern/)` form' do
+          it 'converts to `match(/pattern/)` form' do
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is `=~ [1, 2]` form' do
+        context 'with expression `=~ [1, 2]`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -467,7 +467,7 @@ module Transpec
             END
           end
 
-          it 'converts into `match_array([1, 2])` form' do
+          it 'converts to `match_array([1, 2])` form' do
             rewritten_source.should == expected_source
           end
 
@@ -478,7 +478,7 @@ module Transpec
           end
         end
 
-        context 'when it is `=~[1, 2]` form' do
+        context 'with expression `=~[1, 2]`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -499,12 +499,12 @@ module Transpec
             END
           end
 
-          it 'converts into `match_array([1, 2])` form' do
+          it 'converts to `match_array([1, 2])` form' do
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is `be =~ [1, 2]` form' do
+        context 'with expression `be =~ [1, 2]`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -525,12 +525,12 @@ module Transpec
             END
           end
 
-          it 'converts into `match_array([1, 2])` form' do
+          it 'converts to `match_array([1, 2])` form' do
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is `=~ variable` form' do
+        context 'with expression `=~ variable`' do
           context 'and runtime type of the variable is array' do
             include_context 'dynamic analysis objects'
 
@@ -556,7 +556,7 @@ module Transpec
               END
             end
 
-            it 'converts into `match_array(variable)` form' do
+            it 'converts to `match_array(variable)` form' do
               rewritten_source.should == expected_source
             end
 
@@ -592,7 +592,7 @@ module Transpec
               END
             end
 
-            it 'converts into `match(variable)` form' do
+            it 'converts to `match(variable)` form' do
               rewritten_source.should == expected_source
             end
 
@@ -624,7 +624,7 @@ module Transpec
               END
             end
 
-            it 'converts into `match(variable)` form' do
+            it 'converts to `match(variable)` form' do
               rewritten_source.should == expected_source
             end
 
@@ -640,7 +640,7 @@ module Transpec
           end
         end
 
-        context 'when it is `be =~ variable` form' do
+        context 'with expression `be =~ variable`' do
           context 'and no runtime type information is provided' do
             let(:source) do
               <<-END
@@ -662,7 +662,7 @@ module Transpec
               END
             end
 
-            it 'converts into `match(variable)` form' do
+            it 'converts to `match(variable)` form' do
               rewritten_source.should == expected_source
             end
 

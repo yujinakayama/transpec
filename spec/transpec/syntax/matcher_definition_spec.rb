@@ -22,7 +22,7 @@ module Transpec
           [:failure_message_for_should,     :failure_message],
           [:failure_message_for_should_not, :failure_message_when_negated]
         ].each do |target_method, converted_method|
-          context "when it is `#{target_method} { }` form" do
+          context "with expression `#{target_method} { }`" do
             let(:source) do
               <<-END
                 RSpec::Matchers.define :be_awesome do |expected|
@@ -43,7 +43,7 @@ module Transpec
               END
             end
 
-            it "converts into `#{converted_method} { }` form" do
+            it "converts to `#{converted_method} { }` form" do
               rewritten_source.should == expected_source
             end
 

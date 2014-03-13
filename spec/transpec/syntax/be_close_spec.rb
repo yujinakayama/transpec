@@ -14,7 +14,7 @@ module Transpec
           be_close_object.convert_to_be_within!
         end
 
-        context 'when it is `be_close(expected, delta)` form' do
+        context 'with expression `be_close(expected, delta)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -35,7 +35,7 @@ module Transpec
             END
           end
 
-          it 'converts into `be_within(delta).of(expected)` form' do
+          it 'converts to `be_within(delta).of(expected)` form' do
             rewritten_source.should == expected_source
           end
 

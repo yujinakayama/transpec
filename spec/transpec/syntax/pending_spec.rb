@@ -70,7 +70,7 @@ module Transpec
           pending_object.convert_deprecated_syntax!
         end
 
-        context 'when it is `pending` form' do
+        context 'with expression `pending`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -91,7 +91,7 @@ module Transpec
             END
           end
 
-          it 'converts into `skip` form' do
+          it 'converts to `skip` form' do
             rewritten_source.should == expected_source
           end
 
@@ -101,7 +101,7 @@ module Transpec
           end
         end
 
-        context "when it is `pending 'some reason'` form" do
+        context "with expression `pending 'some reason'`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -122,7 +122,7 @@ module Transpec
             END
           end
 
-          it "converts into `skip 'some reason` form" do
+          it "converts to `skip 'some reason` form" do
             rewritten_source.should == expected_source
           end
 
@@ -132,7 +132,7 @@ module Transpec
           end
         end
 
-        context 'when it is singleline `pending { do_something_fail }` form' do
+        context 'with expression singleline `pending { do_something_fail }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -154,7 +154,7 @@ module Transpec
             END
           end
 
-          it 'converts into `pending; do_something_fail` form' do
+          it 'converts to `pending; do_something_fail` form' do
             rewritten_source.should == expected_source
           end
 
@@ -164,7 +164,7 @@ module Transpec
           end
         end
 
-        context "when it is singleline `pending('some reason') { do_something_fail }` form" do
+        context "with expression singleline `pending('some reason') { do_something_fail }`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -186,12 +186,12 @@ module Transpec
             END
           end
 
-          it "converts into `pending('some reason'); do_something_fail` form" do
+          it "converts to `pending('some reason'); do_something_fail` form" do
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is multiline `pending { do_something_fail }` form' do
+        context 'with expression multiline `pending { do_something_fail }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -217,12 +217,12 @@ module Transpec
             END
           end
 
-          it 'converts into `pending; do_something_fail` form' do
+          it 'converts to `pending; do_something_fail` form' do
             rewritten_source.should == expected_source
           end
         end
 
-        context "when it is multiline `pending('some reason') { do_something_fail }` form" do
+        context "with expression multiline `pending('some reason') { do_something_fail }`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -248,12 +248,12 @@ module Transpec
             END
           end
 
-          it "converts into `pending('some reason'); do_something_fail` form" do
+          it "converts to `pending('some reason'); do_something_fail` form" do
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is multiline `pending { do_something_fail }` form ' \
+        context 'with expression multiline `pending { do_something_fail }` ' \
                 'but the body is not indented' do
           let(:source) do
             <<-END
@@ -280,12 +280,12 @@ module Transpec
             END
           end
 
-          it 'converts into `pending; do_something_fail` form' do
+          it 'converts to `pending; do_something_fail` form' do
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is multiline `pending { do_something_fail }` form ' \
+        context 'with expression multiline `pending { do_something_fail }` ' \
                 'but the body is outdented' do
           let(:source) do
             <<-END
@@ -312,12 +312,12 @@ module Transpec
             END
           end
 
-          it 'converts into `pending; do_something_fail` form' do
+          it 'converts to `pending; do_something_fail` form' do
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is multiline `pending { do_something_fail }` form ' \
+        context 'with expression multiline `pending { do_something_fail }` ' \
                 'but anomalistically the beginning and the body of block are same line' do
           let(:source) do
             <<-END
@@ -341,12 +341,12 @@ module Transpec
             END
           end
 
-          it 'converts into `pending; do_something_fail` form' do
+          it 'converts to `pending; do_something_fail` form' do
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is multiline `pending { do_something_fail }` form ' \
+        context 'with expression multiline `pending { do_something_fail }` ' \
                 'but anomalistically the body and the end of block are same line' do
           let(:source) do
             <<-END
@@ -370,7 +370,7 @@ module Transpec
             END
           end
 
-          it 'converts into `pending; do_something_fail` form' do
+          it 'converts to `pending; do_something_fail` form' do
             rewritten_source.should == expected_source
           end
         end

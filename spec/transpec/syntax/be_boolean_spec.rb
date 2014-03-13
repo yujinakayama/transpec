@@ -18,7 +18,7 @@ module Transpec
 
         let(:arg) { 'be_falsey' }
 
-        context 'when it is `be_true`' do
+        context 'with expression `be_true`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -39,7 +39,7 @@ module Transpec
             END
           end
 
-          it 'converts into `be_truthy`' do
+          it 'converts to `be_truthy`' do
             rewritten_source.should == expected_source
           end
 
@@ -49,7 +49,7 @@ module Transpec
           end
         end
 
-        context 'when it is `be_false`' do
+        context 'with expression `be_false`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -70,7 +70,7 @@ module Transpec
             END
           end
 
-          it 'converts into `be_falsey`' do
+          it 'converts to `be_falsey`' do
             rewritten_source.should == expected_source
           end
 
@@ -92,7 +92,7 @@ module Transpec
               END
             end
 
-            it 'converts into `be_falsy`' do
+            it 'converts to `be_falsy`' do
               rewritten_source.should == expected_source
             end
 
@@ -109,7 +109,7 @@ module Transpec
           be_boolean_object.convert_to_exact_matcher!
         end
 
-        context 'when it is `be_true`' do
+        context 'with expression `be_true`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -130,7 +130,7 @@ module Transpec
             END
           end
 
-          it 'converts into `be true`' do
+          it 'converts to `be true`' do
             rewritten_source.should == expected_source
           end
 
@@ -140,7 +140,7 @@ module Transpec
           end
         end
 
-        context 'when it is `be_false`' do
+        context 'with expression `be_false`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -161,7 +161,7 @@ module Transpec
             END
           end
 
-          it 'converts into `be false`' do
+          it 'converts to `be false`' do
             rewritten_source.should == expected_source
           end
 

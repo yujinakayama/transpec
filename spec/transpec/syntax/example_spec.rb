@@ -70,7 +70,7 @@ module Transpec
       describe '#metadata_key_nodes' do
         subject { example_object.metadata_key_nodes }
 
-        context 'when it is `it { }` form' do
+        context 'with expression `it { }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -84,7 +84,7 @@ module Transpec
           end
         end
 
-        context "when it is `it 'description' { }` form" do
+        context "with expression `it 'description' { }`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -100,7 +100,7 @@ module Transpec
           end
         end
 
-        context "when it is `it 'description', :foo { }` form" do
+        context "with expression `it 'description', :foo { }`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -116,7 +116,7 @@ module Transpec
           end
         end
 
-        context "when it is `it 'description', foo: true { }` form" do
+        context "with expression `it 'description', foo: true { }`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -132,7 +132,7 @@ module Transpec
           end
         end
 
-        context "when it is `it 'description', :foo, :bar, baz: true { }` form" do
+        context "with expression `it 'description', :foo, :bar, baz: true { }`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -154,7 +154,7 @@ module Transpec
           example_object.convert_pending_to_skip!
         end
 
-        context "when it is `pending 'is an example' { }` form" do
+        context "with expression `pending 'is an example' { }`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -175,7 +175,7 @@ module Transpec
             END
           end
 
-          it "converts into `skip 'is an example' { }` form" do
+          it "converts to `skip 'is an example' { }` form" do
             rewritten_source.should == expected_source
           end
 
@@ -185,7 +185,7 @@ module Transpec
           end
         end
 
-        context "when it is `it 'is an example' { }` form" do
+        context "with expression `it 'is an example' { }`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -201,7 +201,7 @@ module Transpec
           end
         end
 
-        context "when it is `it 'is an example', :pending { }` form" do
+        context "with expression `it 'is an example', :pending { }`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -222,7 +222,7 @@ module Transpec
             END
           end
 
-          it "converts into `it 'is an example', :skip { }` form" do
+          it "converts to `it 'is an example', :skip { }` form" do
             rewritten_source.should == expected_source
           end
 
@@ -232,7 +232,7 @@ module Transpec
           end
         end
 
-        context "when it is `it 'description', :pending => true { }` form" do
+        context "with expression `it 'description', :pending => true { }`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -253,7 +253,7 @@ module Transpec
             END
           end
 
-          it "converts into `it 'description', :skip => true { }` form" do
+          it "converts to `it 'description', :skip => true { }` form" do
             rewritten_source.should == expected_source
           end
 
@@ -263,7 +263,7 @@ module Transpec
           end
         end
 
-        context "when it is `it 'description', pending: true { }` form" do
+        context "with expression `it 'description', pending: true { }`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -284,7 +284,7 @@ module Transpec
             END
           end
 
-          it "converts into `it 'description', skip: true { }` form" do
+          it "converts to `it 'description', skip: true { }` form" do
             rewritten_source.should == expected_source
           end
 

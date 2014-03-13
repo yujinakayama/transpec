@@ -154,7 +154,7 @@ module Transpec
       describe '#hash_arg?' do
         subject { method_stub_object.hash_arg? }
 
-        context 'when it is `subject.stub(:method => value)` form' do
+        context 'with expression `obj.stub(:message => value)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -168,7 +168,7 @@ module Transpec
           it { should be_true }
         end
 
-        context 'when it is `subject.stub(:method)` form' do
+        context 'with expression `obj.stub(:message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -190,7 +190,7 @@ module Transpec
 
         let(:rspec_version) { Transpec.required_rspec_version }
 
-        context 'when it is `subject.stub(:method)` form' do
+        context 'with expression `obj.stub(:message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -211,7 +211,7 @@ module Transpec
             END
           end
 
-          it 'converts into `allow(subject).to receive(:method)` form' do
+          it 'converts to `allow(obj).to receive(:message)` form' do
             rewritten_source.should == expected_source
           end
 
@@ -223,7 +223,7 @@ module Transpec
           context 'with runtime information' do
             include_context 'dynamic analysis objects'
 
-            it 'converts into `allow(subject).to receive(:method)` form' do
+            it 'converts to `allow(obj).to receive(:message)` form' do
               rewritten_source.should == expected_source
             end
           end
@@ -297,7 +297,7 @@ module Transpec
           end
         end
 
-        context 'when it is `subject.stub!(:method)` form' do
+        context 'with expression `obj.stub!(:message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -318,7 +318,7 @@ module Transpec
             END
           end
 
-          it 'converts into `allow(subject).to receive(:method)` form' do
+          it 'converts to `allow(obj).to receive(:message)` form' do
             rewritten_source.should == expected_source
           end
 
@@ -328,7 +328,7 @@ module Transpec
           end
         end
 
-        context 'when it is `subject.stub(:method).and_return(value)` form' do
+        context 'with expression `obj.stub(:message).and_return(value)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -349,12 +349,12 @@ module Transpec
             END
           end
 
-          it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
+          it 'converts to `allow(obj).to receive(:message).and_return(value)` form' do
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is `subject.stub(:method).and_raise(RuntimeError)` form' do
+        context 'with expression `obj.stub(:message).and_raise(RuntimeError)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -375,7 +375,7 @@ module Transpec
             END
           end
 
-          it 'converts into `allow(subject).to receive(:method).and_raise(RuntimeError)` form' do
+          it 'converts to `allow(obj).to receive(:message).and_raise(RuntimeError)` form' do
             rewritten_source.should == expected_source
           end
         end
@@ -416,7 +416,7 @@ module Transpec
           end
         end
 
-        context 'when it is `subject.stub(:method => value)` form' do
+        context 'with expression `obj.stub(:message => value)`' do
           context 'and #receive_messages is available' do
             # #before here does not work because #allowized! is invoked in super #before.
             let(:rspec_version) do
@@ -445,7 +445,7 @@ module Transpec
               END
             end
 
-            it 'converts into `allow(subject).to receive_messages(:method => value)` form' do
+            it 'converts to `allow(obj).to receive_messages(:message => value)` form' do
               rewritten_source.should == expected_source
             end
 
@@ -477,7 +477,7 @@ module Transpec
               END
             end
 
-            it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
+            it 'converts to `allow(obj).to receive(:message).and_return(value)` form' do
               rewritten_source.should == expected_source
             end
 
@@ -489,7 +489,7 @@ module Transpec
           end
         end
 
-        context 'when it is `subject.stub(method: value)` form' do
+        context 'with expression `obj.stub(method: value)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -510,7 +510,7 @@ module Transpec
             END
           end
 
-          it 'converts into `allow(subject).to receive(:method).and_return(value)` form' do
+          it 'converts to `allow(obj).to receive(:message).and_return(value)` form' do
             rewritten_source.should == expected_source
           end
 
@@ -521,7 +521,7 @@ module Transpec
           end
         end
 
-        context 'when it is `subject.stub(:a_method => a_value, b_method => b_value)` form' do
+        context 'with expression `obj.stub(:a_method => a_value, b_method => b_value)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -543,8 +543,8 @@ module Transpec
             END
           end
 
-          it 'converts into `allow(subject).to receive(:a_method).and_return(a_value)` ' \
-             'and `allow(subject).to receive(:b_method).and_return(b_value)` form' do
+          it 'converts to `allow(obj).to receive(:a_method).and_return(a_value)` ' \
+             'and `allow(obj).to receive(:b_method).and_return(b_value)`' do
             rewritten_source.should == expected_source
           end
 
@@ -631,7 +631,7 @@ module Transpec
           end
         end
 
-        context 'when it is `subject.stub_chain(:foo, :bar => value)` form' do
+        context 'with expression `obj.stub_chain(:foo, :bar => value)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -660,7 +660,7 @@ module Transpec
               rspec_version
             end
 
-            it 'converts into `allow(subject).to receive_message_chain(:foo, :bar => value)` form' do
+            it 'converts to `allow(obj).to receive_message_chain(:foo, :bar => value)` form' do
               rewritten_source.should == expected_source
             end
 
@@ -679,7 +679,7 @@ module Transpec
         end
 
         [:unstub, :unstub!].each do |method|
-          context "when it is `subject.#{method}(:method)` form" do
+          context "with expression `obj.#{method}(:message)`" do
             let(:source) do
               <<-END
                 describe 'example' do
@@ -700,7 +700,7 @@ module Transpec
           end
         end
 
-        context 'when it is `Klass.any_instance.stub(:method)` form' do
+        context 'with expression `Klass.any_instance.stub(:message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -721,7 +721,7 @@ module Transpec
             END
           end
 
-          it 'converts into `allow_any_instance_of(Klass).to receive(:method)` form' do
+          it 'converts to `allow_any_instance_of(Klass).to receive(:message)` form' do
             rewritten_source.should == expected_source
           end
 
@@ -771,7 +771,7 @@ module Transpec
           end
         end
 
-        context 'when it is `described_class.any_instance.stub(:method)` form' do
+        context 'with expression `described_class.any_instance.stub(:message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -792,7 +792,7 @@ module Transpec
             END
           end
 
-          it 'converts into `allow_any_instance_of(described_class).to receive(:method)` form' do
+          it 'converts to `allow_any_instance_of(described_class).to receive(:message)` form' do
             rewritten_source.should == expected_source
           end
 
@@ -803,7 +803,7 @@ module Transpec
           end
         end
 
-        context 'when it is `variable.any_instance.stub(:method)` form ' \
+        context 'with expression `variable.any_instance.stub(:message)` ' \
                 'and the variable is an AnyInstance::Recorder' do
           context 'with runtime information' do
             include_context 'dynamic analysis objects'
@@ -830,7 +830,7 @@ module Transpec
               END
             end
 
-            it 'converts into `allow_any_instance_of(Klass).to receive(:method)` form' do
+            it 'converts to `allow_any_instance_of(Klass).to receive(:message)` form' do
               rewritten_source.should == expected_source
             end
 
@@ -843,7 +843,7 @@ module Transpec
         end
 
         [:unstub, :unstub!].each do |method|
-          context "when it is `Klass.any_instance.#{method}(:method)` form" do
+          context "with expression `Klass.any_instance.#{method}(:message)`" do
             let(:source) do
               <<-END
                 describe 'example' do
@@ -874,7 +874,7 @@ module Transpec
           [:stub!,   :stub,   'responds to'],
           [:unstub!, :unstub, 'does not respond to']
         ].each do |method, replacement_method, description|
-          context "when it is ##{method}" do
+          context "with expression `obj.#{method}(:message)`" do
             let(:source) do
               <<-END
                 describe 'example' do
@@ -895,7 +895,7 @@ module Transpec
               END
             end
 
-            it "replaces with ##{replacement_method}" do
+            it "converts to `obj.##{replacement_method}(:message)`" do
               rewritten_source.should == expected_source
             end
 
@@ -911,7 +911,7 @@ module Transpec
           [:stub,   'responds to'],
           [:unstub, 'does not respond to']
         ].each do |method, description|
-          context "when it is ##{method}" do
+          context "with expression `obj.#{method}(:message)`" do
             let(:source) do
               <<-END
                 describe 'example' do
@@ -936,7 +936,7 @@ module Transpec
       describe '#allow_no_message?' do
         subject { method_stub_object.allow_no_message? }
 
-        context 'when it is `subject.stub(:method).any_number_of_times` form' do
+        context 'with expression `obj.stub(:message).any_number_of_times`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -950,7 +950,7 @@ module Transpec
           it { should be_true }
         end
 
-        context 'when it is `subject.stub(:method).with(arg).any_number_of_times` form' do
+        context 'with expression `obj.stub(:message).with(arg).any_number_of_times`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -964,7 +964,7 @@ module Transpec
           it { should be_true }
         end
 
-        context 'when it is `subject.stub(:method).at_least(0)` form' do
+        context 'with expression `obj.stub(:message).at_least(0)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -978,7 +978,7 @@ module Transpec
           it { should be_true }
         end
 
-        context 'when it is `subject.stub(:method)` form' do
+        context 'with expression `obj.stub(:message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -998,7 +998,7 @@ module Transpec
           method_stub_object.remove_no_message_allowance!
         end
 
-        context 'when it is `subject.stub(:method).any_number_of_times` form' do
+        context 'with expression `obj.stub(:message).any_number_of_times`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -1030,7 +1030,7 @@ module Transpec
           end
         end
 
-        context 'when it is `subject.stub(:method).at_least(0)` form' do
+        context 'with expression `obj.stub(:message).at_least(0)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -1062,7 +1062,7 @@ module Transpec
           end
         end
 
-        context 'when it is `subject.stub(:method)` form' do
+        context 'with expression `obj.stub(:message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -1084,7 +1084,7 @@ module Transpec
           method_stub_object.remove_useless_and_return!
         end
 
-        context 'when it is `subject.stub(:method).and_return { value }` form' do
+        context 'with expression `obj.stub(:message).and_return { value }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -1105,7 +1105,7 @@ module Transpec
             END
           end
 
-          it 'converts into `subject.stub(:method) { value }` form' do
+          it 'converts to `obj.stub(:message) { value }` form' do
             rewritten_source.should == expected_source
           end
 
@@ -1115,7 +1115,7 @@ module Transpec
           end
         end
 
-        context 'when it is `subject.stub(:method).and_return` form' do
+        context 'with expression `obj.stub(:message).and_return`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -1136,7 +1136,7 @@ module Transpec
             END
           end
 
-          it 'converts into `subject.stub(:method)` form' do
+          it 'converts to `obj.stub(:message)` form' do
             rewritten_source.should == expected_source
           end
 
@@ -1146,7 +1146,7 @@ module Transpec
           end
         end
 
-        context 'when it is `subject.stub(:method).and_return(value)` form' do
+        context 'with expression `obj.stub(:message).and_return(value)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -1169,7 +1169,7 @@ module Transpec
           method_stub_object.add_receiver_arg_to_any_instance_implementation_block!
         end
 
-        context 'when it is `Klass.any_instance.stub(:method) do |arg| .. end` form' do
+        context 'with expression `Klass.any_instance.stub(:message) do |arg| .. end`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -1192,7 +1192,7 @@ module Transpec
             END
           end
 
-          it 'converts into `Klass.any_instance.stub(:method) do |instance, arg| .. end` form' do
+          it 'converts to `Klass.any_instance.stub(:message) do |instance, arg| .. end` form' do
             rewritten_source.should == expected_source
           end
 

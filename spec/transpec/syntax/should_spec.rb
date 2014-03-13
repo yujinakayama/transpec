@@ -185,7 +185,7 @@ module Transpec
           end
         end
 
-        context 'when it is `subject.should` form' do
+        context 'with expression `obj.should`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -206,7 +206,7 @@ module Transpec
             END
           end
 
-          it 'converts into `expect(subject).to` form' do
+          it 'converts to `expect(obj).to` form' do
             should_object.expectize!
             rewritten_source.should == expected_source
           end
@@ -316,7 +316,7 @@ module Transpec
           end
         end
 
-        context 'when it is `subject.should_not` form' do
+        context 'with expression `obj.should_not`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -337,7 +337,7 @@ module Transpec
             END
           end
 
-          it 'converts into `expect(subject).not_to` form' do
+          it 'converts to `expect(obj).not_to` form' do
             should_object.expectize!
             rewritten_source.should == expected_source
           end
@@ -359,7 +359,7 @@ module Transpec
               END
             end
 
-            it 'converts into `expect(subject).to_not` form' do
+            it 'converts to `expect(obj).to_not` form' do
               should_object.expectize!('to_not')
               rewritten_source.should == expected_source
             end
@@ -372,7 +372,7 @@ module Transpec
           end
         end
 
-        context 'when it is `(subject).should` form' do
+        context 'with expression `(obj).should`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -393,13 +393,13 @@ module Transpec
             END
           end
 
-          it 'converts into `expect(subject).to` form without superfluous parentheses' do
+          it 'converts to `expect(obj).to` form without superfluous parentheses' do
             should_object.expectize!
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is `subject.should() == 1` form' do
+        context 'with expression `obj.should() == 1`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -420,7 +420,7 @@ module Transpec
             END
           end
 
-          it 'converts into `expect(subject).to eq(1)` form' do
+          it 'converts to `expect(obj).to eq(1)` form' do
             should_object.expectize!
             rewritten_source.should == expected_source
           end
@@ -432,7 +432,7 @@ module Transpec
           'Proc.new', '::Proc.new',
           '->'
         ].each do |method|
-          context "when it is `#{method} { ... }.should` form" do
+          context "with expression `#{method} { ... }.should`" do
             let(:source) do
               <<-END
                 describe 'example' do
@@ -453,7 +453,7 @@ module Transpec
               END
             end
 
-            it 'converts into `expect {...}.to` form' do
+            it 'converts to `expect {...}.to` form' do
               should_object.expectize!
               rewritten_source.should == expected_source
             end
@@ -467,7 +467,7 @@ module Transpec
         end
 
         ['MyObject.lambda', 'MyObject.proc', 'MyObject.new'].each do |method|
-          context "when it is `#{method} { ... }.should` form" do
+          context "with expression `#{method} { ... }.should`" do
             let(:source) do
               <<-END
                 describe 'example' do
@@ -488,14 +488,14 @@ module Transpec
               END
             end
 
-            it "converts into `expect(#{method} { ... }).to` form" do
+            it "converts to `expect(#{method} { ... }).to` form" do
               should_object.expectize!
               rewritten_source.should == expected_source
             end
           end
         end
 
-        context 'when it is `method { ... }.should` form but the subject value is not proc' do
+        context 'with expression `method { ... }.should` but the subject object is not proc' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -516,7 +516,7 @@ module Transpec
             END
           end
 
-          it 'converts into `expect(method { ... }).to` form' do
+          it 'converts to `expect(method { ... }).to` form' do
             should_object.expectize!
             rewritten_source.should == expected_source
           end

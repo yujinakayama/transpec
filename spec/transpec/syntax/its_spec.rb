@@ -39,7 +39,7 @@ module Transpec
           end
         end
 
-        context 'when it is `its(:size) { ... }` form' do
+        context 'with expression `its(:size) { ... }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -63,7 +63,7 @@ module Transpec
             END
           end
 
-          it "converts into `describe '#size' do subject { super().size }; it { ... } end` form" do
+          it "converts to `describe '#size' do subject { super().size }; it { ... } end` form" do
             rewritten_source.should == expected_source
           end
 
@@ -136,7 +136,7 @@ module Transpec
           end
         end
 
-        context "when it is `its('size') { ... }` form" do
+        context "with expression `its('size') { ... }`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -160,7 +160,7 @@ module Transpec
             END
           end
 
-          it "converts into `describe '#size' do subject { super().size }; it { ... } end` form" do
+          it "converts to `describe '#size' do subject { super().size }; it { ... } end` form" do
             rewritten_source.should == expected_source
           end
 
@@ -170,7 +170,7 @@ module Transpec
           end
         end
 
-        context "when it is `its('size.odd?') { ... }` form" do
+        context "with expression `its('size.odd?') { ... }`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -197,7 +197,7 @@ module Transpec
             END
           end
 
-          it 'converts into nested #describe' do
+          it 'converts to nested #describe' do
             rewritten_source.should == expected_source
           end
 
@@ -207,7 +207,7 @@ module Transpec
           end
         end
 
-        context 'when it is `its([:foo]) { ... }` form' do
+        context 'with expression `its([:foo]) { ... }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -231,7 +231,7 @@ module Transpec
             END
           end
 
-          it "converts into `describe '[:foo]' do subject { super()[:foo] }; it { ... } end` form" do
+          it "converts to `describe '[:foo]' do subject { super()[:foo] }; it { ... } end` form" do
             rewritten_source.should == expected_source
           end
 
@@ -241,7 +241,7 @@ module Transpec
           end
         end
 
-        context "when it is `its(['foo']) { ... }` form" do
+        context "with expression `its(['foo']) { ... }`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -265,7 +265,7 @@ module Transpec
             END
           end
 
-          it "converts into `describe \"['foo']\" do subject { super()['foo'] }; it { ... } end` form" do
+          it "converts to `describe \"['foo']\" do subject { super()['foo'] }; it { ... } end` form" do
             rewritten_source.should == expected_source
           end
 
@@ -275,7 +275,7 @@ module Transpec
           end
         end
 
-        context 'when it is `its([3, 2]) { ... }` form' do
+        context 'with expression `its([3, 2]) { ... }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -299,7 +299,7 @@ module Transpec
             END
           end
 
-          it "converts into `describe '[3, 2]' do subject { super()[3, 2] }; it { ... } end` form" do
+          it "converts to `describe '[3, 2]' do subject { super()[3, 2] }; it { ... } end` form" do
             rewritten_source.should == expected_source
           end
 
@@ -309,7 +309,7 @@ module Transpec
           end
         end
 
-        context 'when it is `its(attribute) { ... }` form' do
+        context 'with expression `its(attribute) { ... }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -343,7 +343,7 @@ module Transpec
             END
           end
 
-          it 'converts into `describe attribute do subject { super().send(attribute) }; it { ... } end` form' do
+          it 'converts to `describe attribute do subject { super().send(attribute) }; it { ... } end` form' do
             rewritten_source.should == expected_source
           end
 
@@ -353,7 +353,7 @@ module Transpec
           end
         end
 
-        context 'when it is `its([1, length]) { ... }` form' do
+        context 'with expression `its([1, length]) { ... }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -387,7 +387,7 @@ module Transpec
             END
           end
 
-          it 'converts into `describe [1, length] do subject { super()[1, length] }; it { ... } end` form' do
+          it 'converts to `describe [1, length] do subject { super()[1, length] }; it { ... } end` form' do
             rewritten_source.should == expected_source
           end
 

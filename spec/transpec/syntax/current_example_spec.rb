@@ -17,7 +17,7 @@ module Transpec
         end
 
         (RSpecDSL::EXAMPLE_METHODS + RSpecDSL::HOOK_METHODS).each do |method|
-          context "when it is `#{method} do example end` form" do
+          context "with expression `#{method} do example end`" do
             let(:source) do
               <<-END
                 describe 'example' do
@@ -38,7 +38,7 @@ module Transpec
               END
             end
 
-            it "converts into `#{method} do |example| example end` form" do
+            it "converts to `#{method} do |example| example end` form" do
               rewritten_source.should == expected_source
             end
 
@@ -50,7 +50,7 @@ module Transpec
         end
 
         RSpecDSL::HELPER_METHODS.each do |method|
-          context "when it is `#{method}(:name) do example end` form" do
+          context "with expression `#{method}(:name) do example end`" do
             let(:source) do
               <<-END
                 describe 'example' do
@@ -71,7 +71,7 @@ module Transpec
               END
             end
 
-            it "converts into `#{method}(:name) do |example| example end` form" do
+            it "converts to `#{method}(:name) do |example| example end` form" do
               rewritten_source.should == expected_source
             end
 
@@ -82,7 +82,7 @@ module Transpec
           end
         end
 
-        context 'when it is `after { example }` form' do
+        context 'with expression `after { example }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -103,12 +103,12 @@ module Transpec
             END
           end
 
-          it 'converts into `after { |example| example }` form' do
+          it 'converts to `after { |example| example }` form' do
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is `after do running_example end` form' do
+        context 'with expression `after do running_example end`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -129,7 +129,7 @@ module Transpec
             END
           end
 
-          it 'converts into `after do |example| example end` form' do
+          it 'converts to `after do |example| example end` form' do
             rewritten_source.should == expected_source
           end
         end
@@ -173,7 +173,7 @@ module Transpec
           end
         end
 
-        context 'when it is `around do |ex| example end` form' do
+        context 'with expression `around do |ex| example end`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -194,12 +194,12 @@ module Transpec
             END
           end
 
-          it 'converts into `around do |ex| ex end` form' do
+          it 'converts to `around do |ex| ex end` form' do
             rewritten_source.should == expected_source
           end
         end
 
-        context "when it is `example 'it does something' do do_something end` form", :no_auto_convert do
+        context "with expression `example 'it does something' do do_something end`", :no_auto_convert do
           let(:source) do
             <<-END
               describe 'example' do
@@ -215,7 +215,7 @@ module Transpec
           end
         end
 
-        context 'when it is `def helper_method example; end` form' do
+        context 'with expression `def helper_method example; end`' do
           let(:source) do
             <<-END
               module Helper
@@ -252,7 +252,7 @@ module Transpec
             END
           end
 
-          it 'converts into `def helper_method RSpec.current_example; end` form' do
+          it 'converts to `def helper_method RSpec.current_example; end` form' do
             rewritten_source.should == expected_source
           end
 

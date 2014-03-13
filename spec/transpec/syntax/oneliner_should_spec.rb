@@ -152,7 +152,7 @@ module Transpec
           end
         end
 
-        context 'when it is `it { should be true }` form' do
+        context 'with expression `it { should be true }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -169,7 +169,7 @@ module Transpec
             END
           end
 
-          it 'converts into `it { is_expected.to be true }` form' do
+          it 'converts to `it { is_expected.to be true }` form' do
             should_object.expectize!
             rewritten_source.should == expected_source
           end
@@ -181,7 +181,7 @@ module Transpec
           end
         end
 
-        context 'when it is `it { should() == 1 }` form' do
+        context 'with expression `it { should() == 1 }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -198,7 +198,7 @@ module Transpec
             END
           end
 
-          it 'converts into `it { is_expected.to eq(1) }` form' do
+          it 'converts to `it { is_expected.to eq(1) }` form' do
             should_object.expectize!
             rewritten_source.should == expected_source
           end
@@ -258,7 +258,7 @@ module Transpec
 
         include_examples 'does not convert if project requires have(n).items matcher'
 
-        context 'when it is `it { should have(2).items }` form' do
+        context 'with expression `it { should have(2).items }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -277,7 +277,7 @@ module Transpec
             END
           end
 
-          it "converts into `it 'has 2 items' do subject.size.should == 2 end` form" do
+          it "converts to `it 'has 2 items' do subject.size.should == 2 end` form" do
             rewritten_source.should == expected_source
           end
 
@@ -288,7 +288,7 @@ module Transpec
           end
         end
 
-        context 'when it is `it { should_not have(2).items }` form' do
+        context 'with expression `it { should_not have(2).items }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -307,7 +307,7 @@ module Transpec
             END
           end
 
-          it "converts into `it 'does not have 2 items' do subject.size.should_not == 2 end` form" do
+          it "converts to `it 'does not have 2 items' do subject.size.should_not == 2 end` form" do
             rewritten_source.should == expected_source
           end
 
@@ -318,7 +318,7 @@ module Transpec
           end
         end
 
-        context 'when it is `it { should have(1).items }` form' do
+        context 'with expression `it { should have(1).items }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -337,7 +337,7 @@ module Transpec
             END
           end
 
-          it "converts into `it 'has 1 item' do subject.size.should == 1 end` form" do
+          it "converts to `it 'has 1 item' do subject.size.should == 1 end` form" do
             rewritten_source.should == expected_source
           end
 
@@ -348,7 +348,7 @@ module Transpec
           end
         end
 
-        context 'when it is `it { should have(0).items }` form' do
+        context 'with expression `it { should have(0).items }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -367,7 +367,7 @@ module Transpec
             END
           end
 
-          it "converts into `it 'has no items' do subject.size.should == 0 end` form" do
+          it "converts to `it 'has no items' do subject.size.should == 0 end` form" do
             rewritten_source.should == expected_source
           end
 
@@ -378,7 +378,7 @@ module Transpec
           end
         end
 
-        context 'when it is `it { should have(variable).items }` form' do
+        context 'with expression `it { should have(variable).items }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -397,7 +397,7 @@ module Transpec
             END
           end
 
-          it "converts into `it 'has variable items' do subject.size.should == variable end` form" do
+          it "converts to `it 'has variable items' do subject.size.should == variable end` form" do
             rewritten_source.should == expected_source
           end
 
@@ -408,7 +408,7 @@ module Transpec
           end
         end
 
-        context 'when it is `it { should_not have(0).items }` form' do
+        context 'with expression `it { should_not have(0).items }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -427,7 +427,7 @@ module Transpec
             END
           end
 
-          it "converts into `it 'does not have 0 items' do subject.size.should_not == 0 end` form" do
+          it "converts to `it 'does not have 0 items' do subject.size.should_not == 0 end` form" do
             rewritten_source.should == expected_source
           end
 
@@ -438,7 +438,7 @@ module Transpec
           end
         end
 
-        context 'when it is multiline `it { should have(2).items }` form' do
+        context 'with expression multiline `it { should have(2).items }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -459,7 +459,7 @@ module Transpec
             END
           end
 
-          it "converts into `it 'has 2 items' { subject.size.should == 2 }` form" do
+          it "converts to `it 'has 2 items' { subject.size.should == 2 }` form" do
             rewritten_source.should == expected_source
           end
 
@@ -470,7 +470,7 @@ module Transpec
           end
         end
 
-        context "when it is `it 'has 2 items' do should have(2).items end` form" do
+        context "with expression `it 'has 2 items' do should have(2).items end`" do
           let(:source) do
             <<-END
               describe 'example' do
@@ -491,7 +491,7 @@ module Transpec
             END
           end
 
-          it "converts into `it 'has 2 items' do subject.size.should == 2 end` form" do
+          it "converts to `it 'has 2 items' do subject.size.should == 2 end` form" do
             rewritten_source.should == expected_source
           end
 
@@ -502,7 +502,7 @@ module Transpec
           end
         end
 
-        context 'when it is `it { should have_at_least(2).items }` form' do
+        context 'with expression `it { should have_at_least(2).items }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -521,7 +521,7 @@ module Transpec
             END
           end
 
-          it "converts into `it 'has at least 2 items' do subject.size.should >= 2 end` form" do
+          it "converts to `it 'has at least 2 items' do subject.size.should >= 2 end` form" do
             rewritten_source.should == expected_source
           end
 
@@ -532,7 +532,7 @@ module Transpec
           end
         end
 
-        context 'when it is `it { should have(2).words }` form' do
+        context 'with expression `it { should have(2).words }`' do
           context 'with runtime information' do
             include_context 'dynamic analysis objects'
 
@@ -567,7 +567,7 @@ module Transpec
                 END
               end
 
-              it "converts into `it 'has 2 words' do subject.words.size.should == 2 end` form" do
+              it "converts to `it 'has 2 words' do subject.words.size.should == 2 end` form" do
                 rewritten_source.should == expected_source
               end
 
@@ -588,7 +588,7 @@ module Transpec
 
         include_examples 'does not convert if project requires have(n).items matcher'
 
-        context 'when it is `it { should have(2).items }` form' do
+        context 'with expression `it { should have(2).items }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -607,7 +607,7 @@ module Transpec
             END
           end
 
-          it "converts into `it 'has 2 items' do expect(subject.size).to eq(2) end` form" do
+          it "converts to `it 'has 2 items' do expect(subject.size).to eq(2) end` form" do
             rewritten_source.should == expected_source
           end
 
@@ -618,7 +618,7 @@ module Transpec
           end
         end
 
-        context 'when it is `it { should_not have(2).items }` form' do
+        context 'with expression `it { should_not have(2).items }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -637,7 +637,7 @@ module Transpec
             END
           end
 
-          it "converts into `it 'does not have 2 items' do expect(subject.size).not_to eq(2) end` form" do
+          it "converts to `it 'does not have 2 items' do expect(subject.size).not_to eq(2) end` form" do
             rewritten_source.should == expected_source
           end
 

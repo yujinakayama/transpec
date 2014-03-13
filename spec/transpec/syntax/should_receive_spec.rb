@@ -12,7 +12,7 @@ module Transpec
       let(:record) { should_receive_object.report.records.first }
 
       describe '#expectize!' do
-        context 'when it is `subject.should_receive(:method)` form' do
+        context 'with expression `obj.should_receive(:message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -33,7 +33,7 @@ module Transpec
             END
           end
 
-          it 'converts into `expect(subject).to receive(:method)` form' do
+          it 'converts to `expect(obj).to receive(:message)` form' do
             should_receive_object.expectize!
             rewritten_source.should == expected_source
           end
@@ -152,7 +152,7 @@ module Transpec
           end
         end
 
-        context 'when it is `subject.should_not_receive(:method)` form' do
+        context 'with expression `obj.should_not_receive(:message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -173,7 +173,7 @@ module Transpec
             END
           end
 
-          it 'converts into `expect(subject).not_to receive(:method)` form' do
+          it 'converts to `expect(obj).not_to receive(:message)` form' do
             should_receive_object.expectize!
             rewritten_source.should == expected_source
           end
@@ -196,7 +196,7 @@ module Transpec
               END
             end
 
-            it 'converts into `expect(subject).to_not receive(:method)` form' do
+            it 'converts to `expect(obj).to_not receive(:message)` form' do
               should_receive_object.expectize!('to_not')
               rewritten_source.should == expected_source
             end
@@ -238,7 +238,7 @@ module Transpec
         #     arg == 1
         #   }
         #
-        context 'when it is `subject.should_receive(:method).with do .. end` form' do
+        context 'with expression `obj.should_receive(:message).with do .. end`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -265,14 +265,14 @@ module Transpec
             END
           end
 
-          it 'converts into `expect(subject).to receive(:method) { .. }` form' do
+          it 'converts to `expect(obj).to receive(:message) { .. }` form' do
             should_receive_object.expectize!
             rewritten_source.should == expected_source
           end
         end
 
         # If #with take normal arguments, the block won't be used as an argument matcher.
-        context 'when it is `subject.should_receive(:method).with(arg) do .. end` form' do
+        context 'with expression `obj.should_receive(:message).with(arg) do .. end`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -299,7 +299,7 @@ module Transpec
             END
           end
 
-          it 'converts into `expect(subject).to receive(:method).with(arg) do .. end` form' do
+          it 'converts to `expect(obj).to receive(:message).with(arg) do .. end` form' do
             should_receive_object.expectize!
             rewritten_source.should == expected_source
           end
@@ -313,7 +313,7 @@ module Transpec
         #     arg == 1
         #   end.once
         #
-        # However with `expect(subject).to receive`, the do..end block is taken by the #to method.
+        # However with `expect(obj).to receive`, the do..end block is taken by the #to method.
         # This means the receiver of #once method is return value of #to, that is actually
         # return value of RSpec::Mocks::Matchers::Receive#setup_method_substitute
         # and it's not the instance of RSpec::Mocks::MessageExpectation.
@@ -333,7 +333,7 @@ module Transpec
         #     arg == 1
         #   }.once
         #
-        context 'when it is `subject.should_receive(:method) do .. end.once` form' do
+        context 'with expression `obj.should_receive(:message) do .. end.once`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -360,14 +360,14 @@ module Transpec
             END
           end
 
-          it 'converts into `expect(subject).to receive(:method) { .. }.once` form' do
+          it 'converts to `expect(obj).to receive(:message) { .. }.once` form' do
             should_receive_object.expectize!
             rewritten_source.should == expected_source
           end
         end
 
         # This case, do..end block works without problem.
-        context 'when it is `subject.should_receive(:method) do .. end` form' do
+        context 'with expression `obj.should_receive(:message) do .. end`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -394,13 +394,13 @@ module Transpec
             END
           end
 
-          it 'converts into `expect(subject).to receive(:method) do .. end` form' do
+          it 'converts to `expect(obj).to receive(:message) do .. end` form' do
             should_receive_object.expectize!
             rewritten_source.should == expected_source
           end
         end
 
-        context 'when it is `Klass.any_instance.should_receive(:method)` form' do
+        context 'with expression `Klass.any_instance.should_receive(:message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -421,7 +421,7 @@ module Transpec
             END
           end
 
-          it 'converts into `expect_any_instance_of(Klass).to receive(:method)` form' do
+          it 'converts to `expect_any_instance_of(Klass).to receive(:message)` form' do
             should_receive_object.expectize!
             rewritten_source.should == expected_source
           end
@@ -474,7 +474,7 @@ module Transpec
           end
         end
 
-        context 'when it is `described_class.any_instance.should_receive(:method)` form' do
+        context 'with expression `described_class.any_instance.should_receive(:message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -495,7 +495,7 @@ module Transpec
             END
           end
 
-          it 'converts into `expect_any_instance_of(described_class).to receive(:method)` form' do
+          it 'converts to `expect_any_instance_of(described_class).to receive(:message)` form' do
             should_receive_object.expectize!
             rewritten_source.should == expected_source
           end
@@ -508,7 +508,7 @@ module Transpec
           end
         end
 
-        context 'when it is `variable.any_instance.should_receive(:method)` form' do
+        context 'with expression `variable.any_instance.should_receive(:message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -533,7 +533,7 @@ module Transpec
             END
           end
 
-          it 'converts into `expect_any_instance_of(variable).to receive(:method)` form' do
+          it 'converts to `expect_any_instance_of(variable).to receive(:message)` form' do
             should_receive_object.expectize!
             rewritten_source.should == expected_source
           end
@@ -546,7 +546,7 @@ module Transpec
           end
         end
 
-        context 'when it is `variable.should_receive(:method)` form ' \
+        context 'with expression `variable.should_receive(:message)` ' \
                 'and the variable is an AnyInstance::Recorder' do
           context 'with runtime information' do
             include_context 'dynamic analysis objects'
@@ -575,7 +575,7 @@ module Transpec
               END
             end
 
-            it 'converts into `expect_any_instance_of(Klass).to receive(:method)` form' do
+            it 'converts to `expect_any_instance_of(Klass).to receive(:message)` form' do
               should_receive_object.expectize!
               rewritten_source.should == expected_source
             end
@@ -593,7 +593,7 @@ module Transpec
       describe '#useless_expectation?' do
         subject { should_receive_object.useless_expectation? }
 
-        context 'when it is `subject.should_receive(:method).any_number_of_times` form' do
+        context 'with expression `obj.should_receive(:message).any_number_of_times`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -607,7 +607,7 @@ module Transpec
           it { should be_true }
         end
 
-        context 'when it is `subject.should_receive(:method).with(arg).any_number_of_times` form' do
+        context 'with expression `obj.should_receive(:message).with(arg).any_number_of_times`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -621,7 +621,7 @@ module Transpec
           it { should be_true }
         end
 
-        context 'when it is `subject.should_receive(:method).at_least(0)` form' do
+        context 'with expression `obj.should_receive(:message).at_least(0)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -635,7 +635,7 @@ module Transpec
           it { should be_true }
         end
 
-        context 'when it is `subject.should_receive(:method).at_least(1)` form' do
+        context 'with expression `obj.should_receive(:message).at_least(1)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -649,7 +649,7 @@ module Transpec
           it { should be_false }
         end
 
-        context 'when it is `subject.should_receive(:method)` form' do
+        context 'with expression `obj.should_receive(:message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -665,7 +665,7 @@ module Transpec
       end
 
       describe '#allowize_useless_expectation!' do
-        context 'when it is `subject.should_receive(:method).any_number_of_times` form' do
+        context 'with expression `obj.should_receive(:message).any_number_of_times`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -686,7 +686,7 @@ module Transpec
             END
           end
 
-          it 'converts into `allow(subject).to receive(:method)` form' do
+          it 'converts to `allow(obj).to receive(:message)` form' do
             should_receive_object.allowize_useless_expectation!
             rewritten_source.should == expected_source
           end
@@ -767,7 +767,7 @@ module Transpec
           end
         end
 
-        context 'when it is `Klass.any_instance.should_receive(:method).any_number_of_times` form' do
+        context 'with expression `Klass.any_instance.should_receive(:message).any_number_of_times`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -788,7 +788,7 @@ module Transpec
             END
           end
 
-          it 'converts into `allow_any_instance_of(Klass).to receive(:method)` form' do
+          it 'converts to `allow_any_instance_of(Klass).to receive(:message)` form' do
             should_receive_object.allowize_useless_expectation!
             rewritten_source.should == expected_source
           end
@@ -801,7 +801,7 @@ module Transpec
           end
         end
 
-        context 'when it is `described_class.any_instance.should_receive(:method).any_number_of_times` form' do
+        context 'with expression `described_class.any_instance.should_receive(:message).any_number_of_times`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -822,7 +822,7 @@ module Transpec
             END
           end
 
-          it 'converts into `allow_any_instance_of(described_class).to receive(:method)` form' do
+          it 'converts to `allow_any_instance_of(described_class).to receive(:message)` form' do
             should_receive_object.allowize_useless_expectation!
             rewritten_source.should == expected_source
           end
@@ -835,7 +835,7 @@ module Transpec
           end
         end
 
-        context 'when it is `subject.should_receive(:method).at_least(0)` form' do
+        context 'with expression `obj.should_receive(:message).at_least(0)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -856,7 +856,7 @@ module Transpec
             END
           end
 
-          it 'converts into `allow(subject).to receive(:method)` form' do
+          it 'converts to `allow(obj).to receive(:message)` form' do
             should_receive_object.allowize_useless_expectation!
             rewritten_source.should == expected_source
           end
@@ -869,7 +869,7 @@ module Transpec
           end
         end
 
-        context 'when it is `Klass.any_instance.should_receive(:method).at_least(0)` form' do
+        context 'with expression `Klass.any_instance.should_receive(:message).at_least(0)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -890,7 +890,7 @@ module Transpec
             END
           end
 
-          it 'converts into `allow_any_instance_of(Klass).to receive(:method)` form' do
+          it 'converts to `allow_any_instance_of(Klass).to receive(:message)` form' do
             should_receive_object.allowize_useless_expectation!
             rewritten_source.should == expected_source
           end
@@ -903,7 +903,7 @@ module Transpec
           end
         end
 
-        context 'when it is `subject.should_receive(:method)` form' do
+        context 'with expression `obj.should_receive(:message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -926,7 +926,7 @@ module Transpec
           should_receive_object.stubize_useless_expectation!
         end
 
-        context 'when it is `subject.should_receive(:method).any_number_of_times` form' do
+        context 'with expression `obj.should_receive(:message).any_number_of_times`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -947,7 +947,7 @@ module Transpec
             END
           end
 
-          it 'converts into `subject.stub(:method)` form' do
+          it 'converts to `obj.stub(:message)` form' do
             rewritten_source.should == expected_source
           end
 
@@ -958,7 +958,7 @@ module Transpec
           end
         end
 
-        context 'when it is `subject.should_receive(:method)` form' do
+        context 'with expression `obj.should_receive(:message)`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -980,7 +980,7 @@ module Transpec
           should_receive_object.remove_useless_and_return!
         end
 
-        context 'when it is `subject.should_receive(:method).and_return { value }` form' do
+        context 'with expression `obj.should_receive(:message).and_return { value }`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -1001,7 +1001,7 @@ module Transpec
             END
           end
 
-          it 'converts into `subject.should_receive(:method) { value }` form' do
+          it 'converts to `obj.should_receive(:message) { value }` form' do
             rewritten_source.should == expected_source
           end
 
@@ -1018,7 +1018,7 @@ module Transpec
           should_receive_object.add_receiver_arg_to_any_instance_implementation_block!
         end
 
-        context 'when it is `Klass.any_instance.should_receive(:method) do |arg| .. end` form' do
+        context 'with expression `Klass.any_instance.should_receive(:message) do |arg| .. end`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -1041,7 +1041,7 @@ module Transpec
             END
           end
 
-          it 'converts into `Klass.any_instance.should_receive(:method) do |instance, arg| .. end` form' do
+          it 'converts to `Klass.any_instance.should_receive(:message) do |instance, arg| .. end` form' do
             rewritten_source.should == expected_source
           end
 
@@ -1052,7 +1052,7 @@ module Transpec
           end
         end
 
-        context 'when it is `Klass.any_instance.should_receive(:method) do .. end` form' do
+        context 'with expression `Klass.any_instance.should_receive(:message) do .. end`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -1069,7 +1069,7 @@ module Transpec
           end
         end
 
-        context 'when it is `Klass.any_instance.should_receive(:method) do |instance| .. end` form' do
+        context 'with expression `Klass.any_instance.should_receive(:message) do |instance| .. end`' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -1086,7 +1086,7 @@ module Transpec
           end
         end
 
-        context 'when it is `subject.should_receive(:method) do |arg| .. end` form' do
+        context 'with expression `obj.should_receive(:message) do |arg| .. end`' do
           let(:source) do
             <<-END
               describe 'example' do
