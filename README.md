@@ -144,7 +144,8 @@ After the conversion, run `rspec` again and check whether everything is green:
 $ bundle exec rspec
 ```
 
-If it's green, commit the changes with an auto-generated message that describes the conversion summary:
+If it's green, commit the changes with an auto-generated message
+that describes the conversion summary and helps your team members to understand the new syntax:
 
 ```bash
 $ git commit -aeF .git/COMMIT_EDITMSG
