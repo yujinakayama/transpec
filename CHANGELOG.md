@@ -2,6 +2,8 @@
 
 ## Development
 
+## v1.10.3
+
 * Suggest using `-c/--rspec-command` option and exit gracefully when dynamic analysis failed ([#52](https://github.com/yujinakayama/transpec/issues/52))
 
 ## v1.10.2
