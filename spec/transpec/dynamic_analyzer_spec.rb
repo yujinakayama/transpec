@@ -137,8 +137,8 @@ module Transpec
       context 'when analysis result data file is not found' do
         let(:source) { 'exit!' }
 
-        it 'raises error' do
-          -> { dynamic_analyzer.analyze }.should raise_error
+        it 'raises AnalysisError' do
+          -> { dynamic_analyzer.analyze }.should raise_error(DynamicAnalyzer::AnalysisError)
         end
       end
 

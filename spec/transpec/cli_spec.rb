@@ -148,6 +148,28 @@ module Transpec
         end
       end
 
+      context 'when analysis error is raised in the dynamic analysis' do
+        before do
+          Git.stub(:command_available?).and_return(false)
+          DynamicAnalyzer.any_instance.stub(:analyze).and_raise(DynamicAnalyzer::AnalysisError)
+        end
+
+        it 'suggests using -c/--rspec-command option' do
+          cli.stub(:exit)
+
+          cli.should_receive(:warn) do |message|
+            message.should include('-c/--rspec-command')
+          end
+
+          cli.run(args)
+        end
+
+        it 'exits with status 1' do
+          cli.should_receive(:exit).with(1)
+          cli.run(args)
+        end
+      end
+
       context 'when a syntax error is raised while processing files' do
         let(:args) { [invalid_syntax_file_path, valid_syntax_file_path] }
         let(:invalid_syntax_file_path) { 'invalid_example.rb' }

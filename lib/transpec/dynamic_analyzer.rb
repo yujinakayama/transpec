@@ -86,22 +86,18 @@ module Transpec
 
     def analyze(paths = [])
       in_copied_project do
-        rewriter = Rewriter.new
-
-        FileFinder.find(paths).each do |file_path|
-          begin
-            rewriter.rewrite_file!(file_path)
-          rescue Parser::SyntaxError # rubocop:disable HandleExceptions
-            # Syntax errors will be reported in CLI with Converter.
-          end
-        end
+        rewrite_specs(paths)
 
         File.write(HELPER_FILE, HELPER_SOURCE)
 
         run_rspec(paths)
 
-        File.open(RESULT_FILE) do |file|
-          RuntimeData.load(file)
+        begin
+          File.open(RESULT_FILE) do |file|
+            RuntimeData.load(file)
+          end
+        rescue
+          raise AnalysisError
         end
       end
     end
@@ -154,6 +150,18 @@ module Transpec
 
     private
 
+    def rewrite_specs(paths)
+      rewriter = Rewriter.new
+
+      FileFinder.find(paths).each do |file_path|
+        begin
+          rewriter.rewrite_file!(file_path)
+        rescue Parser::SyntaxError # rubocop:disable HandleExceptions
+          # Syntax errors will be reported in CLI with Converter.
+        end
+      end
+    end
+
     def copy(source, destination)
       if File.symlink?(source)
         File.symlink(File.readlink(source), destination)
@@ -175,5 +183,7 @@ module Transpec
         File.chmod(source_mode, destination) unless File.symlink?(destination)
       end
     end
+
+    class AnalysisError < StandardError; end
   end
 end

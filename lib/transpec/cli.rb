@@ -47,12 +47,7 @@ module Transpec
       runtime_data = nil
 
       unless configuration.skip_dynamic_analysis?
-        puts 'Copying the project for dynamic analysis...'
-        DynamicAnalyzer.new(rspec_command: configuration.rspec_command) do |analyzer|
-          puts "Running dynamic analysis with command #{analyzer.rspec_command.inspect}..."
-          runtime_data = analyzer.analyze(paths)
-        end
-        puts
+        runtime_data = run_dynamic_analysis(paths)
       end
 
       FileFinder.find(paths).each do |file_path|
@@ -86,6 +81,27 @@ module Transpec
         fail "Your project must have rspec gem dependency #{Transpec.required_rspec_version} " \
              "or later but currently it's #{project.rspec_version}. Aborting."
       end
+    end
+
+    def run_dynamic_analysis(paths)
+      runtime_data = nil
+
+      puts 'Copying the project for dynamic analysis...'
+
+      DynamicAnalyzer.new(rspec_command: configuration.rspec_command) do |analyzer|
+        puts "Running dynamic analysis with command #{analyzer.rspec_command.inspect}..."
+        runtime_data = analyzer.analyze(paths)
+      end
+
+      puts
+
+      runtime_data
+    rescue DynamicAnalyzer::AnalysisError
+      warn 'Failed running dynamic analysis. ' \
+           'Transpec needs to run your specs in a copied project directory for dynamic analysis. ' \
+           'If your project requires some special setup or commands to run specs, ' \
+           'use -c/--rspec-command option.'
+      exit(1)
     end
 
     def display_summary

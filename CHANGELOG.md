@@ -2,6 +2,8 @@
 
 ## Development
 
+* Suggest using `-c/--rspec-command` option and exit gracefully when dynamic analysis failed ([#52](https://github.com/yujinakayama/transpec/issues/52))
+
 ## v1.10.2
 
 * Fix a bug where `expect(an_array + another_array).to have(2).items` was converted to `expect(an_array +(another_array).size).to eq(2)`
