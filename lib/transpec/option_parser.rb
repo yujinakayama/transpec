@@ -12,7 +12,7 @@ require 'rainbow/ext/string' unless String.respond_to?(:color)
 module Transpec
   class OptionParser
     CONFIG_ATTRS_FOR_KEEP_TYPES = {
-              should: :convert_should=, # rubocop:disable IndentHash
+              should: :convert_should=,
             oneliner: :convert_oneliner=,
       should_receive: :convert_should_receive=,
                 stub: :convert_stub=,
