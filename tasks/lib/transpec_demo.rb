@@ -12,7 +12,7 @@ class TranspecDemo < TranspecTest
   def run
     require 'transpec'
 
-    puts " Running demo on #{name} project ".center(80, '=')
+    puts " Publishing conversion example of #{name} project ".center(80, '=')
 
     prepare_project
     run_demo

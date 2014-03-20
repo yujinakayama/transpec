@@ -23,11 +23,11 @@ namespace :test do
   end
   # rubocop:enable LineLength
 
-  desc 'Test Transpec on all projects'
+  desc 'Test transpec on all projects'
   task all: tests.map(&:name)
 
   tests.each do |test|
-    desc "Test Transpec on #{test.name} project"
+    desc "Test transpec on #{test.name} project"
     task test.name do
       test.run
     end

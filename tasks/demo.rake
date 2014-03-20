@@ -11,11 +11,11 @@ namespace :demo do
   ]
   # rubocop:enable LineLength
 
-  desc 'Publish conversion example on all projects'
+  desc 'Publish conversion examples of all projects'
   task all: demos.map(&:name)
 
   demos.each do |demo|
-    desc "Publish conversion example on #{demo.name} project"
+    desc "Publish conversion example of #{demo.name} project"
     task demo.name do
       demo.run
     end
