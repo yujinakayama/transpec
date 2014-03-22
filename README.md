@@ -402,14 +402,14 @@ end
 
 The monkey-patched `obj.should`:
 
-* Is provided by `rspec-expectations` gem.
+* Is defined on `BasicObject` (or `Kernel`) and provided by `rspec-expectations` gem.
 * Is deprecated in RSpec 3.
 * Has [the issue](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#delegation_issues) with delegate/proxy objects.
 * There's the alternative syntax [`expect(obj).to`](#standard-expectations) since RSpec 2.11.
 
 The one-liner (implicit receiver) `should`:
 
-* Is provided by `rspec-core` gem.
+* Is defined on `RSpec::Core::ExampleGroup` and provided by `rspec-core` gem.
 * Is _not_ deprecated in RSpec 3.
 * Does _not_ have the issue with delegate/proxy objects.
 * There's the alternative syntax [`is_expected.to`](#one-liner-expectations) since RSpec 2.99.beta2.
