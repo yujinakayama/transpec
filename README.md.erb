@@ -460,9 +460,11 @@ it { is_expected.to_not matcher } # with `--negative-form to_not`
 
 `is_expected.to` is designed for the consistency with the `expect` syntax.
 However the one-liner `should` is still _not_ deprecated in RSpec 3.0
-and available even if the `should` syntax is disabled with `RSpec.configure`.
+and available even if the `should` syntax is
+[disabled with `RSpec.configure`](https://www.relishapp.com/rspec/rspec-expectations/v/3-0/docs/syntax-configuration#disable-should-syntax).
 So if you think `is_expected.to` is verbose,
 feel free to disable this conversion and continue using the one-liner `should`.
+See [Two Types of `should`](#two-types-of-should) also.
 
 * This conversion can be disabled by: `--keep oneliner`
 * Deprecation: Not deprecated
