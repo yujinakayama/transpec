@@ -1,6 +1,6 @@
 [![Gem Version](http://img.shields.io/gem/v/transpec.svg)](http://badge.fury.io/rb/transpec)
 [![Dependency Status](http://img.shields.io/gemnasium/yujinakayama/transpec.svg)](https://gemnasium.com/yujinakayama/transpec)
-[![Build Status](http://img.shields.io/travis/yujinakayama/transpec/master.svg)](https://travis-ci.org/yujinakayama/transpec)
+[![Build Status](https://travis-ci.org/yujinakayama/transpec.svg?branch=master)](https://travis-ci.org/yujinakayama/transpec)
 [![Coverage Status](http://img.shields.io/coveralls/yujinakayama/transpec/master.svg)](https://coveralls.io/r/yujinakayama/transpec)
 [![Code Climate](http://img.shields.io/codeclimate/github/yujinakayama/transpec.svg)](https://codeclimate.com/github/yujinakayama/transpec)
 
