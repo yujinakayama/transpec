@@ -11,6 +11,50 @@ module Transpec
 
       let(:record) { current_example_object.report.records.last }
 
+      describe '.conversion_target_node?' do
+        let(:send_node) do
+          ast.each_descendent_node do |node|
+            next unless node.send_type?
+            method_name = node.children[1]
+            next unless method_name == :example
+            return node
+          end
+          fail 'No #example node is found!'
+        end
+
+        context 'when #example node that returns current example object is passed' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                after do
+                  do_something if example.metadata[:foo]
+                end
+              end
+            END
+          end
+
+          it 'returns true' do
+            CurrentExample.conversion_target_node?(send_node).should be_true
+          end
+        end
+
+        context 'when #example node that defines a spec example is passed' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                example 'it does something' do
+                  do_something
+                end
+              end
+            END
+          end
+
+          it 'returns false' do
+            CurrentExample.conversion_target_node?(send_node).should be_false
+          end
+        end
+      end
+
       describe '#convert!' do
         before do
           current_example_object.convert! unless example.metadata[:no_auto_convert]
@@ -196,22 +240,6 @@ module Transpec
 
           it 'converts to `around do |ex| ex end` form' do
             rewritten_source.should == expected_source
-          end
-        end
-
-        context "with expression `example 'it does something' do do_something end`", :no_auto_convert do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                example 'it does something' do
-                  do_something
-                end
-              end
-            END
-          end
-
-          it 'does nothing' do
-            rewritten_source.should == source
           end
         end
 
