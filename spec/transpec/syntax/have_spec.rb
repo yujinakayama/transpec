@@ -1141,7 +1141,7 @@ module Transpec
 
           let(:have_object) { expect_object.have_matcher }
 
-          fit "converts to `expect(hash['some_key'].size).to eq(2)` form" do
+          it "converts to `expect(hash['some_key'].size).to eq(2)` form" do
             have_object.convert_to_standard_expectation!
             rewritten_source.should == expected_source
           end
