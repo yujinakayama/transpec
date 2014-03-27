@@ -13,8 +13,12 @@ module Transpec
 
       attr_reader :current_syntax_type
 
-      def self.target_method?(receiver_node, method_name)
-        !receiver_node.nil? && [:should, :should_not].include?(method_name)
+      define_dynamic_analysis_request do |rewriter|
+        register_request_of_syntax_availability_inspection(
+          rewriter,
+          :expect_available?,
+          [:expect]
+        )
       end
 
       def initialize(node, source_rewriter = nil, runtime_data = nil, report = nil)
@@ -22,12 +26,8 @@ module Transpec
         @current_syntax_type = :should
       end
 
-      define_dynamic_analysis_request do |rewriter|
-        register_request_of_syntax_availability_inspection(
-          rewriter,
-          :expect_available?,
-          [:expect]
-        )
+      def dynamic_analysis_target?
+        super && !receiver_node.nil? && [:should, :should_not].include?(method_name)
       end
 
       def expect_available?

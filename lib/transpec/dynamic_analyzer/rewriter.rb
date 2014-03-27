@@ -45,8 +45,8 @@ module Transpec
 
         ast.each_node do |node|
           Syntax.standalone_syntaxes.each do |syntax_class|
-            next unless syntax_class.dynamic_analysis_target_node?(node)
             syntax = syntax_class.new(node)
+            next unless syntax.dynamic_analysis_target?
             syntax.register_request_for_dynamic_analysis(self)
           end
         end

@@ -11,10 +11,8 @@ module Transpec
 
       let(:record) { pending_object.report.records.last }
 
-      describe '.conversion_target_node?' do
-        subject { Pending.conversion_target_node?(pending_node, runtime_data) }
-
-        let(:pending_node) do
+      describe '#conversion_target?' do
+        let(:target_node) do
           ast.each_descendent_node do |node|
             next unless node.send_type?
             method_name = node.children[1]
@@ -22,6 +20,12 @@ module Transpec
           end
           fail 'No #pending node is found!'
         end
+
+        let(:pending_object) do
+          Pending.new(target_node, source_rewriter, runtime_data)
+        end
+
+        subject { pending_object.conversion_target? }
 
         context 'when #pending specification node inside of an example is passed' do
           let(:source) do

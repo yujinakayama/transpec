@@ -11,12 +11,6 @@ module Transpec
     class ShouldReceive < Syntax
       include Mixin::Expectizable, Mixin::MonkeyPatchAnyInstance, Mixin::MessagingHost, Util
 
-      alias_method :useless_expectation?, :allow_no_message?
-
-      def self.target_method?(receiver_node, method_name)
-        !receiver_node.nil? && [:should_receive, :should_not_receive].include?(method_name)
-      end
-
       define_dynamic_analysis_request do |rewriter|
         register_request_of_syntax_availability_inspection(
           rewriter,
@@ -29,6 +23,14 @@ module Transpec
           :allow_to_receive_available?,
           [:allow, :receive]
         )
+      end
+
+      alias_method :useless_expectation?, :allow_no_message?
+
+      def dynamic_analysis_target?
+        super &&
+          !receiver_node.nil? &&
+          [:should_receive, :should_not_receive].include?(method_name)
       end
 
       def expect_to_receive_available?

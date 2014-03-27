@@ -8,8 +8,8 @@ module Transpec
     class BeClose < Syntax
       include Mixin::Send
 
-      def self.target_method?(receiver_node, method_name)
-        receiver_node.nil? && method_name == :be_close
+      def dynamic_analysis_target?
+        super && receiver_node.nil? && method_name == :be_close
       end
 
       def convert_to_be_within!

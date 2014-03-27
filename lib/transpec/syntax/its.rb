@@ -9,14 +9,14 @@ module Transpec
     class Its < Syntax
       include Mixin::Send, Util
 
-      def self.target_method?(receiver_node, method_name)
-        receiver_node.nil? && method_name == :its
-      end
-
       define_dynamic_analysis_request do |rewriter|
         key = :project_requires_its?
         code = 'defined?(RSpec::Its)'
         rewriter.register_request(node, key, code, :context)
+      end
+
+      def dynamic_analysis_target?
+        super && receiver_node.nil? && method_name == :its
       end
 
       def convert_to_describe_subject_it!

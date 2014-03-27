@@ -9,8 +9,8 @@ module Transpec
       include_context 'parsed objects'
       include_context 'syntax object', Double, :double_object
 
-      describe '.conversion_target_node?' do
-        let(:send_node) do
+      describe '#conversion_target?' do
+        let(:target_node) do
           ast.each_descendent_node do |node|
             next unless node.send_type?
             method_name = node.children[1]
@@ -19,6 +19,12 @@ module Transpec
           end
           fail 'No #double node is found!'
         end
+
+        let(:double_object) do
+          Double.new(target_node, source_rewriter, runtime_data)
+        end
+
+        subject { double_object.conversion_target? }
 
         context 'when #double node is passed' do
           let(:source) do
@@ -32,9 +38,7 @@ module Transpec
             END
           end
 
-          it 'returns true' do
-            Double.conversion_target_node?(send_node).should be_true
-          end
+          it { should be_true }
         end
 
         context 'with runtime information' do
@@ -52,9 +56,7 @@ module Transpec
               END
             end
 
-            it 'returns true' do
-              Double.conversion_target_node?(send_node).should be_true
-            end
+            it { should be_true }
           end
 
           context 'when another #double node is passed' do
@@ -87,9 +89,7 @@ module Transpec
               END
             end
 
-            it 'returns false' do
-              Double.conversion_target_node?(send_node, runtime_data).should be_false
-            end
+            it { should be_false }
           end
         end
       end

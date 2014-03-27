@@ -12,8 +12,8 @@ module Transpec
 
       let(:record) { method_stub_object.report.records.first }
 
-      describe '.conversion_target_node?' do
-        let(:send_node) do
+      describe '#conversion_target?' do
+        let(:target_node) do
           ast.each_descendent_node do |node|
             next unless node.send_type?
             method_name = node.children[1]
@@ -22,6 +22,12 @@ module Transpec
           end
           fail 'No #stub node is found!'
         end
+
+        let(:method_stub_object) do
+          MethodStub.new(target_node, source_rewriter, runtime_data)
+        end
+
+        subject { method_stub_object.conversion_target? }
 
         context 'when #stub node is passed' do
           let(:source) do
@@ -34,9 +40,7 @@ module Transpec
             END
           end
 
-          it 'returns true' do
-            MethodStub.conversion_target_node?(send_node).should be_true
-          end
+          it { should be_true }
         end
 
         context 'when Factory.stub node is passed' do
@@ -50,9 +54,7 @@ module Transpec
             END
           end
 
-          it 'returns false' do
-            MethodStub.conversion_target_node?(send_node).should be_false
-          end
+          it { should be_false }
         end
 
         context 'with runtime information' do
@@ -69,9 +71,7 @@ module Transpec
               END
             end
 
-            it 'returns true' do
-              MethodStub.conversion_target_node?(send_node, runtime_data).should be_true
-            end
+            it { should be_true }
           end
 
           context 'when another #stub node is passed' do
@@ -90,9 +90,7 @@ module Transpec
               END
             end
 
-            it 'returns false' do
-              MethodStub.conversion_target_node?(send_node, runtime_data).should be_false
-            end
+            it { should be_false }
           end
 
           context "when Factory.stub node is passed and it's RSpec's #stub" do
@@ -109,9 +107,7 @@ module Transpec
               END
             end
 
-            it 'returns true' do
-              MethodStub.conversion_target_node?(send_node, runtime_data).should be_true
-            end
+            it { should be_true }
           end
 
           context 'when Factory.stub node is passed and it has not been run' do
@@ -128,9 +124,7 @@ module Transpec
               END
             end
 
-            it 'returns false' do
-              MethodStub.conversion_target_node?(send_node, runtime_data).should be_false
-            end
+            it { should be_false }
           end
         end
       end

@@ -12,12 +12,11 @@ module Transpec
 
       METHODS_YIELD_EXAMPLE = (EXAMPLE_METHODS + HOOK_METHODS + HELPER_METHODS).freeze
 
-      def self.check_target_node_statically(node)
-        super(node) && Util.block_node_taken_by_method(node).nil?
-      end
-
-      def self.target_method?(receiver_node, method_name)
-        receiver_node.nil? && [:example, :running_example].include?(method_name)
+      def dynamic_analysis_target?
+        super &&
+          receiver_node.nil? &&
+          [:example, :running_example].include?(method_name) &&
+          block_node_taken_by_method(node).nil?
       end
 
       def convert!

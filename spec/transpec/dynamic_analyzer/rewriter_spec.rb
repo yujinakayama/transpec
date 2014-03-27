@@ -22,7 +22,7 @@ module Transpec
         # rubocop:disable LineLength
         let(:expected_source) do
           <<-'END'
-            transpec_analyze((transpec_analyze((subject), self, "(string)_12_19", { :should_source_location => [:object, "method(:should).source_location"], :should_user_defined_method? => [:object, "owner = method(:should).owner\nowner != RSpec::Core::ExampleGroup &&\n  owner.ancestors.include?(RSpec::Core::ExampleGroup)"] }).should be(foo)), self, "(string)_12_34", { :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] })
+            transpec_analyze((transpec_analyze((subject), self, "(string)_12_19", { :should_source_location => [:object, "method(:should).source_location"], :should_example_method_defined_by_user? => [:object, "owner = method(:should).owner\nowner != RSpec::Core::ExampleGroup &&\n  owner.ancestors.include?(RSpec::Core::ExampleGroup)"] }).should be(foo)), self, "(string)_12_34", { :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] })
           END
         end
         # rubocop:enable LineLength
@@ -43,7 +43,7 @@ module Transpec
           # rubocop:disable LineLength
           let(:expected_source) do
             <<-'END'
-              transpec_analyze((transpec_analyze((subject), self, "(string)_14_21", { :should_source_location => [:object, "method(:should).source_location"], :should_user_defined_method? => [:object, "owner = method(:should).owner\nowner != RSpec::Core::ExampleGroup &&\n  owner.ancestors.include?(RSpec::Core::ExampleGroup)"] }).should), self, "(string)_14_28", { :"=~_source_location" => [:object, "method(:=~).source_location"], :"=~_user_defined_method?" => [:object, "owner = method(:=~).owner\nowner != RSpec::Core::ExampleGroup &&\n  owner.ancestors.include?(RSpec::Core::ExampleGroup)"], :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] }) =~ transpec_analyze((<<-HEREDOC.gsub('foo', 'bar')), self, "(string)_32_61", { :enumerable_arg? => [:object, "is_a?(Enumerable)"] })
+              transpec_analyze((transpec_analyze((subject), self, "(string)_14_21", { :should_source_location => [:object, "method(:should).source_location"], :should_example_method_defined_by_user? => [:object, "owner = method(:should).owner\nowner != RSpec::Core::ExampleGroup &&\n  owner.ancestors.include?(RSpec::Core::ExampleGroup)"] }).should), self, "(string)_14_28", { :"=~_source_location" => [:object, "method(:=~).source_location"], :"=~_example_method_defined_by_user?" => [:object, "owner = method(:=~).owner\nowner != RSpec::Core::ExampleGroup &&\n  owner.ancestors.include?(RSpec::Core::ExampleGroup)"], :expect_available? => [:context, "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') } && respond_to?(:expect)"] }) =~ transpec_analyze((<<-HEREDOC.gsub('foo', 'bar')), self, "(string)_32_61", { :enumerable_arg? => [:object, "is_a?(Enumerable)"] })
               foo
               HEREDOC
             END
@@ -65,7 +65,7 @@ module Transpec
           # rubocop:disable LineLength
           let(:expected_source) do
             <<-'END'
-              transpec_analyze((expect { do_something }), self, "(string)_14_20", { :expect_source_location => [:context, "method(:expect).source_location"], :expect_user_defined_method? => [:context, "owner = method(:expect).owner\nowner != RSpec::Core::ExampleGroup &&\n  owner.ancestors.include?(RSpec::Core::ExampleGroup)"] }).to throw_symbol
+              transpec_analyze((expect { do_something }), self, "(string)_14_20", { :expect_source_location => [:context, "method(:expect).source_location"], :expect_example_method_defined_by_user? => [:context, "owner = method(:expect).owner\nowner != RSpec::Core::ExampleGroup &&\n  owner.ancestors.include?(RSpec::Core::ExampleGroup)"] }).to throw_symbol
             END
           end
           # rubocop:enable LineLength
@@ -85,7 +85,7 @@ module Transpec
           # rubocop:disable LineLength
           let(:expected_source) do
             <<-'END'
-              transpec_analyze((double 'something'), self, "(string)_14_32", { :double_source_location => [:context, "method(:double).source_location"], :double_user_defined_method? => [:context, "owner = method(:double).owner\nowner != RSpec::Core::ExampleGroup &&\n  owner.ancestors.include?(RSpec::Core::ExampleGroup)"] })
+              transpec_analyze((double 'something'), self, "(string)_14_32", { :double_source_location => [:context, "method(:double).source_location"], :double_example_method_defined_by_user? => [:context, "owner = method(:double).owner\nowner != RSpec::Core::ExampleGroup &&\n  owner.ancestors.include?(RSpec::Core::ExampleGroup)"] })
             END
           end
           # rubocop:enable LineLength

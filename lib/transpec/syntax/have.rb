@@ -7,11 +7,11 @@ require 'transpec/syntax/mixin/owned_matcher'
 module Transpec
   class Syntax
     class Have < Syntax
-      require 'transpec/syntax/have/dynamic_inspector'
+      require 'transpec/syntax/have/dynamic_analysis'
       require 'transpec/syntax/have/source_builder'
       require 'transpec/syntax/have/have_record'
 
-      include Mixin::Send, Mixin::OwnedMatcher
+      include Mixin::Send, Mixin::OwnedMatcher, DynamicAnalysis
 
       # String#count is not query method, and there's no way to determine
       # whether a method is query method.
@@ -22,13 +22,10 @@ module Transpec
       # for String (String responds to #size).
       QUERY_METHOD_PRIORITIES = [:size, :count, :length].freeze
 
-      def self.target_method?(receiver_node, method_name)
-        receiver_node.nil? &&
+      def dynamic_analysis_target?
+        super &&
+          receiver_node.nil? &&
           [:have, :have_exactly, :have_at_least, :have_at_most].include?(method_name)
-      end
-
-      define_dynamic_analysis_request do |rewriter|
-        DynamicInspector.register_request(self, rewriter)
       end
 
       def convert_to_standard_expectation!(parenthesize_matcher_arg = true)

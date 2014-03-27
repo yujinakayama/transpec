@@ -9,29 +9,28 @@ module Transpec
     class Example < Syntax
       include Mixin::Send, RSpecDSL
 
-      def self.conversion_target_node?(node, runtime_data = nil)
-        return false unless target_node?(node, runtime_data)
+      define_dynamic_analysis_request do |rewriter|
+        code = "is_a?(Class) && ancestors.any? { |a| a.name == 'RSpec::Core::ExampleGroup' }"
+        rewriter.register_request(node, :example_group_context?, code, :context)
+      end
+
+      def dynamic_analysis_target?
+        super && receiver_node.nil? && EXAMPLE_METHODS.include?(method_name)
+      end
+
+      def conversion_target?
+        return false unless dynamic_analysis_target?
 
         # Check whether the context is example group to differenciate
         # RSpec::Core::ExampleGroup.pending (a relative of #it) and
         # RSpec::Core::ExampleGroup#pending (marks the example as pending in #it block).
-        if runtime_data && runtime_data.run?(node)
+        if runtime_data.run?(node)
           # If we have runtime data, check with it.
           runtime_data[node, :example_group_context?]
         else
           # Otherwise check statically.
-          inspector = StaticContextInspector.new(node)
-          inspector.scopes.last == :example_group
+          static_context_inspector.scopes.last == :example_group
         end
-      end
-
-      def self.target_method?(receiver_node, method_name)
-        receiver_node.nil? && EXAMPLE_METHODS.include?(method_name)
-      end
-
-      define_dynamic_analysis_request do |rewriter|
-        code = "is_a?(Class) && ancestors.any? { |a| a.name == 'RSpec::Core::ExampleGroup' }"
-        rewriter.register_request(node, :example_group_context?, code, :context)
       end
 
       def convert_pending_to_skip!

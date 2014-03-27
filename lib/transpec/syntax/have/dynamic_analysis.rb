@@ -5,62 +5,41 @@ require 'transpec/syntax/have'
 module Transpec
   class Syntax
     class Have
-      class DynamicInspector
-        def self.register_request(have, rewriter)
-          new(have, rewriter).register_request
-        end
+      module DynamicAnalysis
+        extend ActiveSupport::Concern
 
-        attr_reader :have, :rewriter
+        included do
+          define_dynamic_analysis_request do |rewriter|
+            target_node = explicit_subject? ? expectation.subject_node : expectation.node
+            target_type = explicit_subject? ? :object : :context
 
-        def initialize(have, rewriter)
-          @have = have
-          @rewriter = rewriter
-        end
-
-        def target_node
-          if have.explicit_subject?
-            have.expectation.subject_node
-          else
-            have.expectation.node
-          end
-        end
-
-        def target_type
-          if have.explicit_subject?
-            :object
-          else
-            :context
-          end
-        end
-
-        def register_request
-          key = :collection_accessor
-          code = collection_accessor_inspection_code
-          rewriter.register_request(target_node, key, code, target_type)
-
-          # Give up inspecting query methods of collection accessor with arguments
-          # (e.g. have(2).errors_on(variable)) since this is a context of #instance_eval.
-          unless have.items_method_has_arguments?
-            key = :available_query_methods
-            code = available_query_methods_inspection_code
+            key = :collection_accessor
+            code = collection_accessor_inspection_code
             rewriter.register_request(target_node, key, code, target_type)
+
+            # Give up inspecting query methods of collection accessor with arguments
+            # (e.g. have(2).errors_on(variable)) since this is a context of #instance_eval.
+            unless items_method_has_arguments?
+              key = :available_query_methods
+              code = available_query_methods_inspection_code
+              rewriter.register_request(target_node, key, code, target_type)
+            end
+
+            key = :collection_accessor_is_private?
+            code = "#{subject_code}.private_methods.include?(#{items_name.inspect})"
+            rewriter.register_request(target_node, key, code, target_type)
+
+            key = :project_requires_collection_matcher?
+            code = 'defined?(RSpec::Rails) || defined?(RSpec::CollectionMatchers)'
+            rewriter.register_request(target_node, key, code, :context)
           end
-
-          key = :collection_accessor_is_private?
-          code = "#{subject_code}.private_methods.include?(#{have.items_name.inspect})"
-          rewriter.register_request(target_node, key, code, target_type)
-
-          key = :project_requires_collection_matcher?
-          code = 'defined?(RSpec::Rails) || defined?(RSpec::CollectionMatchers)'
-          rewriter.register_request(target_node, key, code, :context)
         end
 
         def subject_code
-          have.explicit_subject? ? 'self' : 'subject'
+          explicit_subject? ? 'self' : 'subject'
         end
 
-        # rubocop:disable MethodLength
-        def collection_accessor_inspection_code
+        def collection_accessor_inspection_code # rubocop:disable MethodLength
           # `expect(owner).to have(n).things` invokes private owner#things with Object#__send__
           # if the owner does not respond to any of #size, #count and #length.
           #
@@ -69,7 +48,7 @@ module Transpec
           # rubocop:enable LineLength
           @collection_accessor_inspection_code ||= <<-END.gsub(/^\s+\|/, '').chomp
             |begin
-            |  exact_name = #{have.items_name.inspect}
+            |  exact_name = #{items_name.inspect}
             |
             |  inflector = if defined?(ActiveSupport::Inflector) &&
             |                   ActiveSupport::Inflector.respond_to?(:pluralize)
@@ -100,7 +79,6 @@ module Transpec
             |end
           END
         end
-        # rubocop:enable MethodLength
 
         def available_query_methods_inspection_code
           <<-END.gsub(/^\s+\|/, '').chomp

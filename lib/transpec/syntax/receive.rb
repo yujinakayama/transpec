@@ -10,8 +10,8 @@ module Transpec
     class Receive < Syntax
       include Mixin::Send, Mixin::OwnedMatcher, Mixin::MessagingHost
 
-      def self.target_method?(receiver_node, method_name)
-        receiver_node.nil? && method_name == :receive
+      def dynamic_analysis_target?
+        super && receiver_node.nil? && method_name == :receive
       end
 
       def remove_useless_and_return!

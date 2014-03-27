@@ -13,13 +13,13 @@ module Transpec
 
       attr_reader :current_syntax_type
 
-      def self.target_method?(receiver_node, method_name)
-        receiver_node.nil? && [:should, :should_not].include?(method_name)
-      end
-
       def initialize(node, source_rewriter = nil, runtime_data = nil, report = nil)
         super
         @current_syntax_type = :should
+      end
+
+      def dynamic_analysis_target?
+        super && receiver_node.nil? && [:should, :should_not].include?(method_name)
       end
 
       def expectize!(negative_form = 'not_to', parenthesize_matcher_arg = true)
