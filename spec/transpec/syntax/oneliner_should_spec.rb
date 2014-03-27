@@ -11,6 +11,53 @@ module Transpec
 
       let(:record) { should_object.report.records.first }
 
+      describe '.conversion_target_node?' do
+        let(:send_node) do
+          ast.each_descendent_node do |node|
+            next unless node.send_type?
+            method_name = node.children[1]
+            next unless method_name == :should
+            return node
+          end
+          fail 'No #should node is found!'
+        end
+
+        subject { OnelinerShould.conversion_target_node?(send_node, runtime_data) }
+
+        context 'when one-liner #should node is passed' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                subject { 1 }
+                it { should == 1 }
+              end
+            END
+          end
+
+          it { should be_true }
+
+          context 'with runtime information' do
+            include_context 'dynamic analysis objects'
+            it { should be_true }
+          end
+        end
+
+        context 'when monkey-patched #should node is passed' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                subject { 1 }
+                it 'is 1' do
+                  subject.should == 1
+                end
+              end
+            END
+          end
+
+          it { should be_false }
+        end
+      end
+
       describe '#matcher_node' do
         context 'when it is taking operator matcher' do
           let(:source) do

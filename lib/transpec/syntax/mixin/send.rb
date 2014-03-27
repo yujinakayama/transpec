@@ -27,8 +27,8 @@ module Transpec
             source_location = source_location(node, runtime_data)
             return true unless source_location
             file_path = source_location.first
-            !file_path.match(%r{/rspec\-[^/]+/lib/rspec/}).nil? &&
-              !file_path.end_with?('/memoized_helpers.rb')
+            return false unless file_path.match(%r{/rspec\-[^/]+/lib/rspec/})
+            !user_defined_method?(node, runtime_data)
           end
 
           def source_location(node, runtime_data)
@@ -38,8 +38,19 @@ module Transpec
             runtime_data[target_node, source_location_key(method_name)]
           end
 
+          def user_defined_method?(node, runtime_data)
+            return unless runtime_data
+            receiver_node, method_name, *_ = *node
+            target_node = receiver_node ? receiver_node : node
+            runtime_data[target_node, user_defined_method_key(method_name)]
+          end
+
           def source_location_key(method_name)
             "#{method_name}_source_location".to_sym
+          end
+
+          def user_defined_method_key(method_name)
+            "#{method_name}_user_defined_method?".to_sym
           end
         end
 
@@ -55,6 +66,14 @@ module Transpec
 
             key = self.class.source_location_key(method_name)
             code = "method(#{method_name.inspect}).source_location"
+            rewriter.register_request(target_node, key, code, target_object_type)
+
+            key = self.class.user_defined_method_key(method_name)
+            code = <<-END.gsub(/^\s+\|/, '').chomp
+              |owner = method(#{method_name.inspect}).owner
+              |owner != RSpec::Core::ExampleGroup &&
+              |  owner.ancestors.include?(RSpec::Core::ExampleGroup)
+            END
             rewriter.register_request(target_node, key, code, target_object_type)
           end
         end
