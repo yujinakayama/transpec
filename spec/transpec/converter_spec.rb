@@ -6,7 +6,7 @@ require 'transpec/converter'
 module Transpec
   describe Converter do
     subject(:converter) { Converter.new(configuration, rspec_version) }
-    let(:rspec_version) { Transpec.current_rspec_version }
+    let(:rspec_version) { Transpec.required_rspec_version }
     let(:configuration) { Configuration.new }
 
     describe '#convert_file!' do

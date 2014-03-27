@@ -17,7 +17,7 @@ module Transpec
 
     def initialize(configuration = nil, rspec_version = nil, runtime_data = nil)
       @configuration = configuration || Configuration.new
-      @rspec_version = rspec_version || Transpec.current_rspec_version
+      @rspec_version = rspec_version || Transpec.required_rspec_version
       @runtime_data = runtime_data
       @report = Report.new
     end

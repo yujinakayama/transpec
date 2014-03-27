@@ -10,7 +10,7 @@ module Transpec
     subject(:cli) { CLI.new }
 
     before do
-      cli.project.stub(:rspec_version).and_return(Transpec.current_rspec_version)
+      cli.project.stub(:rspec_version).and_return(Transpec.required_rspec_version)
     end
 
     describe '.run' do
