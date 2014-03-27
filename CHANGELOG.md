@@ -2,6 +2,8 @@
 
 ## Development
 
+* Avoid confusing methods defined with `#let` or `#subject` by user with RSpec built-in methods ([#55](https://github.com/yujinakayama/transpec/issues/55))
+
 ## v1.10.3
 
 * Suggest using `-c/--rspec-command` option and exit gracefully when dynamic analysis failed ([#52](https://github.com/yujinakayama/transpec/issues/52))

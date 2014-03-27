@@ -27,7 +27,8 @@ module Transpec
             source_location = source_location(node, runtime_data)
             return true unless source_location
             file_path = source_location.first
-            !file_path.match(%r{/rspec\-[^/]+/lib/rspec/}).nil?
+            !file_path.match(%r{/rspec\-[^/]+/lib/rspec/}).nil? &&
+              !file_path.end_with?('/memoized_helpers.rb')
           end
 
           def source_location(node, runtime_data)

@@ -53,6 +53,33 @@ module Transpec
             CurrentExample.conversion_target_node?(send_node).should be_false
           end
         end
+
+        context 'when #example node defined with #let by user is passed' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                let(:example) { 'This is not current example object' }
+
+                it 'does something' do
+                  example
+                end
+              end
+            END
+          end
+
+          it 'unfortunately returns true ' \
+             "since it's impossible to differentiate them without runtime information" do
+            CurrentExample.conversion_target_node?(send_node).should be_true
+          end
+
+          context 'with runtime information' do
+            include_context 'dynamic analysis objects'
+
+            it 'returns false properly' do
+              CurrentExample.conversion_target_node?(send_node, runtime_data).should be_false
+            end
+          end
+        end
       end
 
       describe '#convert!' do
