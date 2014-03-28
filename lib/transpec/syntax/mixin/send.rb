@@ -52,7 +52,7 @@ module Transpec
         include TargetDetection
 
         included do
-          define_dynamic_analysis_request do |rewriter|
+          define_dynamic_analysis do |rewriter|
             target_type = receiver_node ? :object : :context
 
             key = source_location_key

@@ -9,7 +9,7 @@ module Transpec
     class Example < Syntax
       include Mixin::Send, RSpecDSL
 
-      define_dynamic_analysis_request do |rewriter|
+      define_dynamic_analysis do |rewriter|
         code = "is_a?(Class) && ancestors.any? { |a| a.name == 'RSpec::Core::ExampleGroup' }"
         rewriter.register_request(node, :example_group_context?, code, :context)
       end

@@ -10,7 +10,7 @@ module Transpec
         extend ActiveSupport::Concern
         include Send
 
-        def register_request_of_syntax_availability_inspection(rewriter, key, methods)
+        def register_syntax_availability_analysis_request(rewriter, key, methods)
           code = "self.class.ancestors.any? { |a| a.name.start_with?('RSpec::') }"
 
           methods.each do |method|
@@ -20,7 +20,7 @@ module Transpec
           rewriter.register_request(node, key, code, :context)
         end
 
-        def check_syntax_availability(key)
+        def syntax_available?(key)
           if runtime_data.present?(node, key)
             runtime_data[node, key]
           else

@@ -11,14 +11,14 @@ module Transpec
     class ShouldReceive < Syntax
       include Mixin::Expectizable, Mixin::MonkeyPatchAnyInstance, Mixin::MessagingHost, Util
 
-      define_dynamic_analysis_request do |rewriter|
-        register_request_of_syntax_availability_inspection(
+      define_dynamic_analysis do |rewriter|
+        register_syntax_availability_analysis_request(
           rewriter,
           :expect_to_receive_available?,
           [:expect, :receive]
         )
 
-        register_request_of_syntax_availability_inspection(
+        register_syntax_availability_analysis_request(
           rewriter,
           :allow_to_receive_available?,
           [:allow, :receive]
@@ -34,11 +34,11 @@ module Transpec
       end
 
       def expect_to_receive_available?
-        check_syntax_availability(__method__)
+        syntax_available?(__method__)
       end
 
       def allow_to_receive_available?
-        check_syntax_availability(__method__)
+        syntax_available?(__method__)
       end
 
       def positive?

@@ -9,7 +9,7 @@ module Transpec
     class Pending < Syntax
       include Mixin::Send, Util
 
-      define_dynamic_analysis_request do |rewriter|
+      define_dynamic_analysis do |rewriter|
         code = 'is_a?(RSpec::Core::ExampleGroup)'
         rewriter.register_request(node, :example_context?, code, :context)
       end

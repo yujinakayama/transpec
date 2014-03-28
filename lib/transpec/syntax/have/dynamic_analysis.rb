@@ -9,7 +9,7 @@ module Transpec
         extend ActiveSupport::Concern
 
         included do
-          define_dynamic_analysis_request do |rewriter|
+          define_dynamic_analysis do |rewriter|
             target_node = explicit_subject? ? expectation.subject_node : expectation.node
             target_type = explicit_subject? ? :object : :context
 

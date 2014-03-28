@@ -9,7 +9,7 @@ module Transpec
     class Its < Syntax
       include Mixin::Send, Util
 
-      define_dynamic_analysis_request do |rewriter|
+      define_dynamic_analysis do |rewriter|
         key = :project_requires_its?
         code = 'defined?(RSpec::Its)'
         rewriter.register_request(node, key, code, :context)

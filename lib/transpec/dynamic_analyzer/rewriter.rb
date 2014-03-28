@@ -47,7 +47,7 @@ module Transpec
           Syntax.standalone_syntaxes.each do |syntax_class|
             syntax = syntax_class.new(node)
             next unless syntax.dynamic_analysis_target?
-            syntax.register_request_for_dynamic_analysis(self)
+            syntax.register_dynamic_analysis_request(self)
           end
         end
       end

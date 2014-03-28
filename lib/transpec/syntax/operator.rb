@@ -15,7 +15,7 @@ module Transpec
       OPERATORS = [:==, :===, :<, :<=, :>, :>=, :=~].freeze
       BE_NODE = s(:send, nil, :be)
 
-      define_dynamic_analysis_request do |rewriter|
+      define_dynamic_analysis do |rewriter|
         if method_name == :=~
           rewriter.register_request(arg_node, :enumerable_arg?, 'is_a?(Enumerable)')
         end

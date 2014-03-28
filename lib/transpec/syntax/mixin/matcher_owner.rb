@@ -14,10 +14,10 @@ module Transpec
             matcher_ivar = "@#{matcher_accessor}"
             matcher_creator = "create_#{matcher_class.snake_case_name}"
 
-            define_dynamic_analysis_request do |rewriter|
+            define_dynamic_analysis do |rewriter|
               matcher = send(matcher_creator)
               if matcher.dynamic_analysis_target?
-                matcher.register_request_for_dynamic_analysis(rewriter)
+                matcher.register_dynamic_analysis_request(rewriter)
               end
             end
 
