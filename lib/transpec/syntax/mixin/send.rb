@@ -22,14 +22,15 @@ module Transpec
           private
 
           def defined_by_rspec?
-            return false unless method_source_path.match(%r{/rspec\-[^/]+/lib/rspec/})
-            !example_method_defined_by_user?
+            defined_in_rspec_source? && !example_method_defined_by_user?
           end
 
-          def method_source_path
+          def defined_in_rspec_source?
             source_location = runtime_data[send_analysis_target_node, source_location_key]
-            return unless source_location
-            source_location.first
+            return true unless source_location
+            source_path = source_location.first
+            return false unless source_path
+            source_path.match(%r{/rspec\-[^/]+/lib/rspec/})
           end
 
           def example_method_defined_by_user?
