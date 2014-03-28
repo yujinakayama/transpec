@@ -48,20 +48,18 @@ module Transpec
             @host = host
           end
 
-          def original_syntax
+          def build_original_syntax
             syntax = base_syntax
             syntax << '.and_return'
             syntax << ' { value }' if @host.and_return_with_block?
             syntax
           end
 
-          def converted_syntax
+          def build_converted_syntax
             syntax = base_syntax
             syntax << ' { value }' if @host.and_return_with_block?
             syntax
           end
-
-          private
 
           def base_syntax
             fail NotImplementedError

@@ -13,11 +13,19 @@ module Transpec
     end
 
     def original_syntax
-      @original_syntax_type.to_s
+      original_syntax_type.to_s
     end
 
     def converted_syntax
-      @converted_syntax_type.to_s
+      converted_syntax_type.to_s
+    end
+
+    def original_syntax_type
+      @original_syntax_type ||= build_original_syntax.to_sym
+    end
+
+    def converted_syntax_type
+      @converted_syntax_type ||= build_converted_syntax.to_sym
     end
 
     def ==(other)
@@ -34,6 +42,16 @@ module Transpec
 
     def to_s
       "`#{original_syntax_type}` -> `#{converted_syntax_type}`"
+    end
+
+    private
+
+    def build_original_syntax
+      fail NotImplementedError
+    end
+
+    def build_converted_syntax
+      fail NotImplementedError
     end
   end
 

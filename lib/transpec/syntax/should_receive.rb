@@ -172,7 +172,7 @@ module Transpec
           fail NotImplementedError
         end
 
-        def original_syntax
+        def build_original_syntax
           syntax = if @should_receive.any_instance?
                      'Klass.any_instance.'
                    else
@@ -181,7 +181,7 @@ module Transpec
           syntax << "#{@should_receive.method_name}(:message)"
         end
 
-        def converted_syntax
+        def build_converted_syntax
           syntax = if @should_receive.any_instance?
                      "#{syntax_name}_any_instance_of(Klass)."
                    else
@@ -203,7 +203,7 @@ module Transpec
           'allow'
         end
 
-        def original_syntax
+        def build_original_syntax
           syntax = super
           syntax << '.any_number_of_times' if @should_receive.any_number_of_times?
           syntax << '.at_least(0)' if @should_receive.at_least_zero?
@@ -216,14 +216,14 @@ module Transpec
           @should_receive = should_receive
         end
 
-        def original_syntax
+        def build_original_syntax
           syntax = "obj.#{@should_receive.method_name}(:message)"
           syntax << '.any_number_of_times' if @should_receive.any_number_of_times?
           syntax << '.at_least(0)' if @should_receive.at_least_zero?
           syntax
         end
 
-        def converted_syntax
+        def build_converted_syntax
           'obj.stub(:message)'
         end
       end

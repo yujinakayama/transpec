@@ -12,22 +12,6 @@ module Transpec
           @have = have
         end
 
-        def original_syntax
-          @original_syntax ||= begin
-            type = have.expectation.class.snake_case_name.to_sym
-            syntax = build_expectation(original_subject, type)
-            syntax << " #{have.method_name}(n).#{original_items}"
-          end
-        end
-
-        def converted_syntax
-          @converted_syntax ||= begin
-            type = have.expectation.current_syntax_type
-            syntax = build_expectation(converted_subject, type)
-            syntax << " #{source_builder.replacement_matcher_source}"
-          end
-        end
-
         def annotation
           return @annotation if instance_variable_defined?(:@annotation)
 
@@ -39,6 +23,18 @@ module Transpec
         end
 
         private
+
+        def build_original_syntax
+          type = have.expectation.class.snake_case_name.to_sym
+          syntax = build_expectation(original_subject, type)
+          syntax << " #{have.method_name}(n).#{original_items}"
+        end
+
+        def build_converted_syntax
+          type = have.expectation.current_syntax_type
+          syntax = build_expectation(converted_subject, type)
+          syntax << " #{source_builder.replacement_matcher_source}"
+        end
 
         def build_expectation(subject, type)
           case type

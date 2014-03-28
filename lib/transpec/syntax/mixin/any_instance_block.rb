@@ -33,11 +33,11 @@ module Transpec
             @host = host
           end
 
-          def original_syntax
+          def build_original_syntax
             "#{base_syntax} { |arg| }"
           end
 
-          def converted_syntax
+          def build_converted_syntax
             "#{base_syntax} { |instance, arg| }"
           end
 

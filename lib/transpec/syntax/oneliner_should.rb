@@ -169,23 +169,21 @@ module Transpec
           @negative_form_of_to = negative_form_of_to
         end
 
-        def original_syntax
-          @original_syntax ||= begin
-            syntax = should.example_has_description? ? "it '...' do" : 'it {'
-            syntax << " #{should.method_name} #{have.method_name}(n).#{original_items} "
-            syntax << (should.example_has_description? ? 'end' : '}')
-          end
+        private
+
+        def build_original_syntax
+          syntax = should.example_has_description? ? "it '...' do" : 'it {'
+          syntax << " #{should.method_name} #{have.method_name}(n).#{original_items} "
+          syntax << (should.example_has_description? ? 'end' : '}')
         end
 
-        def converted_syntax
-          @converted_syntax ||= begin
-            syntax = converted_description
-            syntax << ' '
-            syntax << converted_expectation
-            syntax << ' '
-            syntax << source_builder.replacement_matcher_source
-            syntax << ' end'
-          end
+        def build_converted_syntax
+          syntax = converted_description
+          syntax << ' '
+          syntax << converted_expectation
+          syntax << ' '
+          syntax << source_builder.replacement_matcher_source
+          syntax << ' end'
         end
 
         def converted_description
