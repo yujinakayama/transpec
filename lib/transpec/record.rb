@@ -4,6 +4,13 @@ require 'transpec/annotatable'
 
 module Transpec
   class Record
+    OVERRIDDE_FORBIDDEN_METHODS = [
+      :original_syntax,
+      :original_syntax_type,
+      :converted_syntax,
+      :converted_syntax_type
+    ]
+
     attr_reader :original_syntax_type, :converted_syntax_type, :annotation
 
     def initialize(original_syntax, converted_syntax, annotation = nil)
@@ -52,6 +59,11 @@ module Transpec
 
     def build_converted_syntax
       fail NotImplementedError
+    end
+
+    def self.method_added(method_name)
+      return unless OVERRIDDE_FORBIDDEN_METHODS.include?(method_name)
+      fail "Do not override Record##{method_name}."
     end
   end
 
