@@ -11,8 +11,8 @@ module Transpec
 
       let(:record) { should_object.report.records.first }
 
-      describe '.conversion_target_node?' do
-        let(:send_node) do
+      describe '#conversion_target?' do
+        let(:target_node) do
           ast.each_descendent_node do |node|
             next unless node.send_type?
             method_name = node.children[1]
@@ -22,7 +22,11 @@ module Transpec
           fail 'No #should node is found!'
         end
 
-        subject { OnelinerShould.conversion_target_node?(send_node, runtime_data) }
+        let(:should_object) do
+          OnelinerShould.new(target_node, source_rewriter, runtime_data)
+        end
+
+        subject { should_object.conversion_target? }
 
         context 'when one-liner #should node is passed' do
           let(:source) do

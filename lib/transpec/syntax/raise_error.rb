@@ -9,8 +9,8 @@ module Transpec
     class RaiseError < Syntax
       include Mixin::Send, Mixin::OwnedMatcher
 
-      def self.target_method?(receiver_node, method_name)
-        receiver_node.nil? && method_name == :raise_error
+      def dynamic_analysis_target?
+        super && receiver_node.nil? && method_name == :raise_error
       end
 
       def remove_error_specification_with_negative_expectation!

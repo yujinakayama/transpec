@@ -19,35 +19,36 @@ module Transpec
       ]
       # rubocop:enable LineLength
 
-      def self.conversion_target_node?(node, runtime_data = nil)
-        return false unless check_target_node_statically(node)
-
-        # Check if the method is RSpec's one or not.
-        if source_location(node, runtime_data)
-          # If we have a source location runtime data, check with it.
-          check_target_node_dynamically(node, runtime_data)
-        else
-          # Otherwise check with a static whitelist.
-          receiver_node = node.children.first
-          const_name = Util.const_name(receiver_node)
-          !CLASSES_DEFINING_OWN_STUB_METHOD.include?(const_name)
-        end
-      end
-
-      def self.target_method?(receiver_node, method_name)
-        !receiver_node.nil? && [:stub, :stub!, :stub_chain, :unstub, :unstub!].include?(method_name)
-      end
-
-      define_dynamic_analysis_request do |rewriter|
-        register_request_of_syntax_availability_inspection(
+      define_dynamic_analysis do |rewriter|
+        register_syntax_availability_analysis_request(
           rewriter,
           :allow_to_receive_available?,
           [:allow, :receive]
         )
       end
 
+      def dynamic_analysis_target?
+        super &&
+          !receiver_node.nil? &&
+          [:stub, :stub!, :stub_chain, :unstub, :unstub!].include?(method_name)
+      end
+
+      def conversion_target?
+        return false unless dynamic_analysis_target?
+
+        # Check if the method is RSpec's one or not.
+        if runtime_data.run?(send_analysis_target_node)
+          # If we have runtime data, check with it.
+          defined_by_rspec?
+        else
+          # Otherwise check with a static whitelist.
+          const_name = const_name(receiver_node)
+          !CLASSES_DEFINING_OWN_STUB_METHOD.include?(const_name)
+        end
+      end
+
       def allow_to_receive_available?
-        check_syntax_availability(__method__)
+        syntax_available?(__method__)
       end
 
       def hash_arg?

@@ -55,11 +55,11 @@ end
 shared_context 'syntax object' do |syntax_class, name|
   let(name) do
     ast.each_node do |node|
-      next unless syntax_class.conversion_target_node?(node)
-      return syntax_class.new(node, source_rewriter, runtime_data)
+      syntax = syntax_class.new(node, source_rewriter, runtime_data)
+      return syntax if syntax.conversion_target?
     end
 
-    fail "No #{syntax_class.name} node is found!"
+    fail "No #{syntax_class.name} conversion target is found!"
   end
 end
 

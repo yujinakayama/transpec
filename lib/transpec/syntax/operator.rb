@@ -15,23 +15,14 @@ module Transpec
       OPERATORS = [:==, :===, :<, :<=, :>, :>=, :=~].freeze
       BE_NODE = s(:send, nil, :be)
 
-      def self.standalone?
-        false
-      end
-
-      def self.check_target_node_statically(node)
-        node = node.parent_node if node == BE_NODE
-        super(node)
-      end
-
-      def self.target_method?(receiver_node, method_name)
-        !receiver_node.nil? && OPERATORS.include?(method_name)
-      end
-
-      define_dynamic_analysis_request do |rewriter|
+      define_dynamic_analysis do |rewriter|
         if method_name == :=~
           rewriter.register_request(arg_node, :enumerable_arg?, 'is_a?(Enumerable)')
         end
+      end
+
+      def self.standalone?
+        false
       end
 
       def initialize(node, expectation, source_rewriter = nil, runtime_data = nil, report = nil)
@@ -42,6 +33,10 @@ module Transpec
                         end
 
         super(operator_node, expectation, source_rewriter, runtime_data, report)
+      end
+
+      def dynamic_analysis_target?
+        super && !receiver_node.nil? && OPERATORS.include?(method_name)
       end
 
       def convert_operator!(parenthesize_arg = true)

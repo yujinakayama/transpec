@@ -11,11 +11,11 @@ module Transpec
 
       include Util
 
-      def self.target_node?(node, runtime_data = nil)
+      def dynamic_analysis_target?
         return false unless node && node.block_type?
         send_node = node.children.first
         receiver_node, method_name, *_ = *send_node
-        Util.const_name(receiver_node) == 'RSpec' && method_name == :configure
+        const_name(receiver_node) == 'RSpec' && method_name == :configure
       end
 
       def expectations

@@ -8,73 +8,64 @@ module Transpec
       module Send
         extend ActiveSupport::Concern
 
-        module ClassMethods
-          def target_node?(node, runtime_data = nil)
-            check_target_node_statically(node) && check_target_node_dynamically(node, runtime_data)
+        module TargetDetection
+          def dynamic_analysis_target?
+            node && node.send_type?
           end
 
-          def check_target_node_statically(node)
-            return false unless node && node.send_type?
-            receiver_node, method_name, *_ = *node
-            target_method?(receiver_node, method_name)
+          def conversion_target?
+            return false unless dynamic_analysis_target?
+            return true unless runtime_data.run?(send_analysis_target_node)
+            defined_by_rspec?
           end
 
-          def target_method?(receiver_node, method_name)
-            fail NotImplementedError
+          private
+
+          def defined_by_rspec?
+            return false unless method_source_path.match(%r{/rspec\-[^/]+/lib/rspec/})
+            !example_method_defined_by_user?
           end
 
-          def check_target_node_dynamically(node, runtime_data)
-            source_location = source_location(node, runtime_data)
-            return true unless source_location
-            file_path = source_location.first
-            return false unless file_path.match(%r{/rspec\-[^/]+/lib/rspec/})
-            !user_defined_method?(node, runtime_data)
+          def method_source_path
+            source_location = runtime_data[send_analysis_target_node, source_location_key]
+            return unless source_location
+            source_location.first
           end
 
-          def source_location(node, runtime_data)
-            return unless runtime_data
-            receiver_node, method_name, *_ = *node
-            target_node = receiver_node ? receiver_node : node
-            runtime_data[target_node, source_location_key(method_name)]
+          def example_method_defined_by_user?
+            runtime_data[send_analysis_target_node, example_method_defined_by_user_key]
           end
 
-          def user_defined_method?(node, runtime_data)
-            return unless runtime_data
-            receiver_node, method_name, *_ = *node
-            target_node = receiver_node ? receiver_node : node
-            runtime_data[target_node, user_defined_method_key(method_name)]
+          def send_analysis_target_node
+            receiver_node || node
           end
 
-          def source_location_key(method_name)
+          def source_location_key
             "#{method_name}_source_location".to_sym
           end
 
-          def user_defined_method_key(method_name)
-            "#{method_name}_user_defined_method?".to_sym
+          def example_method_defined_by_user_key
+            "#{method_name}_example_method_defined_by_user?".to_sym
           end
         end
 
+        include TargetDetection
+
         included do
-          define_dynamic_analysis_request do |rewriter|
-            if receiver_node
-              target_node = receiver_node
-              target_object_type = :object
-            else
-              target_node = node
-              target_object_type = :context
-            end
+          define_dynamic_analysis do |rewriter|
+            target_type = receiver_node ? :object : :context
 
-            key = self.class.source_location_key(method_name)
+            key = source_location_key
             code = "method(#{method_name.inspect}).source_location"
-            rewriter.register_request(target_node, key, code, target_object_type)
+            rewriter.register_request(send_analysis_target_node, key, code, target_type)
 
-            key = self.class.user_defined_method_key(method_name)
+            key = example_method_defined_by_user_key
             code = <<-END.gsub(/^\s+\|/, '').chomp
               |owner = method(#{method_name.inspect}).owner
               |owner != RSpec::Core::ExampleGroup &&
               |  owner.ancestors.include?(RSpec::Core::ExampleGroup)
             END
-            rewriter.register_request(target_node, key, code, target_object_type)
+            rewriter.register_request(send_analysis_target_node, key, code, target_type)
           end
         end
 

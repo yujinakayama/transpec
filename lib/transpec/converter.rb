@@ -31,9 +31,8 @@ module Transpec
 
     def dispatch_node(node, source_rewriter)
       Syntax.standalone_syntaxes.each do |syntax_class|
-        next unless syntax_class.conversion_target_node?(node, runtime_data)
-
         syntax = syntax_class.new(node, source_rewriter, runtime_data, report)
+        next unless syntax.conversion_target?
 
         handler_name = "process_#{syntax_class.snake_case_name}"
         send(handler_name, syntax)

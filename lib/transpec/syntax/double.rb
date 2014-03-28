@@ -8,8 +8,8 @@ module Transpec
     class Double < Syntax
       include Mixin::Send
 
-      def self.target_method?(receiver_node, method_name)
-        receiver_node.nil? && [:double, :mock, :stub].include?(method_name)
+      def dynamic_analysis_target?
+        super && receiver_node.nil? && [:double, :mock, :stub].include?(method_name)
       end
 
       def convert_to_double!

@@ -15,8 +15,8 @@ module Transpec
         failure_message_for_should_not: :failure_message_when_negated
       }
 
-      def self.target_method?(receiver_node, method_name)
-        receiver_node.nil? && CONVERSION_CORRESPONDENCE.keys.include?(method_name)
+      def dynamic_analysis_target?
+        super && receiver_node.nil? && CONVERSION_CORRESPONDENCE.keys.include?(method_name)
       end
 
       def convert_deprecated_method!

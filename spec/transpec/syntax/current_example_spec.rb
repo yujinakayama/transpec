@@ -11,8 +11,8 @@ module Transpec
 
       let(:record) { current_example_object.report.records.last }
 
-      describe '.conversion_target_node?' do
-        let(:send_node) do
+      describe '#conversion_target?' do
+        let(:target_node) do
           ast.each_descendent_node do |node|
             next unless node.send_type?
             method_name = node.children[1]
@@ -22,7 +22,13 @@ module Transpec
           fail 'No #example node is found!'
         end
 
-        context 'when #example node that returns current example object is passed' do
+        let(:current_example_object) do
+          CurrentExample.new(target_node, source_rewriter, runtime_data)
+        end
+
+        subject { current_example_object.conversion_target? }
+
+        context 'with #example node that returns current example object' do
           let(:source) do
             <<-END
               describe 'example' do
@@ -33,9 +39,7 @@ module Transpec
             END
           end
 
-          it 'returns true' do
-            CurrentExample.conversion_target_node?(send_node).should be_true
-          end
+          it { should be_true }
         end
 
         context 'when #example node that defines a spec example is passed' do
@@ -49,9 +53,7 @@ module Transpec
             END
           end
 
-          it 'returns false' do
-            CurrentExample.conversion_target_node?(send_node).should be_false
-          end
+          it { should be_false }
         end
 
         context 'when #example node defined with #let by user is passed' do
@@ -69,14 +71,14 @@ module Transpec
 
           it 'unfortunately returns true ' \
              "since it's impossible to differentiate them without runtime information" do
-            CurrentExample.conversion_target_node?(send_node).should be_true
+            should be_true
           end
 
           context 'with runtime information' do
             include_context 'dynamic analysis objects'
 
             it 'returns false properly' do
-              CurrentExample.conversion_target_node?(send_node, runtime_data).should be_false
+              should be_false
             end
           end
         end
@@ -230,9 +232,8 @@ module Transpec
 
           let(:current_example_objects) do
             ast.each_node.reduce([]) do |objects, node|
-              if CurrentExample.conversion_target_node?(node)
-                objects << CurrentExample.new(node, source_rewriter, runtime_data)
-              end
+              current_example_object = CurrentExample.new(node, source_rewriter, runtime_data)
+              objects << current_example_object if current_example_object.conversion_target?
               objects
             end
           end
