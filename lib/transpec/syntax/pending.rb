@@ -50,16 +50,14 @@ module Transpec
 
       def unblock!
         if block_beginning_line == block_body_line
-          range_between_pending_and_body =
-            expression_range.end.join(block_body_node.loc.expression.begin)
           replace(range_between_pending_and_body, "\n" + indentation_of_line(node))
         else
-          remove(expression_range.end.join(block_node.loc.begin))
+          remove(range_from_pending_end_to_block_open)
           outdent!(block_body_node, node)
         end
 
         if block_body_line == block_end_line
-          remove(block_body_node.loc.expression.end.join(block_node.loc.end))
+          remove(range_from_body_end_to_block_close)
         else
           remove(line_range(block_node.loc.end))
         end
@@ -99,6 +97,18 @@ module Transpec
 
       def block_end_line
         block_node.loc.end.line
+      end
+
+      def range_between_pending_and_body
+        expression_range.end.join(block_body_node.loc.expression.begin)
+      end
+
+      def range_from_pending_end_to_block_open
+        expression_range.end.join(block_node.loc.begin)
+      end
+
+      def range_from_body_end_to_block_close
+        block_body_node.loc.expression.end.join(block_node.loc.end)
       end
 
       def register_record(original_syntax, converted_syntax)
