@@ -1,14 +1,13 @@
 # coding: utf-8
 
-require 'transpec/util'
+require 'transpec/dynamic_analyzer/node_util'
 require 'json'
 require 'ostruct'
-require 'pathname'
 
 module Transpec
   class DynamicAnalyzer
     class RuntimeData
-      include Util
+      include NodeUtil
 
       attr_reader :data
 

@@ -2,15 +2,16 @@
 
 require 'transpec/base_rewriter'
 require 'transpec/dynamic_analyzer'
-require 'transpec/syntax'
+require 'transpec/dynamic_analyzer/node_util'
 require 'transpec/util'
+require 'transpec/syntax'
 
 Transpec::Syntax.require_all
 
 module Transpec
   class DynamicAnalyzer
     class Rewriter < BaseRewriter
-      include Util
+      include NodeUtil, Util
 
       EVAL_TARGET_TYPES = [:object, :context]
 
