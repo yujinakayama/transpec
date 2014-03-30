@@ -4,7 +4,7 @@ require 'transpec/annotatable'
 
 module Transpec
   class Record
-    OVERRIDDE_FORBIDDEN_METHODS = [
+    OVERRIDE_FORBIDDEN_METHODS = [
       :original_syntax,
       :original_syntax_type,
       :converted_syntax,
@@ -62,7 +62,7 @@ module Transpec
     end
 
     def self.method_added(method_name)
-      return unless OVERRIDDE_FORBIDDEN_METHODS.include?(method_name)
+      return unless OVERRIDE_FORBIDDEN_METHODS.include?(method_name)
       fail "Do not override Record##{method_name}."
     end
   end
