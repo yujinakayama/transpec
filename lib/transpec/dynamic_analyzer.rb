@@ -9,6 +9,7 @@ require 'find'
 require 'pathname'
 require 'fileutils'
 require 'shellwords'
+require 'erb'
 require 'English'
 
 module Transpec
@@ -16,50 +17,6 @@ module Transpec
     ANALYSIS_METHOD = 'transpec_analyze'
     HELPER_FILE = 'transpec_analysis_helper.rb'
     RESULT_FILE = 'transpec_analysis_result.json'
-    HELPER_SOURCE = <<-END
-      require 'pathname'
-
-      module TranspecAnalysis
-        @base_path = Dir.pwd
-
-        def self.data
-          @data ||= {}
-        end
-
-        at_exit do
-          # Use JSON rather than Marshal so that:
-          # * Unknown third-party class information won't be serialized.
-          #   (Such objects are stored as a string.)
-          # * Singleton method information won't be serialized.
-          #   (With Marshal.load, `singleton can't be dumped (TypeError)` will be raised.)
-          require 'json'
-          path = File.join(@base_path, '#{RESULT_FILE}')
-          File.open(path, 'w') do |file|
-            JSON.dump(data, file)
-          end
-        end
-      end
-
-      def #{ANALYSIS_METHOD}(object, context, node_id, analysis_codes)
-        node_data = {}
-
-        analysis_codes.each do |key, (target_type, code)|
-          target = case target_type
-                   when :object  then object
-                   when :context then context
-                   end
-
-          begin
-            node_data[key] = target.instance_eval(code)
-          rescue Exception
-          end
-        end
-
-        TranspecAnalysis.data[node_id] = node_data
-
-        object
-      end
-    END
 
     attr_reader :project, :rspec_command, :silent
     alias_method :silent?, :silent
@@ -88,7 +45,7 @@ module Transpec
       in_copied_project do
         rewrite_specs(paths)
 
-        File.write(HELPER_FILE, HELPER_SOURCE)
+        File.write(HELPER_FILE, helper_source)
 
         run_rspec(paths)
 
@@ -160,6 +117,12 @@ module Transpec
           # Syntax errors will be reported in CLI with Converter.
         end
       end
+    end
+
+    def helper_source
+      erb_path = File.join(File.dirname(__FILE__), 'dynamic_analyzer', 'helper.rb.erb')
+      erb = ERB.new(File.read(erb_path), nil)
+      erb.result(binding)
     end
 
     def copy(source, destination)
