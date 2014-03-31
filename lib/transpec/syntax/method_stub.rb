@@ -168,16 +168,11 @@ module Transpec
 
       def register_record(conversion_type)
         record_class = case conversion_type
-                       when :deprecated
-                         DeprecatedMethodRecord
-                       when :no_message_allowance
-                         NoMessageAllowanceRecord
-                       when :useless_and_return
-                         MonkeyPatchUselessAndReturnRecord
-                       when :any_instance_block
-                         MonkeyPatchAnyInstanceBlockRecord
-                       else
-                         AllowRecord
+                       when :deprecated           then DeprecatedMethodRecord
+                       when :no_message_allowance then NoMessageAllowanceRecord
+                       when :useless_and_return   then MonkeyPatchUselessAndReturnRecord
+                       when :any_instance_block   then MonkeyPatchAnyInstanceBlockRecord
+                       else                            AllowRecord
                        end
         report.records << record_class.new(self, conversion_type)
       end
