@@ -3,6 +3,8 @@
 class TranspecTest
   include FileUtils # This is Rake's one.
 
+  BUNDLER_RETRY_COUNT = 3
+
   attr_reader :url, :ref, :bundler_args
 
   def self.base_dir
@@ -132,7 +134,7 @@ class TranspecTest
   def bundle_install
     in_project_dir do
       with_clean_bundler_env do
-        sh 'bundle', 'install', *bundler_args
+        sh 'bundle', 'install', '--retry', BUNDLER_RETRY_COUNT.to_s, *bundler_args
       end
     end
   end
