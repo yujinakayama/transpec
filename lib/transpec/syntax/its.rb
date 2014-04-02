@@ -74,7 +74,7 @@ module Transpec
 
       def previous_line_is_blank?
         return false unless previous_line_source
-        previous_line_source.empty? || !previous_line_source.match(/\A\s*\Z/).nil?
+        previous_line_source.empty? || previous_line_source.match(/\A\s*\Z/)
       end
 
       def previous_and_current_line_are_same_indentation_level?

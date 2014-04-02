@@ -29,7 +29,7 @@ module Transpec
 
       def dynamic_analysis_target?
         super &&
-          !receiver_node.nil? &&
+          receiver_node &&
           [:stub, :stub!, :stub_chain, :unstub, :unstub!].include?(method_name)
       end
 

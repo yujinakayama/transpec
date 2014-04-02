@@ -36,7 +36,7 @@ module Transpec
       end
 
       def dynamic_analysis_target?
-        super && !receiver_node.nil? && OPERATORS.include?(method_name)
+        super && receiver_node && OPERATORS.include?(method_name)
       end
 
       def convert_operator!(parenthesize_arg = true)
@@ -88,7 +88,7 @@ module Transpec
 
         parenthesize!(parenthesize_arg)
 
-        accurate = !enumerable_arg?.nil?
+        accurate = !enumerable_arg?.nil? # rubocop:disable NonNilCheck
 
         # Need to register record after all source rewrites are done
         # to avoid false record when failed with overlapped rewrite.
@@ -137,7 +137,7 @@ module Transpec
       end
 
       def prefixed_with_be?
-        !be_node.nil?
+        be_node
       end
 
       def remove_be!

@@ -32,7 +32,7 @@ module Transpec
 
         def any_instance?
           return true unless any_instance_target_node.nil?
-          !runtime_data[subject_node, :any_instance_target_class_name].nil?
+          runtime_data[subject_node, :any_instance_target_class_name]
         end
 
         private

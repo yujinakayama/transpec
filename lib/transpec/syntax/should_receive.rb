@@ -29,7 +29,7 @@ module Transpec
 
       def dynamic_analysis_target?
         super &&
-          !receiver_node.nil? &&
+          receiver_node &&
           [:should_receive, :should_not_receive].include?(method_name)
       end
 

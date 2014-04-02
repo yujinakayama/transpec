@@ -70,7 +70,7 @@ module Transpec
 
       def subject_is_owner_of_collection?
         return true if items_method_has_arguments?
-        !runtime_subject_data(:collection_accessor).nil?
+        runtime_subject_data(:collection_accessor)
       end
 
       def collection_accessor_is_private?
@@ -99,7 +99,7 @@ module Transpec
       end
 
       def accurate_conversion?
-        !runtime_subject_data.nil?
+        runtime_subject_data
       end
 
       def matcher_range

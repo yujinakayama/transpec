@@ -29,7 +29,7 @@ module Transpec
       end
 
       def run?(node)
-        !self[node].nil?
+        self[node]
       end
 
       def present?(node, key)

@@ -27,11 +27,11 @@ module Transpec
 
         def and_return_with_block?
           block_node = Util.block_node_taken_by_method(and_return_node)
-          !block_node.nil?
+          block_node
         end
 
         def and_return?
-          !and_return_node.nil?
+          and_return_node
         end
 
         def and_return_node

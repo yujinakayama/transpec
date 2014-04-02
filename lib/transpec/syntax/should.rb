@@ -27,7 +27,7 @@ module Transpec
       end
 
       def dynamic_analysis_target?
-        super && !receiver_node.nil? && [:should, :should_not].include?(method_name)
+        super && receiver_node && [:should, :should_not].include?(method_name)
       end
 
       def expect_available?

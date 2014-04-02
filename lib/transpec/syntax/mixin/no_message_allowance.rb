@@ -22,11 +22,11 @@ module Transpec
         end
 
         def any_number_of_times?
-          !any_number_of_times_node.nil?
+          any_number_of_times_node
         end
 
         def at_least_zero?
-          !at_least_zero_node.nil?
+          at_least_zero_node
         end
 
         private

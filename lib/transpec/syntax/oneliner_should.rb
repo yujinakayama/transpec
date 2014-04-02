@@ -66,7 +66,7 @@ module Transpec
 
       def example_has_description?
         send_node = example_block_node.children.first
-        !send_node.children[2].nil?
+        send_node.children[2]
       end
 
       def build_description(size)
