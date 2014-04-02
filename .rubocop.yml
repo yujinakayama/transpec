@@ -1,8 +1,8 @@
 
 AllCops:
-  Includes:
+  Include:
     - tasks/*.rake
-  Excludes:
+  Exclude:
     - tmp/*
     - vendor/*
 
