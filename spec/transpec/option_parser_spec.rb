@@ -249,9 +249,9 @@ module Transpec
         parser.help
       end
 
-      it 'does not exceed 80 characters in each line' do
+      it 'does not exceed 100 characters in each line' do
         help_text.each_line do |line|
-          line.chomp.length.should <= 80
+          line.chomp.length.should <= 100
         end
       end
 

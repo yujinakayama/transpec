@@ -124,69 +124,61 @@ module Transpec
     def descriptions
       @descriptions ||= {
         '-f' => [
-          'Force processing even if the current Git',
-          'repository is not clean.'
+          'Force processing even if the current Git repository is not clean.'
         ],
         '-s' => [
-          'Skip dynamic analysis and convert with only',
-          'static analysis. Note that specifying this',
-          'option decreases the conversion accuracy.'
+          'Skip dynamic analysis and convert with only static analysis. Note',
+          'that specifying this option decreases the conversion accuracy.'
         ],
         '-c' => [
-          'Specify a command to run your specs that is',
-          'used for dynamic analysis.',
+          'Specify a command to run your specs that is used for dynamic',
+          'analysis.',
           'Default: "bundle exec rspec"'
         ],
         '-k' => [
-          'Keep specific syntaxes by disabling',
-          'conversions.',
+          'Keep specific syntaxes by disabling conversions.',
           'Conversion Types:',
           '  *should* (to `expect(obj).to`)',
-          '  *oneliner* (from `should` to `is_expected.to`)',
+          '  *oneliner* (from `it { should ... }` to `it { is_expected.to ... }`)',
           '  *should_receive* (to `expect(obj).to receive`)',
           '  *stub*  (to `allow(obj).to receive`)',
-          '  *have_items* (to `expect(obj.size).to eq(n)`)',
-          '  *its* (to `describe { subject { }; it { } }`)',
+          '  *have_items* (to `expect(collection.size).to eq(n)`)',
+          "  *its* (to `describe '#attr' { subject { }; it { } }`)",
           '  *pending* (to `skip`)',
-          '  *deprecated* (e.g. from `mock` to `double`)',
+          '  *deprecated* (all other deprecated syntaxes to latest syntaxes)',
           'These are all converted by default.'
         ],
         '-v' => [
-          'Enable specific conversions that are disabled',
-          'by default.',
+          'Enable specific conversions that are disabled by default.',
           'Conversion Types:',
-          '  *stub_with_hash* TODO',
+          '  *stub_with_hash* (`obj.stub(:msg => val)` to',
+          '                  `allow(obj).to receive(:msg).and_return(val)`)',
           'These conversions are disabled by default.'
         ],
         '-n' => [
-          'Specify a negative form of `to` that is used in',
-          'the `expect(...).to` syntax.',
-          'Either *not_to* or *to_not*.',
+          'Specify a negative form of `to` that is used in the `expect(...).to`',
+          'syntax. Either *not_to* or *to_not*.',
           'Default: *not_to*'
         ],
         '-b' => [
-          'Specify a matcher type that `be_true` and',
-          '`be_false` will be converted to.',
+          'Specify a matcher type that `be_true` and `be_false` will be',
+          'converted to.',
           '  *truthy,falsey* (conditional semantics)',
           '  *truthy,falsy*  (alias of `falsey`)',
           '  *true,false*    (exact equality)',
           'Default: *truthy,falsey*'
         ],
         '-a' => [
-          'Suppress yielding receiver instances to',
-          '`any_instance` implementation blocks as the',
-          'first block argument.'
+          'Suppress yielding receiver instances to `any_instance`',
+          'implementation blocks as the first block argument.'
         ],
         '-p' => [
-          'Suppress parenthesizing arguments of matchers',
-          'when converting `should` with operator matcher',
-          'to `expect` with non-operator matcher. Note',
-          'that it will be parenthesized even if this',
-          'option is specified when parentheses are',
-          'necessary to keep the meaning of the',
-          'expression. By default, arguments of the',
-          'following operator matchers will be',
-          'parenthesized.',
+          'Suppress parenthesizing arguments of matchers when converting',
+          '`should` with operator matcher to `expect` with non-operator matcher.',
+          'Note that it will be parenthesized even if this option is',
+          'specified when parentheses are necessary to keep the meaning of',
+          'the expression. By default, arguments of the following operator',
+          'matchers will be parenthesized.',
           '  `== 10` to `eq(10)`',
           '  `=~ /pattern/` to `match(/pattern/)`',
           '  `=~ [1, 2]` to `match_array([1, 2])`'
