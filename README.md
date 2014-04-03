@@ -230,7 +230,7 @@ Keep specific syntaxes by disabling conversions.
 $ transpec --keep should_receive,stub
 ```
 
-#### Available syntax types
+#### Conversions enabled by default
 
 Note that some syntaxes are available only if your project's RSpec is specific version or later.
 If they are unavailable, conversions for such syntaxes will be disabled automatically.
@@ -247,6 +247,33 @@ Type             | Target Syntax                  | Converted Syntax
 `deprecated`     | All other deprecated syntaxes  | Latest syntaxes
 
 See [Supported Conversions](#supported-conversions) for more details.
+
+
+### `-v/--convert`
+
+Enable specific conversions that are disabled by default.
+
+```bash
+$ transpec --convert stub_with_hash
+```
+
+#### Conversions disabled by default
+
+Some of these target syntaxes are _not_ deprecated in both RSpec 2 and 3,
+but the new syntaxes provide more modern and clear ways.
+
+Type             | Target Syntax                  | Converted Syntax
+-----------------|--------------------------------|----------------------------------------------------
+`stub_with_hash` | `obj.stub(:message => value)`  | `allow(obj).to receive(:message).and_return(value)`
+
+Note: Specifying `stub_with_hash` enables conversion of `obj.stub(:message => value)`
+to `allow(obj).to receive(:message).and_return(value)`
+when `allow(obj).to receive_messages(:message => value)` is unavailable (prior to RSpec 3.0),
+and it will be converted to multiple statements if the hash includes multiple pairs.
+If your project's RSpec is 3.0 or later, it will be converted to `receive_messages(:message => value)`
+regardless of this option.
+
+See [Supported Conversions - Method stubs with a hash argument](#method-stubs-with-a-hash-argument) for more details.
 
 ### `-n/--negative-form`
 
@@ -280,14 +307,6 @@ Specifying this option suppresses the conversion and keeps them compatible with 
 Note that this is not same as `--keep deprecated` since this configures `yield_receiver_to_any_instance_implementation_blocks` with `RSpec.configure`.
 
 See [Supported Conversions - `any_instance` implementation blocks](#any_instance-implementation-blocks) for more details.
-
-### `-t/--convert-stub-with-hash`
-
-Enable conversion of `obj.stub(:message => value)` to `allow(obj).to receive(:message).and_return(value)` when `receive_messages(:message => value)` is unavailable (prior to RSpec 3.0).
-It will be converted to multiple statements if the hash includes multiple pairs.
-This conversion is disabled by default.
-
-See [Supported Conversions - Method stubs with a hash argument](#method-stubs-with-a-hash-argument) for more details.
 
 ### `-p/--no-parentheses-matcher-arg`
 

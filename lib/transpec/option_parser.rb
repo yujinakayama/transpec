@@ -22,6 +22,10 @@ module Transpec
           deprecated: :convert_deprecated_method=
     }
 
+    CONFIG_ATTRS_FOR_CONVERT_TYPES = {
+      stub_with_hash: :convert_stub_with_hash_to_stub_and_return=
+    }
+
     VALID_BOOLEAN_MATCHER_TYPES = %w(truthy,falsey truthy,falsy true,false)
 
     attr_reader :configuration
@@ -36,7 +40,7 @@ module Transpec
     end
 
     def parse(args)
-      args = exclude_deprecated_options(args)
+      args = convert_deprecated_options(args)
       @parser.parse!(args)
       args
     end
@@ -64,11 +68,11 @@ module Transpec
       end
 
       define_option('-k', '--keep TYPE[,TYPE...]') do |types|
-        types.split(',').each do |type|
-          config_attr = CONFIG_ATTRS_FOR_KEEP_TYPES[type.to_sym]
-          fail ArgumentError, "Unknown syntax type #{type.inspect}" unless config_attr
-          configuration.send(config_attr, false)
-        end
+        configure_conversion(CONFIG_ATTRS_FOR_KEEP_TYPES, types, false)
+      end
+
+      define_option('-v', '--convert TYPE[,TYPE...]') do |types|
+        configure_conversion(CONFIG_ATTRS_FOR_CONVERT_TYPES, types, true)
       end
 
       define_option('-n', '--negative-form FORM') do |form|
@@ -86,10 +90,6 @@ module Transpec
 
       define_option('-a', '--no-yield-any-instance') do
         configuration.add_receiver_arg_to_any_instance_implementation_block = false
-      end
-
-      define_option('-t', '--convert-stub-with-hash') do
-        configuration.convert_stub_with_hash_to_stub_and_return = true
       end
 
       define_option('-p', '--no-parentheses-matcher-arg') do
@@ -139,7 +139,7 @@ module Transpec
         '-k' => [
           'Keep specific syntaxes by disabling',
           'conversions.',
-          'Available syntax types:',
+          'Conversion Types:',
           "  #{'should'.bright} (to #{'expect(obj).to'.underline})",
           "  #{'oneliner'.bright} (from #{'should'.underline} to #{'is_expected.to'.underline})",
           "  #{'should_receive'.bright} (to #{'expect(obj).to receive'.underline})",
@@ -149,6 +149,13 @@ module Transpec
           "  #{'pending'.bright} (to #{'skip'.underline})",
           "  #{'deprecated'.bright} (e.g. from #{'mock'.underline} to #{'double'.underline})",
           'These are all converted by default.'
+        ],
+        '-v' => [
+          'Enable specific conversions that are disabled',
+          'by default.',
+          'Conversion Types:',
+          "  #{'stub_with_hash'.bright} TODO",
+          'These conversions are disabled by default.'
         ],
         '-n' => [
           "Specify a negative form of #{'to'.underline} that is used in",
@@ -168,15 +175,6 @@ module Transpec
           'Suppress yielding receiver instances to',
           "#{'any_instance'.underline} implementation blocks as the",
           'first block argument.'
-        ],
-        '-t' => [
-          "Enable conversion of #{'obj.stub(:msg => val)'.underline} to",
-          "#{'allow(obj).to receive(:msg).and_return(val)'.underline}",
-          "when #{'receive_messages(:msg => val)'.underline} is",
-          'unavailable (prior to RSpec 3.0). It will be',
-          'converted to multiple statements if the hash',
-          'includes multiple pairs. This conversion is',
-          'disabled by default.'
         ],
         '-p' => [
           'Suppress parenthesizing arguments of matchers',
@@ -202,16 +200,31 @@ module Transpec
     end
     # rubocop:enable MethodLength, AlignHash
 
-    def exclude_deprecated_options(args)
-      args.reject do |arg|
+    def convert_deprecated_options(raw_args)
+      raw_args.each_with_object([]) do |arg, args|
         case arg
         when '-m', '--generate-commit-message'
-          warn 'DEPRECATION: The -m/--generate-commit-message option is deprecated. ' \
-               'Now Transpec always generates the commit message.'
-          true
+          deprecate('-m/--generate-commit-message option')
+        when '-t', '--convert-stub-with-hash'
+          deprecate('-t/--convert-stub-with-hash', '`--convert stub_with_hash`')
+          args.concat(%w(--convert stub_with_hash))
         else
-          false
+          args << arg
         end
+      end
+    end
+
+    def deprecate(subject, alternative = nil)
+      message =  "DEPRECATION: #{subject} is deprecated."
+      message << " Please use #{alternative} instead." if alternative
+      warn message
+    end
+
+    def configure_conversion(type_to_attr_map, inputted_types, boolean)
+      inputted_types.split(',').each do |type|
+        config_attr = type_to_attr_map[type.to_sym]
+        fail ArgumentError, "Unknown syntax type #{type.inspect}" unless config_attr
+        configuration.send(config_attr, boolean)
       end
     end
   end

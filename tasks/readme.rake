@@ -55,3 +55,17 @@ end
 def pattern_for_header_level(level)
   /^#{'#' * level}[^#]/
 end
+
+def validate_syntax_type_table(markdown_table, types_in_code)
+  types_in_doc = markdown_table.lines.map do |line|
+    first_column = line.split('|').first
+    first_column.gsub(/[^\w]/, '').to_sym
+  end.sort
+
+  types_in_code.sort!
+
+  unless types_in_doc == types_in_code
+    types_missing_description = types_in_code - types_in_doc
+    fail "No descriptions for syntax types #{types_missing_description}"
+  end
+end
