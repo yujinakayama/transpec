@@ -7,10 +7,8 @@ require 'optparse'
 require 'rainbow'
 require 'rainbow/ext/string' unless String.respond_to?(:color)
 
-# rubocop:disable ClassLength
-
 module Transpec
-  class OptionParser
+  class OptionParser # rubocop:disable ClassLength
     CONFIG_ATTRS_FOR_KEEP_TYPES = {
               should: :convert_should=,
             oneliner: :convert_oneliner=,
@@ -51,8 +49,7 @@ module Transpec
 
     private
 
-    # rubocop:disable MethodLength
-    def setup_parser
+    def setup_parser # rubocop:disable MethodLength
       @parser = create_parser
 
       define_option('-f', '--force') do
@@ -105,7 +102,6 @@ module Transpec
         exit
       end
     end
-    # rubocop:enable MethodLength
 
     def create_parser
       banner = "Usage: transpec [options] [files or directories]\n\n"
@@ -120,8 +116,8 @@ module Transpec
       @parser.on(*options, *description_lines, &block)
     end
 
-    # rubocop:disable MethodLength, AlignHash
-    def descriptions
+    # rubocop:disable AlignHash
+    def descriptions # rubocop:disable MethodLength
       @descriptions ||= {
         '-f' => [
           'Force processing even if the current Git repository is not clean.'
@@ -191,7 +187,7 @@ module Transpec
         ]
       }
     end
-    # rubocop:enable MethodLength, AlignHash
+    # rubocop:enable AlignHash
 
     def highlight_text(text)
       text.gsub(/`.+?`/) { |code| code.gsub('`', '').underline }
