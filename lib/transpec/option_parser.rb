@@ -116,6 +116,7 @@ module Transpec
 
     def define_option(*options, &block)
       description_lines = descriptions[options.first]
+      description_lines = description_lines.map { |line| highlight_text(line) }
       @parser.on(*options, *description_lines, &block)
     end
 
@@ -140,55 +141,55 @@ module Transpec
           'Keep specific syntaxes by disabling',
           'conversions.',
           'Conversion Types:',
-          "  #{'should'.bright} (to #{'expect(obj).to'.underline})",
-          "  #{'oneliner'.bright} (from #{'should'.underline} to #{'is_expected.to'.underline})",
-          "  #{'should_receive'.bright} (to #{'expect(obj).to receive'.underline})",
-          "  #{'stub'.bright}  (to #{'allow(obj).to receive'.underline})",
-          "  #{'have_items'.bright} (to #{'expect(obj.size).to eq(n)'.underline})",
-          "  #{'its'.bright} (to #{'describe { subject { }; it { } }'.underline})",
-          "  #{'pending'.bright} (to #{'skip'.underline})",
-          "  #{'deprecated'.bright} (e.g. from #{'mock'.underline} to #{'double'.underline})",
+          '  *should* (to `expect(obj).to`)',
+          '  *oneliner* (from `should` to `is_expected.to`)',
+          '  *should_receive* (to `expect(obj).to receive`)',
+          '  *stub*  (to `allow(obj).to receive`)',
+          '  *have_items* (to `expect(obj.size).to eq(n)`)',
+          '  *its* (to `describe { subject { }; it { } }`)',
+          '  *pending* (to `skip`)',
+          '  *deprecated* (e.g. from `mock` to `double`)',
           'These are all converted by default.'
         ],
         '-v' => [
           'Enable specific conversions that are disabled',
           'by default.',
           'Conversion Types:',
-          "  #{'stub_with_hash'.bright} TODO",
+          '  *stub_with_hash* TODO',
           'These conversions are disabled by default.'
         ],
         '-n' => [
-          "Specify a negative form of #{'to'.underline} that is used in",
-          "the #{'expect(...).to'.underline} syntax.",
-          "Either #{'not_to'.bright} or #{'to_not'.bright}.",
-          "Default: #{'not_to'.bright}"
+          'Specify a negative form of `to` that is used in',
+          'the `expect(...).to` syntax.',
+          'Either *not_to* or *to_not*.',
+          'Default: *not_to*'
         ],
         '-b' => [
-          "Specify a matcher type that #{'be_true'.underline} and",
-          "#{'be_false'.underline} will be converted to.",
-          "  #{'truthy,falsey'.bright} (conditional semantics)",
-          "  #{'truthy,falsy'.bright}  (alias of #{'falsey'.underline})",
-          "  #{'true,false'.bright}    (exact equality)",
-          "Default: #{'truthy,falsey'.bright}"
+          'Specify a matcher type that `be_true` and',
+          '`be_false` will be converted to.',
+          '  *truthy,falsey* (conditional semantics)',
+          '  *truthy,falsy*  (alias of `falsey`)',
+          '  *true,false*    (exact equality)',
+          'Default: *truthy,falsey*'
         ],
         '-a' => [
           'Suppress yielding receiver instances to',
-          "#{'any_instance'.underline} implementation blocks as the",
+          '`any_instance` implementation blocks as the',
           'first block argument.'
         ],
         '-p' => [
           'Suppress parenthesizing arguments of matchers',
-          "when converting #{'should'.underline} with operator matcher",
-          "to #{'expect'.underline} with non-operator matcher. Note",
+          'when converting `should` with operator matcher',
+          'to `expect` with non-operator matcher. Note',
           'that it will be parenthesized even if this',
           'option is specified when parentheses are',
           'necessary to keep the meaning of the',
           'expression. By default, arguments of the',
           'following operator matchers will be',
           'parenthesized.',
-          "  #{'== 10'.underline} to #{'eq(10)'.underline}",
-          "  #{'=~ /pattern/'.underline} to #{'match(/pattern/)'.underline}",
-          "  #{'=~ [1, 2]'.underline} to #{'match_array([1, 2])'.underline}"
+          '  `== 10` to `eq(10)`',
+          '  `=~ /pattern/` to `match(/pattern/)`',
+          '  `=~ [1, 2]` to `match_array([1, 2])`'
         ],
         '--no-color' => [
           'Disable color in the output.'
@@ -199,6 +200,11 @@ module Transpec
       }
     end
     # rubocop:enable MethodLength, AlignHash
+
+    def highlight_text(text)
+      text.gsub(/`.+?`/) { |code| code.gsub('`', '').underline }
+          .gsub(/\*.+?\*/) { |code| code.gsub('*', '').bright }
+    end
 
     def convert_deprecated_options(raw_args)
       raw_args.each_with_object([]) do |arg, args|
