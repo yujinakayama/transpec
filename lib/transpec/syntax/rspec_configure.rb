@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/mixin/send'
 require 'transpec/util'
 
 module Transpec
@@ -10,13 +11,11 @@ module Transpec
       require 'transpec/syntax/rspec_configure/expectations'
       require 'transpec/syntax/rspec_configure/mocks'
 
-      include ConfigurationModification
+      include Mixin::Send, ConfigurationModification
 
       def dynamic_analysis_target?
-        return false unless node && node.block_type?
-        send_node = node.children.first
-        receiver_node, method_name, *_ = *send_node
-        const_name(receiver_node) == 'RSpec' && method_name == :configure
+        return false unless super
+        const_name(receiver_node) == 'RSpec' && method_name == :configure && parent_node.block_type?
       end
 
       def expose_dsl_globally=(boolean)
@@ -31,14 +30,10 @@ module Transpec
         @mocks ||= Mocks.new(self, source_rewriter)
       end
 
+      alias_method :block_node, :parent_node
+
       def block_arg_name
-        first_block_arg_name(node)
-      end
-
-      private
-
-      def find_block_node
-        node
+        first_block_arg_name(block_node)
       end
     end
   end

@@ -9,6 +9,10 @@ module Transpec
       module ConfigurationModification
         include Util, ::AST::Sexp
 
+        def block_node
+          fail NotImplementedError
+        end
+
         private
 
         def set_configuration!(config_name, value)
@@ -38,15 +42,6 @@ module Transpec
         def block_arg_name
           return nil unless block_node
           first_block_arg_name(block_node)
-        end
-
-        def block_node
-          return @block_node if instance_variable_defined?(:@block_node)
-          @block_node = find_block_node
-        end
-
-        def find_block_node
-          fail NotImplementedError
         end
 
         module ConfigurationAddition

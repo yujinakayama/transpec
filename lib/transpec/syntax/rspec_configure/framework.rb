@@ -15,14 +15,10 @@ module Transpec
           @source_rewriter = source_rewriter
         end
 
-        private
+        def block_node
+          return @block_node if instance_variable_defined?(:@block_node)
 
-        def block_method_name
-          fail NotImplementedError
-        end
-
-        def find_block_node
-          rspec_configure.node.each_descendent_node.find do |node|
+          @block_node = rspec_configure.block_node.each_descendent_node.find do |node|
             next unless node.block_type?
             send_node = node.children.first
             receiver_node, method_name, *_ = *send_node
@@ -30,6 +26,12 @@ module Transpec
             method_name == block_method_name
             # TODO: Check expectation framework.
           end
+        end
+
+        private
+
+        def block_method_name
+          fail NotImplementedError
         end
 
         def generate_configuration_lines(config_name, value)
@@ -65,7 +67,7 @@ module Transpec
         end
 
         def block_node_to_insert_code
-          super || rspec_configure.node
+          super || rspec_configure.block_node
         end
 
         def framework_begin_code
