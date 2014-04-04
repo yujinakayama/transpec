@@ -85,10 +85,11 @@ module Transpec
           end
 
           def new_config_variable_name
-            case rspec_configure.block_arg_name
-            when :rspec then self.class.name.split('::').last.downcase
-            when :c     then 'config'
-            else 'c'
+            framework_name = self.class.name.split('::').last.downcase
+            if rspec_configure.block_arg_name.to_s == framework_name
+              'config'
+            else
+              framework_name
             end
           end
 

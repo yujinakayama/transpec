@@ -91,7 +91,7 @@ module Transpec
         end
       end
 
-      shared_examples '#syntaxes=' do |framework_block_method|
+      shared_examples '#syntaxes=' do |framework_block_method, block_arg_name|
         describe '#syntaxes=' do
           before do
             subject.syntaxes = syntaxes
@@ -183,8 +183,8 @@ module Transpec
             let(:expected_source) do
               <<-END
                 RSpec.configure do |config|
-                  config.#{framework_block_method} :rspec do |c|
-                    c.syntax = :expect
+                  config.#{framework_block_method} :rspec do |#{block_arg_name}|
+                    #{block_arg_name}.syntax = :expect
                   end
                 end
               END
@@ -211,8 +211,8 @@ module Transpec
                   RSpec.configure do |config|
                     config.foo = 1
 
-                    config.#{framework_block_method} :rspec do |c|
-                      c.syntax = :expect
+                    config.#{framework_block_method} :rspec do |#{block_arg_name}|
+                      #{block_arg_name}.syntax = :expect
                     end
                   end
                 END
@@ -230,14 +230,14 @@ module Transpec
         subject { rspec_configure.expectations }
 
         include_examples '#syntaxes', :expect_with
-        include_examples '#syntaxes=', :expect_with
+        include_examples '#syntaxes=', :expect_with, :expectations
       end
 
       describe '#mocks' do
         subject(:mocks) { rspec_configure.mocks }
 
         include_examples '#syntaxes', :mock_with
-        include_examples '#syntaxes=', :mock_with
+        include_examples '#syntaxes=', :mock_with, :mocks
 
         describe '#yield_receiver_to_any_instance_implementation_blocks=' do
           before do
@@ -332,8 +332,8 @@ module Transpec
             let(:expected_source) do
               <<-END
                 RSpec.configure do |config|
-                  config.mock_with :rspec do |c|
-                    c.yield_receiver_to_any_instance_implementation_blocks = true
+                  config.mock_with :rspec do |mocks|
+                    mocks.yield_receiver_to_any_instance_implementation_blocks = true
                   end
                 end
               END
@@ -344,25 +344,25 @@ module Transpec
               rewritten_source.should == expected_source
             end
 
-            context "when RSpec.configure's argument variable name is `rspec`" do
+            context "when RSpec.configure's block argument name is `mocks`" do
               let(:source) do
                 <<-END
-                  RSpec.configure do |rspec|
+                  RSpec.configure do |mocks|
                   end
                 END
               end
 
               let(:expected_source) do
                 <<-END
-                  RSpec.configure do |rspec|
-                    rspec.mock_with :rspec do |mocks|
-                      mocks.yield_receiver_to_any_instance_implementation_blocks = true
+                  RSpec.configure do |mocks|
+                    mocks.mock_with :rspec do |config|
+                      config.yield_receiver_to_any_instance_implementation_blocks = true
                     end
                   end
                 END
               end
 
-              it 'defines #mock_with block argument name as `mocks`' do
+              it 'defines #mock_with block argument name as `config`' do
                 rewritten_source.should == expected_source
               end
             end
