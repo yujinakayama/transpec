@@ -200,10 +200,6 @@ Copying project for dynamic analysis...
 Running dynamic analysis with command "bundle exec rspec"...
 ```
 
-### `-s/--skip-dynamic-analysis`
-
-Skip dynamic analysis and convert with only static analysis. Note that specifying this option decreases the conversion accuracy especially in the conversion of [`have(n).items` matcher](#havenitems-matcher).
-
 ### `-c/--rspec-command`
 
 Specify a command to run your specs which is used for dynamic analysis.
@@ -275,6 +271,10 @@ If your project's RSpec is 3.0 or later, it will be converted to `receive_messag
 regardless of this option.
 
 See [Supported Conversions - Method stubs with a hash argument](#method-stubs-with-a-hash-argument) for more details.
+
+### `-s/--skip-dynamic-analysis`
+
+Skip dynamic analysis and convert with only static analysis. Note that specifying this option decreases the conversion accuracy especially in the conversion of [`have(n).items` matcher](#havenitems-matcher).
 
 ### `-n/--negative-form`
 

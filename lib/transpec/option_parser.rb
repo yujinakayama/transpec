@@ -57,10 +57,6 @@ module Transpec
         configuration.forced = true
       end
 
-      define_option('-s', '--skip-dynamic-analysis') do
-        configuration.skip_dynamic_analysis = true
-      end
-
       define_option('-c', '--rspec-command COMMAND') do |command|
         configuration.rspec_command = command
       end
@@ -71,6 +67,10 @@ module Transpec
 
       define_option('-v', '--convert TYPE[,TYPE...]') do |types|
         configure_conversion(CONFIG_ATTRS_FOR_CONVERT_TYPES, types, true)
+      end
+
+      define_option('-s', '--skip-dynamic-analysis') do
+        configuration.skip_dynamic_analysis = true
       end
 
       define_option('-n', '--negative-form FORM') do |form|
