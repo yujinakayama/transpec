@@ -1079,6 +1079,45 @@ module Transpec
       end
     end
 
+    describe '#process_example_group' do
+      let(:example_group) { double('example_group').as_null_object }
+
+      context 'when RSpecVersion#non_monkey_patch_example_group_available? returns true' do
+        before { rspec_version.stub(:non_monkey_patch_example_group_available?).and_return(true) }
+
+        context 'and Configuration#convert_example_group? is true' do
+          before { configuration.convert_example_group = true }
+
+          it 'invokes ExampleGroup#convert_to_non_monkey_patch!' do
+            example_group.should_receive(:convert_to_non_monkey_patch!)
+            converter.process_example_group(example_group)
+          end
+        end
+
+        context 'and Configuration#convert_example_group? is false' do
+          before { configuration.convert_example_group = false }
+
+          it 'does nothing' do
+            example_group.should_not_receive(:convert_to_non_monkey_patch!)
+            converter.process_example_group(example_group)
+          end
+        end
+      end
+
+      context 'when RSpecVersion#non_monkey_patch_example_group_available? returns false' do
+        before { rspec_version.stub(:non_monkey_patch_example_group_available?).and_return(false) }
+
+        context 'and Configuration#convert_example_group? is true' do
+          before { configuration.convert_example_group = true }
+
+          it 'does nothing' do
+            example_group.should_not_receive(:convert_to_non_monkey_patch!)
+            converter.process_example_group(example_group)
+          end
+        end
+      end
+    end
+
     describe '#process_rspec_configure' do
       let(:rspec_configure) do
         double(
@@ -1177,6 +1216,41 @@ module Transpec
         it 'does not invoke RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks=' do
           rspec_configure.mocks.should_not_receive(:yield_receiver_to_any_instance_implementation_blocks=)
           converter.process_rspec_configure(rspec_configure)
+        end
+      end
+
+      context 'when RSpecVersion#non_monkey_patch_example_group_available? returns true' do
+        before { rspec_version.stub(:non_monkey_patch_example_group_available?).and_return(true) }
+
+        context 'and Configuration#convert_example_group? is true' do
+          before { configuration.convert_example_group = true }
+
+          it 'invokes RSpecConfigure#expose_dsl_globally= with false' do
+            rspec_configure.should_receive(:expose_dsl_globally=).with(false)
+            converter.process_rspec_configure(rspec_configure)
+          end
+        end
+
+        context 'and Configuration#convert_example_group? is false' do
+          before { configuration.convert_example_group = false }
+
+          it 'does nothing' do
+            rspec_configure.should_not_receive(:expose_dsl_globally=)
+            converter.process_rspec_configure(rspec_configure)
+          end
+        end
+      end
+
+      context 'when RSpecVersion#non_monkey_patch_example_group_available? returns false' do
+        before { rspec_version.stub(:non_monkey_patch_example_group_available?).and_return(false) }
+
+        context 'and Configuration#convert_example_group? is true' do
+          before { configuration.convert_example_group = true }
+
+          it 'does nothing' do
+            rspec_configure.should_not_receive(:expose_dsl_globally=)
+            converter.process_rspec_configure(rspec_configure)
+          end
         end
       end
     end

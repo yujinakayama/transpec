@@ -21,7 +21,8 @@ module Transpec
     }
 
     CONFIG_ATTRS_FOR_CONVERT_TYPES = {
-      stub_with_hash: :convert_stub_with_hash_to_stub_and_return=
+      stub_with_hash: :convert_stub_with_hash_to_stub_and_return=,
+       example_group: :convert_example_group=
     }
 
     VALID_BOOLEAN_MATCHER_TYPES = %w(truthy,falsey truthy,falsy true,false)

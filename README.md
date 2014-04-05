@@ -264,6 +264,7 @@ but the new syntaxes provide more modern and clear ways.
 
 Type             | Target Syntax                  | Converted Syntax
 -----------------|--------------------------------|----------------------------------------------------
+`example_group`  | `describe 'something' { }`     | `RSpec.describe 'something' { }`
 `stub_with_hash` | `obj.stub(:message => value)`  | `allow(obj).to receive(:message).and_return(value)`
 
 Note: Specifying `stub_with_hash` enables conversion of `obj.stub(:message => value)`
@@ -461,6 +462,7 @@ The one-liner (implicit receiver) `should`:
 * [Pending examples](#pending-examples)
 * [Current example object](#current-example-object)
 * [Custom matcher DSL](#custom-matcher-dsl)
+* [Example Groups](#example-groups)
 
 ### Standard expectations
 
@@ -1212,6 +1214,46 @@ end
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 3.0
 * See also: [Expectations: Matcher protocol and custom matcher API changes - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#expectations_matcher_protocol_and_custom_matcher_api_changes)
+
+### Example Groups
+
+**This conversion is disabled by default and available only if your project's RSpec is `3.0.0.beta2` or later.**
+
+Targets:
+
+```ruby
+RSpec.configure do |rspec|
+end
+
+describe 'top-level example group' do
+  describe 'nested example group' do
+  end
+end
+
+shared_examples 'shared examples' do
+end
+```
+
+Will be converted to:
+
+```ruby
+RSpec.configure do |rspec|
+  rspec.expose_dsl_globally = false
+end
+
+RSpec.describe 'top-level example group' do
+  describe 'nested example group' do
+  end
+end
+
+RSpec.shared_examples 'shared examples' do
+end
+```
+
+* This conversion can be enabled by: `--convert example_group`
+* Deprecation: Not deprecated
+* See also: [Zero Monkey Patching Mode! - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#zero_monkey_patching_mode)
+
 
 ## Compatibility
 

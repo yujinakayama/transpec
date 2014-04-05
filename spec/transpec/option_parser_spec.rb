@@ -103,7 +103,8 @@ module Transpec
 
       describe '-v/--convert option' do
         [
-          ['stub_with_hash', :convert_stub_with_hash_to_stub_and_return?]
+          ['stub_with_hash', :convert_stub_with_hash_to_stub_and_return?],
+          ['example_group',  :convert_example_group?]
         ].each do |cli_type, config_attr|
           context "when #{cli_type.inspect} is specified" do
             let(:args) { ['--convert', cli_type] }
