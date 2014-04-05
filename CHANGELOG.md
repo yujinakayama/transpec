@@ -2,6 +2,7 @@
 
 ## Development
 
+* Support conversion to non-monkey-patch example groups ([#22](https://github.com/yujinakayama/transpec/issues/22))
 * Support conversion of `unstub` ([#49](https://github.com/yujinakayama/transpec/issues/49))
 
 ## v1.10.4
