@@ -1,36 +1,20 @@
 # coding: utf-8
 
 require 'transpec/syntax'
-require 'transpec/syntax/mixin/send'
+require 'transpec/syntax/mixin/context_sensitive'
 require 'transpec/util'
 
 module Transpec
   class Syntax
     class Pending < Syntax
-      include Mixin::Send, Util
-
-      define_dynamic_analysis do |rewriter|
-        code = 'is_a?(RSpec::Core::ExampleGroup)'
-        rewriter.register_request(node, :example_context?, code, :context)
-      end
+      include Mixin::ContextSensitive, Util
 
       def dynamic_analysis_target?
         super && receiver_node.nil? && method_name == :pending
       end
 
-      def conversion_target?
-        return false unless dynamic_analysis_target?
-
-        # Check whether the context is example group to differenciate
-        # RSpec::Core::ExampleGroup.pending (a relative of #it) and
-        # RSpec::Core::ExampleGroup#pending (marks the example as pending in #it block).
-        if runtime_data.run?(node)
-          # If we have runtime data, check with it.
-          runtime_data[node, :example_context?]
-        else
-          # Otherwise check statically.
-          static_context_inspector.scopes.last == :example
-        end
+      def should_be_in_example_group_context?
+        false
       end
 
       def convert_deprecated_syntax!

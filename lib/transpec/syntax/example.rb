@@ -1,36 +1,20 @@
 # coding: utf-8
 
 require 'transpec/syntax'
-require 'transpec/syntax/mixin/send'
+require 'transpec/syntax/mixin/context_sensitive'
 require 'transpec/rspec_dsl'
 
 module Transpec
   class Syntax
     class Example < Syntax
-      include Mixin::Send, RSpecDSL
-
-      define_dynamic_analysis do |rewriter|
-        code = "is_a?(Class) && ancestors.any? { |a| a.name == 'RSpec::Core::ExampleGroup' }"
-        rewriter.register_request(node, :example_group_context?, code, :context)
-      end
+      include Mixin::ContextSensitive, RSpecDSL
 
       def dynamic_analysis_target?
         super && receiver_node.nil? && EXAMPLE_METHODS.include?(method_name)
       end
 
-      def conversion_target?
-        return false unless dynamic_analysis_target?
-
-        # Check whether the context is example group to differenciate
-        # RSpec::Core::ExampleGroup.pending (a relative of #it) and
-        # RSpec::Core::ExampleGroup#pending (marks the example as pending in #it block).
-        if runtime_data.run?(node)
-          # If we have runtime data, check with it.
-          runtime_data[node, :example_group_context?]
-        else
-          # Otherwise check statically.
-          static_context_inspector.scopes.last == :example_group
-        end
+      def should_be_in_example_group_context?
+        true
       end
 
       def convert_pending_to_skip!
