@@ -79,7 +79,7 @@ module Transpec
         end
 
         before do
-          configuration.convert_stub_with_hash_to_stub_and_return = true
+          configuration.convert_stub_with_hash_to_allow_to_receive_and_return = true
         end
 
         it 'converts all targets properly' do
@@ -683,8 +683,8 @@ module Transpec
           context 'and MethodStub#hash_arg? is true' do
             before { method_stub_object.stub(:hash_arg?).and_return(true) }
 
-            context 'and Configuration#convert_stub_with_hash_to_stub_and_return? is true' do
-              before { configuration.convert_stub_with_hash_to_stub_and_return = true }
+            context 'and Configuration#convert_stub_with_hash_to_allow_to_receive_and_return? is true' do
+              before { configuration.convert_stub_with_hash_to_allow_to_receive_and_return = true }
 
               context 'and RSpecVersion#receive_messages_available? is true' do
                 before { rspec_version.stub(:receive_messages_available?).and_return(true) }
@@ -701,8 +701,8 @@ module Transpec
               end
             end
 
-            context 'and Configuration#convert_stub_with_hash_to_stub_and_return? is false' do
-              before { configuration.convert_stub_with_hash_to_stub_and_return = false }
+            context 'and Configuration#convert_stub_with_hash_to_allow_to_receive_and_return? is false' do
+              before { configuration.convert_stub_with_hash_to_allow_to_receive_and_return = false }
 
               context 'and RSpecVersion#receive_messages_available? is true' do
                 before { rspec_version.stub(:receive_messages_available?).and_return(true) }
