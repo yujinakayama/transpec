@@ -254,7 +254,7 @@ See [Supported Conversions](#supported-conversions) for more details.
 Enable specific conversions that are disabled by default.
 
 ```bash
-$ transpec --convert stub_with_hash
+$ transpec --convert example_group
 ```
 
 #### Conversions disabled by default
