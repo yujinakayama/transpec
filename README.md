@@ -159,7 +159,9 @@ And you are done!
 
 ## Advanced Usage
 
-You can pass `transpec` arbitrary paths to be converted:
+### Convert only specific specs
+
+You can pass `transpec` arbitrary paths to convert:
 
 ```bash
 # You always need to be in the project root directory
@@ -177,6 +179,17 @@ $ transpec spec/baz_spec.rb
 
 Note that the current working directory always needs to be the project root directory,
 so that Transpec can copy the project in dynamic analysis.
+
+### Enable/disable specific conversions
+
+You can disable specific conversions that are enabled by default with `-k/--keep` option,
+and enabled conversions that are disabled by default with the `-v/--convert` option.
+
+```bash
+$ transpec --keep its --convert example_group
+```
+
+See [`-k/--keep`](#-k--keep) and [`-v/--convert`](#-v--convert) for more details.
 
 ## Upgrade Process to RSpec 3 beta
 
@@ -255,7 +268,7 @@ $ transpec --convert example_group
 
 #### Conversions disabled by default
 
-Some of these target syntaxes are _not_ deprecated in both RSpec 2 and 3,
+Most of these target syntaxes are _not_ deprecated in both RSpec 2 and 3,
 but the new syntaxes provide more modern and clear ways.
 
 Type             | Target Syntax                  | Converted Syntax
