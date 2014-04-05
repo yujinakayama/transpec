@@ -34,7 +34,12 @@ module Transpec
         return false
       end
 
-      process(paths)
+      begin
+        process(paths)
+      rescue DynamicAnalyzer::AnalysisError
+        warn_dynamic_analysis_error
+        return false
+      end
 
       display_summary
       generate_commit_message
@@ -96,12 +101,6 @@ module Transpec
       puts
 
       runtime_data
-    rescue DynamicAnalyzer::AnalysisError
-      warn 'Failed running dynamic analysis. ' \
-           'Transpec needs to run your specs in a copied project directory for dynamic analysis. ' \
-           'If your project requires some special setup or commands to run specs, ' \
-           'use -c/--rspec-command option.'
-      exit(1)
     end
 
     def display_summary
@@ -136,6 +135,13 @@ module Transpec
 
       puts
       puts "Done! Now run #{'rspec'.bright} and check if everything is green."
+    end
+
+    def warn_dynamic_analysis_error
+      warn 'Failed running dynamic analysis. ' \
+           'Transpec runs your specs in a copied project directory. ' \
+           'If your project requires some special setup or commands to run specs, ' \
+           'use -c/--rspec-command option.'
     end
 
     def warn_syntax_error(error)

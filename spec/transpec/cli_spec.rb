@@ -154,18 +154,13 @@ module Transpec
           DynamicAnalyzer.any_instance.stub(:analyze).and_raise(DynamicAnalyzer::AnalysisError)
         end
 
-        it 'suggests using -c/--rspec-command option' do
-          cli.stub(:exit)
+        include_examples 'aborts processing'
 
+        it 'suggests using -c/--rspec-command option' do
           cli.should_receive(:warn) do |message|
-            message.should include('-c/--rspec-command')
+            message.should include('use -c/--rspec-command')
           end
 
-          cli.run(args)
-        end
-
-        it 'exits with status 1' do
-          cli.should_receive(:exit).with(1)
           cli.run(args)
         end
       end
