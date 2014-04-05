@@ -176,6 +176,11 @@ module Transpec
       matcher_definition.convert_deprecated_method! if configuration.convert_deprecated_method?
     end
 
+    def process_example_group(example_group)
+      return unless rspec_version.non_monkey_patch_example_group_available?
+      example_group.convert_to_non_monkey_patch! if configuration.convert_example_group?
+    end
+
     def process_rspec_configure(rspec_configure)
       if need_to_modify_expectation_syntax_configuration?(rspec_configure)
         rspec_configure.expectations.syntaxes = :expect
@@ -185,8 +190,13 @@ module Transpec
         rspec_configure.mocks.syntaxes = :expect
       end
 
+      if rspec_version.non_monkey_patch_example_group_available? &&
+         configuration.convert_example_group?
+        rspec_configure.expose_dsl_globally = false
+      end
+
       if rspec_version.rspec_2_99? &&
-           configuration.convert_deprecated_method?
+         configuration.convert_deprecated_method?
         should_yield = configuration.add_receiver_arg_to_any_instance_implementation_block?
         rspec_configure.mocks.yield_receiver_to_any_instance_implementation_blocks = should_yield
       end

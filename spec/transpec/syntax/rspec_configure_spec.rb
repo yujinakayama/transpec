@@ -9,6 +9,79 @@ module Transpec
       include_context 'parsed objects'
       include_context 'syntax object', RSpecConfigure, :rspec_configure
 
+      describe '#expose_dsl_globally=' do
+        before do
+          rspec_configure.expose_dsl_globally = value
+        end
+
+        let(:value) { true }
+
+        let(:source) do
+          <<-END
+            RSpec.configure do |config|
+              config.expose_dsl_globally = false
+            end
+          END
+        end
+
+        let(:expected_source) do
+          <<-END
+            RSpec.configure do |config|
+              config.expose_dsl_globally = true
+            end
+          END
+        end
+
+        it 'rewrites the `expose_dsl_globally` configuration' do
+          rewritten_source.should == expected_source
+        end
+
+        context 'when #expose_dsl_globally= does not exist' do
+          let(:source) do
+            <<-END
+              RSpec.configure do |config|
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              RSpec.configure do |config|
+                config.expose_dsl_globally = true
+              end
+            END
+          end
+
+          it 'adds #expose_dsl_globally= statement' do
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'when there are already some configurations' do
+          let(:source) do
+            <<-END
+              RSpec.configure do |config|
+                config.foo = 1
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              RSpec.configure do |config|
+                config.foo = 1
+
+                config.expose_dsl_globally = true
+              end
+            END
+          end
+
+          it 'adds the block after a blank line' do
+            rewritten_source.should == expected_source
+          end
+        end
+      end
+
       shared_examples '#syntaxes' do |framework_block_method|
         describe '#syntaxes' do
           subject { super().syntaxes }
@@ -367,6 +440,36 @@ module Transpec
               end
             end
           end
+        end
+      end
+
+      context 'when multiple configurations are added' do
+        before do
+          rspec_configure.expose_dsl_globally = true
+          rspec_configure.mocks.yield_receiver_to_any_instance_implementation_blocks = false
+        end
+
+        let(:source) do
+          <<-END
+            RSpec.configure do |config|
+            end
+          END
+        end
+
+        let(:expected_source) do
+          <<-END
+            RSpec.configure do |config|
+              config.expose_dsl_globally = true
+
+              config.mock_with :rspec do |mocks|
+                mocks.yield_receiver_to_any_instance_implementation_blocks = false
+              end
+            end
+          END
+        end
+
+        it 'adds them properly' do
+          rewritten_source.should == expected_source
         end
       end
     end

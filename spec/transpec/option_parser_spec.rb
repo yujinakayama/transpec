@@ -101,6 +101,32 @@ module Transpec
         end
       end
 
+      describe '-v/--convert option' do
+        [
+          ['stub_with_hash', :convert_stub_with_hash_to_stub_and_return?],
+          ['example_group',  :convert_example_group?]
+        ].each do |cli_type, config_attr|
+          context "when #{cli_type.inspect} is specified" do
+            let(:args) { ['--convert', cli_type] }
+
+            it "sets Configuration##{config_attr} true" do
+              parser.parse(args)
+              configuration.send(config_attr).should be_true
+            end
+          end
+        end
+
+        context 'when unknown type is specified' do
+          let(:args) { ['--convert', 'unknown'] }
+
+          it 'raises error' do
+            -> { parser.parse(args) }.should raise_error(ArgumentError) { |error|
+              error.message.should == 'Unknown syntax type "unknown"'
+            }
+          end
+        end
+      end
+
       describe '-n/--negative-form option' do
         ['not_to', 'to_not'].each do |form|
           context "when #{form.inspect} is specified" do
@@ -159,9 +185,21 @@ module Transpec
       describe '-t/--convert-stub-with-hash option' do
         let(:args) { ['--convert-stub-with-hash'] }
 
+        before do
+          parser.stub(:warn)
+        end
+
         it 'sets Configuration#convert_stub_with_hash_to_stub_and_return? true' do
           parser.parse(args)
           configuration.convert_stub_with_hash_to_stub_and_return?.should be_true
+        end
+
+        it 'is deprecated' do
+          parser.should_receive(:warn) do |message|
+            message.should =~ /--convert-stub-with-hash.+deprecated/i
+          end
+
+          parser.parse(args)
         end
       end
 
@@ -212,9 +250,9 @@ module Transpec
         parser.help
       end
 
-      it 'does not exceed 80 characters in each line' do
+      it 'does not exceed 100 characters in each line' do
         help_text.each_line do |line|
-          line.chomp.length.should <= 80
+          line.chomp.length.should <= 100
         end
       end
 

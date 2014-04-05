@@ -1,13 +1,12 @@
 # coding: utf-8
 
-require 'transpec/util'
-require 'ast'
+require 'transpec/syntax/rspec_configure/configuration_modification'
 
 module Transpec
   class Syntax
     class RSpecConfigure
       class Framework
-        include Util, ::AST::Sexp
+        include ConfigurationModification
 
         attr_reader :rspec_configure, :source_rewriter
 
@@ -16,45 +15,10 @@ module Transpec
           @source_rewriter = source_rewriter
         end
 
-        private
-
-        def block_method_name
-          fail NotImplementedError
-        end
-
-        def set_configuration!(config_name, value)
-          setter_node = find_configuration_node("#{config_name}=")
-
-          if setter_node
-            arg_node = setter_node.children[2]
-            source_rewriter.replace(arg_node.loc.expression, value.to_s)
-          else
-            add_configuration!(config_name, value)
-          end
-        end
-
-        def find_configuration_node(configuration_method_name)
-          return nil unless block_node
-
-          configuration_method_name = configuration_method_name.to_sym
-
-          block_node.each_descendent_node.find do |node|
-            next unless node.send_type?
-            receiver_node, method_name, = *node
-            next unless receiver_node == s(:lvar, block_arg_name)
-            method_name == configuration_method_name
-          end
-        end
-
-        def block_arg_name
-          return nil unless block_node
-          first_block_arg_name(block_node)
-        end
-
         def block_node
           return @block_node if instance_variable_defined?(:@block_node)
 
-          @block_node = rspec_configure.node.each_descendent_node.find do |node|
+          @block_node = rspec_configure.block_node.each_descendent_node.find do |node|
             next unless node.block_type?
             send_node = node.children.first
             receiver_node, method_name, *_ = *send_node
@@ -64,69 +28,63 @@ module Transpec
           end
         end
 
-        module ConfigurationAddition
-          def add_configuration!(config_name, value)
-            lines = [body_indentation + "#{config_variable_name}.#{config_name} = #{value}"]
+        private
 
-            unless block_node
-              lines.unshift(framework_begin_code)
-              lines << framework_end_code
-            end
+        def block_method_name
+          fail NotImplementedError
+        end
 
-            lines.unshift('') unless empty_block_body?(block_node_to_insert_code)
-            lines.map! { |line| line + "\n" }
+        def generate_configuration_lines(config_name, value)
+          lines = super
 
-            insertion_position = beginning_of_line_range(block_node_to_insert_code.loc.end)
-            source_rewriter.insert_before(insertion_position, lines.join(''))
+          unless block_node
+            lines.unshift(framework_begin_code)
+            lines << framework_end_code
           end
 
-          def config_variable_name
-            block_arg_name || new_config_variable_name
-          end
+          lines
+        end
 
-          def new_config_variable_name
-            framework_name = self.class.name.split('::').last.downcase
-            if rspec_configure.block_arg_name.to_s == framework_name
-              'config'
-            else
-              framework_name
-            end
-          end
+        def config_variable_name
+          super || new_config_variable_name
+        end
 
-          def body_indentation
-            if block_node
-              indentation_of_line(block_node) + (' ' * 2)
-            else
-              indentation_of_line(rspec_configure.node) + (' ' * 4)
-            end
-          end
-
-          def framework_begin_code
-            code = format(
-              '%s.%s :rspec do |%s|',
-              rspec_configure.block_arg_name, block_method_name, config_variable_name
-            )
-            rspec_configure_body_indentation + code
-          end
-
-          def framework_end_code
-            rspec_configure_body_indentation + 'end'
-          end
-
-          def rspec_configure_body_indentation
-            indentation_of_line(rspec_configure.node) + (' ' * 2)
-          end
-
-          def block_node_to_insert_code
-            block_node || rspec_configure.node
-          end
-
-          def empty_block_body?(block_node)
-            (block_node.loc.end.line - block_node.loc.begin.line) <= 1
+        def new_config_variable_name
+          framework_name = self.class.name.split('::').last.downcase
+          if rspec_configure.block_arg_name.to_s == framework_name
+            'config'
+          else
+            framework_name
           end
         end
 
-        include ConfigurationAddition
+        def body_indentation
+          if block_node
+            super
+          else
+            rspec_configure_body_indentation + (' ' * 2)
+          end
+        end
+
+        def block_node_to_insert_code
+          super || rspec_configure.block_node
+        end
+
+        def framework_begin_code
+          code = format(
+            '%s.%s :rspec do |%s|',
+            rspec_configure.block_arg_name, block_method_name, config_variable_name
+          )
+          rspec_configure_body_indentation + code
+        end
+
+        def framework_end_code
+          rspec_configure_body_indentation + 'end'
+        end
+
+        def rspec_configure_body_indentation
+          indentation_of_line(rspec_configure.node) + (' ' * 2)
+        end
 
         module SyntaxConfiguration
           def syntaxes

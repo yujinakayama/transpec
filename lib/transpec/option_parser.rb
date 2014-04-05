@@ -7,10 +7,8 @@ require 'optparse'
 require 'rainbow'
 require 'rainbow/ext/string' unless String.respond_to?(:color)
 
-# rubocop:disable ClassLength
-
 module Transpec
-  class OptionParser
+  class OptionParser # rubocop:disable ClassLength
     CONFIG_ATTRS_FOR_KEEP_TYPES = {
               should: :convert_should=,
             oneliner: :convert_oneliner=,
@@ -20,6 +18,11 @@ module Transpec
                  its: :convert_its=,
              pending: :convert_pending=,
           deprecated: :convert_deprecated_method=
+    }
+
+    CONFIG_ATTRS_FOR_CONVERT_TYPES = {
+      stub_with_hash: :convert_stub_with_hash_to_stub_and_return=,
+       example_group: :convert_example_group=
     }
 
     VALID_BOOLEAN_MATCHER_TYPES = %w(truthy,falsey truthy,falsy true,false)
@@ -36,7 +39,7 @@ module Transpec
     end
 
     def parse(args)
-      args = exclude_deprecated_options(args)
+      args = convert_deprecated_options(args)
       @parser.parse!(args)
       args
     end
@@ -47,8 +50,7 @@ module Transpec
 
     private
 
-    # rubocop:disable MethodLength
-    def setup_parser
+    def setup_parser # rubocop:disable MethodLength
       @parser = create_parser
 
       define_option('-f', '--force') do
@@ -64,11 +66,11 @@ module Transpec
       end
 
       define_option('-k', '--keep TYPE[,TYPE...]') do |types|
-        types.split(',').each do |type|
-          config_attr = CONFIG_ATTRS_FOR_KEEP_TYPES[type.to_sym]
-          fail ArgumentError, "Unknown syntax type #{type.inspect}" unless config_attr
-          configuration.send(config_attr, false)
-        end
+        configure_conversion(CONFIG_ATTRS_FOR_KEEP_TYPES, types, false)
+      end
+
+      define_option('-v', '--convert TYPE[,TYPE...]') do |types|
+        configure_conversion(CONFIG_ATTRS_FOR_CONVERT_TYPES, types, true)
       end
 
       define_option('-n', '--negative-form FORM') do |form|
@@ -88,10 +90,6 @@ module Transpec
         configuration.add_receiver_arg_to_any_instance_implementation_block = false
       end
 
-      define_option('-t', '--convert-stub-with-hash') do
-        configuration.convert_stub_with_hash_to_stub_and_return = true
-      end
-
       define_option('-p', '--no-parentheses-matcher-arg') do
         configuration.parenthesize_matcher_arg = false
       end
@@ -105,7 +103,6 @@ module Transpec
         exit
       end
     end
-    # rubocop:enable MethodLength
 
     def create_parser
       banner = "Usage: transpec [options] [files or directories]\n\n"
@@ -116,81 +113,72 @@ module Transpec
 
     def define_option(*options, &block)
       description_lines = descriptions[options.first]
+      description_lines = description_lines.map { |line| highlight_text(line) }
       @parser.on(*options, *description_lines, &block)
     end
 
-    # rubocop:disable MethodLength, AlignHash
-    def descriptions
+    # rubocop:disable AlignHash
+    def descriptions # rubocop:disable MethodLength
       @descriptions ||= {
         '-f' => [
-          'Force processing even if the current Git',
-          'repository is not clean.'
+          'Force processing even if the current Git repository is not clean.'
         ],
         '-s' => [
-          'Skip dynamic analysis and convert with only',
-          'static analysis. Note that specifying this',
-          'option decreases the conversion accuracy.'
+          'Skip dynamic analysis and convert with only static analysis. Note',
+          'that specifying this option decreases the conversion accuracy.'
         ],
         '-c' => [
-          'Specify a command to run your specs that is',
-          'used for dynamic analysis.',
+          'Specify a command to run your specs that is used for dynamic',
+          'analysis.',
           'Default: "bundle exec rspec"'
         ],
         '-k' => [
-          'Keep specific syntaxes by disabling',
-          'conversions.',
-          'Available syntax types:',
-          "  #{'should'.bright} (to #{'expect(obj).to'.underline})",
-          "  #{'oneliner'.bright} (from #{'should'.underline} to #{'is_expected.to'.underline})",
-          "  #{'should_receive'.bright} (to #{'expect(obj).to receive'.underline})",
-          "  #{'stub'.bright}  (to #{'allow(obj).to receive'.underline})",
-          "  #{'have_items'.bright} (to #{'expect(obj.size).to eq(n)'.underline})",
-          "  #{'its'.bright} (to #{'describe { subject { }; it { } }'.underline})",
-          "  #{'pending'.bright} (to #{'skip'.underline})",
-          "  #{'deprecated'.bright} (e.g. from #{'mock'.underline} to #{'double'.underline})",
+          'Keep specific syntaxes by disabling conversions.',
+          'Conversion Types:',
+          '  *should* (to `expect(obj).to`)',
+          '  *oneliner* (from `it { should ... }` to `it { is_expected.to ... }`)',
+          '  *should_receive* (to `expect(obj).to receive`)',
+          '  *stub*  (to `allow(obj).to receive`)',
+          '  *have_items* (to `expect(collection.size).to eq(n)`)',
+          "  *its* (to `describe '#attr' { subject { }; it { } }`)",
+          '  *pending* (to `skip`)',
+          '  *deprecated* (all other deprecated syntaxes to latest syntaxes)',
           'These are all converted by default.'
         ],
+        '-v' => [
+          'Enable specific conversions that are disabled by default.',
+          'Conversion Types:',
+          '  *stub_with_hash* (`obj.stub(:msg => val)` to',
+          '                  `allow(obj).to receive(:msg).and_return(val)`)',
+          'These conversions are disabled by default.'
+        ],
         '-n' => [
-          "Specify a negative form of #{'to'.underline} that is used in",
-          "the #{'expect(...).to'.underline} syntax.",
-          "Either #{'not_to'.bright} or #{'to_not'.bright}.",
-          "Default: #{'not_to'.bright}"
+          'Specify a negative form of `to` that is used in the `expect(...).to`',
+          'syntax. Either *not_to* or *to_not*.',
+          'Default: *not_to*'
         ],
         '-b' => [
-          "Specify a matcher type that #{'be_true'.underline} and",
-          "#{'be_false'.underline} will be converted to.",
-          "  #{'truthy,falsey'.bright} (conditional semantics)",
-          "  #{'truthy,falsy'.bright}  (alias of #{'falsey'.underline})",
-          "  #{'true,false'.bright}    (exact equality)",
-          "Default: #{'truthy,falsey'.bright}"
+          'Specify a matcher type that `be_true` and `be_false` will be',
+          'converted to.',
+          '  *truthy,falsey* (conditional semantics)',
+          '  *truthy,falsy*  (alias of `falsey`)',
+          '  *true,false*    (exact equality)',
+          'Default: *truthy,falsey*'
         ],
         '-a' => [
-          'Suppress yielding receiver instances to',
-          "#{'any_instance'.underline} implementation blocks as the",
-          'first block argument.'
-        ],
-        '-t' => [
-          "Enable conversion of #{'obj.stub(:msg => val)'.underline} to",
-          "#{'allow(obj).to receive(:msg).and_return(val)'.underline}",
-          "when #{'receive_messages(:msg => val)'.underline} is",
-          'unavailable (prior to RSpec 3.0). It will be',
-          'converted to multiple statements if the hash',
-          'includes multiple pairs. This conversion is',
-          'disabled by default.'
+          'Suppress yielding receiver instances to `any_instance`',
+          'implementation blocks as the first block argument.'
         ],
         '-p' => [
-          'Suppress parenthesizing arguments of matchers',
-          "when converting #{'should'.underline} with operator matcher",
-          "to #{'expect'.underline} with non-operator matcher. Note",
-          'that it will be parenthesized even if this',
-          'option is specified when parentheses are',
-          'necessary to keep the meaning of the',
-          'expression. By default, arguments of the',
-          'following operator matchers will be',
-          'parenthesized.',
-          "  #{'== 10'.underline} to #{'eq(10)'.underline}",
-          "  #{'=~ /pattern/'.underline} to #{'match(/pattern/)'.underline}",
-          "  #{'=~ [1, 2]'.underline} to #{'match_array([1, 2])'.underline}"
+          'Suppress parenthesizing arguments of matchers when converting',
+          '`should` with operator matcher to `expect` with non-operator matcher.',
+          'Note that it will be parenthesized even if this option is',
+          'specified when parentheses are necessary to keep the meaning of',
+          'the expression. By default, arguments of the following operator',
+          'matchers will be parenthesized.',
+          '  `== 10` to `eq(10)`',
+          '  `=~ /pattern/` to `match(/pattern/)`',
+          '  `=~ [1, 2]` to `match_array([1, 2])`'
         ],
         '--no-color' => [
           'Disable color in the output.'
@@ -200,18 +188,38 @@ module Transpec
         ]
       }
     end
-    # rubocop:enable MethodLength, AlignHash
+    # rubocop:enable AlignHash
 
-    def exclude_deprecated_options(args)
-      args.reject do |arg|
+    def highlight_text(text)
+      text.gsub(/`.+?`/) { |code| code.gsub('`', '').underline }
+          .gsub(/\*.+?\*/) { |code| code.gsub('*', '').bright }
+    end
+
+    def convert_deprecated_options(raw_args)
+      raw_args.each_with_object([]) do |arg, args|
         case arg
         when '-m', '--generate-commit-message'
-          warn 'DEPRECATION: The -m/--generate-commit-message option is deprecated. ' \
-               'Now Transpec always generates the commit message.'
-          true
+          deprecate('-m/--generate-commit-message option')
+        when '-t', '--convert-stub-with-hash'
+          deprecate('-t/--convert-stub-with-hash', '`--convert stub_with_hash`')
+          args.concat(%w(--convert stub_with_hash))
         else
-          false
+          args << arg
         end
+      end
+    end
+
+    def deprecate(subject, alternative = nil)
+      message =  "DEPRECATION: #{subject} is deprecated."
+      message << " Please use #{alternative} instead." if alternative
+      warn message
+    end
+
+    def configure_conversion(type_to_attr_map, inputted_types, boolean)
+      inputted_types.split(',').each do |type|
+        config_attr = type_to_attr_map[type.to_sym]
+        fail ArgumentError, "Unknown syntax type #{type.inspect}" unless config_attr
+        configuration.send(config_attr, boolean)
       end
     end
   end

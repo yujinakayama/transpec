@@ -54,7 +54,9 @@ module Transpec
       ]
     end
 
-    [:receive_messages_available?].each do |method|
+    [
+      :receive_messages_available?
+    ].each do |method|
       include_examples 'version comparisons', method, [
         ['2.14.0',       false],
         ['2.99.0.beta1', false],
@@ -66,7 +68,11 @@ module Transpec
       ]
     end
 
-    [:receive_message_chain_available?, :non_should_matcher_protocol_available?].each do |method|
+    [
+      :receive_message_chain_available?,
+      :non_should_matcher_protocol_available?,
+      :non_monkey_patch_example_group_available?
+    ].each do |method|
       include_examples 'version comparisons', method, [
         ['2.14.0',       false],
         ['2.99.0.beta1', false],
