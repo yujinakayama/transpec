@@ -1,0 +1,80 @@
+Convert specs to RSpec 2.99.0.beta2 syntax with Transpec
+
+This conversion is done by Transpec 1.10.4 with the following command:
+    transpec --force
+
+* 396 conversions
+    from: obj.should_receive(:message)
+      to: expect(obj).to receive(:message)
+
+* 239 conversions
+    from: obj.should
+      to: expect(obj).to
+
+* 113 conversions
+    from: obj.stub(:message)
+      to: allow(obj).to receive(:message)
+
+* 94 conversions
+    from: obj.should_not_receive(:message)
+      to: expect(obj).not_to receive(:message)
+
+* 86 conversions
+    from: == expected
+      to: eq(expected)
+
+* 16 conversions
+    from: stub('something')
+      to: double('something')
+
+* 15 conversions
+    from: obj.stub!(:message)
+      to: allow(obj).to receive(:message)
+
+* 15 conversions
+    from: be_true
+      to: be_truthy
+
+* 13 conversions
+    from: mock('something')
+      to: double('something')
+
+* 10 conversions
+    from: lambda { }.should_not
+      to: expect { }.not_to
+
+* 10 conversions
+    from: obj.should_not
+      to: expect(obj).not_to
+
+* 7 conversions
+    from: obj.unstub(:message)
+      to: allow(obj).to receive(:message).and_call_original
+
+* 7 conversions
+    from: be_false
+      to: be_falsey
+
+* 5 conversions
+    from: pending
+      to: skip
+
+* 4 conversions
+    from: obj.should_receive(:message).any_number_of_times
+      to: allow(obj).to receive(:message)
+
+* 4 conversions
+    from: lambda { }.should
+      to: expect { }.to
+
+* 3 conversions
+    from: collection.should have(n).items
+      to: expect(collection.size).to eq(n)
+
+* 1 conversion
+    from: it { should_not ... }
+      to: it { is_expected.not_to ... }
+
+* 1 conversion
+    from: it { should ... }
+      to: it { is_expected.to ... }

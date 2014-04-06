@@ -1,6 +1,6 @@
 # coding: utf-8
 
-class TranspecTest
+class TranspecTest # rubocop:disable ClassLength
   include FileUtils # This is Rake's one.
 
   BUNDLER_RETRY_COUNT = 3
@@ -92,9 +92,28 @@ class TranspecTest
     in_project_dir do
       with_clean_bundler_env do
         sh File.join(Transpec.root, 'bin', 'transpec'), *transpec_args
+        compare_summary!
         sh 'bundle exec rspec'
       end
     end
+  end
+
+  def compare_summary!
+    unless File.exist?(commit_message_fixture_path)
+      warn "#{commit_message_fixture_path} does not exist. Skipping summary comparison."
+      return
+    end
+
+    require 'rspec/expectations'
+    extend RSpec::Matchers
+    summary = File.read(File.join('.git', 'COMMIT_EDITMSG')).lines[5..-1]
+    expected_summary = File.read(commit_message_fixture_path).lines[5..-1]
+    expect(summary).to eq(expected_summary)
+  end
+
+  def commit_message_fixture_path
+    path = File.join(File.dirname(__FILE__), '..', 'fixtures', name, 'COMMIT_EDITMSG')
+    File.expand_path(path)
   end
 
   def in_project_dir(&block)
