@@ -167,8 +167,8 @@ module Transpec
 
       context 'when a syntax error is raised while processing files' do
         let(:args) { [invalid_syntax_file_path, valid_syntax_file_path] }
-        let(:invalid_syntax_file_path) { 'invalid_example.rb' }
-        let(:valid_syntax_file_path) { 'valid_example.rb' }
+        let(:invalid_syntax_file_path) { 'spec/invalid_example.rb' }
+        let(:valid_syntax_file_path) { 'spec/valid_example.rb' }
 
         before do
           create_file(invalid_syntax_file_path, 'This is invalid syntax <')
@@ -176,10 +176,8 @@ module Transpec
         end
 
         it 'warns to the user' do
-          cli.should_receive(:warn) do |message|
-            message.should include('Syntax error')
-          end
-
+          cli.should_receive(:warn)
+            .with('Syntax error at spec/invalid_example.rb:2:1. Skipping the file.')
           cli.run(args)
         end
 
