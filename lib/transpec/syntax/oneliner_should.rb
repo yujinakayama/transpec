@@ -13,7 +13,7 @@ module Transpec
 
       attr_reader :current_syntax_type
 
-      def initialize(node, source_rewriter = nil, runtime_data = nil, report = nil)
+      def initialize(*)
         super
         @current_syntax_type = :should
       end

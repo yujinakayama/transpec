@@ -21,7 +21,7 @@ module Transpec
         )
       end
 
-      def initialize(node, source_rewriter = nil, runtime_data = nil, report = nil)
+      def initialize(*)
         super
         @current_syntax_type = :should
       end
