@@ -4,11 +4,18 @@ require 'transpec/processed_source'
 
 module Transpec
   class BaseRewriter
-    def rewrite_file!(file_path)
-      processed_source = ProcessedSource.parse_file(file_path)
+    def rewrite_file!(arg)
+      processed_source = case arg
+                         when String          then ProcessedSource.parse_file(arg)
+                         when ProcessedSource then arg
+                         else fail "Invalid argument: #{arg}"
+                         end
+
+      fail 'ProcessedSource must be derived from a file' unless processed_source.path
+
       rewritten_source = rewrite(processed_source)
       return if processed_source.to_s == rewritten_source
-      File.write(file_path, rewritten_source)
+      File.write(processed_source.path, rewritten_source)
     end
 
     def rewrite_source(source, path = nil)

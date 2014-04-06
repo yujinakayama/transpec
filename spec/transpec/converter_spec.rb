@@ -20,12 +20,23 @@ module Transpec
         converter.stub(:rewrite).and_return('This is the converted spec')
       end
 
-      it 'overwrites the passed file path' do
-        converter.convert_file!(file_path)
-        File.read(file_path).should == 'This is the converted spec'
+      context 'when a file path is passed' do
+        it 'overwrites the file' do
+          converter.convert_file!(file_path)
+          File.read(file_path).should == 'This is the converted spec'
+        end
       end
 
-      context 'when the source does not need convert' do
+      context 'when a processed source is passed' do
+        let(:processed_source) { ProcessedSource.parse_file(file_path) }
+
+        it 'overwrites the file that the processed source was derived from' do
+          converter.convert_file!(processed_source)
+          File.read(file_path).should == 'This is the converted spec'
+        end
+      end
+
+      context 'when the source is not needed to be converted' do
         before do
           converter.stub(:rewrite).and_return('This is a spec')
         end

@@ -55,16 +55,18 @@ module Transpec
         runtime_data = run_dynamic_analysis(paths)
       end
 
-      FileFinder.find(paths).each do |file_path|
-        convert_file(file_path, runtime_data)
+      spec_suite = SpecSuite.new(paths)
+
+      spec_suite.specs.each do |spec|
+        convert_spec(spec, runtime_data)
       end
     end
 
-    def convert_file(file_path, runtime_data = nil)
-      puts "Converting #{file_path}"
+    def convert_spec(spec, runtime_data = nil)
+      puts "Converting #{spec.path}"
 
       converter = Converter.new(configuration, project.rspec_version, runtime_data)
-      converter.convert_file!(file_path)
+      converter.convert_file!(spec)
 
       warn_annotations(converter.report)
       report << converter.report

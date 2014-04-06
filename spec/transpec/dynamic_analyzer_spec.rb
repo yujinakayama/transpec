@@ -92,7 +92,10 @@ module Transpec
 
       context 'when no path is passed' do
         it 'rewrites all files in the "spec" directory' do
-          DynamicAnalyzer::Rewriter.any_instance.should_receive(:rewrite_file!).with(file_path)
+          DynamicAnalyzer::Rewriter.any_instance.should_receive(:rewrite_file!) do |spec|
+            spec.path.should == file_path
+          end
+
           dynamic_analyzer.analyze
         end
       end
@@ -103,7 +106,10 @@ module Transpec
         end
 
         it 'rewrites only files in the passed paths' do
-          DynamicAnalyzer::Rewriter.any_instance.should_receive(:rewrite_file!).with(file_path)
+          DynamicAnalyzer::Rewriter.any_instance.should_receive(:rewrite_file!) do |spec|
+            spec.path.should == file_path
+          end
+
           dynamic_analyzer.analyze([file_path])
         end
       end

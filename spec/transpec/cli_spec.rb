@@ -47,7 +47,7 @@ module Transpec
 
       shared_examples 'rewrites files' do
         it 'rewrites files' do
-          cli.should_receive(:convert_file)
+          cli.should_receive(:convert_spec)
           cli.run(args)
         end
 
@@ -58,7 +58,7 @@ module Transpec
 
       shared_examples 'aborts processing' do
         it 'aborts processing' do
-          cli.should_not_receive(:convert_file)
+          cli.should_not_receive(:convert_spec)
           cli.run(args).should be_false
         end
       end
@@ -201,7 +201,7 @@ module Transpec
 
         it 'skips dynamic analysis' do
           DynamicAnalyzer.any_instance.should_not_receive(:analyze)
-          cli.should_receive(:convert_file)
+          cli.should_receive(:convert_spec)
           cli.run(args)
         end
       end
@@ -221,13 +221,16 @@ module Transpec
       end
     end
 
-    describe '#convert_file' do
+    describe '#convert_spec' do
       include_context 'isolated environment'
 
-      let(:file_path) { 'example.rb' }
+      let(:processed_source) do
+        path = 'example.rb'
+        create_file(path, source)
+        ProcessedSource.parse_file(path)
+      end
 
       before do
-        create_file(file_path, source)
         cli.stub(:puts)
       end
 
@@ -254,7 +257,7 @@ module Transpec
             message.should =~ /context/i
           end
 
-          cli.convert_file(file_path)
+          cli.convert_spec(processed_source)
         end
       end
 
@@ -274,7 +277,7 @@ module Transpec
             message.should =~ /converted.+but.+incorrect/i
           end
 
-          cli.convert_file(file_path)
+          cli.convert_spec(processed_source)
         end
       end
 
@@ -316,7 +319,7 @@ module Transpec
             times += 1
           end
 
-          cli.convert_file(file_path)
+          cli.convert_spec(processed_source)
         end
       end
     end

@@ -2,7 +2,7 @@
 
 require 'transpec/dynamic_analyzer/rewriter'
 require 'transpec/dynamic_analyzer/runtime_data'
-require 'transpec/file_finder'
+require 'transpec/spec_suite'
 require 'transpec/project'
 require 'tmpdir'
 require 'find'
@@ -110,12 +110,11 @@ module Transpec
     def rewrite_specs(paths)
       rewriter = Rewriter.new
 
-      FileFinder.find(paths).each do |file_path|
-        begin
-          rewriter.rewrite_file!(file_path)
-        rescue Parser::SyntaxError # rubocop:disable HandleExceptions
-          # Syntax errors will be reported in CLI with Converter.
-        end
+      spec_suite = SpecSuite.new(paths)
+
+      spec_suite.specs.each do |spec|
+        next if spec.syntax_error
+        rewriter.rewrite_file!(spec)
       end
     end
 
