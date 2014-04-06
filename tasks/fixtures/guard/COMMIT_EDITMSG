@@ -28,12 +28,12 @@ This conversion is done by Transpec 1.10.4 with the following command:
       to: double('something')
 
 * 15 conversions
-    from: obj.stub!(:message)
-      to: allow(obj).to receive(:message)
-
-* 15 conversions
     from: be_true
       to: be_truthy
+
+* 15 conversions
+    from: obj.stub!(:message)
+      to: allow(obj).to receive(:message)
 
 * 13 conversions
     from: mock('something')
@@ -48,33 +48,33 @@ This conversion is done by Transpec 1.10.4 with the following command:
       to: expect(obj).not_to
 
 * 7 conversions
-    from: obj.unstub(:message)
-      to: allow(obj).to receive(:message).and_call_original
-
-* 7 conversions
     from: be_false
       to: be_falsey
+
+* 7 conversions
+    from: obj.unstub(:message)
+      to: allow(obj).to receive(:message).and_call_original
 
 * 5 conversions
     from: pending
       to: skip
 
 * 4 conversions
-    from: obj.should_receive(:message).any_number_of_times
-      to: allow(obj).to receive(:message)
-
-* 4 conversions
     from: lambda { }.should
       to: expect { }.to
+
+* 4 conversions
+    from: obj.should_receive(:message).any_number_of_times
+      to: allow(obj).to receive(:message)
 
 * 3 conversions
     from: collection.should have(n).items
       to: expect(collection.size).to eq(n)
 
 * 1 conversion
-    from: it { should_not ... }
-      to: it { is_expected.not_to ... }
-
-* 1 conversion
     from: it { should ... }
       to: it { is_expected.to ... }
+
+* 1 conversion
+    from: it { should_not ... }
+      to: it { is_expected.not_to ... }

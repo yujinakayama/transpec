@@ -28,9 +28,9 @@ This conversion is done by Transpec 1.10.4 with the following command:
       to: eq(expected)
 
 * 2 conversions
-    from: obj.stub!(:message)
-      to: allow(obj).to receive(:message)
-
-* 2 conversions
     from: obj.should_not
       to: expect(obj).not_to
+
+* 2 conversions
+    from: obj.stub!(:message)
+      to: allow(obj).to receive(:message)
