@@ -38,21 +38,7 @@ module Transpec
             define_method(matcher_creator) do
               matcher_class.new(matcher_node, self, source_rewriter, runtime_data, report)
             end
-
-            matcher_accessors << matcher_accessor
           end
-
-          def matcher_accessors
-            @matcher_accessors ||= []
-          end
-        end
-
-        def matcher
-          self.class.matcher_accessors.each do |accessor|
-            matcher = send(accessor)
-            return matcher if matcher
-          end
-          nil
         end
       end
     end
