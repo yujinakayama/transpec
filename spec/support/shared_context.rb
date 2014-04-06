@@ -2,26 +2,20 @@
 
 # This context requires `source` to be defined with #let.
 shared_context 'parsed objects' do
-  let(:source_path) { '(string)' }
+  let(:source_path) { nil }
 
-  let(:source_buffer) do
-    require 'parser'
-    buffer = Parser::Source::Buffer.new(source_path)
-    buffer.source = source
-    buffer
+  let(:processed_source) do
+    require 'transpec/processed_source'
+    Transpec::ProcessedSource.parse(source, source_path)
   end
 
   let(:ast) do
-    require 'transpec/ast/builder'
-    require 'transpec/parser'
-    builder = Transpec::AST::Builder.new
-    parser = Parser::CurrentRuby.new(builder)
-    parser.parse(source_buffer)
+    processed_source.ast
   end
 
   let(:source_rewriter) do
     require 'parser'
-    Parser::Source::Rewriter.new(source_buffer)
+    Parser::Source::Rewriter.new(processed_source.buffer)
   end
 
   let(:rewritten_source) { source_rewriter.process }

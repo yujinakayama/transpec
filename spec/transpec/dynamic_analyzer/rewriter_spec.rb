@@ -10,8 +10,8 @@ module Transpec
 
       subject(:rewriter) { Rewriter.new }
 
-      describe '#rewrite' do
-        subject { rewriter.rewrite(source) }
+      describe '#rewrite_source' do
+        subject { rewriter.rewrite_source(source) }
 
         let(:source) do
           <<-END

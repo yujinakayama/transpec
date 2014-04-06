@@ -1,32 +1,35 @@
 # coding: utf-8
 
-require 'transpec/ast/builder'
-require 'transpec/parser'
+require 'transpec/processed_source'
 
 module Transpec
   class BaseRewriter
     def rewrite_file!(file_path)
-      source = File.read(file_path)
-      rewritten_source = rewrite(source, file_path)
-      return if source == rewritten_source
+      processed_source = ProcessedSource.parse_file(file_path)
+      rewritten_source = rewrite(processed_source)
+      return if processed_source.to_s == rewritten_source
       File.write(file_path, rewritten_source)
     end
 
-    def rewrite(source, name = '(string)')
-      source_buffer = create_source_buffer(source, name)
-      ast = parse(source_buffer)
+    def rewrite_source(source, path = nil)
+      processed_source = ProcessedSource.parse(source, path)
+      rewrite(processed_source)
+    end
 
-      source_rewriter = Parser::Source::Rewriter.new(source_buffer)
-      failed_overlapping_rewrite = false
+    def rewrite(processed_source)
+      fail processed_source.syntax_error if processed_source.syntax_error
+
+      source_rewriter = Parser::Source::Rewriter.new(processed_source.buffer)
+      incomplete = false
       source_rewriter.diagnostics.consumer = proc do
-        failed_overlapping_rewrite = true
+        incomplete = true
         fail OverlappedRewriteError
       end
 
-      process(ast, source_rewriter)
+      process(processed_source.ast, source_rewriter)
 
       rewritten_source = source_rewriter.process
-      rewritten_source = rewrite(rewritten_source, name) if failed_overlapping_rewrite
+      rewritten_source = rewrite_source(rewritten_source, processed_source.path) if incomplete
 
       rewritten_source
     end

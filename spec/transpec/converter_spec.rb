@@ -37,8 +37,8 @@ module Transpec
       end
     end
 
-    describe '#convert' do
-      subject { converter.convert(source) }
+    describe '#convert_source' do
+      subject { converter.convert_source(source) }
 
       let(:source) do
         <<-END
@@ -54,7 +54,15 @@ module Transpec
       it 'dispatches found syntax objects to each handler method' do
         converter.should_receive(:process_should).with(an_instance_of(Syntax::Should))
         converter.should_receive(:process_should_receive).with(an_instance_of(Syntax::ShouldReceive))
-        converter.convert(source)
+        converter.convert_source(source)
+      end
+
+      context 'when the source is invalid' do
+        let(:source) { '<' }
+
+        it 'raises Parser::SyntaxError' do
+          -> { converter.convert_source(source) }.should raise_error(Parser::SyntaxError)
+        end
       end
 
       context 'when the source has overlapped convert targets' do
@@ -87,7 +95,7 @@ module Transpec
         end
 
         it 'adds records for only completed conversions' do
-          converter.convert(source)
+          converter.convert_source(source)
           converter.report.records.count.should == 2
         end
       end
@@ -119,7 +127,7 @@ module Transpec
         end
 
         it 'adds the conversion error to the report' do
-          converter.convert(source)
+          converter.convert_source(source)
           converter.report.should have(1).conversion_error
         end
       end

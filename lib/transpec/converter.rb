@@ -13,6 +13,7 @@ module Transpec
     attr_reader :configuration, :rspec_version, :runtime_data, :report
 
     alias_method :convert_file!, :rewrite_file!
+    alias_method :convert_source, :rewrite_source
     alias_method :convert, :rewrite
 
     def initialize(configuration = nil, rspec_version = nil, runtime_data = nil)
