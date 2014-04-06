@@ -26,7 +26,11 @@ module Transpec
         record_counts[record] += 1
       end
 
-      Hash[record_counts.sort_by { |record, count| -count }]
+      sorted_record_counts = record_counts.sort_by do |record, count|
+        [-count, record.original_syntax_type, record.converted_syntax_type]
+      end
+
+      Hash[sorted_record_counts]
     end
 
     def colored_summary(options = nil)
