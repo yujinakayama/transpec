@@ -21,10 +21,6 @@ module Transpec
         end
       end
 
-      def self.standalone?
-        false
-      end
-
       def initialize(node, expectation, source_rewriter = nil, runtime_data = nil, report = nil)
         operator_node = if node == BE_NODE
                           node.parent_node
