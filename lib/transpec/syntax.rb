@@ -124,5 +124,9 @@ module Transpec
     def expression_range
       node.loc.expression
     end
+
+    def inspect
+      "#<#{self.class}: #{node.type}>"
+    end
   end
 end
