@@ -92,8 +92,8 @@ class TranspecTest # rubocop:disable ClassLength
     in_project_dir do
       with_clean_bundler_env do
         sh File.join(Transpec.root, 'bin', 'transpec'), *transpec_args
-        compare_summary!
         sh 'bundle exec rspec'
+        compare_summary!
       end
     end
   end
