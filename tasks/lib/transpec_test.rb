@@ -106,8 +106,8 @@ class TranspecTest # rubocop:disable ClassLength
 
     require 'rspec/expectations'
     extend RSpec::Matchers
-    summary = File.read(File.join('.git', 'COMMIT_EDITMSG')).lines[5..-1]
-    expected_summary = File.read(commit_message_fixture_path).lines[5..-1]
+    summary = File.read(File.join('.git', 'COMMIT_EDITMSG')).lines.to_a[5..-1]
+    expected_summary = File.read(commit_message_fixture_path).lines.to_a[5..-1]
     expect(summary).to eq(expected_summary)
   end
 
