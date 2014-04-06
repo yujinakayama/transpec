@@ -4,10 +4,10 @@ require 'transpec/commit_message'
 require 'transpec/configuration'
 require 'transpec/converter'
 require 'transpec/dynamic_analyzer'
-require 'transpec/file_finder'
 require 'transpec/option_parser'
 require 'transpec/project'
 require 'transpec/report'
+require 'transpec/spec_suite'
 require 'rainbow'
 require 'rainbow/ext/string' unless String.method_defined?(:color)
 

@@ -2,8 +2,8 @@
 
 require 'transpec/dynamic_analyzer/rewriter'
 require 'transpec/dynamic_analyzer/runtime_data'
-require 'transpec/spec_suite'
 require 'transpec/project'
+require 'transpec/spec_suite'
 require 'tmpdir'
 require 'find'
 require 'pathname'
