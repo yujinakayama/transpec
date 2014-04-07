@@ -2,6 +2,8 @@
 
 ## Development
 
+## v1.11.0
+
 * Support conversion to non-monkey-patch example groups ([#22](https://github.com/yujinakayama/transpec/issues/22))
 * Support conversion of `unstub` ([#49](https://github.com/yujinakayama/transpec/issues/49))
 * Modify `yield_receiver_to_any_instance_implementation_blocks` configuration in `RSpec.configure` only when necessary ([#56](https://github.com/yujinakayama/transpec/issues/56))
