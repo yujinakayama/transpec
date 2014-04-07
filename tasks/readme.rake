@@ -79,7 +79,14 @@ end
 require 'transpec/spec_suite'
 
 class FakeSpecSuite < Transpec::SpecSuite
+  def analyze
+  end
+
   def need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?
+    true
+  end
+
+  def main_rspec_configure_node?(node)
     true
   end
 end
