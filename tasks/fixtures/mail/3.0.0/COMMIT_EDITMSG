@@ -1,0 +1,28 @@
+Convert specs to RSpec 3.0.0.beta2 syntax with Transpec
+
+This conversion is done by Transpec 1.11.1 with the following command:
+    transpec --force --convert example_group,hook_scope
+
+* 82 conversions
+    from: describe 'something' { }
+      to: RSpec.describe 'something' { }
+
+* 39 conversions
+    from: before(:each) { }
+      to: before(:example) { }
+
+* 4 conversions
+    from: after(:each) { }
+      to: after(:example) { }
+
+* 1 conversion
+    from: after(:all) { }
+      to: after(:context) { }
+
+* 1 conversion
+    from: before(:all) { }
+      to: before(:context) { }
+
+* 1 conversion
+    from: obj.stub(:message => value)
+      to: allow(obj).to receive_messages(:message => value)
