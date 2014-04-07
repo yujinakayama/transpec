@@ -2,6 +2,8 @@
 
 ## Development
 
+## v1.12.0
+
 * Support conversion of hook scope names ([#53](https://github.com/yujinakayama/transpec/issues/53))
 
 ## v1.11.1
