@@ -68,7 +68,7 @@ module Transpec
     def dispatch_syntax(syntax)
       invoke_handler(syntax.class, syntax)
 
-      syntax_mixins.each do |mixin|
+      Syntax.mixins.each do |mixin|
         next unless syntax.class.ancestors.include?(mixin)
         invoke_handler(mixin, syntax)
       end
@@ -76,12 +76,6 @@ module Transpec
       syntax.dependent_syntaxes.each do |dependent_syntax|
         next unless dependent_syntax.conversion_target?
         dispatch_syntax(dependent_syntax)
-      end
-    end
-
-    def syntax_mixins
-      Syntax::Mixin.constants.map do |const_name|
-        Syntax::Mixin.const_get(const_name, false)
       end
     end
 

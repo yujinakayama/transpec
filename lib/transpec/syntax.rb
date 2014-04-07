@@ -28,6 +28,12 @@ module Transpec
       def standalone_syntaxes
         @standalone_syntaxes ||= all_syntaxes.select(&:standalone?)
       end
+
+      def mixins
+        Mixin.constants.map do |const_name|
+          Mixin.const_get(const_name, false)
+        end
+      end
     end
   end
 end
