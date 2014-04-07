@@ -19,9 +19,11 @@ module Transpec
         super && receiver_node.nil? && method_name == :its
       end
 
-      def convert_to_describe_subject_it!
-        return if project_requires_its?
+      def conversion_target?
+        super && !runtime_data[node, :project_requires_its?]
+      end
 
+      def convert_to_describe_subject_it!
         front, rear = build_wrapper_codes
 
         insert_before(beginning_of_line_range(block_node), front)
@@ -43,10 +45,6 @@ module Transpec
 
       def block_node
         node.parent_node
-      end
-
-      def project_requires_its?
-        runtime_data[node, :project_requires_its?]
       end
 
       private

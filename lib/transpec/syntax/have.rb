@@ -28,12 +28,13 @@ module Transpec
           [:have, :have_exactly, :have_at_least, :have_at_most].include?(method_name)
       end
 
-      def convert_to_standard_expectation!(parenthesize_matcher_arg = true)
-        return if project_requires_collection_matcher?
+      def conversion_target?
+        super && !runtime_subject_data(:project_requires_collection_matcher?)
+      end
 
+      def convert_to_standard_expectation!(parenthesize_matcher_arg = true)
         replace(expectation.subject_range, replacement_subject_source) if explicit_subject?
         replace(matcher_range, source_builder.replacement_matcher_source(parenthesize_matcher_arg))
-
         register_record if explicit_subject?
       end
 
@@ -54,10 +55,6 @@ module Transpec
 
       def items_name
         items_node.children[1]
-      end
-
-      def project_requires_collection_matcher?
-        runtime_subject_data(:project_requires_collection_matcher?)
       end
 
       def collection_accessor

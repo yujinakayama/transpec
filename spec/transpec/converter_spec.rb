@@ -210,7 +210,7 @@ module Transpec
       end
 
       shared_examples 'invokes OnelinerShould#expectize! if available' do
-        context 'when RSpecVersion#oneliner_is_expected_available? returns true' do
+        context 'and RSpecVersion#oneliner_is_expected_available? returns true' do
           before { rspec_version.stub(:oneliner_is_expected_available?).and_return(true) }
 
           it 'invokes OnelinerShould#expectize!' do
@@ -219,7 +219,7 @@ module Transpec
           end
         end
 
-        context 'when RSpecVersion#oneliner_is_expected_available? returns false' do
+        context 'and RSpecVersion#oneliner_is_expected_available? returns false' do
           before { rspec_version.stub(:oneliner_is_expected_available?).and_return(false) }
           include_examples 'does nothing'
         end
@@ -255,20 +255,7 @@ module Transpec
 
           context 'and Configuration#convert_have_items? is true' do
             before { configuration.convert_have_items = true }
-
-            context 'and Have#project_requires_collection_matcher? is true' do
-              before do
-                have_object.stub(:project_requires_collection_matcher?).and_return(true)
-              end
-              include_examples 'invokes OnelinerShould#expectize! if available'
-            end
-
-            context 'and Have#project_requires_collection_matcher? is false' do
-              before do
-                have_object.stub(:project_requires_collection_matcher?).and_return(false)
-              end
-              include_examples 'converts to standard expecatations'
-            end
+            include_examples 'converts to standard expecatations'
           end
 
           context 'and Configuration#convert_have_items? is false' do
@@ -304,20 +291,7 @@ module Transpec
 
           context 'and Configuration#convert_have_items? is true' do
             before { configuration.convert_have_items = true }
-
-            context 'and Have#project_requires_collection_matcher? is true' do
-              before do
-                have_object.stub(:project_requires_collection_matcher?).and_return(true)
-              end
-              include_examples 'does nothing'
-            end
-
-            context 'and Have#project_requires_collection_matcher? is false' do
-              before do
-                have_object.stub(:project_requires_collection_matcher?).and_return(false)
-              end
-              include_examples 'converts to standard expecatations'
-            end
+            include_examples 'converts to standard expecatations'
           end
 
           context 'and Configuration#convert_have_items? is false' do

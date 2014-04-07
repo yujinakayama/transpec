@@ -16,10 +16,6 @@ module Transpec
       include_context 'syntax object', Expect, :expect_object
       include_context 'syntax object', OnelinerShould, :oneliner_should_object
 
-      before do
-        fail 'The #have_matcher is not a conversion target!' unless have_object.conversion_target?
-      end
-
       describe '#have_node' do
         let(:source) do
           <<-END
@@ -76,12 +72,23 @@ module Transpec
         end
       end
 
-      describe '#convert_to_standard_expectation!' do
-        let(:record) { have_object.report.records.last }
+      describe '#conversion_target?' do
+        let(:should_node) do
+          ast.each_descendent_node do |node|
+            next unless node.send_type?
+            method_name = node.children[1]
+            return node if method_name == :should
+          end
+          fail 'No #should node is found!'
+        end
+
+        let(:should_object) do
+          Should.new(should_node, source_rewriter, runtime_data)
+        end
+
+        subject { should_object.have_matcher.conversion_target? }
 
         context 'when rspec-rails is loaded in the spec' do
-          include_context 'dynamic analysis objects'
-
           let(:source) do
             <<-END
               module RSpec
@@ -97,17 +104,17 @@ module Transpec
             END
           end
 
-          let(:have_object) { should_object.have_matcher }
+          context 'without runtime information' do
+            it { should be_true }
+          end
 
-          it 'does nothing' do
-            have_object.convert_to_standard_expectation!
-            rewritten_source.should == source
+          context 'with runtime information' do
+            include_context 'dynamic analysis objects'
+            it { should be_false }
           end
         end
 
         context 'when rspec-collection_matchers is loaded in the spec' do
-          include_context 'dynamic analysis objects'
-
           let(:source) do
             <<-END
               module RSpec
@@ -123,12 +130,22 @@ module Transpec
             END
           end
 
-          let(:have_object) { should_object.have_matcher }
-
-          it 'does nothing' do
-            have_object.convert_to_standard_expectation!
-            rewritten_source.should == source
+          context 'without runtime information' do
+            it { should be_true }
           end
+
+          context 'with runtime information' do
+            include_context 'dynamic analysis objects'
+            it { should be_false }
+          end
+        end
+      end
+
+      describe '#convert_to_standard_expectation!' do
+        let(:record) { have_object.report.records.last }
+
+        before do
+          fail 'The #have_matcher is not a conversion target!' unless have_object.conversion_target?
         end
 
         context 'with expression `collection.should have(2).items`' do

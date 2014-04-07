@@ -34,7 +34,6 @@ module Transpec
 
       def convert_have_items_to_standard_should!
         return unless have_matcher.conversion_target?
-        return if have_matcher.project_requires_collection_matcher?
 
         insert_example_description!
 
@@ -48,7 +47,6 @@ module Transpec
 
       def convert_have_items_to_standard_expect!(negative_form = 'not_to')
         return unless have_matcher.conversion_target?
-        return if have_matcher.project_requires_collection_matcher?
 
         insert_example_description!
 

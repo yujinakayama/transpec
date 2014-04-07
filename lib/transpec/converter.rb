@@ -59,12 +59,8 @@ module Transpec
 
     def process_oneliner_should(oneliner_should)
       negative_form = configuration.negative_form_of_to
-
-      # TODO: Referencing oneliner_should.have_matcher.project_requires_collection_matcher?
-      #   from this converter is considered bad design.
       should_convert_have_items = configuration.convert_have_items? &&
-                                  oneliner_should.have_matcher.conversion_target? &&
-                                  !oneliner_should.have_matcher.project_requires_collection_matcher?
+                                  oneliner_should.have_matcher.conversion_target?
 
       if should_convert_have_items
         if configuration.convert_should?

@@ -11,14 +11,23 @@ module Transpec
 
       let(:record) { its_object.report.records.last }
 
-      describe '#convert_to_describe_subject_it!' do
-        before do
-          its_object.convert_to_describe_subject_it!
+      describe '#conversion_target?' do
+        let(:its_node) do
+          ast.each_descendent_node do |node|
+            next unless node.send_type?
+            method_name = node.children[1]
+            return node if method_name == :its
+          end
+          fail 'No #its node is found!'
         end
 
-        context 'when rspec-its is loaded in the spec' do
-          include_context 'dynamic analysis objects'
+        let(:its_object) do
+          Its.new(its_node, source_rewriter, runtime_data)
+        end
 
+        subject { its_object.conversion_target? }
+
+        context 'when rspec-its is loaded in the spec' do
           let(:source) do
             <<-END
               module RSpec
@@ -34,9 +43,20 @@ module Transpec
             END
           end
 
-          it 'does nothing' do
-            rewritten_source.should == source
+          context 'without runtime information' do
+            it { should be_true }
           end
+
+          context 'with runtime information' do
+            include_context 'dynamic analysis objects'
+            it { should be_false }
+          end
+        end
+      end
+
+      describe '#convert_to_describe_subject_it!' do
+        before do
+          its_object.convert_to_describe_subject_it!
         end
 
         context 'with expression `its(:size) { ... }`' do
