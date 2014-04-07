@@ -183,7 +183,7 @@ so that Transpec can copy the project in dynamic analysis.
 ### Enable/disable specific conversions
 
 You can disable specific conversions that are enabled by default with `-k/--keep` option,
-and enabled conversions that are disabled by default with the `-v/--convert` option.
+and enable conversions that are disabled by default with the `-v/--convert` option.
 
 ```bash
 $ transpec --keep its --convert example_group
