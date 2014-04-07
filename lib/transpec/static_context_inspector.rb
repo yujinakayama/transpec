@@ -129,7 +129,7 @@ module Transpec
 
       if arg_node && [:sym, :str].include?(arg_node.type)
         hook_arg = arg_node.children.first.to_sym
-        return :all_before_after if hook_arg == :all
+        return :all_before_after if [:all, :context].include?(hook_arg)
       end
 
       :each_before_after
