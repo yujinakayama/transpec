@@ -1,7 +1,11 @@
 module TranspecAnalysis
   @base_path = Dir.pwd
 
-  def self.data
+  def self.global_data
+    @data ||= {}
+  end
+
+  def self.node_data
     @data ||= {}
   end
 
@@ -14,7 +18,7 @@ module TranspecAnalysis
     require 'json'
     path = File.join(@base_path, '<%= RESULT_FILE %>')
     File.open(path, 'w') do |file|
-      JSON.dump(data, file)
+      JSON.dump(node_data, file)
     end
   end
 end
@@ -34,7 +38,7 @@ def <%= ANALYSIS_METHOD %>(object, context, node_id, analysis_codes)
     end
   end
 
-  TranspecAnalysis.data[node_id] = node_data
+  TranspecAnalysis.node_data[node_id] = node_data
 
   object
 end

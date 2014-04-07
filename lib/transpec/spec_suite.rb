@@ -44,6 +44,16 @@ module Transpec
       @need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config
     end
 
+    def main_rspec_configure_node?(node)
+      analyze
+
+      if @main_rspec_configure
+        @main_rspec_configure.node.equal?(node)
+      else
+        true
+      end
+    end
+
     private
 
     def dispatch_node(node)
@@ -56,11 +66,11 @@ module Transpec
     end
 
     def dispatch_syntax(syntax)
-      ANALYSIS_TARGET_CLASSES.each do |klass|
-        next unless syntax.class.ancestors.include?(klass)
-        class_name = klass.name.split('::').last.gsub(/([a-z])([A-Z])/, '\1_\2').downcase
-        handler_name = "process_#{class_name}"
-        send(handler_name, syntax)
+      invoke_handler(syntax.class, syntax)
+
+      syntax_mixins.each do |mixin|
+        next unless syntax.class.ancestors.include?(mixin)
+        invoke_handler(mixin, syntax)
       end
 
       syntax.dependent_syntaxes.each do |dependent_syntax|
@@ -69,9 +79,36 @@ module Transpec
       end
     end
 
+    def syntax_mixins
+      Syntax::Mixin.constants.map do |const_name|
+        Syntax::Mixin.const_get(const_name, false)
+      end
+    end
+
+    def invoke_handler(klass, syntax)
+      class_name = klass.name.split('::').last.gsub(/([a-z])([A-Z])/, '\1_\2').downcase
+      handler_name = "process_#{class_name}"
+      send(handler_name, syntax) if respond_to?(handler_name, true)
+    end
+
     def process_any_instance_block(syntax)
       @need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config ||=
         syntax.need_to_add_receiver_arg_to_any_instance_implementation_block?
+    end
+
+    def process_rspec_configure(rspec_configure)
+      return unless runtime_data
+      run_order = runtime_data[rspec_configure.node, :run_order]
+      return unless run_order
+
+      unless @main_rspec_configure
+        @main_rspec_configure = rspec_configure
+        return
+      end
+
+      if run_order < runtime_data[@main_rspec_configure.node, :run_order]
+        @main_rspec_configure = rspec_configure
+      end
     end
   end
 end
