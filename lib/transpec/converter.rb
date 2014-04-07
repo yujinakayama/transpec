@@ -215,7 +215,8 @@ module Transpec
     end
 
     def process_hook(hook)
-      # FIXME
+      return if !configuration.convert_hook_scope? || !rspec_version.hook_scope_alias_available?
+      hook.convert_scope_name!
     end
 
     def process_messaging_host(messaging_host)

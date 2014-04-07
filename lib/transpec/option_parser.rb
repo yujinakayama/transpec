@@ -21,8 +21,9 @@ module Transpec
     }
 
     CONFIG_ATTRS_FOR_CONVERT_TYPES = {
-      stub_with_hash: :convert_stub_with_hash_to_allow_to_receive_and_return=,
-       example_group: :convert_example_group=
+       example_group: :convert_example_group=,
+          hook_scope: :convert_hook_scope=,
+      stub_with_hash: :convert_stub_with_hash_to_allow_to_receive_and_return=
     }
 
     VALID_BOOLEAN_MATCHER_TYPES = %w(truthy,falsey truthy,falsy true,false)
@@ -149,6 +150,7 @@ module Transpec
           'Enable specific conversions that are disabled by default.',
           'Conversion Types:',
           '  *example_group* (`describe` to `RSpec.describe`)',
+          '  *hook_scope* (`before(:all)` to `before(:context)`)',
           '  *stub_with_hash* (`obj.stub(:msg => val)` to',
           '                  `allow(obj).to receive(:msg).and_return(val)`)',
           'These conversions are disabled by default.'

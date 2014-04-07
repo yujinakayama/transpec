@@ -50,6 +50,7 @@ module Transpec
     define_feature :receive_message_chain,          '3.0.0.beta2'
     define_feature :non_should_matcher_protocol,    '3.0.0.beta2'
     define_feature :non_monkey_patch_example_group, '3.0.0.beta2'
+    define_feature :hook_scope_alias,               '3.0.0.beta2'
 
     RSPEC_2_99 = new('2.99.0.beta1')
     RSPEC_3_0  = new('3.0.0.beta1')

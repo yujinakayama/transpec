@@ -21,6 +21,7 @@ module Transpec
         [:add_receiver_arg_to_any_instance_implementation_block?, true],
         [:convert_stub_with_hash_to_allow_to_receive_and_return?, false],
         [:convert_example_group?,                                 false],
+        [:convert_hook_scope?,                                    false],
         [:forced?,                                                false],
         [:skip_dynamic_analysis?,                                 false],
         [:negative_form_of_to,                                    'not_to'],

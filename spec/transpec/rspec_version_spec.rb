@@ -71,7 +71,8 @@ module Transpec
     [
       :receive_message_chain_available?,
       :non_should_matcher_protocol_available?,
-      :non_monkey_patch_example_group_available?
+      :non_monkey_patch_example_group_available?,
+      :hook_scope_alias_available?
     ].each do |method|
       include_examples 'version comparisons', method, [
         ['2.14.0',       false],

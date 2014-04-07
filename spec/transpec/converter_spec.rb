@@ -830,6 +830,45 @@ module Transpec
       end
     end
 
+    describe '#process_hook' do
+      let(:hook_object) { double('hook_object').as_null_object }
+
+      context 'when Configuration#convert_hook_scope? is true' do
+        before { configuration.convert_hook_scope = true }
+
+        context 'when RSpecVersion#hook_scope_alias_available? returns true' do
+          before { rspec_version.stub(:hook_scope_alias_available?).and_return(true) }
+
+          it 'invokes Hook#convert_scope_name!' do
+            hook_object.should_receive(:convert_scope_name!)
+            converter.process_hook(hook_object)
+          end
+        end
+
+        context 'when RSpecVersion#hook_scope_alias_available? returns false' do
+          before { rspec_version.stub(:hook_scope_alias_available?).and_return(false) }
+
+          it 'does nothing' do
+            hook_object.should_not_receive(:convert_scope_name!)
+            converter.process_hook(hook_object)
+          end
+        end
+      end
+
+      context 'when Configuration#convert_hook_scope? is false' do
+        before { configuration.convert_hook_scope = false }
+
+        context 'when RSpecVersion#hook_scope_alias_available? returns true' do
+          before { rspec_version.stub(:hook_scope_alias_available?).and_return(true) }
+
+          it 'does nothing' do
+            hook_object.should_not_receive(:convert_scope_name!)
+            converter.process_hook(hook_object)
+          end
+        end
+      end
+    end
+
     describe '#process_raise_error' do
       let(:raise_error_object) { double('raise_error_object').as_null_object }
 

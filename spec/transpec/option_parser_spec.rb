@@ -103,8 +103,9 @@ module Transpec
 
       describe '-v/--convert option' do
         [
-          ['stub_with_hash', :convert_stub_with_hash_to_allow_to_receive_and_return?],
-          ['example_group',  :convert_example_group?]
+          ['example_group',  :convert_example_group?],
+          ['hook_scope',     :convert_hook_scope?],
+          ['stub_with_hash', :convert_stub_with_hash_to_allow_to_receive_and_return?]
         ].each do |cli_type, config_attr|
           context "when #{cli_type.inspect} is specified" do
             let(:args) { ['--convert', cli_type] }
@@ -256,20 +257,29 @@ module Transpec
         end
       end
 
-      it 'describes all conversion types for -k/--keep option' do
-        option_sections = help_text.lines.slice_before(/^\s*-/)
+      def description_for_option(option)
+        description_lines = parser.send(:descriptions)[option]
+        description_lines.map { |line| parser.send(:highlight_text, line) }
+      end
 
-        keep_section = option_sections.find do |lines|
-          lines.first =~ /^\s*-k/
-        end
+      def conversion_types_for_option(option)
+        section = description_for_option(option)
 
-        conversion_types = keep_section.reduce([]) do |types, line|
-          match = line.match(/^[ ]{37}([a-z_]+)/)
-          next types unless match
+        section.each_with_object([]) do |line, types|
+          match = line.match(/^[ ]{2}([a-z_]+)/)
+          next unless match
           types << match.captures.first
         end
+      end
 
-        conversion_types.should =~ OptionParser.available_conversion_types.map(&:to_s)
+      it 'describes all conversion types for -k/--keep option' do
+        conversion_types = conversion_types_for_option('-k')
+        conversion_types.should =~ OptionParser::CONFIG_ATTRS_FOR_KEEP_TYPES.keys.map(&:to_s)
+      end
+
+      it 'describes all conversion types for -v/--convert option' do
+        conversion_types = conversion_types_for_option('-v')
+        conversion_types.should =~ OptionParser::CONFIG_ATTRS_FOR_CONVERT_TYPES.keys.map(&:to_s)
       end
     end
   end
