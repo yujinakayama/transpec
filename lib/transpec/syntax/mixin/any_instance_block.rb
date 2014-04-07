@@ -11,17 +11,25 @@ module Transpec
         extend ActiveSupport::Concern
         include Send
 
-        def add_receiver_arg_to_any_instance_implementation_block!
-          return unless any_instance_block_node
-          first_arg_node = any_instance_block_node.children[1].children[0]
-          return unless first_arg_node
+        def need_to_add_receiver_arg_to_any_instance_implementation_block?
+          first_arg_node = any_instance_block_first_arg_node
+          return false unless first_arg_node
           first_arg_name = first_arg_node.children.first
-          return if first_arg_name == :instance
-          insert_before(first_arg_node.loc.expression, 'instance, ')
+          first_arg_name != :instance
+        end
+
+        def add_receiver_arg_to_any_instance_implementation_block!
+          return unless need_to_add_receiver_arg_to_any_instance_implementation_block?
+          insert_before(any_instance_block_first_arg_node.loc.expression, 'instance, ')
           true
         end
 
         private
+
+        def any_instance_block_first_arg_node
+          return nil unless any_instance_block_node
+          any_instance_block_node.children[1].children[0]
+        end
 
         def any_instance_block_node
           return unless any_instance?

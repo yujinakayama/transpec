@@ -28,6 +28,12 @@ def generate_readme
   erb.result(binding)
 end
 
+def convert(source, configuration = nil, rspec_version = nil)
+  spec_suite = FakeSpecSuite.new
+  converter = Transpec::Converter.new(spec_suite, configuration, rspec_version)
+  converter.convert_source(source)
+end
+
 def select_sections(content, header_level, *section_names)
   header_pattern = pattern_for_header_level(header_level)
   sections = content.each_line.slice_before(header_pattern)
@@ -67,5 +73,13 @@ def validate_syntax_type_table(markdown_table, types_in_code)
   unless types_in_doc == types_in_code
     types_missing_description = types_in_code - types_in_doc
     fail "No descriptions for syntax types #{types_missing_description}"
+  end
+end
+
+require 'transpec/spec_suite'
+
+class FakeSpecSuite < Transpec::SpecSuite
+  def need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?
+    true
   end
 end

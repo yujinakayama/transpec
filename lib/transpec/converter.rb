@@ -4,23 +4,28 @@ require 'transpec/base_rewriter'
 require 'transpec/configuration'
 require 'transpec/report'
 require 'transpec/rspec_version'
+require 'transpec/spec_suite'
 require 'transpec/syntax'
 
 Transpec::Syntax.require_all
 
 module Transpec
   class Converter < BaseRewriter # rubocop:disable ClassLength
-    attr_reader :configuration, :rspec_version, :runtime_data, :report
+    attr_reader :spec_suite, :configuration, :rspec_version, :report
 
     alias_method :convert_file!, :rewrite_file!
     alias_method :convert_source, :rewrite_source
     alias_method :convert, :rewrite
 
-    def initialize(configuration = nil, rspec_version = nil, runtime_data = nil)
+    def initialize(spec_suite = nil, configuration = nil, rspec_version = nil)
+      @spec_suite = spec_suite || SpecSuite.new
       @configuration = configuration || Configuration.new
       @rspec_version = rspec_version || Transpec.required_rspec_version
-      @runtime_data = runtime_data
       @report = Report.new
+    end
+
+    def runtime_data
+      spec_suite.runtime_data
     end
 
     def process(ast, source_rewriter)
@@ -197,7 +202,8 @@ module Transpec
       end
 
       if rspec_version.rspec_2_99? &&
-         configuration.convert_deprecated_method?
+         configuration.convert_deprecated_method? &&
+         spec_suite.need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?
         should_yield = configuration.add_receiver_arg_to_any_instance_implementation_block?
         rspec_configure.mocks.yield_receiver_to_any_instance_implementation_blocks = should_yield
       end

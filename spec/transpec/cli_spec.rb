@@ -230,6 +230,8 @@ module Transpec
         ProcessedSource.parse_file(path)
       end
 
+      let(:spec_suite) { SpecSuite.new }
+
       before do
         cli.stub(:puts)
       end
@@ -257,7 +259,7 @@ module Transpec
             message.should =~ /context/i
           end
 
-          cli.convert_spec(processed_source)
+          cli.convert_spec(processed_source, spec_suite)
         end
       end
 
@@ -277,7 +279,7 @@ module Transpec
             message.should =~ /converted.+but.+incorrect/i
           end
 
-          cli.convert_spec(processed_source)
+          cli.convert_spec(processed_source, spec_suite)
         end
       end
 
@@ -319,7 +321,7 @@ module Transpec
             times += 1
           end
 
-          cli.convert_spec(processed_source)
+          cli.convert_spec(processed_source, spec_suite)
         end
       end
     end

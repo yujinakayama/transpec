@@ -55,17 +55,22 @@ module Transpec
         runtime_data = run_dynamic_analysis(paths)
       end
 
-      spec_suite = SpecSuite.new(paths)
+      spec_suite = SpecSuite.new(paths, runtime_data)
+      # Actually #analyze does not need to be invoked here, but doing this will avoid long freeze
+      # while conversion of files.
+      puts 'Aggregating spec suite data...'
+      spec_suite.analyze
+      puts
 
       spec_suite.specs.each do |spec|
-        convert_spec(spec, runtime_data)
+        convert_spec(spec, spec_suite)
       end
     end
 
-    def convert_spec(spec, runtime_data = nil)
+    def convert_spec(spec, spec_suite)
       puts "Converting #{spec.path}"
 
-      converter = Converter.new(configuration, project.rspec_version, runtime_data)
+      converter = Converter.new(spec_suite, configuration, project.rspec_version)
       converter.convert_file!(spec)
 
       warn_annotations(converter.report)

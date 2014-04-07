@@ -65,7 +65,7 @@ END
 Transpec would convert it to the following form:
 
 ```ruby
-<%= Transpec::Converter.new.convert_source(example) -%>
+<%= convert(example) -%>
 ```
 
 ### Actual examples
@@ -321,7 +321,7 @@ when parentheses are necessary to keep the meaning of the expression.
 
 ```ruby
 <%=
-parenthesizing_example = <<END
+example = <<END
 describe 'original spec' do
   it 'is an example' do
     1.should == 1
@@ -334,18 +334,12 @@ end
 END
 -%>
 
-<%=
-Transpec::Converter.new.convert_source(parenthesizing_example).gsub(
-  'original spec',
-  'converted spec'
-)
--%>
+<%= convert(example).gsub('original spec', 'converted spec') -%>
 
 <%=
 configuration = Transpec::Configuration.new
 configuration.parenthesize_matcher_arg = false
-converter = Transpec::Converter.new(configuration)
-converter.convert_source(parenthesizing_example)
+convert(example, configuration)
   .gsub(
     'original spec',
     'converted spec with -p/--no-parentheses-matcher-arg option'
@@ -694,7 +688,7 @@ Targets:
 
 ```ruby
 <%=
-its_target = <<END
+example = <<END
 describe 'example' do
   subject { { foo: 1, bar: 2 } }
   its(:size) { should == 2 }
@@ -708,7 +702,7 @@ END
 Will be converted to:
 
 ```ruby
-<%= Transpec::Converter.new.convert_source(its_target) -%>
+<%= convert(example) -%>
 ```
 
 There's an option to continue using `its` with [rspec-its](https://github.com/rspec/rspec-its) which is a gem extracted from `rspec-core`.
@@ -911,7 +905,7 @@ Targets:
 
 ```ruby
 <%=
-useless_and_return_target = <<END
+example = <<END
 expect(obj).to receive(:message).and_return { 1 }
 allow(obj).to receive(:message).and_return { 1 }
 
@@ -924,7 +918,7 @@ END
 Will be converted to:
 
 ```ruby
-<%= Transpec::Converter.new.convert_source(useless_and_return_target) -%>
+<%= convert(example) -%>
 ```
 
 * This conversion can be disabled by: `--keep deprecated`
@@ -939,7 +933,7 @@ Targets:
 
 ```ruby
 <%=
-any_instance_block_target = <<END
+example = <<END
 RSpec.configure do |rspec|
 end
 
@@ -960,7 +954,7 @@ Will be converted to:
 ```ruby
 <%=
 rspec_version = Transpec::RSpecVersion.yielding_receiver_to_any_instance_implementation_block_available_version
-Transpec::Converter.new(nil, rspec_version).convert_source(any_instance_block_target)
+convert(example, nil, rspec_version)
 -%>
 
 # With `--no-yield-any-instance`
@@ -968,7 +962,7 @@ Transpec::Converter.new(nil, rspec_version).convert_source(any_instance_block_ta
 configuration = Transpec::Configuration.new
 configuration.add_receiver_arg_to_any_instance_implementation_block = false
 rspec_version = Transpec::RSpecVersion.yielding_receiver_to_any_instance_implementation_block_available_version
-Transpec::Converter.new(configuration, rspec_version).convert_source(any_instance_block_target)
+convert(example, configuration, rspec_version)
 -%>
 ```
 
@@ -1022,7 +1016,7 @@ Targets:
 
 ```ruby
 <%=
-pending_example_target = <<END
+example = <<END
 describe 'example' do
   it 'is skipped', :pending => true do
     do_something_possibly_fail # This won't be run
@@ -1052,7 +1046,7 @@ Will be converted to:
 ```ruby
 <%=
 rspec_version = Transpec::RSpecVersion.skip_available_version
-Transpec::Converter.new(nil, rspec_version).convert_source(pending_example_target)
+convert(example, nil, rspec_version)
   .gsub('pending', 'pending # #pending with block is no longer supported')
 -%>
 ```
@@ -1081,7 +1075,7 @@ Targets:
 
 ```ruby
 <%=
-example_target = <<END
+example = <<END
 module ScreenshotHelper
   def save_failure_screenshot
     return unless example.exception
@@ -1104,7 +1098,7 @@ Will be converted to:
 ```ruby
 <%=
 rspec_version = Transpec::RSpecVersion.yielded_example_available_version
-Transpec::Converter.new(nil, rspec_version).convert_source(example_target)
+convert(example, nil, rspec_version)
 -%>
 ```
 
@@ -1136,7 +1130,7 @@ Targets:
 
 ```ruby
 <%=
-custom_matcher_dsl_target = <<END
+example = <<END
 RSpec::Matchers.define :be_awesome do
   match_for_should { }
   match_for_should_not { }
@@ -1152,7 +1146,7 @@ Will be converted to:
 ```ruby
 <%=
 rspec_version = Transpec::RSpecVersion.non_should_matcher_protocol_available_version
-Transpec::Converter.new(nil, rspec_version).convert_source(custom_matcher_dsl_target)
+convert(example, nil, rspec_version)
 -%>
 ```
 
@@ -1168,7 +1162,7 @@ Targets:
 
 ```ruby
 <%=
-example_group_target = <<END
+example = <<END
 RSpec.configure do |rspec|
 end
 
@@ -1190,7 +1184,7 @@ Will be converted to:
 configuration = Transpec::Configuration.new
 configuration.convert_example_group = true
 rspec_version = Transpec::RSpecVersion.non_monkey_patch_example_group_available_version
-Transpec::Converter.new(configuration, rspec_version).convert_source(example_group_target)
+convert(example, configuration, rspec_version)
 -%>
 ```
 
