@@ -15,8 +15,56 @@ module Transpec
       cli
     end
 
+    context 'when there are multiple RSpec.configure in the spec suite' do
+      before do
+        create_file('spec/spec_helper.rb', <<-END)
+          RSpec.configure do |config|
+          end
+        END
+
+        create_file('spec/unit/spec_helper.rb', <<-END)
+          require 'spec_helper'
+
+          RSpec.configure do |config|
+          end
+        END
+
+        create_file('spec/unit/unit_spec.rb', <<-END)
+          require 'unit/spec_helper'
+
+          describe 'example' do
+            it 'responds to #message' do
+              Object.any_instance.stub(:message) do |arg|
+              end
+            end
+          end
+        END
+      end
+
+      it 'modifies only the one that was run first' do
+        cli.project.stub(:rspec_version).and_return(RSpecVersion.new('2.99.0'))
+        cli.run([])
+
+        File.read('spec/spec_helper.rb').should == <<-END
+          RSpec.configure do |config|
+            config.mock_with :rspec do |mocks|
+              mocks.yield_receiver_to_any_instance_implementation_blocks = true
+            end
+          end
+        END
+
+        File.read('spec/unit/spec_helper.rb').should == <<-END
+          require 'spec_helper'
+
+          RSpec.configure do |config|
+          end
+        END
+      end
+    end
+
     describe 'yield_receiver_to_any_instance_implementation_blocks' do
       let(:spec_helper_path) { 'spec/spec_helper.rb' }
+
       before do
         create_file(spec_helper_path, <<-END)
           RSpec.configure do |config|

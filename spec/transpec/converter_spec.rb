@@ -1138,27 +1138,35 @@ module Transpec
         context 'and Configuration#convert_deprecated_method? returns true' do
           before { configuration.convert_deprecated_method = true }
 
-          context 'and SpecSuite#need_to_modify_yield_receiver_..._configuration? return true' do
+          context 'and SpecSuite#main_rspec_configure_node? returns true' do
             before do
-              spec_suite.stub(:need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?)
-                .and_return(true)
+              spec_suite.stub(:main_rspec_configure_node?).and_return(true)
             end
 
-            context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns true' do
-              before { configuration.add_receiver_arg_to_any_instance_implementation_block = true }
-
-              it 'invokes RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks= with true' do
-                rspec_configure.mocks.should_receive(:yield_receiver_to_any_instance_implementation_blocks=).with(true)
-                converter.process_rspec_configure(rspec_configure)
+            context 'and SpecSuite#need_to_modify_yield_receiver_..._configuration? return true' do
+              before do
+                spec_suite.stub(:need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?)
+                  .and_return(true)
               end
-            end
 
-            context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns false' do
-              before { configuration.add_receiver_arg_to_any_instance_implementation_block = false }
+              context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns true' do
+                before { configuration.add_receiver_arg_to_any_instance_implementation_block = true }
 
-              it 'invokes RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks= with false' do
-                rspec_configure.mocks.should_receive(:yield_receiver_to_any_instance_implementation_blocks=).with(false)
-                converter.process_rspec_configure(rspec_configure)
+                it 'invokes RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks= with true' do
+                  rspec_configure.mocks
+                    .should_receive(:yield_receiver_to_any_instance_implementation_blocks=).with(true)
+                  converter.process_rspec_configure(rspec_configure)
+                end
+              end
+
+              context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns false' do
+                before { configuration.add_receiver_arg_to_any_instance_implementation_block = false }
+
+                it 'invokes RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks= with false' do
+                  rspec_configure.mocks
+                    .should_receive(:yield_receiver_to_any_instance_implementation_blocks=).with(false)
+                  converter.process_rspec_configure(rspec_configure)
+                end
               end
             end
           end
@@ -1167,6 +1175,21 @@ module Transpec
             before do
               spec_suite.stub(:need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?)
                 .and_return(false)
+            end
+
+            context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns true' do
+              before { configuration.add_receiver_arg_to_any_instance_implementation_block = true }
+
+              it 'does not invoke RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks=' do
+                rspec_configure.mocks.should_not_receive(:yield_receiver_to_any_instance_implementation_blocks=)
+                converter.process_rspec_configure(rspec_configure)
+              end
+            end
+          end
+
+          context 'and SpecSuite#main_rspec_configure_node? returns false' do
+            before do
+              spec_suite.stub(:main_rspec_configure_node?).and_return(false)
             end
 
             context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns true' do

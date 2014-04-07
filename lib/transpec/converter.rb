@@ -188,6 +188,8 @@ module Transpec
     end
 
     def process_rspec_configure(rspec_configure)
+      return unless spec_suite.main_rspec_configure_node?(rspec_configure.node)
+
       if need_to_modify_expectation_syntax_configuration?(rspec_configure)
         rspec_configure.expectations.syntaxes = :expect
       end
@@ -201,9 +203,7 @@ module Transpec
         rspec_configure.expose_dsl_globally = false
       end
 
-      if rspec_version.rspec_2_99? &&
-         configuration.convert_deprecated_method? &&
-         spec_suite.need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?
+      if need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?
         should_yield = configuration.add_receiver_arg_to_any_instance_implementation_block?
         rspec_configure.mocks.yield_receiver_to_any_instance_implementation_blocks = should_yield
       end
@@ -231,6 +231,11 @@ module Transpec
       return unless configuration.convert_deprecated_method?
       return unless configuration.add_receiver_arg_to_any_instance_implementation_block?
       messaging_host.add_receiver_arg_to_any_instance_implementation_block!
+    end
+
+    def need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?
+      rspec_version.rspec_2_99? && configuration.convert_deprecated_method? &&
+        spec_suite.need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?
     end
 
     def need_to_modify_expectation_syntax_configuration?(rspec_configure)
