@@ -12,7 +12,7 @@ namespace :test do
 
   # rubocop:disable LineLength
   tests = [
-    Test.new(Transpec.root, nil, ['--quiet']),
+    Test.new(Transpec.root, nil, ['--quiet'], true),
     Test.new('https://github.com/yujinakayama/twitter.git', 'transpec-test-rspec-2-99', bundler_args),
     Test.new('https://github.com/yujinakayama/mail.git', 'transpec-test-rspec-2-99', bundler_args)
   ]

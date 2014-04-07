@@ -1,8 +1,8 @@
 # coding: utf-8
 
-require_relative 'test'
+require_relative 'project'
 
-class Demo < Test
+class Demo < Project
   DEMO_BRANCH = 'transpec-demo'
 
   def self.base_dir_path
@@ -24,6 +24,10 @@ class Demo < Test
   end
 
   private
+
+  def transpec(*args)
+    sh File.join(Transpec.root, 'bin', 'transpec'), *args
+  end
 
   def setup_from_remote
     FileUtils.rm_rf(project_dir) if Dir.exist?(project_dir)
