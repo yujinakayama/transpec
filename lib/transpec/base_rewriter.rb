@@ -47,19 +47,6 @@ module Transpec
       fail NotImplementedError
     end
 
-    def create_source_buffer(source, name)
-      source_buffer = Parser::Source::Buffer.new(name)
-      source_buffer.source = source
-      source_buffer
-    end
-
-    def parse(source_buffer)
-      builder = AST::Builder.new
-      parser = Parser::CurrentRuby.new(builder)
-      ast = parser.parse(source_buffer)
-      ast
-    end
-
     class OverlappedRewriteError < StandardError; end
   end
 end
