@@ -13,13 +13,6 @@ module Transpec
             accessor = "#{matcher_class.snake_case_name}_matcher"
             ivar = "@#{accessor}"
 
-            define_dynamic_analysis do |rewriter|
-              matcher = send(accessor)
-              if matcher.dynamic_analysis_target?
-                matcher.register_dynamic_analysis_request(rewriter)
-              end
-            end
-
             define_method(accessor) do
               return instance_variable_get(ivar) if instance_variable_defined?(ivar)
               matcher = matcher_class.new(matcher_node, self, source_rewriter, runtime_data, report)
