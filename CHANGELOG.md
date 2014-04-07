@@ -4,6 +4,10 @@
 
 * Support conversion to non-monkey-patch example groups ([#22](https://github.com/yujinakayama/transpec/issues/22))
 * Support conversion of `unstub` ([#49](https://github.com/yujinakayama/transpec/issues/49))
+* Modify `yield_receiver_to_any_instance_implementation_blocks` configuration in `RSpec.configure` only when necessary ([#56](https://github.com/yujinakayama/transpec/issues/56))
+* Modify only the main `RSpec.configure` when there are multiple ones ([#56](https://github.com/yujinakayama/transpec/issues/56))
+* Add `-v/--convert` option that allows to enable conversions that are disabled by default
+* Deprecate `-t/--convert-stub-with-hash` option
 
 ## v1.10.4
 
