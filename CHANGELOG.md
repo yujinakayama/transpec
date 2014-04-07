@@ -2,6 +2,8 @@
 
 ## Development
 
+## v1.11.1
+
 * Add missing description of `example_group` for `-v/--convert` option in the `-h/--help` text
 
 ## v1.11.0
