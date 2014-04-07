@@ -113,6 +113,10 @@ module Transpec
       dynamic_analysis_target?
     end
 
+    def dependent_syntaxes
+      @dependent_syntaxes ||= []
+    end
+
     def static_context_inspector
       @static_context_inspector ||= StaticContextInspector.new(node)
     end

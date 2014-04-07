@@ -34,10 +34,7 @@ module Transpec
       Syntax.standalone_syntaxes.each do |syntax_class|
         syntax = syntax_class.new(node, source_rewriter, runtime_data, report)
         next unless syntax.conversion_target?
-
-        handler_name = "process_#{syntax_class.snake_case_name}"
-        send(handler_name, syntax)
-
+        dispatch_syntax(syntax)
         break
       end
     rescue OverlappedRewriteError # rubocop:disable HandleExceptions
@@ -45,49 +42,45 @@ module Transpec
       report.conversion_errors << error
     end
 
-    def process_should(should)
-      if configuration.convert_should?
-        should.expectize!(
-          configuration.negative_form_of_to,
-          configuration.parenthesize_matcher_arg?
-        )
-      end
+    def dispatch_syntax(syntax)
+      handler_name = "process_#{syntax.class.snake_case_name}"
+      send(handler_name, syntax)
 
-      process_have(should.have_matcher)
-      process_raise_error(should.raise_error_matcher)
+      syntax.dependent_syntaxes.each do |dependent_syntax|
+        next unless dependent_syntax.conversion_target?
+        dispatch_syntax(dependent_syntax)
+      end
+    end
+
+    def process_should(should)
+      return unless configuration.convert_should?
+      should.expectize!(configuration.negative_form_of_to)
     end
 
     def process_oneliner_should(oneliner_should)
       negative_form = configuration.negative_form_of_to
-      parenthesize = configuration.parenthesize_matcher_arg?
 
       # TODO: Referencing oneliner_should.have_matcher.project_requires_collection_matcher?
       #   from this converter is considered bad design.
       should_convert_have_items = configuration.convert_have_items? &&
-                                  oneliner_should.have_matcher &&
+                                  oneliner_should.have_matcher.conversion_target? &&
                                   !oneliner_should.have_matcher.project_requires_collection_matcher?
 
       if should_convert_have_items
         if configuration.convert_should?
-          oneliner_should.convert_have_items_to_standard_expect!(negative_form, parenthesize)
+          oneliner_should.convert_have_items_to_standard_expect!(negative_form)
         else
           oneliner_should.convert_have_items_to_standard_should!
         end
       elsif configuration.convert_oneliner? && rspec_version.oneliner_is_expected_available?
-        oneliner_should.expectize!(negative_form, parenthesize)
+        oneliner_should.expectize!(negative_form)
       end
-
-      process_raise_error(oneliner_should.raise_error_matcher)
     end
 
     def process_expect(expect)
-      process_have(expect.have_matcher)
-      process_raise_error(expect.raise_error_matcher)
-      process_messaging_host(expect.receive_matcher)
     end
 
     def process_allow(allow)
-      process_messaging_host(allow.receive_matcher)
     end
 
     def process_should_receive(should_receive)
@@ -128,6 +121,17 @@ module Transpec
       method_stub.remove_no_message_allowance! if configuration.convert_deprecated_method?
 
       process_messaging_host(method_stub)
+    end
+
+    def process_operator(operator)
+      return unless configuration.convert_should?
+      return if operator.expectation.is_a?(Syntax::OnelinerShould) &&
+        !rspec_version.oneliner_is_expected_available?
+      operator.convert_operator!(configuration.parenthesize_matcher_arg?)
+    end
+
+    def process_receive(receive)
+      process_messaging_host(receive)
     end
 
     def process_be_boolean(be_boolean)

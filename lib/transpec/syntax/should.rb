@@ -34,7 +34,7 @@ module Transpec
         syntax_available?(__method__)
       end
 
-      def expectize!(negative_form = 'not_to', parenthesize_matcher_arg = true)
+      def expectize!(negative_form = 'not_to')
         fail ContextError.new("##{method_name}", '#expect', selector_range) unless expect_available?
 
         if proc_literal?(subject_node)
@@ -47,8 +47,6 @@ module Transpec
 
         @current_syntax_type = :expect
         register_record(negative_form)
-
-        operator_matcher.convert_operator!(parenthesize_matcher_arg) if operator_matcher
       end
 
       private

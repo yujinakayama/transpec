@@ -151,72 +151,36 @@ module Transpec
       describe '#have_matcher' do
         subject { expect_object.have_matcher }
 
-        context 'when it is taking #have matcher' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'has 2 items' do
-                  expect(subject).to have(2).items
-                end
+        let(:source) do
+          <<-END
+            describe 'example' do
+              it 'has 2 items' do
+                expect(subject).to have(2).items
               end
-            END
-          end
-
-          it 'returns an instance of Have' do
-            should be_an(Have)
-          end
+            end
+          END
         end
 
-        context 'when it is taking any other matcher' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'is empty' do
-                  expect(subject).to be_empty
-                end
-              end
-            END
-          end
-
-          it 'returns nil' do
-            should be_nil
-          end
+        it 'returns an instance of Have' do
+          should be_an(Have)
         end
       end
 
       describe '#receive_matcher' do
         subject { expect_object.receive_matcher }
 
-        context 'when it is taking #receive matcher' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'receives :foo' do
-                  expect(subject).to receive(:foo)
-                end
+        let(:source) do
+          <<-END
+            describe 'example' do
+              it 'receives :foo' do
+                expect(subject).to receive(:foo)
               end
-            END
-          end
-
-          it 'returns an instance of Receive' do
-            should be_an(Receive)
-          end
+            end
+          END
         end
 
-        context 'when it is taking any other matcher' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'is empty' do
-                  expect(subject).to be_empty
-                end
-              end
-            END
-          end
-
-          it 'returns nil' do
-            should be_nil
-          end
+        it 'returns an instance of Receive' do
+          should be_an(Receive)
         end
       end
 

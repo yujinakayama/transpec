@@ -22,18 +22,18 @@ module Transpec
         super && receiver_node.nil? && [:should, :should_not].include?(method_name)
       end
 
-      def expectize!(negative_form = 'not_to', parenthesize_matcher_arg = true)
+      def expectize!(negative_form = 'not_to')
         replacement = 'is_expected.'
         replacement << (positive? ? 'to' : negative_form)
         replace(should_range, replacement)
 
         @current_syntax_type = :expect
-        operator_matcher.convert_operator!(parenthesize_matcher_arg) if operator_matcher
 
         register_record(negative_form)
       end
 
       def convert_have_items_to_standard_should!
+        return unless have_matcher.conversion_target?
         return if have_matcher.project_requires_collection_matcher?
 
         insert_example_description!
@@ -46,9 +46,8 @@ module Transpec
         report.records << OnelinerShouldHaveRecord.new(self, have_matcher)
       end
 
-      # rubocop:disable LineLength
-      def convert_have_items_to_standard_expect!(negative_form = 'not_to', parenthesize_matcher_arg = true)
-        # rubocop:enable LineLength
+      def convert_have_items_to_standard_expect!(negative_form = 'not_to')
+        return unless have_matcher.conversion_target?
         return if have_matcher.project_requires_collection_matcher?
 
         insert_example_description!
@@ -91,7 +90,9 @@ module Transpec
       private
 
       def insert_example_description!
-        fail 'This one-liner #should does not have #have matcher!' unless have_matcher
+        unless have_matcher.conversion_target?
+          fail 'This one-liner #should does not have #have matcher!'
+        end
 
         unless example_has_description?
           insert_before(example_block_node.loc.begin, "'#{generated_description}' ")

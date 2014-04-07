@@ -62,9 +62,17 @@ module Transpec
         END
       end
 
-      it 'dispatches found syntax objects to each handler method' do
+      it 'dispatches conversion target standalone syntax objects to each handler method' do
         converter.should_receive(:process_should).with(an_instance_of(Syntax::Should))
         converter.should_receive(:process_should_receive).with(an_instance_of(Syntax::ShouldReceive))
+        converter.should_not_receive(:process_stub)
+        converter.convert_source(source)
+      end
+
+      it 'dispatches conversion target non-standalone syntax objects to each handler method' do
+        converter.should_receive(:process_operator).with(an_instance_of(Syntax::Operator))
+        converter.should_not_receive(:process_have)
+        converter.should_not_receive(:process_raise_error)
         converter.convert_source(source)
       end
 
@@ -155,7 +163,7 @@ module Transpec
           before { configuration.negative_form_of_to = 'not_to' }
 
           it 'invokes Should#expectize! with "not_to"' do
-            should_object.should_receive(:expectize!).with('not_to', anything)
+            should_object.should_receive(:expectize!).with('not_to')
             converter.process_should(should_object)
           end
         end
@@ -164,25 +172,7 @@ module Transpec
           before { configuration.negative_form_of_to = 'to_not' }
 
           it 'invokes Should#expectize! with "to_not"' do
-            should_object.should_receive(:expectize!).with('to_not', anything)
-            converter.process_should(should_object)
-          end
-        end
-
-        context 'and Configuration#parenthesize_matcher_arg is true' do
-          before { configuration.parenthesize_matcher_arg = true }
-
-          it 'invokes Should#expectize! with true as second argument' do
-            should_object.should_receive(:expectize!).with(anything, true)
-            converter.process_should(should_object)
-          end
-        end
-
-        context 'and Configuration#parenthesize_matcher_arg is false' do
-          before { configuration.parenthesize_matcher_arg = false }
-
-          it 'invokes Should#expectize! with false as second argument' do
-            should_object.should_receive(:expectize!).with(anything, false)
+            should_object.should_receive(:expectize!).with('to_not')
             converter.process_should(should_object)
           end
         end
@@ -196,57 +186,19 @@ module Transpec
           converter.process_should(should_object)
         end
       end
-
-      context 'when Configuration#convert_have_items? is true' do
-        before { configuration.convert_have_items = true }
-
-        context 'and Configuration#parenthesize_matcher_arg is true' do
-          before { configuration.parenthesize_matcher_arg = true }
-
-          it 'invokes Have#convert_to_standard_expectation! with true' do
-            should_object.have_matcher.should_receive(:convert_to_standard_expectation!).with(true)
-            converter.process_should(should_object)
-          end
-        end
-
-        context 'and Configuration#parenthesize_matcher_arg is false' do
-          before { configuration.parenthesize_matcher_arg = false }
-
-          it 'invokes Have#convert_to_standard_expectation! with false' do
-            should_object.have_matcher.should_receive(:convert_to_standard_expectation!).with(false)
-            converter.process_should(should_object)
-          end
-        end
-
-        context 'and Configuration#convert_should? is true' do
-          before { configuration.convert_should = true }
-
-          it 'invokes Should#expectize! then Have#convert_to_standard_expectation!' do
-            should_object.should_receive(:expectize!).ordered
-            should_object.have_matcher.should_receive(:convert_to_standard_expectation!).ordered
-            converter.process_should(should_object)
-          end
-        end
-      end
-
-      context 'when Configuration#convert_have_items? is false' do
-        before { configuration.convert_have_items = false }
-
-        it 'does not invoke Have#convert_to_standard_expectation!' do
-          should_object.have_matcher.should_not_receive(:convert_to_standard_expectation!)
-          converter.process_should(should_object)
-        end
-      end
-
-      it 'invokes #process_raise_error with its #raise_error_matcher' do
-        converter.should_receive(:process_raise_error).with(raise_error_object)
-        converter.process_should(should_object)
-      end
     end
 
     describe '#process_oneliner_should' do
-      let(:should_object) { double('oneliner_should_object', raise_error_matcher: raise_error_object).as_null_object }
+      let(:should_object) do
+        double(
+          'oneliner_should_object',
+          raise_error_matcher: raise_error_object,
+                 have_matcher: have_object
+        ).as_null_object
+      end
+
       let(:raise_error_object) { double('raise_error_object').as_null_object }
+      let(:have_object) { double('have_object').as_null_object }
 
       shared_examples 'does nothing' do
         it 'does nothing' do
@@ -296,9 +248,9 @@ module Transpec
       context 'when Configuration#convert_oneliner? is true' do
         before { configuration.convert_oneliner = true }
 
-        context 'and the OnelinerShould has #have matcher' do
+        context 'and the #have matcher is conversion target' do
           before do
-            should_object.stub(:have_matcher).and_return(double('have_matcher').as_null_object)
+            have_object.stub(:conversion_target?).and_return(true)
           end
 
           context 'and Configuration#convert_have_items? is true' do
@@ -306,16 +258,14 @@ module Transpec
 
             context 'and Have#project_requires_collection_matcher? is true' do
               before do
-                should_object.have_matcher
-                  .stub(:project_requires_collection_matcher?).and_return(true)
+                have_object.stub(:project_requires_collection_matcher?).and_return(true)
               end
               include_examples 'invokes OnelinerShould#expectize! if available'
             end
 
             context 'and Have#project_requires_collection_matcher? is false' do
               before do
-                should_object.have_matcher
-                  .stub(:project_requires_collection_matcher?).and_return(false)
+                have_object.stub(:project_requires_collection_matcher?).and_return(false)
               end
               include_examples 'converts to standard expecatations'
             end
@@ -327,9 +277,9 @@ module Transpec
           end
         end
 
-        context 'and the OnelinerShould does not have #have matcher' do
+        context 'and the #have matcher is not conversion target' do
           before do
-            should_object.stub(:have_matcher).and_return(nil)
+            have_object.stub(:conversion_target?).and_return(false)
           end
 
           context 'and Configuration#convert_have_items? is true' do
@@ -347,9 +297,9 @@ module Transpec
       context 'when Configuration#convert_oneliner? is false' do
         before { configuration.convert_oneliner = false }
 
-        context 'and the OnelinerShould has #have matcher' do
+        context 'and the #have matcher is conversion target' do
           before do
-            should_object.stub(:have_matcher).and_return(double('have_matcher').as_null_object)
+            have_object.stub(:conversion_target?).and_return(true)
           end
 
           context 'and Configuration#convert_have_items? is true' do
@@ -357,16 +307,14 @@ module Transpec
 
             context 'and Have#project_requires_collection_matcher? is true' do
               before do
-                should_object.have_matcher
-                  .stub(:project_requires_collection_matcher?).and_return(true)
+                have_object.stub(:project_requires_collection_matcher?).and_return(true)
               end
               include_examples 'does nothing'
             end
 
             context 'and Have#project_requires_collection_matcher? is false' do
               before do
-                should_object.have_matcher
-                  .stub(:project_requires_collection_matcher?).and_return(false)
+                have_object.stub(:project_requires_collection_matcher?).and_return(false)
               end
               include_examples 'converts to standard expecatations'
             end
@@ -378,9 +326,9 @@ module Transpec
           end
         end
 
-        context 'and the OnelinerShould does not have #have matcher' do
+        context 'and the #have matcher is not conversion target' do
           before do
-            should_object.stub(:have_matcher).and_return(nil)
+            have_object.stub(:conversion_target?).and_return(false)
           end
 
           context 'and Configuration#convert_have_items? is true' do
@@ -393,83 +341,6 @@ module Transpec
             include_examples 'does nothing'
           end
         end
-      end
-
-      it 'invokes #process_raise_error with its #raise_error_matcher' do
-        converter.should_receive(:process_raise_error).with(raise_error_object)
-        converter.process_oneliner_should(should_object)
-      end
-    end
-
-    describe '#process_expect' do
-      let(:expect_object) do
-        double('expect_object',
-               receive_matcher: receive_object,
-           raise_error_matcher: raise_error_object
-        ).as_null_object
-      end
-      let(:receive_object) { double('receive_object').as_null_object }
-      let(:raise_error_object) { double('raise_error_object').as_null_object }
-
-      context 'when Configuration#convert_have_items? is true' do
-        before { configuration.convert_have_items = true }
-
-        context 'and Configuration#parenthesize_matcher_arg is true' do
-          before { configuration.parenthesize_matcher_arg = true }
-
-          it 'invokes Have#convert_to_standard_expectation! with true' do
-            expect_object.have_matcher.should_receive(:convert_to_standard_expectation!).with(true)
-            converter.process_expect(expect_object)
-          end
-        end
-
-        context 'and Configuration#parenthesize_matcher_arg is false' do
-          before { configuration.parenthesize_matcher_arg = false }
-
-          it 'invokes Have#convert_to_standard_expectation! with false' do
-            expect_object.have_matcher.should_receive(:convert_to_standard_expectation!).with(false)
-            converter.process_expect(expect_object)
-          end
-        end
-      end
-
-      context 'when Configuration#convert_have_items? is false' do
-        before { configuration.convert_have_items = false }
-
-        it 'does not invoke Have#convert_to_standard_expectation!' do
-          expect_object.have_matcher.should_not_receive(:convert_to_standard_expectation!)
-          converter.process_expect(expect_object)
-        end
-      end
-
-      it "invokes #process_useless_and_return with the expect's #receive matcher" do
-        converter.should_receive(:process_useless_and_return).with(receive_object)
-        converter.process_expect(expect_object)
-      end
-
-      it "invokes #process_any_instance_block with the expect's #receive matcher" do
-        converter.should_receive(:process_any_instance_block).with(receive_object)
-        converter.process_expect(expect_object)
-      end
-
-      it 'invokes #process_raise_error with its #raise_error_matcher' do
-        converter.should_receive(:process_raise_error).with(raise_error_object)
-        converter.process_expect(expect_object)
-      end
-    end
-
-    describe '#process_allow' do
-      let(:allow_object) { double('allow_object', receive_matcher: receive_object).as_null_object }
-      let(:receive_object) { double('receive_object').as_null_object }
-
-      it "invokes #process_useless_and_return with the allow's #receive matcher" do
-        converter.should_receive(:process_useless_and_return).with(receive_object)
-        converter.process_allow(allow_object)
-      end
-
-      it "invokes #process_any_instance_block with the allow's #receive matcher" do
-        converter.should_receive(:process_any_instance_block).with(receive_object)
-        converter.process_allow(allow_object)
       end
     end
 
@@ -805,6 +676,65 @@ module Transpec
       end
     end
 
+    describe '#process_operator' do
+      let(:operator_object) { double('operator_object').as_null_object }
+
+      context 'when Configuration#convert_should? is true' do
+        before { configuration.convert_should = true }
+
+        context 'and Configuration#parenthesize_matcher_arg is true' do
+          before { configuration.parenthesize_matcher_arg = true }
+
+          it 'invokes Operator#convert_operator! with true' do
+            operator_object.should_receive(:convert_operator!).with(true)
+            converter.process_operator(operator_object)
+          end
+        end
+
+        context 'and Configuration#parenthesize_matcher_arg is false' do
+          before { configuration.parenthesize_matcher_arg = false }
+
+          it 'invokes Should#expectize! with false as second argument' do
+            operator_object.should_receive(:convert_operator!).with(false)
+            converter.process_operator(operator_object)
+          end
+        end
+
+        context 'and the expectation is one-liner should' do
+          before do
+            operator_object.stub(:expectation).and_return(Syntax::OnelinerShould.new(nil))
+          end
+
+          context 'and RSpecVersion#oneliner_is_expected_available? returns true' do
+            before { rspec_version.stub(:oneliner_is_expected_available?).and_return(true) }
+
+            it 'invokes Operator#convert_operator!' do
+              operator_object.should_receive(:convert_operator!)
+              converter.process_operator(operator_object)
+            end
+          end
+
+          context 'and RSpecVersion#oneliner_is_expected_available? returns false' do
+            before { rspec_version.stub(:oneliner_is_expected_available?).and_return(false) }
+
+            it 'does not invoke Operator#convert_operator!' do
+              operator_object.should_not_receive(:convert_operator!)
+              converter.process_operator(operator_object)
+            end
+          end
+        end
+      end
+
+      context 'when Configuration#convert_should? is false' do
+        before { configuration.convert_should = false }
+
+        it 'does not invoke Operator#convert_operator!' do
+          operator_object.should_not_receive(:convert_operator!)
+          converter.process_operator(operator_object)
+        end
+      end
+    end
+
     describe '#process_be_boolean' do
       let(:be_boolean_object) { double('be_boolean_object').as_null_object }
 
@@ -886,6 +816,41 @@ module Transpec
         it 'does nothing' do
           be_close_object.should_not_receive(:convert_to_be_within!)
           converter.process_be_close(be_close_object)
+        end
+      end
+    end
+
+    describe '#process_have' do
+      let(:have_object) { double('have_object').as_null_object }
+
+      context 'when Configuration#convert_have_items? is true' do
+        before { configuration.convert_have_items = true }
+
+        context 'and Configuration#parenthesize_matcher_arg is true' do
+          before { configuration.parenthesize_matcher_arg = true }
+
+          it 'invokes Have#convert_to_standard_expectation! with true' do
+            have_object.should_receive(:convert_to_standard_expectation!).with(true)
+            converter.process_have(have_object)
+          end
+        end
+
+        context 'and Configuration#parenthesize_matcher_arg is false' do
+          before { configuration.parenthesize_matcher_arg = false }
+
+          it 'invokes Have#convert_to_standard_expectation! with false' do
+            have_object.should_receive(:convert_to_standard_expectation!).with(false)
+            converter.process_have(have_object)
+          end
+        end
+      end
+
+      context 'when Configuration#convert_have_items? is false' do
+        before { configuration.convert_have_items = false }
+
+        it 'does not invoke Have#convert_to_standard_expectation!' do
+          have_object.should_not_receive(:convert_to_standard_expectation!)
+          converter.process_have(have_object)
         end
       end
     end

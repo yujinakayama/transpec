@@ -82,109 +82,78 @@ module Transpec
       describe '#operator_matcher' do
         subject { should_object.operator_matcher }
 
-        context 'when it is taking operator matcher' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'is 1' do
-                  subject.should == 1
-                end
+        let(:source) do
+          <<-END
+            describe 'example' do
+              it 'is 1' do
+                subject.should == 1
               end
-            END
-          end
-
-          it 'returns an instance of Operator' do
-            should be_an(Operator)
-          end
+            end
+          END
         end
 
-        context 'when it is taking non-operator matcher' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'is empty' do
-                  subject.should be_empty
-                end
-              end
-            END
-          end
-
-          it 'returns nil' do
-            should be_nil
-          end
+        it 'returns an instance of Operator' do
+          should be_an(Operator)
         end
       end
 
       describe '#have_matcher' do
         subject { should_object.have_matcher }
 
-        context 'when it is taking #have matcher' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'has 2 items' do
-                  subject.should have(2).items
-                end
+        let(:source) do
+          <<-END
+            describe 'example' do
+              it 'has 2 items' do
+                subject.should have(2).items
               end
-            END
-          end
-
-          it 'returns an instance of Have' do
-            should be_an(Have)
-          end
+            end
+          END
         end
 
-        context 'when it is taking operator matcher' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'is 1' do
-                  subject.should == 1
-                end
-              end
-            END
-          end
+        it 'returns an instance of Have' do
+          should be_an(Have)
+        end
+      end
 
-          it 'returns nil' do
-            should be_nil
-          end
+      describe '#raise_error_matcher' do
+        subject { should_object.raise_error_matcher }
+
+        let(:source) do
+          <<-END
+            describe 'example' do
+              it 'raises error' do
+                lambda { do_something }.should raise_error
+              end
+            end
+          END
         end
 
-        context 'when it is taking any other non-operator matcher' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'is empty' do
-                  subject.should be_empty
-                end
-              end
-            END
-          end
+        it 'returns an instance of RaiseError' do
+          should be_an(RaiseError)
+        end
+      end
 
-          it 'returns nil' do
-            should be_nil
-          end
+      describe '#dependent_syntaxes' do
+        let(:source) do
+          <<-END
+            describe 'example' do
+              it 'has 2 items' do
+                subject.should have(2).items
+              end
+            end
+          END
+        end
+
+        it 'returns an array containing #have_matcher, #operator_matcher, #raise_error_matcher' do
+          should_object.dependent_syntaxes.should =~ [
+            should_object.have_matcher,
+            should_object.operator_matcher,
+            should_object.raise_error_matcher
+          ]
         end
       end
 
       describe '#expectize!' do
-        context 'when it has an operator matcher' do
-          let(:source) do
-            <<-END
-              describe 'example' do
-                it 'is 1' do
-                  subject.should == 1
-                end
-              end
-            END
-          end
-
-          it 'invokes Operator#convert_operator!' do
-            should_object.operator_matcher.should_receive(:convert_operator!)
-            should_object.expectize!
-          end
-        end
-
         context 'with expression `obj.should`' do
           let(:source) do
             <<-END
@@ -414,13 +383,13 @@ module Transpec
             <<-END
               describe 'example' do
                 it 'is 1' do
-                  expect(subject).to eq(1)
+                  expect(subject).to == 1
                 end
               end
             END
           end
 
-          it 'converts to `expect(obj).to eq(1)` form' do
+          it 'converts to `expect(obj).to == 1` form' do
             should_object.expectize!
             rewritten_source.should == expected_source
           end

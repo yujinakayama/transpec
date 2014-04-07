@@ -9,36 +9,33 @@ module Transpec
         extend ActiveSupport::Concern
 
         module ClassMethods
-          def add_matcher(matcher_class) # rubocop:disable MethodLength
-            matcher_accessor = "#{matcher_class.snake_case_name}_matcher"
-            matcher_ivar = "@#{matcher_accessor}"
-            matcher_creator = "create_#{matcher_class.snake_case_name}"
+          def add_matcher(matcher_class)
+            accessor = "#{matcher_class.snake_case_name}_matcher"
+            ivar = "@#{accessor}"
 
             define_dynamic_analysis do |rewriter|
-              matcher = send(matcher_creator)
+              matcher = send(accessor)
               if matcher.dynamic_analysis_target?
                 matcher.register_dynamic_analysis_request(rewriter)
               end
             end
 
-            define_method(matcher_accessor) do
-              if instance_variable_defined?(matcher_ivar)
-                return instance_variable_get(matcher_ivar)
-              end
-
-              matcher = send(matcher_creator)
-
-              if matcher.conversion_target?
-                instance_variable_set(matcher_ivar, matcher)
-              else
-                instance_variable_set(matcher_ivar, nil)
-              end
+            define_method(accessor) do
+              return instance_variable_get(ivar) if instance_variable_defined?(ivar)
+              matcher = matcher_class.new(matcher_node, self, source_rewriter, runtime_data, report)
+              instance_variable_set(ivar, matcher)
             end
 
-            define_method(matcher_creator) do
-              matcher_class.new(matcher_node, self, source_rewriter, runtime_data, report)
-            end
+            matcher_accessors << accessor
           end
+
+          def matcher_accessors
+            @matcher_accessors ||= []
+          end
+        end
+
+        def dependent_syntaxes
+          super + self.class.matcher_accessors.map { |accessor| send(accessor) }
         end
       end
     end

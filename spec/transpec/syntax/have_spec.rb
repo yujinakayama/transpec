@@ -16,6 +16,10 @@ module Transpec
       include_context 'syntax object', Expect, :expect_object
       include_context 'syntax object', OnelinerShould, :oneliner_should_object
 
+      before do
+        fail 'The #have_matcher is not a conversion target!' unless have_object.conversion_target?
+      end
+
       describe '#have_node' do
         let(:source) do
           <<-END
