@@ -214,6 +214,10 @@ module Transpec
       have.convert_to_standard_expectation!(configuration.parenthesize_matcher_arg)
     end
 
+    def process_hook(hook)
+      # FIXME
+    end
+
     def process_messaging_host(messaging_host)
       process_useless_and_return(messaging_host)
       process_any_instance_block(messaging_host)
