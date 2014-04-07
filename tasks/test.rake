@@ -1,6 +1,6 @@
 # coding: utf-8
 
-require_relative 'lib/transpec_test'
+require_relative 'lib/test'
 
 namespace :test do
   # On Travis CI, reuse system gems to speed up build.
@@ -12,14 +12,14 @@ namespace :test do
 
   # rubocop:disable LineLength
   tests = [
-    TranspecTest.new(File.expand_path('.'), nil, ['--quiet']),
-    TranspecTest.new('https://github.com/yujinakayama/twitter.git', 'transpec-test-rspec-2-99', bundler_args),
-    TranspecTest.new('https://github.com/yujinakayama/mail.git', 'transpec-test-rspec-2-99', bundler_args)
+    Test.new(Transpec.root, nil, ['--quiet']),
+    Test.new('https://github.com/yujinakayama/twitter.git', 'transpec-test-rspec-2-99', bundler_args),
+    Test.new('https://github.com/yujinakayama/mail.git', 'transpec-test-rspec-2-99', bundler_args)
   ]
 
   # Sometimes Guard fails with JRuby randomly.
   unless RUBY_ENGINE == 'jruby'
-    tests << TranspecTest.new('https://github.com/yujinakayama/guard.git', 'transpec-test-rspec-2-99', bundler_args + %w(--without development))
+    tests << Test.new('https://github.com/yujinakayama/guard.git', 'transpec-test-rspec-2-99', bundler_args + %w(--without development))
   end
   # rubocop:enable LineLength
 
