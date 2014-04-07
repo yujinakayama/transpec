@@ -136,7 +136,7 @@ module Transpec
           'Keep specific syntaxes by disabling conversions.',
           'Conversion Types:',
           '  *should* (to `expect(obj).to`)',
-          '  *oneliner* (from `it { should ... }` to `it { is_expected.to ... }`)',
+          '  *oneliner* (`it { should ... }` to `it { is_expected.to ... }`)',
           '  *should_receive* (to `expect(obj).to receive`)',
           '  *stub*  (to `allow(obj).to receive`)',
           '  *have_items* (to `expect(collection.size).to eq(n)`)',
@@ -148,6 +148,7 @@ module Transpec
         '-v' => [
           'Enable specific conversions that are disabled by default.',
           'Conversion Types:',
+          '  *example_group* (`describe` to `RSpec.describe`)',
           '  *stub_with_hash* (`obj.stub(:msg => val)` to',
           '                  `allow(obj).to receive(:msg).and_return(val)`)',
           'These conversions are disabled by default.'

@@ -2,6 +2,8 @@
 
 ## Development
 
+* Add missing description of `example_group` for `-v/--convert` option in the `-h/--help` text
+
 ## v1.11.0
 
 * Support conversion to non-monkey-patch example groups ([#22](https://github.com/yujinakayama/transpec/issues/22))
