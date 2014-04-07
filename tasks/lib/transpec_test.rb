@@ -1,7 +1,10 @@
 # coding: utf-8
 
+require 'rspec/expectations'
+
 class TranspecTest # rubocop:disable ClassLength
   include FileUtils # This is Rake's one.
+  include RSpec::Matchers
 
   BUNDLER_RETRY_COUNT = 3
 
@@ -40,7 +43,7 @@ class TranspecTest # rubocop:disable ClassLength
     require 'transpec'
     puts " Testing transpec on #{name} project ".center(80, '=')
     prepare_project
-    run_test(%w(--force))
+    run_test
   end
 
   private
@@ -88,13 +91,27 @@ class TranspecTest # rubocop:disable ClassLength
     end
   end
 
-  def run_test(transpec_args = [])
+  def run_test
     in_project_dir do
       with_clean_bundler_env do
-        sh File.join(Transpec.root, 'bin', 'transpec'), *transpec_args
+        run_transpec('--force')
         sh 'bundle exec rspec'
         compare_summary!
+        add_rspec_3_to_gemfile
+        sh 'bundle update'
+        run_transpec('--force', '--convert', 'example_group,hook_scope')
+        sh 'bundle exec rspec'
       end
+    end
+  end
+
+  def run_transpec(*args)
+    sh File.join(Transpec.root, 'bin', 'transpec'), *args
+  end
+
+  def add_rspec_3_to_gemfile
+    File.open('Gemfile', 'a') do |file|
+      file.puts("gem 'rspec', '~> 3.0.0.beta1'")
     end
   end
 
@@ -104,8 +121,6 @@ class TranspecTest # rubocop:disable ClassLength
       return
     end
 
-    require 'rspec/expectations'
-    extend RSpec::Matchers
     summary = File.read(File.join('.git', 'COMMIT_EDITMSG')).lines.to_a[5..-1]
     expected_summary = File.read(commit_message_fixture_path).lines.to_a[5..-1]
     expect(summary).to eq(expected_summary)
