@@ -258,6 +258,7 @@ Type             | Target Syntax                  | Converted Syntax
 <%=
 conversion_type_table = <<END
 `example_group`  | `describe 'something' { }`     | `RSpec.describe 'something' { }`
+`hook_scope`     | `before(:all) { }`             | `before(:context) { }`
 `stub_with_hash` | `obj.stub(:message => value)`  | `allow(obj).to receive(:message).and_return(value)`
 END
 

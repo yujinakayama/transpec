@@ -275,6 +275,7 @@ but the new syntaxes provide more modern and clear ways.
 Type             | Target Syntax                  | Converted Syntax
 -----------------|--------------------------------|----------------------------------------------------
 `example_group`  | `describe 'something' { }`     | `RSpec.describe 'something' { }`
+`hook_scope`     | `before(:all) { }`             | `before(:context) { }`
 `stub_with_hash` | `obj.stub(:message => value)`  | `allow(obj).to receive(:message).and_return(value)`
 
 Note: Specifying `stub_with_hash` enables conversion of `obj.stub(:message => value)`
