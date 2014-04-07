@@ -195,58 +195,11 @@ module Transpec
         end
       end
 
-      shared_examples 'does not convert if project requires have(n).items matcher' do
-        context 'when rspec-rails is loaded in the spec' do
-          include_context 'dynamic analysis objects'
-
-          let(:source) do
-            <<-END
-              module RSpec
-                module Rails
-                end
-              end
-
-              describe [:foo, :bar] do
-                it { should have(2).items }
-              end
-            END
-          end
-
-          it 'does nothing' do
-            rewritten_source.should == source
-          end
-        end
-
-        context 'when rspec-collection_matchers is loaded in the spec' do
-          include_context 'dynamic analysis objects'
-
-          let(:source) do
-            <<-END
-              module RSpec
-                module CollectionMatchers
-                end
-              end
-
-              describe [:foo, :bar] do
-                it { should have(2).items }
-              end
-            END
-          end
-
-          let(:have_object) { should_object.have_matcher }
-
-          it 'does nothing' do
-            rewritten_source.should == source
-          end
-        end
-      end
-
-      describe '#convert_have_items_to_standard_should!' do
+      describe '#convert_have_items_to_standard_should! and Have#convert_to_standard_expectation!' do
         before do
           should_object.convert_have_items_to_standard_should!
+          should_object.have_matcher.convert_to_standard_expectation!
         end
-
-        include_examples 'does not convert if project requires have(n).items matcher'
 
         context 'with expression `it { should have(2).items }`' do
           let(:source) do
@@ -571,12 +524,11 @@ module Transpec
         end
       end
 
-      describe '#convert_have_items_to_standard_expect!' do
+      describe '#convert_have_items_to_standard_expect! and Have#convert_to_standard_expectation!' do
         before do
           should_object.convert_have_items_to_standard_expect!
+          should_object.have_matcher.convert_to_standard_expectation!
         end
-
-        include_examples 'does not convert if project requires have(n).items matcher'
 
         context 'with expression `it { should have(2).items }`' do
           let(:source) do

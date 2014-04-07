@@ -40,8 +40,6 @@ module Transpec
         subject_source = have_matcher.replacement_subject_source('subject')
         insert_before(expression_range, "#{subject_source}.")
 
-        have_matcher.convert_to_standard_expectation!
-
         report.records << OnelinerShouldHaveRecord.new(self, have_matcher)
       end
 
@@ -56,7 +54,6 @@ module Transpec
         replace(should_range, expect_to_source)
 
         @current_syntax_type = :expect
-        have_matcher.convert_to_standard_expectation!
 
         report.records << OnelinerShouldHaveRecord.new(self, have_matcher, negative_form)
       end
