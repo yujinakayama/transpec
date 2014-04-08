@@ -478,6 +478,7 @@ The one-liner (implicit receiver) `should`:
 * [Current example object](#current-example-object)
 * [Custom matcher DSL](#custom-matcher-dsl)
 * [Example Groups](#example-groups)
+* [Hook scope aliases](#hook-scope-aliases)
 
 ### Standard expectations
 
@@ -1269,6 +1270,41 @@ end
 * Deprecation: Not deprecated
 * See also: [Zero Monkey Patching Mode! - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#zero_monkey_patching_mode)
 
+### Hook scope aliases
+
+**This conversion is disabled by default and available only if your project's RSpec is `3.0.0.beta2` or later.**
+
+Targets:
+
+```ruby
+describe 'example' do
+  before { do_something }
+  before(:each) { do_something }
+  before(:all) { do_something }
+end
+
+RSpec.configure do |config|
+  before(:suite) { do_something }
+end
+```
+
+Will be converted to:
+
+```ruby
+describe 'example' do
+  before { do_something }
+  before(:example) { do_something }
+  before(:context) { do_something }
+end
+
+RSpec.configure do |config|
+  before(:suite) { do_something }
+end
+```
+
+* This conversion can be enabled by: `--convert hook_scope`
+* Deprecation: Not deprecated
+* See also: [Adds hook scope aliases `example` and `context` · rspec/rspec-core](https://github.com/rspec/rspec-core/pull/1174)
 
 ## Compatibility
 
