@@ -40,6 +40,54 @@ end
 
 module Transpec
   class Syntax
+    module ModuleUtil
+      module_function
+
+      def snake_case_name(module_name)
+        module_name.split('::').last.gsub(/([a-z])([A-Z])/, '\1_\2').downcase
+      end
+    end
+  end
+end
+
+module Transpec
+  class Syntax
+    module Dispatcher
+      def dispatch_node(node, source_rewriter = nil, runtime_data = nil, report = nil)
+        Syntax.standalone_syntaxes.find do |syntax_class|
+          syntax = syntax_class.new(node, source_rewriter, runtime_data, report)
+          dispatch_syntax(syntax)
+        end
+      end
+
+      def dispatch_syntax(syntax)
+        return false unless syntax.conversion_target?
+
+        invoke_handler(syntax.class, syntax)
+
+        included_mixins = syntax.class.included_modules & Syntax.mixins
+        included_mixins.each do |mixin|
+          invoke_handler(mixin, syntax)
+        end
+
+        syntax.dependent_syntaxes.each do |dependent_syntax|
+          dispatch_syntax(dependent_syntax)
+        end
+
+        true
+      end
+
+      def invoke_handler(klass, syntax)
+        class_name = ModuleUtil.snake_case_name(klass.name)
+        handler_name = "process_#{class_name}"
+        send(handler_name, syntax) if respond_to?(handler_name, true)
+      end
+    end
+  end
+end
+
+module Transpec
+  class Syntax
     module Rewritable
       private
 
@@ -98,10 +146,7 @@ module Transpec
     end
 
     def self.snake_case_name
-      @snake_cake_name ||= begin
-        class_name = name.split('::').last
-        class_name.gsub(/([a-z])([A-Z])/, '\1_\2').downcase
-      end
+      @snake_cake_name ||= ModuleUtil.snake_case_name(name)
     end
 
     def initialize(node, source_rewriter = nil, runtime_data = nil, report = nil)

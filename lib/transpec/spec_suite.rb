@@ -8,6 +8,8 @@ Transpec::Syntax.require_all
 
 module Transpec
   class SpecSuite
+    include Syntax::Dispatcher
+
     ANALYSIS_TARGET_CLASSES = [Syntax::Mixin::AnyInstanceBlock]
 
     attr_reader :runtime_data
@@ -32,7 +34,7 @@ module Transpec
       specs.each do |spec|
         next unless spec.ast
         spec.ast.each_node do |node|
-          dispatch_node(node)
+          dispatch_node(node, nil, runtime_data)
         end
       end
 
@@ -55,35 +57,6 @@ module Transpec
     end
 
     private
-
-    def dispatch_node(node)
-      Syntax.standalone_syntaxes.each do |syntax_class|
-        syntax = syntax_class.new(node, nil, runtime_data)
-        next unless syntax.conversion_target?
-        dispatch_syntax(syntax)
-        break
-      end
-    end
-
-    def dispatch_syntax(syntax)
-      invoke_handler(syntax.class, syntax)
-
-      Syntax.mixins.each do |mixin|
-        next unless syntax.class.ancestors.include?(mixin)
-        invoke_handler(mixin, syntax)
-      end
-
-      syntax.dependent_syntaxes.each do |dependent_syntax|
-        next unless dependent_syntax.conversion_target?
-        dispatch_syntax(dependent_syntax)
-      end
-    end
-
-    def invoke_handler(klass, syntax)
-      class_name = klass.name.split('::').last.gsub(/([a-z])([A-Z])/, '\1_\2').downcase
-      handler_name = "process_#{class_name}"
-      send(handler_name, syntax) if respond_to?(handler_name, true)
-    end
 
     def process_any_instance_block(syntax)
       @need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config ||=
