@@ -38,12 +38,15 @@ def convert(source, options = {})
   cli = Transpec::CLI.new
   cli.project.stub(:rspec_version).and_return(options[:rspec_version]) if options[:rspec_version]
 
+  cli_args = Array(options[:cli])
+  cli_args << '--skip-dynamic-analysis' unless options[:dynamic] # For performance
+
   source = wrap_source(source, options[:wrap_with])
   converted_source = nil
 
   in_isolated_env do
     FileHelper.create_file('spec/example_spec.rb', source)
-    cli.run(options[:cli] || [])
+    cli.run(cli_args)
     converted_source = File.read('spec/example_spec.rb')
   end
 
