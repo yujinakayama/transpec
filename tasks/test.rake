@@ -14,14 +14,9 @@ namespace :test do
   tests = [
     Test.new(Transpec.root, nil, ['--quiet'], true),
     Test.new('https://github.com/yujinakayama/twitter.git', 'transpec-test-rspec-2-99', bundler_args),
-    Test.new('https://github.com/yujinakayama/mail.git', 'transpec-test-rspec-2-99', bundler_args)
+    Test.new('https://github.com/yujinakayama/mail.git', 'transpec-test-rspec-2-99', bundler_args),
+    Test.new('https://github.com/yujinakayama/guard.git', 'transpec-test-rspec-2-99', bundler_args + %w(--without development))
   ]
-
-  # Sometimes Guard fails with JRuby randomly.
-  unless RUBY_ENGINE == 'jruby'
-    tests << Test.new('https://github.com/yujinakayama/guard.git', 'transpec-test-rspec-2-99', bundler_args + %w(--without development))
-  end
-  # rubocop:enable LineLength
 
   desc 'Test transpec on all projects'
   task all: tests.map(&:name)

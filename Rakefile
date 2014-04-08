@@ -11,4 +11,6 @@ end
 
 task default: %w(spec style readme)
 
-task ci: %w(spec style readme:check test:all)
+ci_tasks = %w(spec style readme:check test:all)
+ci_tasks << 'test:all' unless RUBY_ENGINE == 'jruby'
+task ci: ci_tasks
