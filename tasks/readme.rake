@@ -31,7 +31,7 @@ def generate_readme
   erb.result(binding)
 end
 
-def convert(source, options = {})
+def convert(source, options = {}) # rubocop:disable MethodLength
   require 'rspec/mocks/standalone'
   require File.join(Transpec.root, 'spec/support/file_helper')
 
@@ -41,7 +41,14 @@ def convert(source, options = {})
   cli_args = Array(options[:cli])
   cli_args << '--skip-dynamic-analysis' unless options[:dynamic] # For performance
 
+  hidden_code = options[:hidden]
+  if hidden_code
+    hidden_code += "\n"
+    source = hidden_code + source
+  end
+
   source = wrap_source(source, options[:wrap_with])
+
   converted_source = nil
 
   in_isolated_env do
@@ -50,7 +57,9 @@ def convert(source, options = {})
     converted_source = File.read('spec/example_spec.rb')
   end
 
-  unwrap_source(converted_source, options[:wrap_with])
+  converted_source = unwrap_source(converted_source, options[:wrap_with])
+  converted_source = converted_source[hidden_code.length..-1] if hidden_code
+  converted_source
 end
 
 def wrap_source(source, wrapper)

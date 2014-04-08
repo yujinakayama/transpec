@@ -450,16 +450,24 @@ table_of_contents(supported_conversions_section, 3)
 Targets:
 
 ```ruby
+<%=
+positive_example = <<END
 obj.should matcher
+END
+-%>
+<%=
+negative_example = <<END
 obj.should_not matcher
+END
+-%>
 ```
 
 Will be converted to:
 
 ```ruby
-expect(obj).to matcher
-expect(obj).not_to matcher
-expect(obj).to_not matcher # with `--negative-form to_not`
+<%= convert(positive_example, wrap_with: :example) -%>
+<%= convert(negative_example, wrap_with: :example) -%>
+<%= convert(negative_example, wrap_with: :example, cli: ['--negative-form', 'to_not']).chomp -%> # with `--negative-form to_not`
 ```
 
 * This conversion can be disabled by: `--keep should`
@@ -468,21 +476,29 @@ expect(obj).to_not matcher # with `--negative-form to_not`
 
 ### One-liner expectations
 
-**This conversion is available only if your project's RSpec is `<%= Transpec::RSpecVersion.oneliner_is_expected_available_version %>` or later.**
+**This conversion is available only if your project's RSpec is `<%= rspec_version = Transpec::RSpecVersion.oneliner_is_expected_available_version %>` or later.**
 
 Targets:
 
 ```ruby
+<%=
+positive_example = <<END
 it { should matcher }
+END
+-%>
+<%=
+negative_example = <<END
 it { should_not matcher }
+END
+-%>
 ```
 
 Will be converted to:
 
 ```ruby
-it { is_expected.to matcher }
-it { is_expected.not_to matcher }
-it { is_expected.to_not matcher } # with `--negative-form to_not`
+<%= convert(positive_example, wrap_with: :example, rspec_version: rspec_version) -%>
+<%= convert(negative_example, wrap_with: :example, rspec_version: rspec_version) -%>
+<%= convert(negative_example, wrap_with: :example, rspec_version: rspec_version, cli: ['--negative-form', 'to_not']).chomp -%> # with `--negative-form to_not`
 ```
 
 `is_expected.to` is designed for the consistency with the `expect` syntax.
@@ -502,21 +518,21 @@ See [Two Types of `should`](#two-types-of-should) also.
 Targets:
 
 ```ruby
+<%=
+example = <<END
 1.should == 1
 1.should < 2
 Integer.should === 1
 'string'.should =~ /^str/
 [1, 2, 3].should =~ [2, 1, 3]
+END
+-%>
 ```
 
 Will be converted to:
 
 ```ruby
-expect(1).to eq(1)
-expect(1).to be < 2
-expect(Integer).to be === 1
-expect('string').to match(/^str/)
-expect([1, 2, 3]).to match_array([2, 1, 3])
+<%= convert(example, wrap_with: :example) -%>
 ```
 
 This conversion is combined with the conversion of [standard expectations](#standard-expecatations) and cannot be disabled separately because the `expect` syntax does not directly support the operator matchers.
@@ -525,29 +541,30 @@ This conversion is combined with the conversion of [standard expectations](#stan
 
 ### Boolean matchers
 
-**This conversion is available only if your project's RSpec is `<%= Transpec::RSpecVersion.be_truthy_available_version %>` or later.**
+**This conversion is available only if your project's RSpec is `<%= rspec_version = Transpec::RSpecVersion.be_truthy_available_version %>` or later.**
 
 Targets:
 
 ```ruby
+<%=
+example = <<END
 expect(obj).to be_true
 expect(obj).to be_false
+END
+-%>
 ```
 
 Will be converted to:
 
 ```ruby
-expect(obj).to be_truthy
-expect(obj).to be_falsey
+<%= convert(example, rspec_version: rspec_version, wrap_with: :example) -%>
 
 # With `--boolean-matcher truthy,falsy`
 # be_falsy is just an alias of be_falsey.
-expect(obj).to be_truthy
-expect(obj).to be_falsy
+<%= convert(example, cli: ['--boolean-matcher', 'truthy,falsy'], rspec_version: rspec_version, wrap_with: :example) -%>
 
 # With `--boolean-matcher true,false`
-expect(obj).to be true
-expect(obj).to be false
+<%= convert(example, cli: ['--boolean-matcher', 'true,false'], rspec_version: rspec_version, wrap_with: :example) -%>
 ```
 
 * `be_true` matcher passes if expectation subject is _truthy_ in conditional semantics. (i.e. all objects except `false` and `nil`)
@@ -568,13 +585,17 @@ So, converting `be_true`/`be_false` to `be_truthy`/`be_falsey` never breaks your
 Targets:
 
 ```ruby
+<%=
+example = <<END
 expect(1.0 / 3.0).to be_close(0.333, 0.001)
+END
+-%>
 ```
 
 Will be converted to:
 
 ```ruby
-expect(1.0 / 3.0).to be_within(0.001).of(0.333)
+<%= convert(example, wrap_with: :example) -%>
 ```
 
 * This conversion can be disabled by: `--keep deprecated`
@@ -588,31 +609,74 @@ expect(1.0 / 3.0).to be_within(0.001).of(0.333)
 Targets:
 
 ```ruby
+<%=
+example = <<END
 expect(collection).to have(3).items
 expect(collection).to have_exactly(3).items
 expect(collection).to have_at_least(3).items
 expect(collection).to have_at_most(3).items
+END
+-%>
+
+<%=
+should_example = <<END
 collection.should have(3).items
+END
+-%>
 
 # Assume `team` responds to #players.
+<%=
+collection_owner_example = <<END
 expect(team).to have(3).players
+END
+-%>
 
 # Assume #players is a private method.
+<%=
+private_method_example = <<END
 expect(team).to have(3).players
+END
+-%>
 ```
 
 Will be converted to:
 
 ```ruby
-expect(collection.size).to eq(3)
-expect(collection.size).to be >= 3
-expect(collection.size).to be <= 3
-collection.size.should == 3  # with `--keep should`
+<%=
+convert(example, dynamic: true, wrap_with: :example, hidden: 'collection = [1, 2, 3]')
+-%>
 
-expect(team.players.size).to eq(3)
+<%=
+" # With `--keep should`\n" +
+convert(should_example, cli: ['--keep', 'should'], dynamic: true, wrap_with: :example, hidden: 'collection = [1, 2, 3]')
+-%>
+
+<%=
+convert(collection_owner_example, dynamic: true, wrap_with: :example, hidden: <<END)
+class Team
+  def players
+    [1, 2, 3]
+  end
+end
+
+team = Team.new
+END
+-%>
 
 # have(n).items matcher invokes #players even if it's a private method.
-expect(team.send(:players).size).to eq(3)
+<%=
+convert(private_method_example, dynamic: true, wrap_with: :example, hidden: <<END)
+class Team
+  private
+
+  def players
+    [1, 2, 3]
+  end
+end
+
+team = Team.new
+END
+-%>
 ```
 
 There's an option to continue using `have(n).items` matcher with [rspec-collection_matchers](https://github.com/rspec/rspec-collection_matchers) which is a gem extracted from `rspec-expectations`.
@@ -636,25 +700,39 @@ Note: `rspec-rails` 3.0 [still uses `have(n).items` matcher with `rspec-collecti
 Targets:
 
 ```ruby
+<%=
+example = <<END
 it { should have(3).items }
+END
+-%>
+<%=
+collection_owner_example = <<END
 it { should have_at_least(3).players }
+END
+-%>
 ```
 
 Will be converted to:
 
 ```ruby
-it 'has 3 items' do
-  expect(subject.size).to eq(3)
-end
+<%= convert(example, dynamic: true, wrap_with: :group, hidden: 'subject { [1, 2, 3] }') -%>
 
 # With `--keep should`
-it 'has 3 items' do
-  subject.size.should == 3
-end
+<%= convert(example, dynamic: true, wrap_with: :group, hidden: 'subject { [1, 2, 3] }', cli: ['--keep', 'should']) -%>
 
-it 'has at least 3 players' do
-  expect(subject.players.size).to be >= 3
+<%=
+convert(collection_owner_example, dynamic: true, wrap_with: :group, hidden: <<END)
+subject do
+  class Team
+    def players
+      [1, 2, 3]
+    end
+  end
+
+  Team.new
 end
+END
+-%>
 ```
 
 * This conversion can be disabled by: `--keep have_items`
@@ -664,15 +742,19 @@ end
 Targets:
 
 ```ruby
+<%=
+example = <<END
 lambda { do_something }.should raise_error
 proc { do_something }.should raise_error
 -> { do_something }.should raise_error
+END
+-%>
 ```
 
 Will be converted to:
 
 ```ruby
-expect { do_something }.to raise_error
+<%= convert(example, wrap_with: :example).lines.to_a.uniq.join("\n") -%>
 ```
 
 * This conversion can be disabled by: `--keep should`
@@ -721,17 +803,25 @@ If you choose to do so, disable this conversion by either:
 Targets:
 
 ```ruby
+<%=
+example = <<END
 expect { do_something }.not_to raise_error(SomeErrorClass)
 expect { do_something }.not_to raise_error('message')
 expect { do_something }.not_to raise_error(SomeErrorClass, 'message')
+END
+-%>
+<%=
+should_example = <<END
 lambda { do_something }.should_not raise_error(SomeErrorClass)
+END
+-%>
 ```
 
 Will be converted to:
 
 ```ruby
-expect { do_something }.not_to raise_error
-lambda { do_something }.should_not raise_error # with `--keep should`
+<%= convert(example, wrap_with: :example).lines.to_a.uniq.join("\n") -%>
+<%= convert(should_example, wrap_with: :example, cli: ['--keep', 'should']).chomp -%> # with `--keep should`
 ```
 
 * This conversion can be disabled by: `--keep deprecated`
@@ -743,15 +833,18 @@ lambda { do_something }.should_not raise_error # with `--keep should`
 Targets:
 
 ```ruby
+<%=
+example = <<END
 obj.should_receive(:message)
 Klass.any_instance.should_receive(:message)
+END
+-%>
 ```
 
 Will be converted to:
 
 ```ruby
-expect(obj).to receive(:message)
-expect_any_instance_of(Klass).to receive(:message)
+<%= convert(example, wrap_with: :example) -%>
 ```
 
 * This conversion can be disabled by: `--keep should_receive`
@@ -763,21 +856,29 @@ expect_any_instance_of(Klass).to receive(:message)
 Targets:
 
 ```ruby
+<%=
+example = <<END
 obj.should_receive(:message).any_number_of_times
 obj.should_receive(:message).at_least(0)
+END
+-%>
 
+<%=
+any_instance_example = <<END
 Klass.any_instance.should_receive(:message).any_number_of_times
 Klass.any_instance.should_receive(:message).at_least(0)
+END
+-%>
 ```
 
 Will be converted to:
 
 ```ruby
-allow(obj).to receive(:message)
-obj.stub(:message) # with `--keep stub`
+<%= convert(example, wrap_with: :example).lines.to_a.uniq.join("\n") -%>
+<%= convert(example, wrap_with: :example, cli: ['--keep', 'stub']).lines.to_a.uniq.join("\n").chomp -%> # with `--keep stub`
 
-allow_any_instance_of(Klass).to receive(:message)
-Klass.any_instance.stub(:message) # with `--keep stub`
+<%= convert(any_instance_example, wrap_with: :example).lines.to_a.uniq.join("\n") -%>
+<%= convert(any_instance_example, wrap_with: :example, cli: ['--keep', 'stub']).lines.to_a.uniq.join("\n").chomp -%> # with `--keep stub`
 ```
 
 * This conversion can be disabled by: `--keep deprecated`
@@ -789,29 +890,45 @@ Klass.any_instance.stub(:message) # with `--keep stub`
 Targets:
 
 ```ruby
+<%=
+example = <<END
 obj.stub(:message)
 obj.stub!(:message)
+END
+-%>
 
+<%=
+stub_chain_example = <<END
 obj.stub_chain(:foo, :bar, :baz)
+END
+-%>
 
+<%=
+any_instance_example = <<END
 Klass.any_instance.stub(:message)
+END
+-%>
 
+<%=
+unstub_example = <<END
 obj.unstub(:message)
 obj.unstub!(:message)
+END
+-%>
 ```
 
 Will be converted to:
 
 ```ruby
-allow(obj).to receive(:message)
+<%= convert(example, wrap_with: :example).lines.to_a.uniq.join("\n") -%>
 
 # Conversion from `stub_chain` to `receive_message_chain` is available
-# only if the target project's RSpec is <%= Transpec::RSpecVersion.receive_message_chain_available_version %> or later
-allow(obj).to receive_message_chain(:foo, :bar, :baz)
+# only if the target project's RSpec is <%= rspec_version = Transpec::RSpecVersion.receive_message_chain_available_version %> or later
+<%= convert(stub_chain_example, wrap_with: :example, rspec_version: rspec_version) -%>
 
-allow_any_instance_of(Klass).to receive(:message)
+<%= convert(any_instance_example, wrap_with: :example) -%>
 
-allow(obj).to receive(:message).and_call_original
+<%= convert(unstub_example, wrap_with: :example).lines.to_a.uniq.join("\n") -%>
 ```
 
 * This conversion can be disabled by: `--keep stub`
@@ -825,22 +942,25 @@ allow(obj).to receive(:message).and_call_original
 Targets:
 
 ```ruby
+<%=
+example = <<END
 obj.stub(:foo => 1, :bar => 2)
+END
+-%>
 ```
 
 Will be converted to:
 
 ```ruby
-# If the target project's RSpec is <%= Transpec::RSpecVersion.receive_messages_available_version %> or later
-allow(obj).to receive_messages(:foo => 1, :bar => 2)
+# If the target project's RSpec is <%= rspec_version = Transpec::RSpecVersion.receive_messages_available_version %> or later
+<%= convert(example, wrap_with: :example, rspec_version: rspec_version) -%>
 
 # If the target project's RSpec is prior to <%= Transpec::RSpecVersion.receive_messages_available_version %>
-obj.stub(:foo => 1, :bar => 2) # No conversion
+<%= convert(example, wrap_with: :example, rspec_version: Transpec.required_rspec_version).chomp -%> # No conversion
 
 # If the target project's RSpec is prior to <%= Transpec::RSpecVersion.receive_messages_available_version %>
-# and `--convert-stub-with-hash` is specified
-allow(obj).to receive(:foo).and_return(1)
-allow(obj).to receive(:bar).and_return(2)
+# and `--convert stub-with-hash` is specified
+<%= convert(example, wrap_with: :example, rspec_version: Transpec.required_rspec_version, cli: ['--convert', 'stub_with_hash']) -%>
 ```
 
 `allow(obj).to receive_messages(:foo => 1, :bar => 2)` which is designed to be the replacement for `obj.stub(:foo => 1, :bar => 2)` is available from RSpec 3.0.
@@ -863,15 +983,19 @@ Or if you're going to stay RSpec 2.14 for now but want to convert all `stub` to 
 Targets:
 
 ```ruby
+<%=
+example = <<END
 obj.stub!(:message)
 obj.unstub!(:message)
+END
+-%>
 ```
 
 Will be converted to:
 
 ```ruby
-obj.stub(:message) # with `--keep stub`
-obj.unstub(:message) # with `--keep stub`
+# With `--keep stub`
+<%= convert(example, wrap_with: :example, cli: ['--keep', 'stub']) -%>
 ```
 
 * This conversion can be disabled by: `--keep deprecated`
@@ -883,15 +1007,19 @@ obj.unstub(:message) # with `--keep stub`
 Targets:
 
 ```ruby
+<%=
+example = <<END
 obj.stub(:message).any_number_of_times
 obj.stub(:message).at_least(0)
+END
+-%>
 ```
 
 Will be converted to:
 
 ```ruby
-allow(obj).to receive(:message)
-obj.stub(:message) # with `--keep stub`
+<%= convert(example, wrap_with: :example).lines.to_a.uniq.join("\n") -%>
+<%= convert(example, wrap_with: :example, cli: ['--keep', 'stub']).lines.to_a.uniq.join("\n").chomp -%> # with `--keep stub`
 ```
 
 * This conversion can be disabled by: `--keep deprecated`
@@ -917,7 +1045,7 @@ END
 Will be converted to:
 
 ```ruby
-<%= convert(example) -%>
+<%= convert(example, wrap_with: :example) -%>
 ```
 
 * This conversion can be disabled by: `--keep deprecated`
@@ -951,16 +1079,11 @@ END
 Will be converted to:
 
 ```ruby
-<%=
-rspec_version = Transpec::RSpecVersion.yielding_receiver_to_any_instance_implementation_block_available_version
-convert(example, rspec_version: rspec_version)
--%>
+<% rspec_version = Transpec::RSpecVersion.yielding_receiver_to_any_instance_implementation_block_available_version -%>
+<%= convert(example, rspec_version: rspec_version) -%>
 
 # With `--no-yield-any-instance`
-<%=
-rspec_version = Transpec::RSpecVersion.yielding_receiver_to_any_instance_implementation_block_available_version
-convert(example, cli: ['--no-yield-any-instance'], rspec_version: rspec_version)
--%>
+<%= convert(example, cli: ['--no-yield-any-instance'], rspec_version: rspec_version) -%>
 ```
 
 Here's an excerpt from [the warning](https://github.com/rspec/rspec-mocks/blob/aab8dc9/lib/rspec/mocks/message_expectation.rb#L478-L491) for `any_instance` implementation blocks in RSpec 2.99:
@@ -991,14 +1114,18 @@ Here's an excerpt from [the warning](https://github.com/rspec/rspec-mocks/blob/a
 Targets:
 
 ```ruby
+<%=
+example = <<END
 stub('something')
 mock('something')
+END
+-%>
 ```
 
 Will be converted to:
 
 ```ruby
-double('something')
+<%= convert(example, wrap_with: :example).lines.to_a.uniq.join("\n") -%>
 ```
 
 * This conversion can be disabled by: `--keep deprecated`
@@ -1042,8 +1169,7 @@ Will be converted to:
 
 ```ruby
 <%=
-rspec_version = Transpec::RSpecVersion.skip_available_version
-convert(example, rspec_version: rspec_version)
+convert(example, rspec_version: Transpec::RSpecVersion.skip_available_version)
   .gsub('pending', 'pending # #pending with block is no longer supported')
 -%>
 ```
@@ -1066,7 +1192,7 @@ Here's an excerpt from [the warning](https://github.com/rspec/rspec-core/blob/v2
 
 ### Current example object
 
-**This conversion is available only if your project's RSpec is `<%= Transpec::RSpecVersion.yielded_example_available_version %>` or later.**
+**This conversion is available only if your project's RSpec is `<%= rspec_version = Transpec::RSpecVersion.yielded_example_available_version %>` or later.**
 
 Targets:
 
@@ -1093,10 +1219,7 @@ END
 Will be converted to:
 
 ```ruby
-<%=
-rspec_version = Transpec::RSpecVersion.yielded_example_available_version
-convert(example, rspec_version: rspec_version)
--%>
+<%= convert(example, rspec_version: rspec_version) -%>
 ```
 
 Here's an excerpt from [the warning](https://github.com/rspec/rspec-core/blob/7d6d2ca/lib/rspec/core/example_group.rb#L513-L527) for `RSpec::Core::ExampleGroup#example` and `#running_example` in RSpec 2.99:
@@ -1121,7 +1244,7 @@ Here's an excerpt from [the warning](https://github.com/rspec/rspec-core/blob/7d
 
 ### Custom matcher DSL
 
-**This conversion is available only if your project's RSpec is `<%= Transpec::RSpecVersion.non_should_matcher_protocol_available_version %>` or later.**
+**This conversion is available only if your project's RSpec is `<%= rspec_version = Transpec::RSpecVersion.non_should_matcher_protocol_available_version %>` or later.**
 
 Targets:
 
@@ -1141,10 +1264,7 @@ END
 Will be converted to:
 
 ```ruby
-<%=
-rspec_version = Transpec::RSpecVersion.non_should_matcher_protocol_available_version
-convert(example, rspec_version: rspec_version)
--%>
+<%= convert(example, rspec_version: rspec_version) -%>
 ```
 
 * This conversion can be disabled by: `--keep deprecated`
@@ -1153,7 +1273,7 @@ convert(example, rspec_version: rspec_version)
 
 ### Example groups
 
-**This conversion is disabled by default and available only if your project's RSpec is `<%= Transpec::RSpecVersion.non_monkey_patch_example_group_available_version %>` or later.**
+**This conversion is disabled by default and available only if your project's RSpec is `<%= rspec_version = Transpec::RSpecVersion.non_monkey_patch_example_group_available_version %>` or later.**
 
 Targets:
 
@@ -1177,10 +1297,7 @@ END
 Will be converted to:
 
 ```ruby
-<%=
-rspec_version = Transpec::RSpecVersion.non_monkey_patch_example_group_available_version
-convert(example, cli: ['--convert', 'example_group'], rspec_version: rspec_version)
--%>
+<%= convert(example, cli: ['--convert', 'example_group'], rspec_version: rspec_version) -%>
 ```
 
 * This conversion can be enabled by: `--convert example_group`
@@ -1189,7 +1306,7 @@ convert(example, cli: ['--convert', 'example_group'], rspec_version: rspec_versi
 
 ### Hook scope aliases
 
-**This conversion is disabled by default and available only if your project's RSpec is `<%= Transpec::RSpecVersion.hook_scope_alias_available_version %>` or later.**
+**This conversion is disabled by default and available only if your project's RSpec is `<%= rspec_version = Transpec::RSpecVersion.hook_scope_alias_available_version %>` or later.**
 
 Targets:
 
@@ -1212,10 +1329,7 @@ END
 Will be converted to:
 
 ```ruby
-<%=
-rspec_version = Transpec::RSpecVersion.hook_scope_alias_available_version
-convert(example, cli: ['--convert', 'hook_scope'], rspec_version: rspec_version)
--%>
+<%= convert(example, cli: ['--convert', 'hook_scope'], rspec_version: rspec_version) -%>
 ```
 
 * This conversion can be enabled by: `--convert hook_scope`

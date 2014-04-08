@@ -627,6 +627,7 @@ expect(collection).to have(3).items
 expect(collection).to have_exactly(3).items
 expect(collection).to have_at_least(3).items
 expect(collection).to have_at_most(3).items
+
 collection.should have(3).items
 
 # Assume `team` responds to #players.
@@ -640,9 +641,12 @@ Will be converted to:
 
 ```ruby
 expect(collection.size).to eq(3)
+expect(collection.size).to eq(3)
 expect(collection.size).to be >= 3
 expect(collection.size).to be <= 3
-collection.size.should == 3  # with `--keep should`
+
+ # With `--keep should`
+collection.size.should == 3
 
 expect(team.players.size).to eq(3)
 
@@ -889,7 +893,7 @@ allow(obj).to receive_messages(:foo => 1, :bar => 2)
 obj.stub(:foo => 1, :bar => 2) # No conversion
 
 # If the target project's RSpec is prior to 3.0.0.beta1
-# and `--convert-stub-with-hash` is specified
+# and `--convert stub-with-hash` is specified
 allow(obj).to receive(:foo).and_return(1)
 allow(obj).to receive(:bar).and_return(2)
 ```
@@ -921,8 +925,9 @@ obj.unstub!(:message)
 Will be converted to:
 
 ```ruby
-obj.stub(:message) # with `--keep stub`
-obj.unstub(:message) # with `--keep stub`
+# With `--keep stub`
+obj.stub(:message)
+obj.unstub(:message)
 ```
 
 * This conversion can be disabled by: `--keep deprecated`
