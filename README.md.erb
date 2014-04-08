@@ -338,9 +338,7 @@ END
 <%= convert(example).gsub('original spec', 'converted spec') -%>
 
 <%=
-configuration = Transpec::Configuration.new
-configuration.parenthesize_matcher_arg = false
-convert(example, configuration)
+convert(example, cli: ['-p'])
   .gsub(
     'original spec',
     'converted spec with -p/--no-parentheses-matcher-arg option'
@@ -955,15 +953,13 @@ Will be converted to:
 ```ruby
 <%=
 rspec_version = Transpec::RSpecVersion.yielding_receiver_to_any_instance_implementation_block_available_version
-convert(example, nil, rspec_version)
+convert(example, rspec_version: rspec_version)
 -%>
 
 # With `--no-yield-any-instance`
 <%=
-configuration = Transpec::Configuration.new
-configuration.add_receiver_arg_to_any_instance_implementation_block = false
 rspec_version = Transpec::RSpecVersion.yielding_receiver_to_any_instance_implementation_block_available_version
-convert(example, configuration, rspec_version)
+convert(example, cli: ['--no-yield-any-instance'], rspec_version: rspec_version)
 -%>
 ```
 
@@ -1047,7 +1043,7 @@ Will be converted to:
 ```ruby
 <%=
 rspec_version = Transpec::RSpecVersion.skip_available_version
-convert(example, nil, rspec_version)
+convert(example, rspec_version: rspec_version)
   .gsub('pending', 'pending # #pending with block is no longer supported')
 -%>
 ```
@@ -1099,7 +1095,7 @@ Will be converted to:
 ```ruby
 <%=
 rspec_version = Transpec::RSpecVersion.yielded_example_available_version
-convert(example, nil, rspec_version)
+convert(example, rspec_version: rspec_version)
 -%>
 ```
 
@@ -1147,7 +1143,7 @@ Will be converted to:
 ```ruby
 <%=
 rspec_version = Transpec::RSpecVersion.non_should_matcher_protocol_available_version
-convert(example, nil, rspec_version)
+convert(example, rspec_version: rspec_version)
 -%>
 ```
 
@@ -1182,10 +1178,8 @@ Will be converted to:
 
 ```ruby
 <%=
-configuration = Transpec::Configuration.new
-configuration.convert_example_group = true
 rspec_version = Transpec::RSpecVersion.non_monkey_patch_example_group_available_version
-convert(example, configuration, rspec_version)
+convert(example, cli: ['--convert', 'example_group'], rspec_version: rspec_version)
 -%>
 ```
 
@@ -1219,10 +1213,8 @@ Will be converted to:
 
 ```ruby
 <%=
-configuration = Transpec::Configuration.new
-configuration.convert_hook_scope = true
 rspec_version = Transpec::RSpecVersion.hook_scope_alias_available_version
-convert(example, configuration, rspec_version)
+convert(example, cli: ['--convert', 'hook_scope'], rspec_version: rspec_version)
 -%>
 ```
 

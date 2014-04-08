@@ -2,7 +2,9 @@
 
 desc 'Generate README.md'
 task :readme do
+  puts 'Generating README.md...'
   File.write('README.md', generate_readme)
+  puts 'Done.'
 end
 
 namespace :readme do
@@ -21,6 +23,7 @@ end
 
 def generate_readme
   require 'erb'
+  require 'transpec'
   require 'transpec/cli'
 
   readme = File.read('README.md.erb')
@@ -28,10 +31,66 @@ def generate_readme
   erb.result(binding)
 end
 
-def convert(source, configuration = nil, rspec_version = nil)
-  spec_suite = FakeSpecSuite.new
-  converter = Transpec::Converter.new(spec_suite, configuration, rspec_version)
-  converter.convert_source(source)
+def convert(source, options = {})
+  require 'rspec/mocks/standalone'
+  require File.join(Transpec.root, 'spec/support/file_helper')
+
+  cli = Transpec::CLI.new
+  cli.project.stub(:rspec_version).and_return(options[:rspec_version]) if options[:rspec_version]
+
+  source = wrap_source(source, options[:wrap_with])
+  converted_source = nil
+
+  in_isolated_env do
+    FileHelper.create_file('spec/example_spec.rb', source)
+    cli.run(options[:cli] || [])
+    converted_source = File.read('spec/example_spec.rb')
+  end
+
+  unwrap_source(converted_source, options[:wrap_with])
+end
+
+def wrap_source(source, wrapper)
+  source = "it 'is example' do\n" + source + "end\n" if wrapper == :example
+
+  if [:example, :group].include?(wrapper)
+    source = "describe 'example group' do\n" + source + "end\n"
+  end
+
+  source
+end
+
+def unwrap_source(source, wrapper)
+  return source unless wrapper
+
+  unwrap_count = case wrapper
+                 when :group then 1
+                 when :example then 2
+                 end
+
+  lines = source.lines.to_a
+
+  unwrap_count.times do
+    lines = lines[1..-2]
+  end
+
+  lines.join('')
+end
+
+def in_isolated_env
+  require 'stringio'
+  require 'tmpdir'
+
+  original_stdout = $stdout
+  $stdout = StringIO.new
+
+  Dir.mktmpdir do |tmpdir|
+    Dir.chdir(tmpdir) do
+      yield
+    end
+  end
+ensure
+  $stdout = original_stdout
 end
 
 def select_sections(content, header_level, *section_names)
@@ -73,20 +132,5 @@ def validate_syntax_type_table(markdown_table, types_in_code)
   unless types_in_doc == types_in_code
     types_missing_description = types_in_code - types_in_doc
     fail "No descriptions for syntax types #{types_missing_description}"
-  end
-end
-
-require 'transpec/spec_suite'
-
-class FakeSpecSuite < Transpec::SpecSuite
-  def analyze
-  end
-
-  def need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?
-    true
-  end
-
-  def main_rspec_configure_node?(node)
-    true
   end
 end
