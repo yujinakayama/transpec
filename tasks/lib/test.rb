@@ -25,6 +25,7 @@ class Test < Project
       return if simple?
       compare_summary!('2.99.0')
 
+      puts 'Rewriting `rspec` version in Gemfile as 3.0.0'
       add_rspec_3_to_gemfile
       sh 'bundle update'
 
