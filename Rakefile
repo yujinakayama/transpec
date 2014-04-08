@@ -11,6 +11,6 @@ end
 
 task default: %w(spec style readme)
 
-ci_tasks = %w(spec style readme:check test:all)
-ci_tasks << 'test:all' unless RUBY_ENGINE == 'jruby'
+ci_tasks = %w(spec)
+ci_tasks.concat(%w(style readme:check test:all)) unless RUBY_ENGINE == 'jruby'
 task ci: ci_tasks
