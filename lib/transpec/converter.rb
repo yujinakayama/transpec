@@ -11,6 +11,8 @@ Transpec::Syntax.require_all
 
 module Transpec
   class Converter < BaseRewriter # rubocop:disable ClassLength
+    include Syntax::Dispatcher
+
     attr_reader :spec_suite, :configuration, :rspec_version, :report
 
     alias_method :convert_file!, :rewrite_file!
@@ -30,30 +32,14 @@ module Transpec
 
     def process(ast, source_rewriter)
       return unless ast
+
       ast.each_node do |node|
-        dispatch_node(node, source_rewriter)
-      end
-    end
-
-    def dispatch_node(node, source_rewriter)
-      Syntax.standalone_syntaxes.each do |syntax_class|
-        syntax = syntax_class.new(node, source_rewriter, runtime_data, report)
-        next unless syntax.conversion_target?
-        dispatch_syntax(syntax)
-        break
-      end
-    rescue OverlappedRewriteError # rubocop:disable HandleExceptions
-    rescue ConversionError => error
-      report.conversion_errors << error
-    end
-
-    def dispatch_syntax(syntax)
-      handler_name = "process_#{syntax.class.snake_case_name}"
-      send(handler_name, syntax)
-
-      syntax.dependent_syntaxes.each do |dependent_syntax|
-        next unless dependent_syntax.conversion_target?
-        dispatch_syntax(dependent_syntax)
+        begin
+          dispatch_node(node, source_rewriter, runtime_data, report)
+        rescue OverlappedRewriteError # rubocop:disable HandleExceptions
+        rescue ConversionError => error
+          report.conversion_errors << error
+        end
       end
     end
 
@@ -78,12 +64,6 @@ module Transpec
       end
     end
 
-    def process_expect(expect)
-    end
-
-    def process_allow(allow)
-    end
-
     def process_should_receive(should_receive)
       if should_receive.useless_expectation?
         if configuration.convert_deprecated_method?
@@ -98,8 +78,6 @@ module Transpec
       elsif configuration.convert_should_receive?
         should_receive.expectize!(configuration.negative_form_of_to)
       end
-
-      process_messaging_host(should_receive)
     end
 
     def process_double(double)
@@ -120,8 +98,6 @@ module Transpec
       end
 
       method_stub.remove_no_message_allowance! if configuration.convert_deprecated_method?
-
-      process_messaging_host(method_stub)
     end
 
     def process_operator(operator)
@@ -129,10 +105,6 @@ module Transpec
       return if operator.expectation.is_a?(Syntax::OnelinerShould) &&
         !rspec_version.oneliner_is_expected_available?
       operator.convert_operator!(configuration.parenthesize_matcher_arg?)
-    end
-
-    def process_receive(receive)
-      process_messaging_host(receive)
     end
 
     def process_be_boolean(be_boolean)
@@ -217,11 +189,6 @@ module Transpec
     def process_hook(hook)
       return if !configuration.convert_hook_scope? || !rspec_version.hook_scope_alias_available?
       hook.convert_scope_name!
-    end
-
-    def process_messaging_host(messaging_host)
-      process_useless_and_return(messaging_host)
-      process_any_instance_block(messaging_host)
     end
 
     def process_useless_and_return(messaging_host)

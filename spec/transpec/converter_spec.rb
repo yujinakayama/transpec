@@ -475,16 +475,6 @@ module Transpec
           end
         end
       end
-
-      it 'invokes #process_useless_and_return with the should_receive' do
-        converter.should_receive(:process_useless_and_return).with(should_receive_object)
-        converter.process_should_receive(should_receive_object)
-      end
-
-      it 'invokes #process_any_instance_block with the should_receive' do
-        converter.should_receive(:process_any_instance_block).with(should_receive_object)
-        converter.process_should_receive(should_receive_object)
-      end
     end
 
     describe '#process_method_stub' do
@@ -616,16 +606,6 @@ module Transpec
           include_examples 'does not invoke MethodStub#convert_deprecated_method!'
           include_examples 'does not invoke MethodStub#remove_no_message_allowance!'
         end
-      end
-
-      it 'invokes #process_useless_and_return with the method stub' do
-        converter.should_receive(:process_useless_and_return).with(method_stub_object)
-        converter.process_method_stub(method_stub_object)
-      end
-
-      it 'invokes #process_any_instance_block with the method stub' do
-        converter.should_receive(:process_any_instance_block).with(method_stub_object)
-        converter.process_method_stub(method_stub_object)
       end
     end
 
