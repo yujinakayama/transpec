@@ -30,7 +30,7 @@ module Transpec
       end
 
       def mixins
-        Mixin.constants.map do |const_name|
+        @mixins ||= Mixin.constants.map do |const_name|
           Mixin.const_get(const_name, false)
         end
       end
@@ -78,9 +78,15 @@ module Transpec
       end
 
       def invoke_handler(klass, syntax)
-        class_name = ModuleUtil.snake_case_name(klass.name)
-        handler_name = "process_#{class_name}"
+        handler_name = handler_names[klass]
         send(handler_name, syntax) if respond_to?(handler_name, true)
+      end
+
+      def handler_names
+        @handler_names_cache ||= Hash.new do |hash, klass|
+          class_name = ModuleUtil.snake_case_name(klass.name)
+          hash[klass] = "process_#{class_name}"
+        end
       end
     end
   end
