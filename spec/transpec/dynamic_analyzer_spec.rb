@@ -27,7 +27,7 @@ module Transpec
 
         it 'changes working directory to copied project directory' do
           initial_directory = Dir.pwd
-          DynamicAnalyzer.new(silent: true) do |analyzer|
+          DynamicAnalyzer.new(silent: true) do
             Dir.pwd.should_not == initial_directory
           end
         end

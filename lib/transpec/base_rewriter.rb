@@ -43,7 +43,7 @@ module Transpec
 
     private
 
-    def process(ast, source_rewriter)
+    def process(ast, source_rewriter) # rubocop:disable UnusedMethodArgument
       fail NotImplementedError
     end
 
