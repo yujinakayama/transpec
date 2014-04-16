@@ -141,10 +141,7 @@ module Transpec
         include_examples 'aborts processing'
 
         it 'warns to the user' do
-          cli.should_receive(:warn) do |arg|
-            arg.should match(/rspec.+dependency/i)
-          end
-
+          cli.should_receive(:warn).with(/rspec.+dependency/i)
           cli.run(args)
         end
       end
@@ -276,10 +273,7 @@ module Transpec
         end
 
         it 'warns to user' do
-          cli.should_receive(:warn) do |message|
-            message.should =~ /converted.+but.+incorrect/i
-          end
-
+          cli.should_receive(:warn).with(/converted.+but.+incorrect/i)
           cli.convert_spec(processed_source, spec_suite)
         end
       end
