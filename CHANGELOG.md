@@ -2,6 +2,10 @@
 
 ## Development
 
+## v1.13.0
+
+* Improve the conversion performance.
+
 ## v1.12.0
 
 * Support conversion of hook scope names. ([#53](https://github.com/yujinakayama/transpec/issues/53))
