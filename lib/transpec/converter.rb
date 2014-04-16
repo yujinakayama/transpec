@@ -162,14 +162,6 @@ module Transpec
     def process_rspec_configure(rspec_configure)
       return unless spec_suite.main_rspec_configure_node?(rspec_configure.node)
 
-      if need_to_modify_expectation_syntax_configuration?(rspec_configure)
-        rspec_configure.expectations.syntaxes = :expect
-      end
-
-      if need_to_modify_mock_syntax_configuration?(rspec_configure)
-        rspec_configure.mocks.syntaxes = :expect
-      end
-
       if rspec_version.non_monkey_patch_example_group_available? &&
          configuration.convert_example_group?
         rspec_configure.expose_dsl_globally = false
@@ -208,21 +200,6 @@ module Transpec
     def need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?
       rspec_version.rspec_2_99? && configuration.convert_deprecated_method? &&
         spec_suite.need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?
-    end
-
-    def need_to_modify_expectation_syntax_configuration?(rspec_configure)
-      return false unless configuration.convert_should?
-      rspec_configure.expectations.syntaxes == [:should]
-    rescue Syntax::RSpecConfigure::Framework::UnknownSyntaxError
-      false
-    end
-
-    def need_to_modify_mock_syntax_configuration?(rspec_configure)
-      return false if !configuration.convert_should_receive? &&
-                      !configuration.convert_stub?
-      rspec_configure.mocks.syntaxes == [:should]
-    rescue Syntax::RSpecConfigure::Framework::UnknownSyntaxError
-      false
     end
   end
 end
