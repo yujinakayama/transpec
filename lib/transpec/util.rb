@@ -138,12 +138,6 @@ module Transpec
       Parser::Source::Range.new(range.source_buffer, begin_pos, begin_pos)
     end
 
-    def end_of_line_range(arg)
-      range = range_from_arg(arg)
-      begin_pos = beginning_of_line_range(range).begin_pos + range.source_line.size
-      Parser::Source::Range.new(range.source_buffer, begin_pos, begin_pos)
-    end
-
     def line_range(arg)
       range = range_from_arg(arg)
       beginning_of_line_range(range).resize(range.source_line.size + 1)
