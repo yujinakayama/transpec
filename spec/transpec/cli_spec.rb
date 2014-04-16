@@ -90,9 +90,10 @@ module Transpec
               include_examples 'aborts processing'
               include_examples 'does not generate commit message'
 
-              it 'warns to the user' do
-                cli.should_receive(:warn) do |arg|
-                  arg.should include('clean')
+              it 'warns and suggests the use of -f/--force option' do
+                cli.should_receive(:warn) do |message|
+                  message.should include('clean')
+                  message.should include('-f/--force')
                 end
 
                 cli.run(args)

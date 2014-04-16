@@ -85,7 +85,8 @@ module Transpec
     def fail_if_should_not_continue!
       unless configuration.forced?
         if Git.command_available? && Git.inside_of_repository? && !Git.clean?
-          fail 'The current Git repository is not clean. Aborting.'
+          fail 'The current Git repository is not clean. Aborting. ' \
+               'If you want to proceed forcibly, use -f/--force option.'
         end
       end
 
