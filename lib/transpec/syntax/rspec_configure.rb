@@ -15,7 +15,7 @@ module Transpec
 
       define_dynamic_analysis do |rewriter|
         code = "TranspecAnalysis.global_data[:rspec_configure_run_order] ||= 0\n" \
-               "TranspecAnalysis.global_data[:rspec_configure_run_order] += 1"
+               'TranspecAnalysis.global_data[:rspec_configure_run_order] += 1'
         rewriter.register_request(node, :run_order, code)
       end
 
