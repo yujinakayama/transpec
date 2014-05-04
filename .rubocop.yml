@@ -1,10 +1,10 @@
 
 AllCops:
   Include:
-    - tasks/*.rake
+    - '**/*.rake'
   Exclude:
-    - tmp/*
-    - vendor/*
+    - 'tmp/**/*'
+    - 'vendor/**/*'
 
 LineLength:
   Max: 100
