@@ -1132,6 +1132,62 @@ module Transpec
           end
         end
 
+        context 'with multiline expression `obj.stub(:message)\n.and_return { value }`' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo and returns 1' do
+                  subject.stub(:foo)
+                    .and_return { 1 }
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo and returns 1' do
+                  subject.stub(:foo) { 1 }
+                end
+              end
+            END
+          end
+
+          it 'converts to `obj.stub(:message) { value }` form' \
+             'while preventing the block from being interpreted as a hash' do
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'with multiline expression `obj.stub(:message).\nand_return { value }`' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo and returns 1' do
+                  subject.stub(:foo).
+                    and_return { 1 }
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'responds to #foo and returns 1' do
+                  subject.stub(:foo) { 1 }
+                end
+              end
+            END
+          end
+
+          it 'converts to `obj.stub(:message) { value }` form' \
+             'while preventing the block from being interpreted as a hash' do
+            rewritten_source.should == expected_source
+          end
+        end
+
         context 'with expression `obj.stub(:message).and_return`' do
           let(:source) do
             <<-END

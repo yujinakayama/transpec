@@ -2,6 +2,8 @@
 
 ## Development
 
+* Fix a bug where multiline expression `expect(obj).to receive(:message)\n.and_return { value }` was converted to `expect(obj).to.receive(:message)\n { value }` and the block was interpreted as a hash literal. ([#60](https://github.com/yujinakayama/transpec/issues/60))
+
 ## v1.13.0
 
 * Improve the conversion performance.

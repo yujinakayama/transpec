@@ -13,8 +13,6 @@ module Transpec
 
         def remove_useless_and_return!
           return unless useless_and_return?
-          map = and_return_node.loc
-          and_return_range = map.dot.join(map.expression.end)
           remove(and_return_range)
           true
         end
@@ -41,6 +39,13 @@ module Transpec
             method_name = chained_node.children[1]
             break chained_node if method_name == :and_return
           end
+        end
+
+        private
+
+        def and_return_range
+          receiver_node = and_return_node.children.first
+          receiver_node.loc.expression.end.join(and_return_node.loc.expression.end)
         end
 
         class UselessAndReturnRecord < Record
