@@ -97,24 +97,45 @@ module Transpec
       end
 
       describe '#register_request' do
-        let(:some_node) { s(:int, 1) }
-        let(:another_node) { s(:int, 2) }
+        include_context 'parsed objects'
+
+        let(:source) do
+          <<-END
+            1
+            2
+          END
+        end
+
+        let(:a_node) { ast.children[0] }
+        let(:another_node) { ast.children[1] }
 
         it 'stores requests for each node' do
-          rewriter.register_request(some_node, :odd, 'odd?', :object)
+          rewriter.register_request(a_node, :odd, 'odd?', :object)
           rewriter.register_request(another_node, :even, 'even?', :object)
-          rewriter.requests.should == {
-            some_node    => { odd: [:object, 'odd?'] },
-            another_node => { even: [:object, 'even?'] }
-          }
+          rewriter.requests[a_node].should == { odd: [:object, 'odd?'] }
+          rewriter.requests[another_node].should == { even: [:object, 'even?'] }
         end
 
         it 'merges multiple requests for same node' do
-          rewriter.register_request(some_node, :odd, 'odd?', :object)
-          rewriter.register_request(some_node, :even, 'even?', :object)
-          rewriter.requests.should == {
-            some_node => { odd: [:object, 'odd?'], even: [:object, 'even?'] }
-          }
+          rewriter.register_request(a_node, :odd, 'odd?', :object)
+          rewriter.register_request(a_node, :even, 'even?', :object)
+          rewriter.requests[a_node].should == { odd: [:object, 'odd?'], even: [:object, 'even?'] }
+        end
+
+        context 'when there are same structure nodes but they are not identical objects' do
+          let(:source) do
+            <<-END
+              1
+              1
+            END
+          end
+
+          it 'properly diffrenciate them' do
+            rewriter.register_request(a_node, :odd, 'odd?', :object)
+            rewriter.register_request(another_node, :even, 'even?', :object)
+            rewriter.requests[a_node].should == { odd: [:object, 'odd?'] }
+            rewriter.requests[another_node].should == { even: [:object, 'even?'] }
+          end
         end
       end
     end

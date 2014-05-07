@@ -23,7 +23,9 @@ module Transpec
       end
 
       def requests
-        @requests ||= {}
+        # AST::Node#eql? returns true if two nodes have the same structure,
+        # even if they are not identical objects.
+        @requests ||= {}.compare_by_identity
       end
 
       def clear_requests!

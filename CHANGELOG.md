@@ -3,6 +3,7 @@
 ## Development
 
 * Fix a bug where multiline expression `expect(obj).to receive(:message)\n.and_return { value }` was converted to `expect(obj).to.receive(:message)\n { value }` and the block was interpreted as a hash literal. ([#60](https://github.com/yujinakayama/transpec/issues/60))
+* Fix a bug where dynamic analysis were not run partially when there are same structure nodes in an AST with `ast` gem 2.0.
 
 ## v1.13.0
 
