@@ -974,7 +974,7 @@ So, if you're going to use Transpec in [the upgrade path to RSpec 3](http://myro
 3. Upgrade to RSpec 3.0
 4. Run `transpec` again to convert `obj.stub(:message => value)`
 
-Or if you're going to stay RSpec 2.14 for now but want to convert all `stub` to `allow` statements, run `transpec` with `--convert-stub-with-hash` option. Note that once the conversion is done, multiple statements cannot be merged into a `receive_messages`.
+Or if you're going to stay RSpec 2.14 for now but want to convert all `stub` to `allow` statements, run `transpec` with `--convert stub_with_hash` option. Note that once the conversion is done, multiple statements cannot be merged into a `receive_messages`.
 
 * This conversion can be disabled by: `--keep stub`
 * Deprecation: deprecated since RSpec 3.0
