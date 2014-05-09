@@ -2,12 +2,13 @@
 
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/context_sensitive'
+require 'transpec/syntax/mixin/metadata'
 require 'transpec/rspec_dsl'
 
 module Transpec
   class Syntax
     class Example < Syntax
-      include Mixin::ContextSensitive, RSpecDSL
+      include Mixin::ContextSensitive, Mixin::Metadata, RSpecDSL
 
       def dynamic_analysis_target?
         super && receiver_node.nil? && EXAMPLE_METHODS.include?(method_name)
@@ -20,16 +21,6 @@ module Transpec
       def convert_pending_to_skip!
         convert_pending_selector_to_skip!
         convert_pending_metadata_to_skip!
-      end
-
-      def metadata_key_nodes
-        metadata_nodes.each_with_object([]) do |node, key_nodes|
-          if node.hash_type?
-            key_nodes.concat(node.children.map { |pair_node| pair_node.children.first })
-          else
-            key_nodes << node
-          end
-        end
       end
 
       private
@@ -67,10 +58,6 @@ module Transpec
         else
           range
         end
-      end
-
-      def metadata_nodes
-        arg_nodes[1..-1] || []
       end
 
       def register_record(original_syntax, converted_syntax)
