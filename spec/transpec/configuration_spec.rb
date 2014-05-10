@@ -9,6 +9,7 @@ module Transpec
 
     context 'by default' do
       [
+        [:forced?,                                                false],
         [:convert_should?,                                        true],
         [:convert_oneliner?,                                      true],
         [:convert_should_receive?,                                true],
@@ -17,16 +18,15 @@ module Transpec
         [:convert_its?,                                           true],
         [:convert_pending?,                                       true],
         [:convert_deprecated_method?,                             true],
-        [:parenthesize_matcher_arg?,                              true],
-        [:add_receiver_arg_to_any_instance_implementation_block?, true],
-        [:convert_stub_with_hash_to_allow_to_receive_and_return?, false],
         [:convert_example_group?,                                 false],
         [:convert_hook_scope?,                                    false],
-        [:forced?,                                                false],
+        [:convert_stub_with_hash_to_allow_to_receive_and_return?, false],
         [:skip_dynamic_analysis?,                                 false],
         [:negative_form_of_to,                                    'not_to'],
         [:boolean_matcher_type,                                   :conditional],
-        [:form_of_be_falsey,                                      'be_falsey']
+        [:form_of_be_falsey,                                      'be_falsey'],
+        [:add_receiver_arg_to_any_instance_implementation_block?, true],
+        [:parenthesize_matcher_arg?,                              true]
       ].each do |attribute, value|
         describe "##{attribute}" do
           subject { configuration.send(attribute) }
