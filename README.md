@@ -202,6 +202,9 @@ read this article by [Myron Marston](https://github.com/myronmarston), who is th
 
 ## Options
 
+Though Transpec ships with sensible defaults that essentially conform to the RSpec 3 defaults,
+you can customize the conversion behavior.
+
 ### `-f/--force`
 
 Force processing even if the current Git repository is not clean.
