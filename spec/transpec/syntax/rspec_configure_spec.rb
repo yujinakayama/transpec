@@ -9,6 +9,34 @@ module Transpec
       include_context 'parsed objects'
       include_context 'syntax object', RSpecConfigure, :rspec_configure
 
+      context 'when multiple configurations are added' do
+        before do
+          rspec_configure.expose_dsl_globally = true
+          rspec_configure.infer_spec_type_from_file_location!
+        end
+
+        let(:source) do
+          <<-END
+            RSpec.configure do |config|
+            end
+          END
+        end
+
+        let(:expected_source) do
+          <<-END
+            RSpec.configure do |config|
+              config.expose_dsl_globally = true
+
+              config.infer_spec_type_from_file_location!
+            end
+          END
+        end
+
+        it 'properly adds them' do
+          rewritten_source.should == expected_source
+        end
+      end
+
       describe '#expose_dsl_globally=' do
         before do
           rspec_configure.expose_dsl_globally = value
@@ -78,6 +106,95 @@ module Transpec
 
           it 'adds the block after a blank line' do
             rewritten_source.should == expected_source
+          end
+        end
+      end
+
+      describe '#infer_spec_type_from_file_location!' do
+        before do
+          rspec_configure.infer_spec_type_from_file_location!
+        end
+
+        context 'when #infer_spec_type_from_file_location! does not exist' do
+          let(:source) do
+            <<-END
+              RSpec.configure do |config|
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              RSpec.configure do |config|
+                config.infer_spec_type_from_file_location!
+              end
+            END
+          end
+
+          it 'adds #infer_spec_type_from_file_location! statement' do
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'when #infer_spec_type_from_file_location! already exists' do
+          let(:source) do
+            <<-END
+              RSpec.configure do |config|
+                config.infer_spec_type_from_file_location!
+              end
+            END
+          end
+
+          it 'does nothing' do
+            rewritten_source.should == source
+          end
+        end
+
+        context 'with runtime information' do
+          include_context 'dynamic analysis objects'
+
+          context 'when rspec-rails is loaded in the spec' do
+            let(:source) do
+              <<-END
+                module RSpec
+                  module Rails
+                  end
+                end
+
+                RSpec.configure do |config|
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                module RSpec
+                  module Rails
+                  end
+                end
+
+                RSpec.configure do |config|
+                  config.infer_spec_type_from_file_location!
+                end
+              END
+            end
+
+            it 'adds #infer_spec_type_from_file_location! statement' do
+              rewritten_source.should == expected_source
+            end
+          end
+
+          context 'when rspec-rails is not loaded in the spec' do
+            let(:source) do
+              <<-END
+                RSpec.configure do |config|
+                end
+              END
+            end
+
+            it 'does nothing' do
+              rewritten_source.should == source
+            end
           end
         end
       end

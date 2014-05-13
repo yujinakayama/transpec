@@ -44,8 +44,9 @@ module Transpec
           first_block_arg_name(block_node)
         end
 
+        # TODO: Refactor this to remove messy overrides in Framework.
         module ConfigurationAddition
-          def add_configuration!(config_name, value)
+          def add_configuration!(config_name, value = nil)
             lines = generate_configuration_lines(config_name, value)
             lines.unshift('') unless empty_block_body?
             lines.map! { |line| line + "\n" }
@@ -56,8 +57,10 @@ module Transpec
             block_node_to_insert_code.metadata[:added_configuration] = true
           end
 
-          def generate_configuration_lines(config_name, value)
-            [body_indentation + "#{config_variable_name}.#{config_name} = #{value}"]
+          def generate_configuration_lines(config_name, value = nil)
+            line = body_indentation + "#{config_variable_name}.#{config_name}"
+            line << " = #{value}" unless value.nil?
+            [line]
           end
 
           def config_variable_name

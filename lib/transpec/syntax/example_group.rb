@@ -4,12 +4,14 @@ require 'transpec/syntax'
 require 'transpec/syntax/mixin/context_sensitive'
 require 'transpec/syntax/mixin/metadata'
 require 'transpec/syntax/mixin/monkey_patch'
+require 'transpec/syntax/mixin/rspec_rails'
 require 'transpec/rspec_dsl'
 
 module Transpec
   class Syntax
     class ExampleGroup < Syntax
-      include Mixin::ContextSensitive, Mixin::Metadata, Mixin::MonkeyPatch, RSpecDSL, Util
+      include Mixin::ContextSensitive, Mixin::Metadata, Mixin::MonkeyPatch, Mixin::RSpecRails,
+              RSpecDSL, Util
 
       DIRECTORY_TO_TYPE_MAP = {
         'controllers' => :controller,
@@ -23,10 +25,6 @@ module Transpec
         'views'       => :view,
         'features'    => :feature
       }
-
-      define_dynamic_analysis do |rewriter|
-        rewriter.register_request(node, :rspec_rails?, 'defined?(RSpec::Rails)', :context)
-      end
 
       def dynamic_analysis_target?
         return false unless super
@@ -71,14 +69,6 @@ module Transpec
       end
 
       private
-
-      def rspec_rails?
-        if runtime_data.present?(node, :rspec_rails?)
-          runtime_data[node, :rspec_rails?]
-        else
-          true
-        end
-      end
 
       def explicit_type_metadata?
         metadata_key_nodes.any? do |node|
