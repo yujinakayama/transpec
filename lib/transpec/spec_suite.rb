@@ -10,8 +10,6 @@ module Transpec
   class SpecSuite
     include Syntax::Dispatcher
 
-    ANALYSIS_TARGET_CLASSES = [Syntax::Mixin::AnyInstanceBlock]
-
     attr_reader :runtime_data
 
     def initialize(base_paths = [], runtime_data = nil)
@@ -21,10 +19,8 @@ module Transpec
     end
 
     def specs
-      @specs ||= begin
-        FileFinder.find(@base_paths).map do |path|
-          ProcessedSource.parse_file(path)
-        end
+      @specs ||= FileFinder.find(@base_paths).map do |path|
+        ProcessedSource.parse_file(path)
       end
     end
 
