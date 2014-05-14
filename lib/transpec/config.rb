@@ -1,7 +1,7 @@
 # coding: utf-8
 
 module Transpec
-  class Configuration
+  class Config
     NEGATIVE_FORMS_OF_TO = ['not_to', 'to_not'].freeze
     FORMS_OF_BE_FALSEY = ['be_falsey', 'be_falsy'].freeze
     BOOLEAN_MATCHER_TYPES = [:conditional, :exact].freeze

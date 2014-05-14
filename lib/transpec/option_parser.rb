@@ -1,6 +1,6 @@
 # coding: utf-8
 
-require 'transpec/configuration'
+require 'transpec/config'
 require 'transpec/git'
 require 'transpec/version'
 require 'optparse'
@@ -28,14 +28,14 @@ module Transpec
 
     VALID_BOOLEAN_MATCHER_TYPES = %w(truthy,falsey truthy,falsy true,false)
 
-    attr_reader :configuration
+    attr_reader :config
 
     def self.available_conversion_types
       CONFIG_ATTRS_FOR_KEEP_TYPES.keys
     end
 
-    def initialize(configuration = Configuration.new)
-      @configuration = configuration
+    def initialize(config = Config.new)
+      @config = config
       setup_parser
     end
 
@@ -55,11 +55,11 @@ module Transpec
       @parser = create_parser
 
       define_option('-f', '--force') do
-        configuration.forced = true
+        config.forced = true
       end
 
       define_option('-c', '--rspec-command COMMAND') do |command|
-        configuration.rspec_command = command
+        config.rspec_command = command
       end
 
       define_option('-k', '--keep TYPE[,TYPE...]') do |types|
@@ -71,11 +71,11 @@ module Transpec
       end
 
       define_option('-s', '--skip-dynamic-analysis') do
-        configuration.skip_dynamic_analysis = true
+        config.skip_dynamic_analysis = true
       end
 
       define_option('-n', '--negative-form FORM') do |form|
-        configuration.negative_form_of_to = form
+        config.negative_form_of_to = form
       end
 
       define_option('-b', '--boolean-matcher TYPE') do |type|
@@ -83,16 +83,16 @@ module Transpec
           types = VALID_BOOLEAN_MATCHER_TYPES.map(&:inspect).join(', ')
           fail ArgumentError, "Boolean matcher type must be any of #{types}"
         end
-        configuration.boolean_matcher_type = type.include?('truthy') ? :conditional : :exact
-        configuration.form_of_be_falsey = type.include?('falsy') ? 'be_falsy' : 'be_falsey'
+        config.boolean_matcher_type = type.include?('truthy') ? :conditional : :exact
+        config.form_of_be_falsey = type.include?('falsy') ? 'be_falsy' : 'be_falsey'
       end
 
       define_option('-a', '--no-yield-any-instance') do
-        configuration.add_receiver_arg_to_any_instance_implementation_block = false
+        config.add_receiver_arg_to_any_instance_implementation_block = false
       end
 
       define_option('-p', '--no-parentheses-matcher-arg') do
-        configuration.parenthesize_matcher_arg = false
+        config.parenthesize_matcher_arg = false
       end
 
       define_option('--no-color') do
@@ -222,7 +222,7 @@ module Transpec
       inputted_types.split(',').each do |type|
         config_attr = type_to_attr_map[type.to_sym]
         fail ArgumentError, "Unknown syntax type #{type.inspect}" unless config_attr
-        configuration.send(config_attr, boolean)
+        config.send(config_attr, boolean)
       end
     end
   end

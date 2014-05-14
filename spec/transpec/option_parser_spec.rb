@@ -5,8 +5,8 @@ require 'transpec/option_parser'
 
 module Transpec
   describe OptionParser do
-    subject(:parser) { OptionParser.new(configuration) }
-    let(:configuration) { Configuration.new }
+    subject(:parser) { OptionParser.new(config) }
+    let(:config) { Config.new }
 
     describe '#parse' do
       subject { parser.parse(args) }
@@ -24,18 +24,18 @@ module Transpec
       describe '-f/--force option' do
         let(:args) { ['--force'] }
 
-        it 'sets Configuration#forced? true' do
+        it 'sets Config#forced? true' do
           parser.parse(args)
-          configuration.forced?.should be_true
+          config.forced?.should be_true
         end
       end
 
       describe '-s/--skip-dynamic-analysis option' do
         let(:args) { ['--skip-dynamic-analysis'] }
 
-        it 'sets Configuration#skip_dynamic_analysis? true' do
+        it 'sets Config#skip_dynamic_analysis? true' do
           parser.parse(args)
-          configuration.skip_dynamic_analysis?.should be_true
+          config.skip_dynamic_analysis?.should be_true
         end
       end
 
@@ -73,9 +73,9 @@ module Transpec
           context "when #{cli_type.inspect} is specified" do
             let(:args) { ['--keep', cli_type] }
 
-            it "sets Configuration##{config_attr} false" do
+            it "sets Config##{config_attr} false" do
               parser.parse(args)
-              configuration.send(config_attr).should be_false
+              config.send(config_attr).should be_false
             end
           end
         end
@@ -85,8 +85,8 @@ module Transpec
 
           it 'handles all of them' do
             parser.parse(args)
-            configuration.convert_should_receive?.should be_false
-            configuration.convert_deprecated_method?.should be_false
+            config.convert_should_receive?.should be_false
+            config.convert_deprecated_method?.should be_false
           end
         end
 
@@ -110,9 +110,9 @@ module Transpec
           context "when #{cli_type.inspect} is specified" do
             let(:args) { ['--convert', cli_type] }
 
-            it "sets Configuration##{config_attr} true" do
+            it "sets Config##{config_attr} true" do
               parser.parse(args)
-              configuration.send(config_attr).should be_true
+              config.send(config_attr).should be_true
             end
           end
         end
@@ -133,9 +133,9 @@ module Transpec
           context "when #{form.inspect} is specified" do
             let(:args) { ['--negative-form', form] }
 
-            it "sets Configuration#negative_form_of_to #{form.inspect}" do
+            it "sets Config#negative_form_of_to #{form.inspect}" do
               parser.parse(args)
-              configuration.negative_form_of_to.should == form
+              config.negative_form_of_to.should == form
             end
           end
         end
@@ -146,18 +146,18 @@ module Transpec
           ['truthy,falsey', :conditional, 'be_falsey'],
           ['truthy,falsy',  :conditional, 'be_falsy'],
           ['true,false',    :exact,       'be_falsey']
-        ].each do |cli_type, configuration_type, form_of_be_falsey|
+        ].each do |cli_type, config_type, form_of_be_falsey|
           context "when #{cli_type.inspect} is specified" do
             let(:args) { ['--boolean-matcher', cli_type] }
 
-            it "sets Configuration#boolean_matcher_type #{configuration_type.inspect}" do
+            it "sets Config#boolean_matcher_type #{config_type.inspect}" do
               parser.parse(args)
-              configuration.boolean_matcher_type.should == configuration_type
+              config.boolean_matcher_type.should == config_type
             end
 
-            it "sets Configuration#form_of_be_falsey #{form_of_be_falsey.inspect}" do
+            it "sets Config#form_of_be_falsey #{form_of_be_falsey.inspect}" do
               parser.parse(args)
-              configuration.form_of_be_falsey.should == form_of_be_falsey
+              config.form_of_be_falsey.should == form_of_be_falsey
             end
           end
         end
@@ -176,9 +176,9 @@ module Transpec
       describe '-a/--no-yield-any-instance option' do
         let(:args) { ['--no-yield-any-instance'] }
 
-        it 'sets Configuration#add_receiver_arg_to_any_instance_implementation_block? false' do
+        it 'sets Config#add_receiver_arg_to_any_instance_implementation_block? false' do
           parser.parse(args)
-          configuration.add_receiver_arg_to_any_instance_implementation_block?
+          config.add_receiver_arg_to_any_instance_implementation_block?
             .should be_false
         end
       end
@@ -190,9 +190,9 @@ module Transpec
           parser.stub(:warn)
         end
 
-        it 'sets Configuration#convert_stub_with_hash_to_allow_to_receive_and_return? true' do
+        it 'sets Config#convert_stub_with_hash_to_allow_to_receive_and_return? true' do
           parser.parse(args)
-          configuration.convert_stub_with_hash_to_allow_to_receive_and_return?.should be_true
+          config.convert_stub_with_hash_to_allow_to_receive_and_return?.should be_true
         end
 
         it 'is deprecated' do
@@ -207,9 +207,9 @@ module Transpec
       describe '-p/--no-parentheses-matcher-arg option' do
         let(:args) { ['--no-parentheses-matcher-arg'] }
 
-        it 'sets Configuration#parenthesize_matcher_arg? false' do
+        it 'sets Config#parenthesize_matcher_arg? false' do
           parser.parse(args)
-          configuration.parenthesize_matcher_arg.should be_false
+          config.parenthesize_matcher_arg.should be_false
         end
       end
 

@@ -5,9 +5,9 @@ require 'transpec/converter'
 
 module Transpec
   describe Converter do
-    subject(:converter) { Converter.new(spec_suite, configuration, rspec_version) }
+    subject(:converter) { Converter.new(spec_suite, config, rspec_version) }
     let(:spec_suite) { double('spec_suite', runtime_data: nil).as_null_object }
-    let(:configuration) { Configuration.new }
+    let(:config) { Config.new }
     let(:rspec_version) { Transpec.required_rspec_version }
 
     describe '#convert_file!' do
@@ -107,7 +107,7 @@ module Transpec
         end
 
         before do
-          configuration.convert_stub_with_hash_to_allow_to_receive_and_return = true
+          config.convert_stub_with_hash_to_allow_to_receive_and_return = true
         end
 
         it 'converts all targets properly' do
@@ -122,7 +122,7 @@ module Transpec
 
       context 'when the source has a monkey-patched expectation outside of example group context' do
         before do
-          configuration.convert_should = true
+          config.convert_should = true
           converter.stub(:warn)
         end
 
@@ -157,11 +157,11 @@ module Transpec
       let(:should_object) { double('should_object', raise_error_matcher: raise_error_object).as_null_object }
       let(:raise_error_object) { double('raise_error_object').as_null_object }
 
-      context 'when Configuration#convert_should? is true' do
-        before { configuration.convert_should = true }
+      context 'when Config#convert_should? is true' do
+        before { config.convert_should = true }
 
-        context 'and Configuration#negative_form_of_to is "not_to"' do
-          before { configuration.negative_form_of_to = 'not_to' }
+        context 'and Config#negative_form_of_to is "not_to"' do
+          before { config.negative_form_of_to = 'not_to' }
 
           it 'invokes Should#expectize! with "not_to"' do
             should_object.should_receive(:expectize!).with('not_to')
@@ -169,8 +169,8 @@ module Transpec
           end
         end
 
-        context 'and Configuration#negative_form_of_to is "to_not"' do
-          before { configuration.negative_form_of_to = 'to_not' }
+        context 'and Config#negative_form_of_to is "to_not"' do
+          before { config.negative_form_of_to = 'to_not' }
 
           it 'invokes Should#expectize! with "to_not"' do
             should_object.should_receive(:expectize!).with('to_not')
@@ -179,8 +179,8 @@ module Transpec
         end
       end
 
-      context 'when Configuration#convert_should? is false' do
-        before { configuration.convert_should = false }
+      context 'when Config#convert_should? is false' do
+        before { config.convert_should = false }
 
         it 'does not invoke Should#expectize!' do
           should_object.should_not_receive(:expectize!)
@@ -227,8 +227,8 @@ module Transpec
       end
 
       shared_examples 'converts to standard expecatations' do
-        context 'and Configuration#convert_should? is true' do
-          before { configuration.convert_should = true }
+        context 'and Config#convert_should? is true' do
+          before { config.convert_should = true }
 
           it 'invokes OnelinerShould#convert_have_items_to_standard_expect!' do
             should_object.should_receive(:convert_have_items_to_standard_expect!)
@@ -236,8 +236,8 @@ module Transpec
           end
         end
 
-        context 'and Configuration#convert_should? is false' do
-          before { configuration.convert_should = false }
+        context 'and Config#convert_should? is false' do
+          before { config.convert_should = false }
 
           it 'invokes OnelinerShould#convert_have_items_to_standard_should!' do
             should_object.should_receive(:convert_have_items_to_standard_should!)
@@ -246,21 +246,21 @@ module Transpec
         end
       end
 
-      context 'when Configuration#convert_oneliner? is true' do
-        before { configuration.convert_oneliner = true }
+      context 'when Config#convert_oneliner? is true' do
+        before { config.convert_oneliner = true }
 
         context 'and the #have matcher is conversion target' do
           before do
             have_object.stub(:conversion_target?).and_return(true)
           end
 
-          context 'and Configuration#convert_have_items? is true' do
-            before { configuration.convert_have_items = true }
+          context 'and Config#convert_have_items? is true' do
+            before { config.convert_have_items = true }
             include_examples 'converts to standard expecatations'
           end
 
-          context 'and Configuration#convert_have_items? is false' do
-            before { configuration.convert_have_items = false }
+          context 'and Config#convert_have_items? is false' do
+            before { config.convert_have_items = false }
             include_examples 'invokes OnelinerShould#expectize! if available'
           end
         end
@@ -270,33 +270,33 @@ module Transpec
             have_object.stub(:conversion_target?).and_return(false)
           end
 
-          context 'and Configuration#convert_have_items? is true' do
-            before { configuration.convert_have_items = true }
+          context 'and Config#convert_have_items? is true' do
+            before { config.convert_have_items = true }
             include_examples 'invokes OnelinerShould#expectize! if available'
           end
 
-          context 'and Configuration#convert_have_items? is false' do
-            before { configuration.convert_have_items = false }
+          context 'and Config#convert_have_items? is false' do
+            before { config.convert_have_items = false }
             include_examples 'invokes OnelinerShould#expectize! if available'
           end
         end
       end
 
-      context 'when Configuration#convert_oneliner? is false' do
-        before { configuration.convert_oneliner = false }
+      context 'when Config#convert_oneliner? is false' do
+        before { config.convert_oneliner = false }
 
         context 'and the #have matcher is conversion target' do
           before do
             have_object.stub(:conversion_target?).and_return(true)
           end
 
-          context 'and Configuration#convert_have_items? is true' do
-            before { configuration.convert_have_items = true }
+          context 'and Config#convert_have_items? is true' do
+            before { config.convert_have_items = true }
             include_examples 'converts to standard expecatations'
           end
 
-          context 'and Configuration#convert_have_items? is false' do
-            before { configuration.convert_have_items = false }
+          context 'and Config#convert_have_items? is false' do
+            before { config.convert_have_items = false }
             include_examples 'does nothing'
           end
         end
@@ -306,13 +306,13 @@ module Transpec
             have_object.stub(:conversion_target?).and_return(false)
           end
 
-          context 'and Configuration#convert_have_items? is true' do
-            before { configuration.convert_have_items = true }
+          context 'and Config#convert_have_items? is true' do
+            before { config.convert_have_items = true }
             include_examples 'does nothing'
           end
 
-          context 'and Configuration#convert_have_items? is false' do
-            before { configuration.convert_have_items = false }
+          context 'and Config#convert_have_items? is false' do
+            before { config.convert_have_items = false }
             include_examples 'does nothing'
           end
         end
@@ -334,18 +334,18 @@ module Transpec
       context 'when ShouldReceive#useless_expectation? returns true' do
         before { should_receive_object.stub(:useless_expectation?).and_return(true) }
 
-        context 'and Configuration#convert_deprecated_method? is true' do
-          before { configuration.convert_deprecated_method = true }
+        context 'and Config#convert_deprecated_method? is true' do
+          before { config.convert_deprecated_method = true }
 
-          context 'and Configuration#convert_stub? is true' do
-            before { configuration.convert_stub = true }
+          context 'and Config#convert_stub? is true' do
+            before { config.convert_stub = true }
 
             [true, false].each do |convert_should_receive|
-              context "and Configuration#convert_should_receive? is #{convert_should_receive}" do
-                before { configuration.convert_should_receive = convert_should_receive }
+              context "and Config#convert_should_receive? is #{convert_should_receive}" do
+                before { config.convert_should_receive = convert_should_receive }
 
-                context 'and Configuration#negative_form_of_to is "not_to"' do
-                  before { configuration.negative_form_of_to = 'not_to' }
+                context 'and Config#negative_form_of_to is "not_to"' do
+                  before { config.negative_form_of_to = 'not_to' }
 
                   it 'invokes ShouldReceive#allowize_useless_expectation! with "not_to"' do
                     should_receive_object.should_receive(:allowize_useless_expectation!).with('not_to')
@@ -353,8 +353,8 @@ module Transpec
                   end
                 end
 
-                context 'and Configuration#negative_form_of_to is "to_not"' do
-                  before { configuration.negative_form_of_to = 'to_not' }
+                context 'and Config#negative_form_of_to is "to_not"' do
+                  before { config.negative_form_of_to = 'to_not' }
 
                   it 'invokes ShouldReceive#allowize_useless_expectation! with "to_not"' do
                     should_receive_object.should_receive(:allowize_useless_expectation!).with('to_not')
@@ -365,12 +365,12 @@ module Transpec
             end
           end
 
-          context 'and Configuration#convert_stub? is false' do
-            before { configuration.convert_stub = false }
+          context 'and Config#convert_stub? is false' do
+            before { config.convert_stub = false }
 
             [true, false].each do |convert_should_receive|
-              context "and Configuration#convert_should_receive? is #{convert_should_receive}" do
-                before { configuration.convert_should_receive = convert_should_receive }
+              context "and Config#convert_should_receive? is #{convert_should_receive}" do
+                before { config.convert_should_receive = convert_should_receive }
 
                 it 'invokes ShouldReceive#stubize_useless_expectation!' do
                   should_receive_object.should_receive(:stubize_useless_expectation!)
@@ -381,18 +381,18 @@ module Transpec
           end
         end
 
-        context 'and Configuration#convert_deprecated_method? is false' do
-          before { configuration.convert_deprecated_method = false }
+        context 'and Config#convert_deprecated_method? is false' do
+          before { config.convert_deprecated_method = false }
 
           [true, false].each do |convert_stub|
-            context "and Configuration#convert_stub? is #{convert_stub}" do
-              before { configuration.convert_stub = convert_stub }
+            context "and Config#convert_stub? is #{convert_stub}" do
+              before { config.convert_stub = convert_stub }
 
-              context 'and Configuration#convert_should_receive? is true' do
-                before { configuration.convert_should_receive = true }
+              context 'and Config#convert_should_receive? is true' do
+                before { config.convert_should_receive = true }
 
-                context 'and Configuration#negative_form_of_to is "not_to"' do
-                  before { configuration.negative_form_of_to = 'not_to' }
+                context 'and Config#negative_form_of_to is "not_to"' do
+                  before { config.negative_form_of_to = 'not_to' }
 
                   it 'invokes ShouldReceive#expectize! with "not_to"' do
                     should_receive_object.should_receive(:expectize!).with('not_to')
@@ -400,8 +400,8 @@ module Transpec
                   end
                 end
 
-                context 'and Configuration#negative_form_of_to is "to_not"' do
-                  before { configuration.negative_form_of_to = 'to_not' }
+                context 'and Config#negative_form_of_to is "to_not"' do
+                  before { config.negative_form_of_to = 'to_not' }
 
                   it 'invokes ShouldReceive#expectize! with "to_not"' do
                     should_receive_object.should_receive(:expectize!).with('to_not')
@@ -410,8 +410,8 @@ module Transpec
                 end
               end
 
-              context 'and Configuration#convert_should_receive? is false' do
-                before { configuration.convert_should_receive = false }
+              context 'and Config#convert_should_receive? is false' do
+                before { config.convert_should_receive = false }
 
                 include_examples 'does nothing'
               end
@@ -423,19 +423,19 @@ module Transpec
       context 'when ShouldReceive#useless_expectation? returns false' do
         before { should_receive_object.stub(:useless_expectation?).and_return(false) }
 
-        context 'and Configuration#convert_should_receive? is true' do
-          before { configuration.convert_should_receive = true }
+        context 'and Config#convert_should_receive? is true' do
+          before { config.convert_should_receive = true }
 
           [true, false].each do |convert_deprecated_method|
-            context "and Configuration#convert_deprecated_method? is #{convert_deprecated_method}" do
-              before { configuration.convert_deprecated_method = convert_deprecated_method }
+            context "and Config#convert_deprecated_method? is #{convert_deprecated_method}" do
+              before { config.convert_deprecated_method = convert_deprecated_method }
 
               [true, false].each do |convert_stub|
-                context "and Configuration#convert_stub? is #{convert_stub}" do
-                  before { configuration.convert_stub = convert_stub }
+                context "and Config#convert_stub? is #{convert_stub}" do
+                  before { config.convert_stub = convert_stub }
 
-                  context 'and Configuration#negative_form_of_to is "not_to"' do
-                    before { configuration.negative_form_of_to = 'not_to' }
+                  context 'and Config#negative_form_of_to is "not_to"' do
+                    before { config.negative_form_of_to = 'not_to' }
 
                     it 'invokes ShouldReceive#expectize! with "not_to"' do
                       should_receive_object.should_receive(:expectize!).with('not_to')
@@ -443,8 +443,8 @@ module Transpec
                     end
                   end
 
-                  context 'and Configuration#negative_form_of_to is "to_not"' do
-                    before { configuration.negative_form_of_to = 'to_not' }
+                  context 'and Config#negative_form_of_to is "to_not"' do
+                    before { config.negative_form_of_to = 'to_not' }
 
                     it 'invokes ShouldReceive#expectize! with "to_not"' do
                       should_receive_object.should_receive(:expectize!).with('to_not')
@@ -457,16 +457,16 @@ module Transpec
           end
         end
 
-        context 'and Configuration#convert_should_receive? is false' do
-          before { configuration.convert_should_receive = false }
+        context 'and Config#convert_should_receive? is false' do
+          before { config.convert_should_receive = false }
 
           [true, false].each do |convert_deprecated_method|
-            context "and Configuration#convert_deprecated_method? is #{convert_deprecated_method}" do
-              before { configuration.convert_deprecated_method = convert_deprecated_method }
+            context "and Config#convert_deprecated_method? is #{convert_deprecated_method}" do
+              before { config.convert_deprecated_method = convert_deprecated_method }
 
               [true, false].each do |convert_stub|
-                context "and Configuration#convert_stub? is #{convert_stub}" do
-                  before { configuration.convert_stub = convert_stub }
+                context "and Config#convert_stub? is #{convert_stub}" do
+                  before { config.convert_stub = convert_stub }
 
                   include_examples 'does nothing'
                 end
@@ -522,11 +522,11 @@ module Transpec
         end
       end
 
-      context 'when Configuration#convert_stub? is true' do
-        before { configuration.convert_stub = true }
+      context 'when Config#convert_stub? is true' do
+        before { config.convert_stub = true }
 
-        context 'and Configuration#convert_deprecated_method? is true' do
-          before { configuration.convert_deprecated_method = true }
+        context 'and Config#convert_deprecated_method? is true' do
+          before { config.convert_deprecated_method = true }
 
           context 'and MethodStub#hash_arg? is false' do
             before { method_stub_object.stub(:hash_arg?).and_return(false) }
@@ -538,8 +538,8 @@ module Transpec
           context 'and MethodStub#hash_arg? is true' do
             before { method_stub_object.stub(:hash_arg?).and_return(true) }
 
-            context 'and Configuration#convert_stub_with_hash_to_allow_to_receive_and_return? is true' do
-              before { configuration.convert_stub_with_hash_to_allow_to_receive_and_return = true }
+            context 'and Config#convert_stub_with_hash_to_allow_to_receive_and_return? is true' do
+              before { config.convert_stub_with_hash_to_allow_to_receive_and_return = true }
 
               context 'and RSpecVersion#receive_messages_available? is true' do
                 before { rspec_version.stub(:receive_messages_available?).and_return(true) }
@@ -556,8 +556,8 @@ module Transpec
               end
             end
 
-            context 'and Configuration#convert_stub_with_hash_to_allow_to_receive_and_return? is false' do
-              before { configuration.convert_stub_with_hash_to_allow_to_receive_and_return = false }
+            context 'and Config#convert_stub_with_hash_to_allow_to_receive_and_return? is false' do
+              before { config.convert_stub_with_hash_to_allow_to_receive_and_return = false }
 
               context 'and RSpecVersion#receive_messages_available? is true' do
                 before { rspec_version.stub(:receive_messages_available?).and_return(true) }
@@ -576,9 +576,9 @@ module Transpec
           end
         end
 
-        context 'and Configuration#convert_deprecated_method? is false' do
+        context 'and Config#convert_deprecated_method? is false' do
           before do
-            configuration.convert_deprecated_method = false
+            config.convert_deprecated_method = false
             method_stub_object.stub(:hash_arg?).and_return(false)
           end
 
@@ -588,19 +588,19 @@ module Transpec
         end
       end
 
-      context 'when Configuration#convert_stub? is false' do
-        before { configuration.convert_stub = false }
+      context 'when Config#convert_stub? is false' do
+        before { config.convert_stub = false }
 
-        context 'and Configuration#convert_deprecated_method? is true' do
-          before { configuration.convert_deprecated_method = true }
+        context 'and Config#convert_deprecated_method? is true' do
+          before { config.convert_deprecated_method = true }
 
           include_examples 'does not invoke MethodStub#allowize!'
           include_examples 'invokes MethodStub#convert_deprecated_method!'
           include_examples 'invokes MethodStub#remove_no_message_allowance!'
         end
 
-        context 'and Configuration#convert_deprecated_method? is false' do
-          before { configuration.convert_deprecated_method = false }
+        context 'and Config#convert_deprecated_method? is false' do
+          before { config.convert_deprecated_method = false }
 
           include_examples 'does not invoke MethodStub#allowize!'
           include_examples 'does not invoke MethodStub#convert_deprecated_method!'
@@ -612,8 +612,8 @@ module Transpec
     describe '#process_double' do
       let(:double_object) { double('double_object').as_null_object }
 
-      context 'when Configuration#convert_deprecated_method? is true' do
-        before { configuration.convert_deprecated_method = true }
+      context 'when Config#convert_deprecated_method? is true' do
+        before { config.convert_deprecated_method = true }
 
         it 'invokes Double#convert_to_double!' do
           double_object.should_receive(:convert_to_double!)
@@ -621,8 +621,8 @@ module Transpec
         end
       end
 
-      context 'when Configuration#convert_deprecated_method? is false' do
-        before { configuration.convert_deprecated_method = false }
+      context 'when Config#convert_deprecated_method? is false' do
+        before { config.convert_deprecated_method = false }
 
         it 'does nothing' do
           double_object.should_not_receive(:convert_to_double!)
@@ -634,11 +634,11 @@ module Transpec
     describe '#process_operator' do
       let(:operator_object) { double('operator_object').as_null_object }
 
-      context 'when Configuration#convert_should? is true' do
-        before { configuration.convert_should = true }
+      context 'when Config#convert_should? is true' do
+        before { config.convert_should = true }
 
-        context 'and Configuration#parenthesize_matcher_arg is true' do
-          before { configuration.parenthesize_matcher_arg = true }
+        context 'and Config#parenthesize_matcher_arg is true' do
+          before { config.parenthesize_matcher_arg = true }
 
           it 'invokes Operator#convert_operator! with true' do
             operator_object.should_receive(:convert_operator!).with(true)
@@ -646,8 +646,8 @@ module Transpec
           end
         end
 
-        context 'and Configuration#parenthesize_matcher_arg is false' do
-          before { configuration.parenthesize_matcher_arg = false }
+        context 'and Config#parenthesize_matcher_arg is false' do
+          before { config.parenthesize_matcher_arg = false }
 
           it 'invokes Should#expectize! with false as second argument' do
             operator_object.should_receive(:convert_operator!).with(false)
@@ -680,8 +680,8 @@ module Transpec
         end
       end
 
-      context 'when Configuration#convert_should? is false' do
-        before { configuration.convert_should = false }
+      context 'when Config#convert_should? is false' do
+        before { config.convert_should = false }
 
         it 'does not invoke Operator#convert_operator!' do
           operator_object.should_not_receive(:convert_operator!)
@@ -696,14 +696,14 @@ module Transpec
       context 'when RSpecVersion#be_truthy_available? returns true' do
         before { rspec_version.stub(:be_truthy_available?).and_return(true) }
 
-        context 'and Configuration#convert_deprecated_method? is true' do
-          before { configuration.convert_deprecated_method = true }
+        context 'and Config#convert_deprecated_method? is true' do
+          before { config.convert_deprecated_method = true }
 
-          context 'and Configuration#boolean_matcher_type is :conditional' do
-            before { configuration.boolean_matcher_type = :conditional }
+          context 'and Config#boolean_matcher_type is :conditional' do
+            before { config.boolean_matcher_type = :conditional }
 
-            context 'and Configuration#form_of_be_falsey is "be_falsey"' do
-              before { configuration.form_of_be_falsey = 'be_falsey' }
+            context 'and Config#form_of_be_falsey is "be_falsey"' do
+              before { config.form_of_be_falsey = 'be_falsey' }
 
               it 'invokes BeBoolean#convert_to_conditional_matcher! with "be_falsey"' do
                 be_boolean_object.should_receive(:convert_to_conditional_matcher!).with('be_falsey')
@@ -711,8 +711,8 @@ module Transpec
               end
             end
 
-            context 'and Configuration#form_of_be_falsey is "be_falsy"' do
-              before { configuration.form_of_be_falsey = 'be_falsy' }
+            context 'and Config#form_of_be_falsey is "be_falsy"' do
+              before { config.form_of_be_falsey = 'be_falsy' }
 
               it 'invokes BeBoolean#convert_to_conditional_matcher! with "be_falsy"' do
                 be_boolean_object.should_receive(:convert_to_conditional_matcher!).with('be_falsy')
@@ -721,8 +721,8 @@ module Transpec
             end
           end
 
-          context 'and Configuration#boolean_matcher_type is :exact' do
-            before { configuration.boolean_matcher_type = :exact }
+          context 'and Config#boolean_matcher_type is :exact' do
+            before { config.boolean_matcher_type = :exact }
 
             it 'invokes BeBoolean#convert_to_exact_matcher!' do
               be_boolean_object.should_receive(:convert_to_exact_matcher!)
@@ -731,8 +731,8 @@ module Transpec
           end
         end
 
-        context 'and Configuration#convert_deprecated_method? is false' do
-          before { configuration.convert_deprecated_method = false }
+        context 'and Config#convert_deprecated_method? is false' do
+          before { config.convert_deprecated_method = false }
 
           it 'does nothing' do
             be_boolean_object.should_not_receive(:convert_to_conditional_matcher!)
@@ -756,8 +756,8 @@ module Transpec
     describe '#process_be_close' do
       let(:be_close_object) { double('be_close_object').as_null_object }
 
-      context 'when Configuration#convert_deprecated_method? is true' do
-        before { configuration.convert_deprecated_method = true }
+      context 'when Config#convert_deprecated_method? is true' do
+        before { config.convert_deprecated_method = true }
 
         it 'invokes BeClose#convert_to_be_within!' do
           be_close_object.should_receive(:convert_to_be_within!)
@@ -765,8 +765,8 @@ module Transpec
         end
       end
 
-      context 'when Configuration#convert_deprecated_method? is false' do
-        before { configuration.convert_deprecated_method = false }
+      context 'when Config#convert_deprecated_method? is false' do
+        before { config.convert_deprecated_method = false }
 
         it 'does nothing' do
           be_close_object.should_not_receive(:convert_to_be_within!)
@@ -778,11 +778,11 @@ module Transpec
     describe '#process_have' do
       let(:have_object) { double('have_object').as_null_object }
 
-      context 'when Configuration#convert_have_items? is true' do
-        before { configuration.convert_have_items = true }
+      context 'when Config#convert_have_items? is true' do
+        before { config.convert_have_items = true }
 
-        context 'and Configuration#parenthesize_matcher_arg is true' do
-          before { configuration.parenthesize_matcher_arg = true }
+        context 'and Config#parenthesize_matcher_arg is true' do
+          before { config.parenthesize_matcher_arg = true }
 
           it 'invokes Have#convert_to_standard_expectation! with true' do
             have_object.should_receive(:convert_to_standard_expectation!).with(true)
@@ -790,8 +790,8 @@ module Transpec
           end
         end
 
-        context 'and Configuration#parenthesize_matcher_arg is false' do
-          before { configuration.parenthesize_matcher_arg = false }
+        context 'and Config#parenthesize_matcher_arg is false' do
+          before { config.parenthesize_matcher_arg = false }
 
           it 'invokes Have#convert_to_standard_expectation! with false' do
             have_object.should_receive(:convert_to_standard_expectation!).with(false)
@@ -800,8 +800,8 @@ module Transpec
         end
       end
 
-      context 'when Configuration#convert_have_items? is false' do
-        before { configuration.convert_have_items = false }
+      context 'when Config#convert_have_items? is false' do
+        before { config.convert_have_items = false }
 
         it 'does not invoke Have#convert_to_standard_expectation!' do
           have_object.should_not_receive(:convert_to_standard_expectation!)
@@ -813,8 +813,8 @@ module Transpec
     describe '#process_hook' do
       let(:hook_object) { double('hook_object').as_null_object }
 
-      context 'when Configuration#convert_hook_scope? is true' do
-        before { configuration.convert_hook_scope = true }
+      context 'when Config#convert_hook_scope? is true' do
+        before { config.convert_hook_scope = true }
 
         context 'when RSpecVersion#hook_scope_alias_available? returns true' do
           before { rspec_version.stub(:hook_scope_alias_available?).and_return(true) }
@@ -835,8 +835,8 @@ module Transpec
         end
       end
 
-      context 'when Configuration#convert_hook_scope? is false' do
-        before { configuration.convert_hook_scope = false }
+      context 'when Config#convert_hook_scope? is false' do
+        before { config.convert_hook_scope = false }
 
         context 'when RSpecVersion#hook_scope_alias_available? returns true' do
           before { rspec_version.stub(:hook_scope_alias_available?).and_return(true) }
@@ -852,8 +852,8 @@ module Transpec
     describe '#process_raise_error' do
       let(:raise_error_object) { double('raise_error_object').as_null_object }
 
-      context 'when Configuration#convert_deprecated_method? is true' do
-        before { configuration.convert_deprecated_method = true }
+      context 'when Config#convert_deprecated_method? is true' do
+        before { config.convert_deprecated_method = true }
 
         it 'invokes RaiseError#remove_error_specification_with_negative_expectation!' do
           raise_error_object.should_receive(:remove_error_specification_with_negative_expectation!)
@@ -861,8 +861,8 @@ module Transpec
         end
       end
 
-      context 'when Configuration#convert_deprecated_method? is false' do
-        before { configuration.convert_deprecated_method = false }
+      context 'when Config#convert_deprecated_method? is false' do
+        before { config.convert_deprecated_method = false }
 
         it 'does nothing' do
           raise_error_object.should_not_receive(:remove_error_specification_with_negative_expectation!)
@@ -874,8 +874,8 @@ module Transpec
     describe '#process_its' do
       let(:its_object) { double('its_object').as_null_object }
 
-      context 'when Configuration#convert_its? is true' do
-        before { configuration.convert_its = true }
+      context 'when Config#convert_its? is true' do
+        before { config.convert_its = true }
 
         it 'invokes Its#convert_to_describe_subject_it!' do
           its_object.should_receive(:convert_to_describe_subject_it!)
@@ -883,8 +883,8 @@ module Transpec
         end
       end
 
-      context 'when Configuration#convert_its? is false' do
-        before { configuration.convert_its = false }
+      context 'when Config#convert_its? is false' do
+        before { config.convert_its = false }
 
         it 'does nothing' do
           its_object.should_not_receive(:convert_to_describe_subject_it!)
@@ -906,8 +906,8 @@ module Transpec
       context 'when RSpecVersion#rspec_2_99? returns true' do
         before { rspec_version.stub(:rspec_2_99?).and_return(true) }
 
-        context 'and Configuration#convert_pending? returns true' do
-          before { configuration.convert_pending = true }
+        context 'and Config#convert_pending? returns true' do
+          before { config.convert_pending = true }
 
           it 'invokes Example#convert_pending_to_skip!' do
             example_object.should_receive(:convert_pending_to_skip!)
@@ -915,8 +915,8 @@ module Transpec
           end
         end
 
-        context 'and Configuration#convert_pending? returns false' do
-          before { configuration.convert_pending = false }
+        context 'and Config#convert_pending? returns false' do
+          before { config.convert_pending = false }
           include_examples 'does nothing'
         end
       end
@@ -924,13 +924,13 @@ module Transpec
       context 'when RSpecVersion#rspec_2_99? returns false' do
         before { rspec_version.stub(:rspec_2_99?).and_return(false) }
 
-        context 'and Configuration#convert_pending? returns true' do
-          before { configuration.convert_pending = true }
+        context 'and Config#convert_pending? returns true' do
+          before { config.convert_pending = true }
           include_examples 'does nothing'
         end
 
-        context 'and Configuration#convert_pending? returns false' do
-          before { configuration.convert_pending = false }
+        context 'and Config#convert_pending? returns false' do
+          before { config.convert_pending = false }
           include_examples 'does nothing'
         end
       end
@@ -949,8 +949,8 @@ module Transpec
       context 'when RSpecVersion#rspec_2_99? returns true' do
         before { rspec_version.stub(:rspec_2_99?).and_return(true) }
 
-        context 'and Configuration#convert_pending? returns true' do
-          before { configuration.convert_pending = true }
+        context 'and Config#convert_pending? returns true' do
+          before { config.convert_pending = true }
 
           it 'invokes Example#convert_deprecated_syntax!' do
             pending_object.should_receive(:convert_deprecated_syntax!)
@@ -958,8 +958,8 @@ module Transpec
           end
         end
 
-        context 'and Configuration#convert_pending? returns false' do
-          before { configuration.convert_pending = false }
+        context 'and Config#convert_pending? returns false' do
+          before { config.convert_pending = false }
           include_examples 'does nothing'
         end
       end
@@ -967,13 +967,13 @@ module Transpec
       context 'when RSpecVersion#rspec_2_99? returns false' do
         before { rspec_version.stub(:rspec_2_99?).and_return(false) }
 
-        context 'and Configuration#convert_pending? returns true' do
-          before { configuration.convert_pending = true }
+        context 'and Config#convert_pending? returns true' do
+          before { config.convert_pending = true }
           include_examples 'does nothing'
         end
 
-        context 'and Configuration#convert_pending? returns false' do
-          before { configuration.convert_pending = false }
+        context 'and Config#convert_pending? returns false' do
+          before { config.convert_pending = false }
           include_examples 'does nothing'
         end
       end
@@ -985,8 +985,8 @@ module Transpec
       context 'when RSpecVersion#yielded_example_available? returns true' do
         before { rspec_version.stub(:yielded_example_available?).and_return(true) }
 
-        context 'and Configuration#convert_deprecated_method? is true' do
-          before { configuration.convert_deprecated_method = true }
+        context 'and Config#convert_deprecated_method? is true' do
+          before { config.convert_deprecated_method = true }
 
           it 'invokes CurrentExample#convert!' do
             current_example_object.should_receive(:convert!)
@@ -994,8 +994,8 @@ module Transpec
           end
         end
 
-        context 'and Configuration#convert_deprecated_method? is false' do
-          before { configuration.convert_deprecated_method = false }
+        context 'and Config#convert_deprecated_method? is false' do
+          before { config.convert_deprecated_method = false }
 
           it 'does nothing' do
             current_example_object.should_not_receive(:convert!)
@@ -1007,8 +1007,8 @@ module Transpec
       context 'when RSpecVersion#yielded_example_available? returns false' do
         before { rspec_version.stub(:yielded_example_available?).and_return(false) }
 
-        context 'and Configuration#convert_deprecated_method? is true' do
-          before { configuration.convert_deprecated_method = true }
+        context 'and Config#convert_deprecated_method? is true' do
+          before { config.convert_deprecated_method = true }
 
           it 'does nothing' do
             current_example_object.should_not_receive(:convert!)
@@ -1024,8 +1024,8 @@ module Transpec
       context 'when RSpecVersion#non_should_matcher_protocol_available? returns true' do
         before { rspec_version.stub(:non_should_matcher_protocol_available?).and_return(true) }
 
-        context 'and Configuration#convert_deprecated_method? is true' do
-          before { configuration.convert_deprecated_method = true }
+        context 'and Config#convert_deprecated_method? is true' do
+          before { config.convert_deprecated_method = true }
 
           it 'invokes MatcherDefinition#convert_deprecated_method!' do
             matcher_definition.should_receive(:convert_deprecated_method!)
@@ -1033,8 +1033,8 @@ module Transpec
           end
         end
 
-        context 'and Configuration#convert_deprecated_method? is false' do
-          before { configuration.convert_deprecated_method = false }
+        context 'and Config#convert_deprecated_method? is false' do
+          before { config.convert_deprecated_method = false }
 
           it 'does nothing' do
             matcher_definition.should_not_receive(:convert_deprecated_method!)
@@ -1046,8 +1046,8 @@ module Transpec
       context 'when RSpecVersion#non_should_matcher_protocol_available? returns false' do
         before { rspec_version.stub(:non_should_matcher_protocol_available?).and_return(false) }
 
-        context 'and Configuration#convert_deprecated_method? is true' do
-          before { configuration.convert_deprecated_method = true }
+        context 'and Config#convert_deprecated_method? is true' do
+          before { config.convert_deprecated_method = true }
 
           it 'does nothing' do
             matcher_definition.should_not_receive(:convert_deprecated_method!)
@@ -1063,8 +1063,8 @@ module Transpec
       context 'when RSpecVersion#non_monkey_patch_example_group_available? returns true' do
         before { rspec_version.stub(:non_monkey_patch_example_group_available?).and_return(true) }
 
-        context 'and Configuration#convert_example_group? is true' do
-          before { configuration.convert_example_group = true }
+        context 'and Config#convert_example_group? is true' do
+          before { config.convert_example_group = true }
 
           it 'invokes ExampleGroup#convert_to_non_monkey_patch!' do
             example_group.should_receive(:convert_to_non_monkey_patch!)
@@ -1072,8 +1072,8 @@ module Transpec
           end
         end
 
-        context 'and Configuration#convert_example_group? is false' do
-          before { configuration.convert_example_group = false }
+        context 'and Config#convert_example_group? is false' do
+          before { config.convert_example_group = false }
 
           it 'does nothing' do
             example_group.should_not_receive(:convert_to_non_monkey_patch!)
@@ -1085,8 +1085,8 @@ module Transpec
       context 'when RSpecVersion#non_monkey_patch_example_group_available? returns false' do
         before { rspec_version.stub(:non_monkey_patch_example_group_available?).and_return(false) }
 
-        context 'and Configuration#convert_example_group? is true' do
-          before { configuration.convert_example_group = true }
+        context 'and Config#convert_example_group? is true' do
+          before { config.convert_example_group = true }
 
           it 'does nothing' do
             example_group.should_not_receive(:convert_to_non_monkey_patch!)
@@ -1110,22 +1110,22 @@ module Transpec
           rspec_version.stub(:rspec_2_99?).and_return(true)
         end
 
-        context 'and Configuration#convert_deprecated_method? returns true' do
-          before { configuration.convert_deprecated_method = true }
+        context 'and Config#convert_deprecated_method? returns true' do
+          before { config.convert_deprecated_method = true }
 
           context 'and SpecSuite#main_rspec_configure_node? returns true' do
             before do
               spec_suite.stub(:main_rspec_configure_node?).and_return(true)
             end
 
-            context 'and SpecSuite#need_to_modify_yield_receiver_..._configuration? return true' do
+            context 'and SpecSuite#need_to_modify_yield_receiver_..._config? return true' do
               before do
                 spec_suite.stub(:need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?)
                   .and_return(true)
               end
 
-              context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns true' do
-                before { configuration.add_receiver_arg_to_any_instance_implementation_block = true }
+              context 'and Config#add_receiver_arg_to_any_instance_implementation_block? returns true' do
+                before { config.add_receiver_arg_to_any_instance_implementation_block = true }
 
                 it 'invokes RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks= with true' do
                   rspec_configure.mocks
@@ -1134,8 +1134,8 @@ module Transpec
                 end
               end
 
-              context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns false' do
-                before { configuration.add_receiver_arg_to_any_instance_implementation_block = false }
+              context 'and Config#add_receiver_arg_to_any_instance_implementation_block? returns false' do
+                before { config.add_receiver_arg_to_any_instance_implementation_block = false }
 
                 it 'invokes RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks= with false' do
                   rspec_configure.mocks
@@ -1146,14 +1146,14 @@ module Transpec
             end
           end
 
-          context 'and SpecSuite#need_to_modify_yield_receiver_..._configuration? return false' do
+          context 'and SpecSuite#need_to_modify_yield_receiver_..._config? return false' do
             before do
               spec_suite.stub(:need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?)
                 .and_return(false)
             end
 
-            context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns true' do
-              before { configuration.add_receiver_arg_to_any_instance_implementation_block = true }
+            context 'and Config#add_receiver_arg_to_any_instance_implementation_block? returns true' do
+              before { config.add_receiver_arg_to_any_instance_implementation_block = true }
 
               it 'does not invoke RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks=' do
                 rspec_configure.mocks.should_not_receive(:yield_receiver_to_any_instance_implementation_blocks=)
@@ -1167,8 +1167,8 @@ module Transpec
               spec_suite.stub(:main_rspec_configure_node?).and_return(false)
             end
 
-            context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns true' do
-              before { configuration.add_receiver_arg_to_any_instance_implementation_block = true }
+            context 'and Config#add_receiver_arg_to_any_instance_implementation_block? returns true' do
+              before { config.add_receiver_arg_to_any_instance_implementation_block = true }
 
               it 'does not invoke RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks=' do
                 rspec_configure.mocks.should_not_receive(:yield_receiver_to_any_instance_implementation_blocks=)
@@ -1178,8 +1178,8 @@ module Transpec
           end
         end
 
-        context 'and Configuration#convert_deprecated_method? returns false' do
-          before { configuration.convert_deprecated_method = false }
+        context 'and Config#convert_deprecated_method? returns false' do
+          before { config.convert_deprecated_method = false }
 
           it 'does not invoke RSpecConfigure.mocks.yield_receiver_to_any_instance_implementation_blocks=' do
             rspec_configure.mocks.should_not_receive(:yield_receiver_to_any_instance_implementation_blocks=)
@@ -1202,8 +1202,8 @@ module Transpec
       context 'when RSpecVersion#non_monkey_patch_example_group_available? returns true' do
         before { rspec_version.stub(:non_monkey_patch_example_group_available?).and_return(true) }
 
-        context 'and Configuration#convert_example_group? is true' do
-          before { configuration.convert_example_group = true }
+        context 'and Config#convert_example_group? is true' do
+          before { config.convert_example_group = true }
 
           it 'invokes RSpecConfigure#expose_dsl_globally= with false' do
             rspec_configure.should_receive(:expose_dsl_globally=).with(false)
@@ -1211,8 +1211,8 @@ module Transpec
           end
         end
 
-        context 'and Configuration#convert_example_group? is false' do
-          before { configuration.convert_example_group = false }
+        context 'and Config#convert_example_group? is false' do
+          before { config.convert_example_group = false }
 
           it 'does nothing' do
             rspec_configure.should_not_receive(:expose_dsl_globally=)
@@ -1224,8 +1224,8 @@ module Transpec
       context 'when RSpecVersion#non_monkey_patch_example_group_available? returns false' do
         before { rspec_version.stub(:non_monkey_patch_example_group_available?).and_return(false) }
 
-        context 'and Configuration#convert_example_group? is true' do
-          before { configuration.convert_example_group = true }
+        context 'and Config#convert_example_group? is true' do
+          before { config.convert_example_group = true }
 
           it 'does nothing' do
             rspec_configure.should_not_receive(:expose_dsl_globally=)
@@ -1238,8 +1238,8 @@ module Transpec
     describe '#process_useless_and_return' do
       let(:messaging_host) { double('messaging host').as_null_object }
 
-      context 'when Configuration#convert_deprecated_method? returns true' do
-        before { configuration.convert_deprecated_method = true }
+      context 'when Config#convert_deprecated_method? returns true' do
+        before { config.convert_deprecated_method = true }
 
         it 'invokes #remove_useless_and_return!' do
           messaging_host.should_receive(:remove_useless_and_return!)
@@ -1247,8 +1247,8 @@ module Transpec
         end
       end
 
-      context 'when Configuration#convert_deprecated_method? returns false' do
-        before { configuration.convert_deprecated_method = false }
+      context 'when Config#convert_deprecated_method? returns false' do
+        before { config.convert_deprecated_method = false }
 
         it 'does nothing' do
           messaging_host.should_not_receive(:remove_useless_and_return!)
@@ -1265,11 +1265,11 @@ module Transpec
           rspec_version.stub(:rspec_2_99?).and_return(true)
         end
 
-        context 'and Configuration#convert_deprecated_method? returns true' do
-          before { configuration.convert_deprecated_method = true }
+        context 'and Config#convert_deprecated_method? returns true' do
+          before { config.convert_deprecated_method = true }
 
-          context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns true' do
-            before { configuration.add_receiver_arg_to_any_instance_implementation_block = true }
+          context 'and Config#add_receiver_arg_to_any_instance_implementation_block? returns true' do
+            before { config.add_receiver_arg_to_any_instance_implementation_block = true }
 
             it 'invokes #add_receiver_arg_to_any_instance_implementation_block!' do
               messaging_host.should_receive(:add_receiver_arg_to_any_instance_implementation_block!)
@@ -1277,8 +1277,8 @@ module Transpec
             end
           end
 
-          context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns false' do
-            before { configuration.add_receiver_arg_to_any_instance_implementation_block = false }
+          context 'and Config#add_receiver_arg_to_any_instance_implementation_block? returns false' do
+            before { config.add_receiver_arg_to_any_instance_implementation_block = false }
 
             it 'does nothing' do
               messaging_host.should_not_receive(:add_instance_arg_to_any_instance_implementation_block!)
@@ -1287,11 +1287,11 @@ module Transpec
           end
         end
 
-        context 'and Configuration#convert_deprecated_method? returns false' do
-          before { configuration.convert_deprecated_method = false }
+        context 'and Config#convert_deprecated_method? returns false' do
+          before { config.convert_deprecated_method = false }
 
-          context 'and Configuration#add_receiver_arg_to_any_instance_implementation_block? returns true' do
-            before { configuration.add_receiver_arg_to_any_instance_implementation_block = true }
+          context 'and Config#add_receiver_arg_to_any_instance_implementation_block? returns true' do
+            before { config.add_receiver_arg_to_any_instance_implementation_block = true }
 
             it 'does nothing' do
               messaging_host.should_not_receive(:add_instance_arg_to_any_instance_implementation_block!)

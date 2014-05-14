@@ -1,7 +1,7 @@
 # coding: utf-8
 
 require 'transpec/commit_message'
-require 'transpec/configuration'
+require 'transpec/config'
 require 'transpec/converter'
 require 'transpec/dynamic_analyzer'
 require 'transpec/option_parser'
@@ -13,7 +13,7 @@ require 'rainbow/ext/string' unless String.method_defined?(:color)
 
 module Transpec
   class CLI
-    attr_reader :project, :configuration, :report
+    attr_reader :project, :config, :report
 
     def self.run(args = ARGV)
       new.run(args)
@@ -21,13 +21,13 @@ module Transpec
 
     def initialize
       @project = Project.new
-      @configuration = Configuration.new
+      @config = Config.new
       @report = Report.new
     end
 
     def run(args)
       begin
-        paths = OptionParser.new(configuration).parse(args)
+        paths = OptionParser.new(config).parse(args)
         fail_if_should_not_continue!
       rescue => error
         warn error.message
@@ -51,7 +51,7 @@ module Transpec
     def process(paths)
       runtime_data = nil
 
-      unless configuration.skip_dynamic_analysis?
+      unless config.skip_dynamic_analysis?
         runtime_data = run_dynamic_analysis(paths)
       end
 
@@ -70,7 +70,7 @@ module Transpec
     def convert_spec(spec, spec_suite)
       puts "Converting #{spec.path}"
 
-      converter = Converter.new(spec_suite, configuration, project.rspec_version)
+      converter = Converter.new(spec_suite, config, project.rspec_version)
       converter.convert_file!(spec)
 
       warn_annotations(converter.report)
@@ -83,7 +83,7 @@ module Transpec
     private
 
     def fail_if_should_not_continue!
-      unless configuration.forced?
+      unless config.forced?
         if Git.command_available? && Git.inside_of_repository? && !Git.clean?
           fail 'The current Git repository is not clean. Aborting. ' \
                'If you want to proceed forcibly, use -f/--force option.'
@@ -101,7 +101,7 @@ module Transpec
 
       puts 'Copying the project for dynamic analysis...'
 
-      DynamicAnalyzer.new(rspec_command: configuration.rspec_command) do |analyzer|
+      DynamicAnalyzer.new(rspec_command: config.rspec_command) do |analyzer|
         puts "Running dynamic analysis with command #{analyzer.rspec_command.inspect}..."
         runtime_data = analyzer.analyze(paths)
       end

@@ -11,7 +11,7 @@ module Transpec
         end
 
         def yield_receiver_to_any_instance_implementation_blocks=(boolean)
-          set_configuration!(:yield_receiver_to_any_instance_implementation_blocks, boolean)
+          set_config!(:yield_receiver_to_any_instance_implementation_blocks, boolean)
         end
       end
     end
