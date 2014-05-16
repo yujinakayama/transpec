@@ -1,6 +1,6 @@
 Convert specs to RSpec 2.99.0.beta2 syntax with Transpec
 
-This conversion is done by Transpec 1.11.1 with the following command:
+This conversion is done by Transpec 1.13.1 with the following command:
     transpec --force
 
 * 2161 conversions
@@ -82,3 +82,5 @@ This conversion is done by Transpec 1.11.1 with the following command:
 * 1 conversion
     from: obj.stub!(:message)
       to: obj.stub(:message)
+
+See also: https://github.com/yujinakayama/transpec#supported-conversions

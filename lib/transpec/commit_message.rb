@@ -20,6 +20,8 @@ module Transpec
         |    transpec #{smart_cli_args}
         |
         |#{conversion_summary}
+        |
+        |See also: https://github.com/yujinakayama/transpec#supported-conversions
       END
     end
 

@@ -55,7 +55,7 @@ module Transpec
         end
 
         it 'has conversion summary' do
-          body_lines[3..-1].join('').should == <<-END.gsub(/^\s+\|/, '')
+          body_lines[3..-3].join('').should == <<-END.gsub(/^\s+\|/, '')
             |* 2 conversions
             |    from: obj.should
             |      to: expect(obj).to
@@ -64,6 +64,14 @@ module Transpec
             |    from: obj.stub(:message)
             |      to: allow(obj).to receive(:message)
           END
+        end
+
+        it 'has blank line after the summary' do
+          body_lines[-2].chomp.should be_empty
+        end
+
+        it 'has the URL at the last line' do
+          body_lines[-1].chomp.should == 'See also: https://github.com/yujinakayama/transpec#supported-conversions'
         end
       end
     end

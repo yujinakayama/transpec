@@ -1,6 +1,6 @@
 Convert specs to RSpec 3.0.0.beta2 syntax with Transpec
 
-This conversion is done by Transpec 1.11.1 with the following command:
+This conversion is done by Transpec 1.13.1 with the following command:
     transpec --force --convert example_group,hook_scope
 
 * 31 conversions
@@ -30,3 +30,5 @@ This conversion is done by Transpec 1.11.1 with the following command:
 * 1 conversion
     from: after(:each) { }
       to: after(:example) { }
+
+See also: https://github.com/yujinakayama/transpec#supported-conversions
