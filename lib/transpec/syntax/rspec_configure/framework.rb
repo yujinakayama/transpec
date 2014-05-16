@@ -1,12 +1,12 @@
 # coding: utf-8
 
-require 'transpec/syntax/rspec_configure/configuration_modification'
+require 'transpec/syntax/rspec_configure/config_modification'
 
 module Transpec
   class Syntax
     class RSpecConfigure
       class Framework
-        include ConfigurationModification
+        include ConfigModification
 
         attr_reader :rspec_configure, :source_rewriter
 
@@ -34,7 +34,7 @@ module Transpec
           fail NotImplementedError
         end
 
-        def generate_configuration_lines(config_name, value)
+        def generate_config_lines(config_name, value = nil)
           lines = super
 
           unless block_node
@@ -86,7 +86,7 @@ module Transpec
           indentation_of_line(rspec_configure.node) + (' ' * 2)
         end
 
-        module SyntaxConfiguration
+        module SyntaxConfig
           def syntaxes
             return [] unless syntaxes_node
 
@@ -107,7 +107,7 @@ module Transpec
               fail ArgumentError, 'Syntaxes must be either an array or a symbol.'
             end
 
-            set_configuration!(:syntax, syntaxes.inspect)
+            set_config!(:syntax, syntaxes.inspect)
           end
 
           private
@@ -115,7 +115,7 @@ module Transpec
           def syntaxes_node
             return @syntaxes_node if instance_variable_defined?(:@syntaxes_node)
 
-            syntax_setter_node = find_configuration_node(:syntax=)
+            syntax_setter_node = find_config_node(:syntax=)
 
             @syntaxes_node = if syntax_setter_node
                                syntax_setter_node.children[2]
@@ -127,7 +127,7 @@ module Transpec
           class UnknownSyntaxError < StandardError; end
         end
 
-        include SyntaxConfiguration
+        include SyntaxConfig
       end
     end
   end

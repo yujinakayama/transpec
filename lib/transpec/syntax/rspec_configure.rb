@@ -1,17 +1,18 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/mixin/rspec_rails'
 require 'transpec/syntax/mixin/send'
 require 'transpec/util'
 
 module Transpec
   class Syntax
     class RSpecConfigure < Syntax
-      require 'transpec/syntax/rspec_configure/configuration_modification'
+      require 'transpec/syntax/rspec_configure/config_modification'
       require 'transpec/syntax/rspec_configure/expectations'
       require 'transpec/syntax/rspec_configure/mocks'
 
-      include Mixin::Send, ConfigurationModification
+      include Mixin::Send, Mixin::RSpecRails, ConfigModification
 
       define_dynamic_analysis do |rewriter|
         code = "TranspecAnalysis.global_data[:rspec_configure_run_order] ||= 0\n" \
@@ -25,7 +26,17 @@ module Transpec
       end
 
       def expose_dsl_globally=(boolean)
-        set_configuration!(:expose_dsl_globally, boolean)
+        set_config!(:expose_dsl_globally, boolean)
+      end
+
+      def infer_spec_type_from_file_location!
+        return if infer_spec_type_from_file_location?
+        return unless rspec_rails?
+        add_config!(:infer_spec_type_from_file_location!)
+      end
+
+      def infer_spec_type_from_file_location?
+        !find_config_node(:infer_spec_type_from_file_location!).nil?
       end
 
       def expectations

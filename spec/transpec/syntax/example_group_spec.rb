@@ -49,6 +49,20 @@ module Transpec
           end
         end
 
+        context "with expression `RSpec.describe 'something' do ... end`" do
+          let(:source) do
+            <<-END
+              RSpec.describe 'something' do
+              end
+            END
+          end
+
+          it 'does nothing' do
+            example_group.convert_to_non_monkey_patch!
+            rewritten_source.should == source
+          end
+        end
+
         context 'when the #describe is in a module' do
           let(:source) do
             <<-END
@@ -163,6 +177,269 @@ module Transpec
 
             it 'properly converts only the outermost #describe' do
               rewritten_source.should == expected_source
+            end
+          end
+        end
+      end
+
+      describe '#add_explicit_type_metadata!' do
+        before do
+          example_group.add_explicit_type_metadata!
+        end
+
+        context 'when it is in top level scope' do
+          context "and expression `describe 'something' do ... end`" do
+            let(:source) do
+              <<-END
+                    describe 'something' do
+                    end
+              END
+            end
+
+            {
+              'controllers' => :controller,
+              'helpers'     => :helper,
+              'mailers'     => :mailer,
+              'models'      => :model,
+              'requests'    => :request,
+              'integration' => :request,
+              'api'         => :request,
+              'routing'     => :routing,
+              'views'       => :view,
+              'features'    => :feature
+            }.each do |directory, type|
+              context "and the file path is \"spec/#{directory}/some_spec.rb\"" do
+                let(:source_path) { "spec/#{directory}/some_spec.rb" }
+
+                let(:expected_source) do
+                  <<-END
+                    describe 'something', :type => #{type.inspect} do
+                    end
+                  END
+                end
+
+                it "adds metadata \":type => #{type.inspect}\"" do
+                  rewritten_source.should == expected_source
+                end
+
+                it "adds record `describe 'some #{type}' { }` " \
+                   "-> `describe 'some #{type}', :type => #{type.inspect} { }`" do
+                  record.original_syntax.should  == "describe 'some #{type}' { }"
+                  record.converted_syntax.should  == "describe 'some #{type}', :type => #{type.inspect} { }"
+                end
+              end
+            end
+
+            context 'and the file path is "spec/contollers/some_namespace/some_spec.rb"' do
+              let(:source_path) { 'spec/controllers/some_namespace/some_spec.rb' }
+
+              let(:expected_source) do
+                <<-END
+                    describe 'something', :type => :controller do
+                    end
+                END
+              end
+
+              it 'adds metadata ":type => :controller' do
+                rewritten_source.should == expected_source
+              end
+            end
+
+            context 'and the file path is "spec/unit/some_spec.rb"' do
+              let(:source_path) { 'spec/unit/some_spec.rb' }
+
+              it 'does nothing' do
+                rewritten_source.should == source
+              end
+            end
+
+            context 'and the file path is "features/controllers/some_spec.rb"' do
+              let(:source_path) { 'features/controllers/some_spec.rb' }
+
+              it 'does nothing' do
+                rewritten_source.should == source
+              end
+            end
+          end
+
+          context "and expression `describe 'something', :foo => :bar do ... end`" do
+            let(:source) do
+              <<-END
+                  describe 'something', :foo => :bar do
+                  end
+              END
+            end
+
+            context 'and the file path is "spec/controllers/some_spec.rb"' do
+              let(:source_path) { 'spec/controllers/some_spec.rb' }
+
+              let(:expected_source) do
+                <<-END
+                  describe 'something', :type => :controller, :foo => :bar do
+                  end
+                END
+              end
+
+              it 'adds metadata ":type => :controller"' do
+                rewritten_source.should == expected_source
+              end
+            end
+          end
+
+          context "and expression `describe 'something', foo: :bar do ... end`" do
+            let(:source) do
+              <<-END
+                  describe 'something', foo: :bar do
+                  end
+              END
+            end
+
+            context 'and the file path is "spec/controllers/some_spec.rb"' do
+              let(:source_path) { 'spec/controllers/some_spec.rb' }
+
+              let(:expected_source) do
+                <<-END
+                  describe 'something', type: :controller, foo: :bar do
+                  end
+                END
+              end
+
+              it 'adds metadata "type: :controller"' do
+                rewritten_source.should == expected_source
+              end
+            end
+          end
+
+          context "and expression `describe 'something', :type => :foo do ... end`" do
+            let(:source) do
+              <<-END
+                  describe 'something', :type => :foo do
+                  end
+              END
+            end
+
+            context 'and the file path is "spec/controllers/some_spec.rb"' do
+              let(:source_path) { 'spec/controllers/some_spec.rb' }
+
+              it 'does nothing' do
+                rewritten_source.should == source
+              end
+            end
+          end
+
+          context "and expression `RSpec.describe 'something' do ... end`" do
+            let(:source) do
+              <<-END
+                  RSpec.describe 'something' do
+                  end
+              END
+            end
+
+            context 'and the file path is "spec/controllers/some_spec.rb"' do
+              let(:source_path) { 'spec/controllers/some_spec.rb' }
+
+              let(:expected_source) do
+                <<-END
+                  RSpec.describe 'something', :type => :controller do
+                  end
+                END
+              end
+
+              it 'adds metadata ":type => :controller"' do
+                rewritten_source.should == expected_source
+              end
+            end
+          end
+
+          context "and expression `shared_examples 'something' do ... end`" do
+            let(:source) do
+              <<-END
+                  shared_examples 'something' do
+                  end
+              END
+            end
+
+            context 'and the file path is "spec/controllers/some_spec.rb"' do
+              let(:source_path) { 'spec/controllers/some_spec.rb' }
+
+              it 'does nothing' do
+                rewritten_source.should == source
+              end
+            end
+          end
+        end
+
+        context 'when #describes are nested' do
+          let(:source_path) { 'spec/controllers/some_spec.rb' }
+
+          let(:source) do
+            <<-END
+              describe 'something' do
+                describe '#some_method' do
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'something', :type => :controller do
+                describe '#some_method' do
+                end
+              end
+            END
+          end
+
+          it 'adds the metadata only to the outmost #describe' do
+            rewritten_source.should == expected_source
+          end
+        end
+
+        context 'with runtime information' do
+          include_context 'dynamic analysis objects'
+
+          let(:source_path) { 'spec/controllers/some_spec.rb' }
+
+          context 'when rspec-rails is loaded in the spec' do
+            let(:source) do
+              <<-END
+                module RSpec
+                  module Rails
+                  end
+                end
+
+                describe 'something' do
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                module RSpec
+                  module Rails
+                  end
+                end
+
+                describe 'something', :type => :controller do
+                end
+              END
+            end
+
+            it 'adds the metadata' do
+              rewritten_source.should == expected_source
+            end
+          end
+
+          context 'when rspec-rails is not loaded in the spec' do
+            let(:source) do
+              <<-END
+                describe 'something' do
+                end
+              END
+            end
+
+            it 'does nothing' do
+              rewritten_source.should == source
             end
           end
         end

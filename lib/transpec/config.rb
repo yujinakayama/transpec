@@ -1,12 +1,13 @@
 # coding: utf-8
 
 module Transpec
-  class Configuration
+  class Config
     NEGATIVE_FORMS_OF_TO = ['not_to', 'to_not'].freeze
     FORMS_OF_BE_FALSEY = ['be_falsey', 'be_falsy'].freeze
     BOOLEAN_MATCHER_TYPES = [:conditional, :exact].freeze
 
     PREDICATES = [
+      [:forced,                                                false],
       [:convert_should,                                        true],
       [:convert_oneliner,                                      true],
       [:convert_should_receive,                                true],
@@ -15,13 +16,13 @@ module Transpec
       [:convert_its,                                           true],
       [:convert_pending,                                       true],
       [:convert_deprecated_method,                             true],
-      [:parenthesize_matcher_arg,                              true],
-      [:add_receiver_arg_to_any_instance_implementation_block, true],
-      [:convert_stub_with_hash_to_allow_to_receive_and_return, false],
       [:convert_example_group,                                 false],
       [:convert_hook_scope,                                    false],
-      [:forced,                                                false],
-      [:skip_dynamic_analysis,                                 false]
+      [:convert_stub_with_hash_to_allow_to_receive_and_return, false],
+      [:skip_dynamic_analysis,                                 false],
+      [:add_receiver_arg_to_any_instance_implementation_block, true],
+      [:add_explicit_type_metadata_to_example_group,           true],
+      [:parenthesize_matcher_arg,                              true]
     ].freeze
 
     PREDICATES.each do |predicate, _|
