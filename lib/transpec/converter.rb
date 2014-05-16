@@ -155,8 +155,14 @@ module Transpec
     end
 
     def process_example_group(example_group)
-      return unless rspec_version.non_monkey_patch_example_group_available?
-      example_group.convert_to_non_monkey_patch! if config.convert_example_group?
+      if rspec_version.non_monkey_patch_example_group_available? && config.convert_example_group?
+        example_group.convert_to_non_monkey_patch!
+      end
+
+      if rspec_version.implicit_spec_type_disablement_available? &&
+         config.add_explicit_type_metadata_to_example_group?
+        example_group.add_explicit_type_metadata!
+      end
     end
 
     def process_rspec_configure(rspec_configure)
@@ -170,6 +176,11 @@ module Transpec
       if need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?
         should_yield = config.add_receiver_arg_to_any_instance_implementation_block?
         rspec_configure.mocks.yield_receiver_to_any_instance_implementation_blocks = should_yield
+      end
+
+      if rspec_version.implicit_spec_type_disablement_available? &&
+         !config.add_explicit_type_metadata_to_example_group?
+        rspec_configure.infer_spec_type_from_file_location!
       end
     end
 

@@ -482,6 +482,7 @@ The one-liner (implicit receiver) `should`:
 * [Pending examples](#pending-examples)
 * [Current example object](#current-example-object)
 * [Custom matcher DSL](#custom-matcher-dsl)
+* [Implicit spec types in rspec-rails](#implicit-spec-types-in-rspec-rails)
 * [Example groups](#example-groups)
 * [Hook scope aliases](#hook-scope-aliases)
 
@@ -1240,6 +1241,55 @@ end
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 3.0
 * See also: [Expectations: Matcher protocol and custom matcher API changes - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#expectations_matcher_protocol_and_custom_matcher_api_changes)
+
+### Implicit spec types in rspec-rails
+
+**This conversion is available only if `rspec-rails` is loaded in your spec and your project's RSpec is `2.99.0.rc1` or later.**
+
+Targets:
+
+```ruby
+# In spec/models/some_model_spec.rb
+RSpec.configure do |rspec|
+end
+
+describe SomeModel do
+end
+```
+
+Will be converted to:
+
+```ruby
+RSpec.configure do |rspec|
+end
+
+describe SomeModel, :type => :model do
+end
+
+# With `--no-explicit-spec-type`
+RSpec.configure do |rspec|
+  rspec.infer_spec_type_from_file_location!
+end
+
+describe SomeModel do
+end
+```
+
+Here's an excerpt from [the warning](https://github.com/rspec/rspec-rails/blob/ab6313b/lib/rspec/rails/infer_type_configuration.rb#L13-L22) in RSpec 2.99:
+
+> rspec-rails 3 will no longer automatically infer an example group's spec type from the file location. You can explicitly opt-in to this feature using this snippet:
+>
+> ```ruby
+> RSpec.configure do |config|
+>   config.infer_spec_type_from_file_location!
+> end
+> ```
+>
+> If you wish to manually label spec types via metadata you can safely ignore this warning and continue upgrading to RSpec 3 without addressing it.
+
+* This conversion can be disabled by: `--keep deprecated`
+* Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
+* See also: [Consider making example group mixins more explicit · rspec/rspec-rails](https://github.com/rspec/rspec-rails/issues/662)
 
 ### Example groups
 

@@ -67,9 +67,10 @@ class READMEContext
     converted_source = nil
 
     in_isolated_env do
-      FileHelper.create_file('spec/example_spec.rb', source)
+      path = options[:path] || 'spec/example_spec.rb'
+      FileHelper.create_file(path, source)
       cli.run(cli_args)
-      converted_source = File.read('spec/example_spec.rb')
+      converted_source = File.read(path)
     end
 
     converted_source = unwrap_source(converted_source, options[:wrap_with])

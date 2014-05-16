@@ -59,6 +59,22 @@ module Transpec
     end
 
     [
+      :implicit_spec_type_disablement_available?
+    ].each do |method|
+      include_examples 'version comparisons', method, [
+        ['2.14.0',       false],
+        ['2.99.0.beta1', false],
+        ['2.99.0.beta2', false],
+        ['2.99.0.rc1',   true],
+        ['2.99.0',       true],
+        ['3.0.0.beta1',  false],
+        ['3.0.0.beta2',  false],
+        ['3.0.0.rc1',    true],
+        ['3.0.0',        true]
+      ]
+    end
+
+    [
       :receive_messages_available?
     ].each do |method|
       include_examples 'version comparisons', method, [

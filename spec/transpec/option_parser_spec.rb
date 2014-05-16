@@ -183,6 +183,15 @@ module Transpec
         end
       end
 
+      describe '-t/--no-explicit-spec-type option' do
+        let(:args) { ['--no-explicit-spec-type'] }
+
+        it 'sets Config#add_explicit_type_metadata_to_example_group? false' do
+          parser.parse(args)
+          config.add_explicit_type_metadata_to_example_group?.should be_false
+        end
+      end
+
       describe '-t/--convert-stub-with-hash option' do
         let(:args) { ['--convert-stub-with-hash'] }
 

@@ -26,6 +26,7 @@ module Transpec
         [:boolean_matcher_type,                                   :conditional],
         [:form_of_be_falsey,                                      'be_falsey'],
         [:add_receiver_arg_to_any_instance_implementation_block?, true],
+        [:add_explicit_type_metadata_to_example_group?,           true],
         [:parenthesize_matcher_arg?,                              true]
       ].each do |attribute, value|
         describe "##{attribute}" do

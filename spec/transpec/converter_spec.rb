@@ -1094,6 +1094,41 @@ module Transpec
           end
         end
       end
+
+      context 'when RSpecVersion#implicit_spec_type_disablement_available? returns true' do
+        before { rspec_version.stub(:implicit_spec_type_disablement_available?).and_return(true) }
+
+        context 'and Config#add_explicit_type_metadata_to_example_group? is true' do
+          before { config.add_explicit_type_metadata_to_example_group = true }
+
+          it 'invokes ExampleGroup#add_explicit_type_metadata!' do
+            example_group.should_receive(:add_explicit_type_metadata!)
+            converter.process_example_group(example_group)
+          end
+        end
+
+        context 'and Config#add_explicit_type_metadata_to_example_group? is false' do
+          before { config.add_explicit_type_metadata_to_example_group = false }
+
+          it 'does nothing' do
+            example_group.should_not_receive(:add_explicit_type_metadata!)
+            converter.process_example_group(example_group)
+          end
+        end
+      end
+
+      context 'when RSpecVersion#implicit_spec_type_disablement_available? returns false' do
+        before { rspec_version.stub(:implicit_spec_type_disablement_available?).and_return(false) }
+
+        context 'and Config#add_explicit_type_metadata_to_example_group? is true' do
+          before { config.add_explicit_type_metadata_to_example_group = true }
+
+          it 'does nothing' do
+            example_group.should_not_receive(:add_explicit_type_metadata!)
+            converter.process_example_group(example_group)
+          end
+        end
+      end
     end
 
     describe '#process_rspec_configure' do

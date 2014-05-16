@@ -91,6 +91,10 @@ module Transpec
         config.add_receiver_arg_to_any_instance_implementation_block = false
       end
 
+      define_option('-t', '--no-explicit-spec-type') do
+        config.add_explicit_type_metadata_to_example_group = false
+      end
+
       define_option('-p', '--no-parentheses-matcher-arg') do
         config.parenthesize_matcher_arg = false
       end
@@ -171,6 +175,10 @@ module Transpec
         '-a' => [
           'Suppress yielding receiver instances to `any_instance`',
           'implementation blocks as the first block argument.'
+        ],
+        '-t' => [
+          'Suppress adding explicit `:type` metadata to example groups in a',
+          'project using rspec-rails.'
         ],
         '-p' => [
           'Suppress parenthesizing arguments of matchers when converting',

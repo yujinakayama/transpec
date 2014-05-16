@@ -21,6 +21,7 @@ module Transpec
       [:convert_stub_with_hash_to_allow_to_receive_and_return, false],
       [:skip_dynamic_analysis,                                 false],
       [:add_receiver_arg_to_any_instance_implementation_block, true],
+      [:add_explicit_type_metadata_to_example_group,           true],
       [:parenthesize_matcher_arg,                              true]
     ].freeze
 
