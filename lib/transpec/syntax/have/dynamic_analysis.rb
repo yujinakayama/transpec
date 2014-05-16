@@ -30,7 +30,7 @@ module Transpec
             rewriter.register_request(target_node, key, code, target_type)
 
             key = :project_requires_collection_matcher?
-            code = 'defined?(RSpec::Rails) || defined?(RSpec::CollectionMatchers)'
+            code = 'defined?(RSpec::CollectionMatchers)'
             rewriter.register_request(target_node, key, code, :context)
           end
         end

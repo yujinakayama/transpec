@@ -624,7 +624,7 @@ expect(1.0 / 3.0).to be_within(0.001).of(0.333)
 
 ### `have(n).items` matcher
 
-**This conversion will be disabled automatically if `rspec-collection_matchers` or `rspec-rails` is loaded in your spec.**
+**This conversion will be disabled automatically if `rspec-collection_matchers` is loaded in your spec.**
 
 Targets:
 

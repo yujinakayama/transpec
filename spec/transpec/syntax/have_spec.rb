@@ -110,7 +110,7 @@ module Transpec
 
           context 'with runtime information' do
             include_context 'dynamic analysis objects'
-            it { should be_false }
+            it { should be_true }
           end
         end
 
