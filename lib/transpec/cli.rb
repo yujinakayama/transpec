@@ -58,7 +58,7 @@ module Transpec
       spec_suite = SpecSuite.new(paths, runtime_data)
       # Actually #analyze does not need to be invoked here, but doing this will avoid long freeze
       # while conversion of files.
-      puts 'Aggregating spec suite data...'
+      puts 'Gathering the spec suite data...'
       spec_suite.analyze
       puts
 
