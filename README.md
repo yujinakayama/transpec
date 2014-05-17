@@ -664,9 +664,7 @@ There's an option to continue using `have(n).items` matcher with [rspec-collecti
 If you choose to do so, disable this conversion by either:
 
 * Specify `--keep have_items` option manually.
-* Require `rspec-collection_matchers` or `rspec-rails` in your spec so that Transpec automatically disables this conversion.
-
-Note: `rspec-rails` 3.0 [still uses `have(n).items` matcher with `rspec-collection_matchers`](https://github.com/rspec/rspec-rails/blob/v3.0.0.beta1/rspec-rails.gemspec#L41).
+* Require `rspec-collection_matchers` in your spec so that Transpec automatically disables this conversion.
 
 ---
 
@@ -676,7 +674,7 @@ Note: `rspec-rails` 3.0 [still uses `have(n).items` matcher with `rspec-collecti
 
 ### One-liner expectations with `have(n).items` matcher
 
-**This conversion will be disabled automatically if `rspec-collection_matchers` or `rspec-rails` is loaded in your spec.**
+**This conversion will be disabled automatically if `rspec-collection_matchers` is loaded in your spec.**
 
 Targets:
 
