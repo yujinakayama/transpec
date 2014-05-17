@@ -998,8 +998,6 @@ end
 
 describe 'example' do
   it 'is any_instance implementation block' do
-    Klass.any_instance.should_receive(:message) { |arg| puts arg }
-    Klass.any_instance.stub(:message) { |arg| puts arg }
     expect_any_instance_of(Klass).to receive(:message) { |arg| puts arg }
     allow_any_instance_of(Klass).to receive(:message) { |arg| puts arg }
   end
@@ -1019,8 +1017,6 @@ describe 'example' do
   it 'is any_instance implementation block' do
     expect_any_instance_of(Klass).to receive(:message) { |instance, arg| puts arg }
     allow_any_instance_of(Klass).to receive(:message) { |instance, arg| puts arg }
-    expect_any_instance_of(Klass).to receive(:message) { |instance, arg| puts arg }
-    allow_any_instance_of(Klass).to receive(:message) { |instance, arg| puts arg }
   end
 end
 
@@ -1033,8 +1029,6 @@ end
 
 describe 'example' do
   it 'is any_instance implementation block' do
-    expect_any_instance_of(Klass).to receive(:message) { |arg| puts arg }
-    allow_any_instance_of(Klass).to receive(:message) { |arg| puts arg }
     expect_any_instance_of(Klass).to receive(:message) { |arg| puts arg }
     allow_any_instance_of(Klass).to receive(:message) { |arg| puts arg }
   end
