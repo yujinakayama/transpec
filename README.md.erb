@@ -579,8 +579,6 @@ Will be converted to:
 
 So, converting `be_true`/`be_false` to `be_truthy`/`be_falsey` never breaks your specs and this is Transpec's default. If you are willing to test boolean values strictly, you can convert them to `be true`/`be false` with `--boolean-matcher true,false` option. Note that this may break your specs if your application code don't return exact boolean values.
 
----
-
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
 * See also: [Consider renaming `be_true` and `be_false` to `be_truthy` and `be_falsey` · rspec/rspec-expectations](https://github.com/rspec/rspec-expectations/issues/283)
@@ -1236,8 +1234,6 @@ Here's an excerpt from [the warning](https://github.com/rspec/rspec-core/blob/7d
 >   c.expose_current_running_example_as :example
 > end
 > ```
-
----
 
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
