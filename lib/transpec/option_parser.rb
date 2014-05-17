@@ -148,7 +148,7 @@ module Transpec
           "  *its* (to `describe '#attr' { subject { }; it { } }`)",
           '  *pending* (to `skip`)',
           '  *deprecated* (all other deprecated syntaxes to latest syntaxes)',
-          'These are all converted by default.'
+          'These conversions are enabled by default.'
         ],
         '-v' => [
           'Enable specific conversions that are disabled by default.',
