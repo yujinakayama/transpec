@@ -2,6 +2,8 @@
 
 ## Development
 
+## v2.0.0
+
 * Support conversion of implicit spec types in rspec-rails. ([#57](https://github.com/yujinakayama/transpec/issues/57))
 * Enable conversion of `have(n).items` even if rspec-rails is loaded in the spec according to the removal of rspec-collection_matchers in rspec-rails 3.
 * Remove support for deprecated options `-m/--generate-commit-message` and `-t/--convert-stub-with-hash`.
