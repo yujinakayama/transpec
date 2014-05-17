@@ -207,17 +207,7 @@ module Transpec
     end
 
     def convert_deprecated_options(raw_args)
-      raw_args.each_with_object([]) do |arg, args|
-        case arg
-        when '-m', '--generate-commit-message'
-          deprecate('-m/--generate-commit-message option')
-        when '-t', '--convert-stub-with-hash'
-          deprecate('-t/--convert-stub-with-hash', '`--convert stub_with_hash`')
-          args.concat(%w(--convert stub_with_hash))
-        else
-          args << arg
-        end
-      end
+      raw_args.dup
     end
 
     def deprecate(subject, alternative = nil)

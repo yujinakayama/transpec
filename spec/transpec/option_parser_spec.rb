@@ -39,26 +39,6 @@ module Transpec
         end
       end
 
-      describe '-m/--generate-commit-message option' do
-        let(:args) { ['--generate-commit-message'] }
-
-        before do
-          parser.stub(:warn)
-        end
-
-        it 'is deprecated' do
-          parser.should_receive(:warn) do |message|
-            message.should =~ /--generate-commit-message.+deprecated/i
-          end
-
-          parser.parse(args)
-        end
-
-        it 'does not raise error' do
-          -> { parser.parse(args) }.should_not raise_error
-        end
-      end
-
       describe '-k/--keep option' do
         [
           ['should',         :convert_should?],
@@ -189,27 +169,6 @@ module Transpec
         it 'sets Config#add_explicit_type_metadata_to_example_group? false' do
           parser.parse(args)
           config.add_explicit_type_metadata_to_example_group?.should be_false
-        end
-      end
-
-      describe '-t/--convert-stub-with-hash option' do
-        let(:args) { ['--convert-stub-with-hash'] }
-
-        before do
-          parser.stub(:warn)
-        end
-
-        it 'sets Config#convert_stub_with_hash_to_allow_to_receive_and_return? true' do
-          parser.parse(args)
-          config.convert_stub_with_hash_to_allow_to_receive_and_return?.should be_true
-        end
-
-        it 'is deprecated' do
-          parser.should_receive(:warn) do |message|
-            message.should =~ /--convert-stub-with-hash.+deprecated/i
-          end
-
-          parser.parse(args)
         end
       end
 
