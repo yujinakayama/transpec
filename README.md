@@ -1331,8 +1331,8 @@ describe 'example' do
   before(:all) { do_something }
 end
 
-RSpec.configure do |config|
-  before(:suite) { do_something }
+RSpec.configure do |rspec|
+  rspec.before(:suite) { do_something }
 end
 ```
 
@@ -1345,8 +1345,8 @@ describe 'example' do
   before(:context) { do_something }
 end
 
-RSpec.configure do |config|
-  before(:suite) { do_something }
+RSpec.configure do |rspec|
+  rspec.before(:suite) { do_something }
 end
 ```
 
