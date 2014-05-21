@@ -231,10 +231,9 @@ module Transpec
           end
 
           let(:current_example_objects) do
-            ast.each_node.reduce([]) do |objects, node|
+            ast.each_node.each_with_object([]) do |node, objects|
               current_example_object = CurrentExample.new(node, source_rewriter, runtime_data)
               objects << current_example_object if current_example_object.conversion_target?
-              objects
             end
           end
 
