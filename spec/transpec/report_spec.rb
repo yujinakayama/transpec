@@ -81,7 +81,7 @@ module Transpec
 
     describe '#stats' do
       it 'returns stats string' do
-        report.stats.should == '3 conversions, 1 incomplete, 2 cautions, 0 errors'
+        report.stats.should == '3 conversions, 1 incomplete, 2 warnings, 0 errors'
       end
     end
 

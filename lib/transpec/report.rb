@@ -59,7 +59,7 @@ module Transpec
                      :green
                    end
 
-      conversion_incomplete_caution_stats(base_color) + error_stats(base_color)
+      conversion_incomplete_warning_stats(base_color) + error_stats(base_color)
     end
 
     def stats
@@ -97,10 +97,10 @@ module Transpec
       text << indentation + '    ' + colorize('to: ', :cyan) + record.converted_syntax + "\n"
     end
 
-    def conversion_incomplete_caution_stats(color)
+    def conversion_incomplete_warning_stats(color)
       text = pluralize(records.count, 'conversion') + ', '
       text << pluralize(conversion_errors.count, 'incomplete') + ', '
-      text << pluralize(annotation_count, 'caution') + ', '
+      text << pluralize(annotation_count, 'warning') + ', '
       colorize(text, color)
     end
 
