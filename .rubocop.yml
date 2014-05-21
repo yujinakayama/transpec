@@ -55,3 +55,7 @@ BracesAroundHashParameters:
 # TODO: Shorten to 100.
 ClassLength:
   Max: 137
+
+# This cop should consider symmetries.
+GuardClause:
+  Enabled: false
