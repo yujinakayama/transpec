@@ -3,6 +3,7 @@
 ## Development
 
 * Disable invalid conversion of `expect(model).to have(n).errors_on(:attr)`. ([#62](https://github.com/yujinakayama/transpec/issues/62))
+* Fix false positive conversion of `expect { }.should raise_error(SpecificErrorClass)`. ([#64](https://github.com/yujinakayama/transpec/issues/64))
 
 ## v2.0.0
 

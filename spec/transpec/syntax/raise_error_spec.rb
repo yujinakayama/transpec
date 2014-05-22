@@ -63,6 +63,28 @@ module Transpec
           end
         end
 
+        context 'with expression `expect { }.should raise_error(SpecificErrorClass)`' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'raises SpecificErrorClass' do
+                  expect { do_something }.should raise_error(SpecificErrorClass)
+                end
+              end
+            END
+          end
+
+          let(:raise_error_object) { expect_object.raise_error_matcher }
+
+          it 'does nothing' do
+            rewritten_source.should == source
+          end
+
+          it 'reports nothing' do
+            raise_error_object.report.records.should be_empty
+          end
+        end
+
         context 'with expression `lambda { }.should raise_error(SpecificErrorClass) { |error| ... }`' do
           let(:source) do
             <<-END

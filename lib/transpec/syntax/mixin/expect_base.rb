@@ -27,7 +27,8 @@ module Transpec
 
         def positive?
           to_method_name = to_node.children[1]
-          to_method_name == :to
+          # `expect { do_something }.should raise_error` is possible in RSpec 2.
+          [:to, :should].include?(to_method_name)
         end
 
         def subject_node
