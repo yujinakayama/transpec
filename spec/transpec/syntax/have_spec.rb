@@ -139,6 +139,81 @@ module Transpec
             it { should be_false }
           end
         end
+
+        context 'with expression `expect(obj).to have(2).errors_on(:name)`' do
+          subject { expect_object.have_matcher.conversion_target? }
+
+          context 'and subject includes ActiveModel::Validations' do
+            let(:source) do
+              <<-END
+                module ActiveModel
+                  module Validations
+                    def errors_on(attribute, options = {})
+                      valid_args = [options[:context]].compact
+                      self.valid?(*valid_args)
+
+                      [self.errors[attribute]].flatten.compact
+                    end
+                  end
+                end
+
+                class SomeModel
+                  include ActiveModel::Validations
+
+                  def valid?(*)
+                    false
+                  end
+
+                  def errors
+                    { name: [:foo, :bar] }
+                  end
+                end
+
+                describe SomeModel do
+                  it 'has 2 errors on name' do
+                    expect(subject).to have(2).errors_on(:name)
+                  end
+                end
+              END
+            end
+
+            context 'without runtime information' do
+              it { should be_true }
+            end
+
+            context 'with runtime information' do
+              include_context 'dynamic analysis objects'
+              it { should be_false }
+            end
+          end
+
+          context 'and subject includes ActiveModel::Validations' do
+            let(:source) do
+              <<-END
+                class SomeModel
+                  def errors_on(*)
+                    [:foo, :bar]
+                  end
+                end
+
+                describe SomeModel do
+                  it 'has 2 errors on name' do
+                    expect(subject).to have(2).errors_on(:name)
+                  end
+                end
+              END
+            end
+
+            context 'without runtime information' do
+              it { should be_true }
+            end
+
+            context 'with runtime information' do
+              include_context 'dynamic analysis objects'
+              it { should be_true }
+            end
+          end
+        end
       end
 
       describe '#convert_to_standard_expectation!' do
@@ -931,24 +1006,24 @@ module Transpec
           end
         end
 
-        context 'with expression `expect(obj).to have(2).errors_on(:name)`' do
+        context 'with expression `expect(obj).to have(2).attrs_on(:name)`' do
           let(:have_object) { expect_object.have_matcher }
 
           context 'with runtime information' do
             include_context 'dynamic analysis objects'
 
-            context 'and subject responds to #errors_on' do
+            context 'and subject responds to #attrs_on' do
               let(:source) do
                 <<-END
                   class SomeModel
-                    def errors_on(attribute)
+                    def attrs_on(attribute)
                       [:foo, :bar]
                     end
                   end
 
                   describe SomeModel do
-                    it 'has 2 errors on name' do
-                      expect(subject).to have(2).errors_on(:name)
+                    it 'has 2 attributes on name' do
+                      expect(subject).to have(2).attrs_on(:name)
                     end
                   end
                 END
@@ -957,46 +1032,46 @@ module Transpec
               let(:expected_source) do
                 <<-END
                   class SomeModel
-                    def errors_on(attribute)
+                    def attrs_on(attribute)
                       [:foo, :bar]
                     end
                   end
 
                   describe SomeModel do
-                    it 'has 2 errors on name' do
-                      expect(subject.errors_on(:name).size).to eq(2)
+                    it 'has 2 attributes on name' do
+                      expect(subject.attrs_on(:name).size).to eq(2)
                     end
                   end
                 END
               end
 
-              it 'converts to `expect(obj.errors_on(:name).size).to eq(2)` form' do
+              it 'converts to `expect(obj.attrs_on(:name).size).to eq(2)` form' do
                 have_object.convert_to_standard_expectation!
                 rewritten_source.should == expected_source
               end
 
               it 'adds record ' \
-                 '`expect(obj).to have(n).errors_on(...)` -> `expect(obj.errors_on(...).size).to eq(n)`' do
+                 '`expect(obj).to have(n).attrs_on(...)` -> `expect(obj.attrs_on(...).size).to eq(n)`' do
                 have_object.convert_to_standard_expectation!
-                record.original_syntax.should  == 'expect(obj).to have(n).errors_on(...)'
-                record.converted_syntax.should == 'expect(obj.errors_on(...).size).to eq(n)'
+                record.original_syntax.should  == 'expect(obj).to have(n).attrs_on(...)'
+                record.converted_syntax.should == 'expect(obj.attrs_on(...).size).to eq(n)'
               end
             end
 
-            context 'and #errors_on is a private method' do
+            context 'and #attrs_on is a private method' do
               let(:source) do
                 <<-END
                   class SomeModel
                     private
 
-                    def errors_on(attribute)
+                    def attrs_on(attribute)
                       [:foo, :bar]
                     end
                   end
 
                   describe SomeModel do
-                    it 'has 2 errors on name' do
-                      expect(subject).to have(2).errors_on(:name)
+                    it 'has 2 attributes on name' do
+                      expect(subject).to have(2).attrs_on(:name)
                     end
                   end
                 END
@@ -1007,29 +1082,29 @@ module Transpec
                   class SomeModel
                     private
 
-                    def errors_on(attribute)
+                    def attrs_on(attribute)
                       [:foo, :bar]
                     end
                   end
 
                   describe SomeModel do
-                    it 'has 2 errors on name' do
-                      expect(subject.send(:errors_on, :name).size).to eq(2)
+                    it 'has 2 attributes on name' do
+                      expect(subject.send(:attrs_on, :name).size).to eq(2)
                     end
                   end
                 END
               end
 
-              it 'converts to `expect(obj.send(:errors_on, :name).size).to eq(2)` form' do
+              it 'converts to `expect(obj.send(:attrs_on, :name).size).to eq(2)` form' do
                 have_object.convert_to_standard_expectation!
                 rewritten_source.should == expected_source
               end
 
               it 'adds record ' \
-                 '`expect(obj).to have(n).errors_on(...)` -> `expect(obj.send(:errors_on, ...).size).to eq(n)`' do
+                 '`expect(obj).to have(n).attrs_on(...)` -> `expect(obj.send(:attrs_on, ...).size).to eq(n)`' do
                 have_object.convert_to_standard_expectation!
-                record.original_syntax.should  == 'expect(obj).to have(n).errors_on(...)'
-                record.converted_syntax.should == 'expect(obj.send(:errors_on, ...).size).to eq(n)'
+                record.original_syntax.should  == 'expect(obj).to have(n).attrs_on(...)'
+                record.converted_syntax.should == 'expect(obj.send(:attrs_on, ...).size).to eq(n)'
               end
             end
           end
@@ -1038,14 +1113,14 @@ module Transpec
             let(:source) do
               <<-END
                 class SomeModel
-                  def errors_on(attribute)
+                  def attrs_on(attribute)
                     [:foo, :bar]
                   end
                 end
 
                 describe SomeModel do
-                  it 'has 2 errors on name' do
-                    expect(subject).to have(2).errors_on(:name)
+                  it 'has 2 attributes on name' do
+                    expect(subject).to have(2).attrs_on(:name)
                   end
                 end
               END
@@ -1054,29 +1129,29 @@ module Transpec
             let(:expected_source) do
               <<-END
                 class SomeModel
-                  def errors_on(attribute)
+                  def attrs_on(attribute)
                     [:foo, :bar]
                   end
                 end
 
                 describe SomeModel do
-                  it 'has 2 errors on name' do
-                    expect(subject.errors_on(:name).size).to eq(2)
+                  it 'has 2 attributes on name' do
+                    expect(subject.attrs_on(:name).size).to eq(2)
                   end
                 end
               END
             end
 
-            it 'converts to `expect(obj.errors_on(:name).size).to eq(2)` form' do
+            it 'converts to `expect(obj.attrs_on(:name).size).to eq(2)` form' do
               have_object.convert_to_standard_expectation!
               rewritten_source.should == expected_source
             end
 
             it 'adds record ' \
-               '`expect(obj).to have(n).errors_on(...)` -> `expect(obj.errors_on(...).size).to eq(n)`' do
+               '`expect(obj).to have(n).attrs_on(...)` -> `expect(obj.attrs_on(...).size).to eq(n)`' do
               have_object.convert_to_standard_expectation!
-              record.original_syntax.should  == 'expect(obj).to have(n).errors_on(...)'
-              record.converted_syntax.should == 'expect(obj.errors_on(...).size).to eq(n)'
+              record.original_syntax.should  == 'expect(obj).to have(n).attrs_on(...)'
+              record.converted_syntax.should == 'expect(obj.attrs_on(...).size).to eq(n)'
             end
           end
         end

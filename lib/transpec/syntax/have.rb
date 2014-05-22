@@ -29,7 +29,9 @@ module Transpec
       end
 
       def conversion_target?
-        super && !runtime_subject_data(:project_requires_collection_matcher?)
+        return false unless super
+        return false if runtime_subject_data(:project_requires_collection_matcher?)
+        !active_model_errors_on?
       end
 
       def convert_to_standard_expectation!(parenthesize_matcher_arg = true)
@@ -68,6 +70,11 @@ module Transpec
       def subject_is_owner_of_collection?
         return true if items_method_has_arguments?
         runtime_subject_data(:collection_accessor)
+      end
+
+      def active_model_errors_on?
+        return false unless runtime_subject_data(:subject_includes_active_model_validations?)
+        [:errors_on, :error_on].include?(items_name)
       end
 
       def collection_accessor_is_private?

@@ -29,6 +29,10 @@ module Transpec
             code = "#{subject_code}.private_methods.include?(#{items_name.inspect})"
             rewriter.register_request(target_node, key, code, target_type)
 
+            key = :subject_includes_active_model_validations?
+            code = 'is_a?(ActiveModel::Validations)'
+            rewriter.register_request(target_node, key, code, target_type)
+
             key = :project_requires_collection_matcher?
             code = 'defined?(RSpec::CollectionMatchers)'
             rewriter.register_request(target_node, key, code, :context)

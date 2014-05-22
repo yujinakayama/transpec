@@ -2,6 +2,8 @@
 
 ## Development
 
+* Disable invalid conversion of `expect(model).to have(n).errors_on(:attr)`. ([#62](https://github.com/yujinakayama/transpec/issues/62))
+
 ## v2.0.0
 
 * Support conversion of implicit spec types in rspec-rails. ([#57](https://github.com/yujinakayama/transpec/issues/57))

@@ -639,6 +639,9 @@ expect(team).to have(3).players
 
 # Assume #players is a private method.
 expect(team).to have(3).players
+
+# Validation expectations in rspec-rails.
+expect(model).to have(2).errors_on(:name)
 ```
 
 Will be converted to:
@@ -656,6 +659,9 @@ expect(team.players.size).to eq(3)
 
 # have(n).items matcher invokes #players even if it's a private method.
 expect(team.send(:players).size).to eq(3)
+
+# Conversion of `have(n).errors_on(:attr)` is not supported.
+expect(model).to have(2).errors_on(:name)
 ```
 
 There's an option to continue using `have(n).items` matcher with [rspec-collection_matchers](https://github.com/rspec/rspec-collection_matchers) which is a gem extracted from `rspec-expectations`.
@@ -664,7 +670,25 @@ If you choose to do so, disable this conversion by either:
 * Specify `--keep have_items` option manually.
 * Require `rspec-collection_matchers` in your spec so that Transpec automatically disables this conversion.
 
----
+#### Note about `expect(model).to have(n).errors_on(:attr)`
+
+The idiom `expect(model).to have(n).errors_on(:attr)` in rspec-rails 2 consists of
+`have(n).items` matcher and a monkey-patch [`ActiveModel::Validations#errors_on`](https://github.com/rspec/rspec-rails/blob/v2.14.2/lib/rspec/rails/extensions/active_record/base.rb#L34-L57).
+In RSpec 2 the monkey-patch was provided by rspec-rails,
+but in RSpec 3 it's extracted to rspec-collection_matchers along with `have(n).items` matcher.
+So if you convert it to `expect(model.errors_on(:attr).size).to eq(2)` without rspec-collection_matchers,
+it fails with error `undefined method 'error_on' for #<Model ...>`.
+
+Technically it can be converted to:
+
+```ruby
+model.valid?
+expect(model.errors[:attr].size).to eq(n)
+```
+
+However currently Transpec doesn't support this conversion
+since this is probably not what most people want.
+So using rspec-collection_matchers gem is recommended for now.
 
 * This conversion can be disabled by: `--keep have_items`
 * Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
