@@ -30,14 +30,10 @@ module Transpec
         super && receiver_node && [:should, :should_not].include?(method_name)
       end
 
-      def expect_available?
-        syntax_available?(__method__)
-      end
-
       def expectize!(negative_form = 'not_to')
         fail ContextError.new("##{method_name}", '#expect', selector_range) unless expect_available?
 
-        if proc_literal?(subject_node)
+        if proc_subject?
           replace(range_of_subject_method_taking_block, 'expect')
         else
           wrap_subject_in_expect!
@@ -51,13 +47,25 @@ module Transpec
 
       private
 
+      def expect_available?
+        syntax_available?(__method__)
+      end
+
+      def proc_subject?
+        return true if proc_literal?(subject_node)
+        return false unless subject_node.block_type?
+        send_node = subject_node.children.first
+        receiver_node, method_name, = *send_node
+        receiver_node.nil? && method_name == :expect
+      end
+
       def range_of_subject_method_taking_block
         send_node = subject_node.children.first
         send_node.loc.expression
       end
 
       def register_record(negative_form_of_to)
-        if proc_literal?(subject_node)
+        if proc_subject?
           original_syntax = "#{range_of_subject_method_taking_block.source} { }.should"
           converted_syntax = 'expect { }.'
         else

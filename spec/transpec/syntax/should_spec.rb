@@ -399,7 +399,8 @@ module Transpec
           'lambda', 'Kernel.lambda', '::Kernel.lambda',
           'proc', 'Kernel.proc', '::Kernel.proc',
           'Proc.new', '::Proc.new',
-          '->'
+          '->',
+          'expect'
         ].each do |method|
           context "with expression `#{method} { ... }.should`" do
             let(:source) do
