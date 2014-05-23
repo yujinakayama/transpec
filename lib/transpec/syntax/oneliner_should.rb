@@ -5,6 +5,8 @@ require 'transpec/syntax/mixin/should_base'
 require 'transpec/rspec_dsl'
 require 'transpec/util'
 require 'active_support/inflector/methods'
+require 'active_support/inflector/inflections'
+require 'active_support/inflections'
 
 module Transpec
   class Syntax

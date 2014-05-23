@@ -5,6 +5,7 @@
 * Disable invalid conversion of `expect(model).to have(n).errors_on(:attr)`. ([#62](https://github.com/yujinakayama/transpec/issues/62))
 * Fix false positive conversion of `expect { }.should raise_error(SpecificErrorClass)`. ([#64](https://github.com/yujinakayama/transpec/issues/64))
 * Support conversion of `expect { do_something }.should`.
+* Relax `activesupport` dependency from `'~> 4.0'` to `'>= 3.0', '< 5.0'` in case that `transpec` is added to a `Gemfile`. ([#63](https://github.com/yujinakayama/transpec/pull/63))
 
 ## v2.0.0
 
