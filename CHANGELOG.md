@@ -2,6 +2,8 @@
 
 ## Development
 
+* Deprecate `--no-parentheses-matcher-arg` option in favor of `--no-parens-matcher-arg`.
+
 ## v2.1.0
 
 * Disable invalid conversion of `expect(model).to have(n).errors_on(:attr)`. ([#62](https://github.com/yujinakayama/transpec/issues/62))

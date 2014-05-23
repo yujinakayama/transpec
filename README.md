@@ -329,7 +329,7 @@ Note that this is not same as `--keep deprecated` since this configures `yield_r
 
 See [Supported Conversions - `any_instance` implementation blocks](#any_instance-implementation-blocks) for more details.
 
-### `-p/--no-parentheses-matcher-arg`
+### `-p/--no-parens-matcher-arg`
 
 Suppress parenthesizing arguments of matchers when converting
 `should` with operator matcher to `expect` with non-operator matcher
@@ -358,7 +358,7 @@ describe 'converted spec' do
   end
 end
 
-describe 'converted spec with -p/--no-parentheses-matcher-arg option' do
+describe 'converted spec with -p/--no-parens-matcher-arg option' do
   it 'is an example' do
     expect(1).to eq 1
     expect(2).to be > 1

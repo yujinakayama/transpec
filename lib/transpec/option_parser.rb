@@ -95,7 +95,7 @@ module Transpec
         config.add_explicit_type_metadata_to_example_group = false
       end
 
-      define_option('-p', '--no-parentheses-matcher-arg') do
+      define_option('-p', '--no-parens-matcher-arg') do
         config.parenthesize_matcher_arg = false
       end
 
@@ -207,12 +207,20 @@ module Transpec
     end
 
     def convert_deprecated_options(raw_args)
-      raw_args.dup
+      raw_args.each_with_object([]) do |arg, args|
+        case arg
+        when '--no-parentheses-matcher-arg'
+          deprecate('--no-parentheses-matcher-arg option', '--no-parens-matcher-arg')
+          args << '--no-parens-matcher-arg'
+        else
+          args << arg
+        end
+      end
     end
 
     def deprecate(subject, alternative = nil)
       message =  "DEPRECATION: #{subject} is deprecated."
-      message << " Please use #{alternative} instead." if alternative
+      message << " Use #{alternative} instead." if alternative
       warn message
     end
 

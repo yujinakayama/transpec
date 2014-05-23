@@ -317,7 +317,7 @@ Note that this is not same as `--keep deprecated` since this configures `yield_r
 
 See [Supported Conversions - `any_instance` implementation blocks](#any_instance-implementation-blocks) for more details.
 
-### `-p/--no-parentheses-matcher-arg`
+### `-p/--no-parens-matcher-arg`
 
 Suppress parenthesizing arguments of matchers when converting
 `should` with operator matcher to `expect` with non-operator matcher
@@ -346,7 +346,7 @@ END
 convert(example, cli: ['-p'])
   .gsub(
     'original spec',
-    'converted spec with -p/--no-parentheses-matcher-arg option'
+    'converted spec with -p/--no-parens-matcher-arg option'
   )
   .gsub(/^.+\{ key: value \}/) do |match|
     "    # With non-operator method, the parentheses are always required\n" +

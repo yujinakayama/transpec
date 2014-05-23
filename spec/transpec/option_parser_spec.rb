@@ -172,12 +172,29 @@ module Transpec
         end
       end
 
-      describe '-p/--no-parentheses-matcher-arg option' do
+      describe '-p/--no-parens-matcher-arg option' do
+        let(:args) { ['--no-parens-matcher-arg'] }
+
+        it 'sets Config#parenthesize_matcher_arg? false' do
+          parser.parse(args)
+          config.parenthesize_matcher_arg.should be_false
+        end
+      end
+
+      describe '--no-parentheses-matcher-arg option' do
         let(:args) { ['--no-parentheses-matcher-arg'] }
 
         it 'sets Config#parenthesize_matcher_arg? false' do
           parser.parse(args)
           config.parenthesize_matcher_arg.should be_false
+        end
+
+        it 'is deprecated' do
+          parser.should_receive(:warn) do |message|
+            message.should =~ /--no-parentheses-matcher-arg.+deprecated/i
+          end
+
+          parser.parse(args)
         end
       end
 
