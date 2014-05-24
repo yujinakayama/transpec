@@ -483,7 +483,7 @@ The one-liner (implicit receiver) `should`:
 * [Current example object](#current-example-object)
 * [Custom matcher DSL](#custom-matcher-dsl)
 * [Implicit spec types in rspec-rails](#implicit-spec-types-in-rspec-rails)
-* [Example groups](#example-groups)
+* [Monkey-patched example groups](#monkey-patched-example-groups)
 * [Hook scope aliases](#hook-scope-aliases)
 
 ### Standard expectations
@@ -1305,7 +1305,7 @@ Here's an excerpt from [the warning](https://github.com/rspec/rspec-rails/blob/a
 * Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
 * See also: [Consider making example group mixins more explicit · rspec/rspec-rails](https://github.com/rspec/rspec-rails/issues/662)
 
-### Example groups
+### Monkey-patched example groups
 
 **This conversion is disabled by default and available only if your project's RSpec is `3.0.0.beta2` or later.**
 
