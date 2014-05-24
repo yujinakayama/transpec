@@ -791,7 +791,9 @@ If you choose to do so, disable this conversion by either:
 * Specify `--keep its` option manually.
 * Require `rspec-its` in your spec so that Transpec automatically disables this conversion.
 
----
+Note that this conversion is a sort of first-aid
+and ideally the expectations should be rewritten to be more expressive by yourself.
+Read [this post](https://gist.github.com/myronmarston/4503509) for the rationale.
 
 * This conversion can be disabled by: `--keep its`
 * Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
