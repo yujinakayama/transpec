@@ -27,7 +27,7 @@ module Transpec
         front, rear = build_wrapper_codes
 
         insert_before(beginning_of_line_range(block_node), front)
-        replace(expression_range, 'it')
+        replace(range_from_its_to_front_of_block, 'it ')
         insert_after(block_node.loc.expression, rear)
 
         register_record
@@ -87,6 +87,10 @@ module Transpec
 
       def base_indentation
         @base_indentation ||= indentation_of_line(node)
+      end
+
+      def range_from_its_to_front_of_block
+        expression_range.join(block_node.loc.begin.begin)
       end
 
       def register_record

@@ -92,6 +92,34 @@ module Transpec
             record.converted_syntax.should == "describe '#attr' do subject { super().attr }; it { } end"
           end
 
+          context 'and there are consecutive blanks between the #its and the block' do
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  subject { ['foo'] }
+                  its(:size)   { should == 1 }
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  subject { ['foo'] }
+
+                  describe '#size' do
+                    subject { super().size }
+                    it { should == 1 }
+                  end
+                end
+              END
+            end
+
+            it 'removes the redundant blanks' do
+              rewritten_source.should == expected_source
+            end
+          end
+
           context 'and there is no blank line before #its' do
             context 'and the indentation level of the previous line is same as the target line' do
               let(:source) do

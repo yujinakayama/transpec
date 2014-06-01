@@ -3,6 +3,7 @@
 ## Development
 
 * Deprecate `--no-parentheses-matcher-arg` option in favor of `--no-parens-matcher-arg`.
+* Remove consecutive white spaces between `its` and the block.
 
 ## v2.1.0
 
