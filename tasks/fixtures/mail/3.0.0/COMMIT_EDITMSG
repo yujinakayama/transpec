@@ -1,6 +1,6 @@
-Convert specs to RSpec 3.0.0.beta2 syntax with Transpec
+Convert specs to RSpec 3.0.0 syntax with Transpec
 
-This conversion is done by Transpec 1.13.1 with the following command:
+This conversion is done by Transpec 2.2.0 with the following command:
     transpec --force --convert example_group,hook_scope
 
 * 82 conversions
@@ -27,4 +27,4 @@ This conversion is done by Transpec 1.13.1 with the following command:
     from: obj.stub(:message => value)
       to: allow(obj).to receive_messages(:message => value)
 
-See also: https://github.com/yujinakayama/transpec#supported-conversions
+For more details: https://github.com/yujinakayama/transpec#supported-conversions
