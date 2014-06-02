@@ -2,6 +2,8 @@
 
 ## Development
 
+## v2.2.0
+
 * Add descriptive comments to auto-added configurations in `RSpec.configure`.
 * Deprecate `--no-parentheses-matcher-arg` option in favor of `--no-parens-matcher-arg`.
 * Remove consecutive white spaces between `its` and the block.

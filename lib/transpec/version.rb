@@ -4,7 +4,7 @@ module Transpec
   # http://semver.org/
   module Version
     MAJOR = 2
-    MINOR = 1
+    MINOR = 2
     PATCH = 0
 
     def self.to_s
