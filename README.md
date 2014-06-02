@@ -1048,7 +1048,7 @@ end
 
 Or with `--no-yield-any-instance` option they will be converted to:
 
-```
+```ruby
 RSpec.configure do |rspec|
   rspec.mock_with :rspec do |mocks|
     # In RSpec 3, `any_instance` implementation blocks will be yielded the receiving
@@ -1277,7 +1277,7 @@ end
 
 Or with `--no-explicit-spec-type` option they will be converted to:
 
-```
+```ruby
 RSpec.configure do |rspec|
   # rspec-rails 3 will no longer automatically infer an example group's spec type
   # from the file location. You can explicitly opt-in to the feature using this

@@ -1137,7 +1137,7 @@ Will be converted to:
 
 Or with `--no-yield-any-instance` option they will be converted to:
 
-```
+```ruby
 <%= convert(example, cli: ['--no-yield-any-instance'], rspec_version: rspec_version) -%>
 ```
 
@@ -1332,7 +1332,7 @@ Will be converted to:
 
 Or with `--no-explicit-spec-type` option they will be converted to:
 
-```
+```ruby
 <%= convert(example, rspec_version: rspec_version, path: 'spec/models/some_model_spec.rb', cli: ['--no-explicit-spec-type']) -%>
 ```
 
