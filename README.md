@@ -8,17 +8,20 @@
 
 **Transpec** is a tool for converting your specs to the latest [RSpec](http://rspec.info/) syntax with static and dynamic code analysis.
 
-This aims to facilitate a smooth transition to RSpec 3, and it's now ready for RSpec 2.99 and 3.0 beta!
+With Transpec you can upgrade your RSpec 2 specs to RSpec 3 in no time.
+It supports [conversions](#supported-conversions) for almost all of the RSpec 3 changes – not only the `expect` syntax.
+Also, you can use it on your RSpec 2 project even if you're not going to upgrade it to RSpec 3 for now.
 
-See the following pages for the new RSpec syntax and the plan for RSpec 3:
+Check out the following pages for the new RSpec syntax and the changes in RSpec 3:
 
 * [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax)
 * [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
-* [Myron Marston » The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3)
+* [Myron Marston » Notable Changes in RSpec 3](http://myronmars.to/n/dev-blog/2014/05/notable-changes-in-rspec-3)
 
-Transpec now supports conversions for almost all of the RSpec 3 changes,
-but the changes are not fixed and may vary in the future.
-So it's recommended to follow updates of both RSpec and Transpec.
+If you are going to use Transpec in the upgrade process to RSpec 3,
+read the RSpec official guide:
+
+* https://relishapp.com/rspec/docs/upgrade
 
 ## Examples
 
@@ -192,13 +195,6 @@ $ transpec --keep its --convert example_group
 ```
 
 See [`-k/--keep`](#-k--keep) and [`-v/--convert`](#-v--convert) for more details.
-
-## Upgrade Process to RSpec 3 beta
-
-If you are going to use Transpec in the upgrade process to RSpec 3 beta,
-read this article by [Myron Marston](https://github.com/myronmarston), who is the lead maintainer of RSpec:
-
-* [Myron Marston » RSpec 2.99 and 3.0 betas have been released!](http://myronmars.to/n/dev-blog/2013/11/rspec-2-99-and-3-0-betas-have-been-released)
 
 ## Options
 
@@ -509,7 +505,7 @@ expect(obj).to_not matcher # with `--negative-form to_not`
 
 ### One-liner expectations
 
-**This conversion is available only if your project's RSpec is `2.99.0.beta2` or later.**
+This conversion is available only if your project's RSpec is **2.99.0.beta2 or later**.
 
 Targets:
 
@@ -566,7 +562,7 @@ This conversion is combined with the conversion of [standard expectations](#stan
 
 ### Boolean matchers
 
-**This conversion is available only if your project's RSpec is `2.99.0.beta1` or later.**
+This conversion is available only if your project's RSpec is **2.99.0.beta1 or later**.
 
 Targets:
 
@@ -622,7 +618,7 @@ expect(1.0 / 3.0).to be_within(0.001).of(0.333)
 
 ### `have(n).items` matcher
 
-**This conversion will be disabled automatically if `rspec-collection_matchers` is loaded in your spec.**
+This conversion will be **disabled automatically if `rspec-collection_matchers` is loaded** in your spec.
 
 Targets:
 
@@ -696,7 +692,7 @@ So using rspec-collection_matchers gem is recommended for now.
 
 ### One-liner expectations with `have(n).items` matcher
 
-**This conversion will be disabled automatically if `rspec-collection_matchers` is loaded in your spec.**
+This conversion will be **disabled automatically if `rspec-collection_matchers` is loaded** in your spec.
 
 Targets:
 
@@ -746,7 +742,7 @@ expect { do_something }.to raise_error
 
 ### Expectations on attribute of subject with `its`
 
-**This conversion will be disabled automatically if `rspec-its` is loaded in your spec.**
+This conversion will be **disabled automatically if `rspec-its` is loaded** in your spec.
 
 Targets:
 
@@ -1010,7 +1006,7 @@ allow(obj).to receive(:message)
 
 ### `any_instance` implementation blocks
 
-**This conversion is available only if your project's RSpec is `>= 2.99.0.beta1` and `< 3.0.0.beta1`.**
+This conversion is available only if your project's RSpec is **`>= 2.99.0.beta1` and `< 3.0.0.beta1`**.
 
 Targets:
 
@@ -1048,8 +1044,11 @@ describe 'example' do
     allow_any_instance_of(Klass).to receive(:message) { |instance, arg| puts arg }
   end
 end
+```
 
-# With `--no-yield-any-instance`
+Or with `--no-yield-any-instance` option they will be converted to:
+
+```
 RSpec.configure do |rspec|
   rspec.mock_with :rspec do |mocks|
     # In RSpec 3, `any_instance` implementation blocks will be yielded the receiving
@@ -1070,25 +1069,6 @@ describe 'example' do
   end
 end
 ```
-
-Here's an excerpt from [the warning](https://github.com/rspec/rspec-mocks/blob/aab8dc9/lib/rspec/mocks/message_expectation.rb#L478-L491) for `any_instance` implementation blocks in RSpec 2.99:
-
-> In RSpec 3, `any_instance` implementation blocks will be yielded the receiving
-> instance as the first block argument to allow the implementation block to use
-> the state of the receiver.  To maintain compatibility with RSpec 3 you need to
-> either set rspec-mocks' `yield_receiver_to_any_instance_implementation_blocks`
-> config option to `false` OR set it to `true` and update your `any_instance`
-> implementation blocks to account for the first block argument being the receiving instance.
->
-> To set the config option, use a snippet like:
->
-> ```ruby
-> RSpec.configure do |rspec|
->   rspec.mock_with :rspec do |mocks|
->     mocks.yield_receiver_to_any_instance_implementation_blocks = false
->   end
-> end
-> ```
 
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 2.99
@@ -1115,7 +1095,7 @@ double('something')
 
 ### Pending examples
 
-**This conversion is available only if your project's RSpec is `>= 2.99.0.beta1` and `< 3.0.0.beta1`.**
+This conversion is available only if your project's RSpec is **`>= 2.99.0.beta1` and `< 3.0.0.beta1`**.
 
 Targets:
 
@@ -1184,7 +1164,7 @@ Here's an excerpt from [the warning](https://github.com/rspec/rspec-core/blob/v2
 
 ### Current example object
 
-**This conversion is available only if your project's RSpec is `2.99.0.beta1` or later.**
+This conversion is available only if your project's RSpec is **2.99.0.beta1 or later**.
 
 Targets:
 
@@ -1242,7 +1222,7 @@ Here's an excerpt from [the warning](https://github.com/rspec/rspec-core/blob/7d
 
 ### Custom matcher DSL
 
-**This conversion is available only if your project's RSpec is `3.0.0.beta2` or later.**
+This conversion is available only if your project's RSpec is **3.0.0.beta2 or later**.
 
 Targets:
 
@@ -1272,7 +1252,7 @@ end
 
 ### Implicit spec types in rspec-rails
 
-**This conversion is available only if `rspec-rails` is loaded in your spec and your project's RSpec is `2.99.0.rc1` or later.**
+This conversion is **available only if `rspec-rails` is loaded** in your spec and your project's RSpec is **2.99.0.rc1 or later**.
 
 Targets:
 
@@ -1293,8 +1273,11 @@ end
 
 describe SomeModel, :type => :model do
 end
+```
 
-# With `--no-explicit-spec-type`
+Or with `--no-explicit-spec-type` option they will be converted to:
+
+```
 RSpec.configure do |rspec|
   # rspec-rails 3 will no longer automatically infer an example group's spec type
   # from the file location. You can explicitly opt-in to the feature using this
@@ -1312,25 +1295,13 @@ describe SomeModel do
 end
 ```
 
-Here's an excerpt from [the warning](https://github.com/rspec/rspec-rails/blob/ab6313b/lib/rspec/rails/infer_type_configuration.rb#L13-L22) in RSpec 2.99:
-
-> rspec-rails 3 will no longer automatically infer an example group's spec type from the file location. You can explicitly opt-in to this feature using this snippet:
->
-> ```ruby
-> RSpec.configure do |config|
->   config.infer_spec_type_from_file_location!
-> end
-> ```
->
-> If you wish to manually label spec types via metadata you can safely ignore this warning and continue upgrading to RSpec 3 without addressing it.
-
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
 * See also: [Consider making example group mixins more explicit · rspec/rspec-rails](https://github.com/rspec/rspec-rails/issues/662)
 
 ### Monkey-patched example groups
 
-**This conversion is disabled by default and available only if your project's RSpec is `3.0.0.beta2` or later.**
+This conversion is **disabled by default** and available only if your project's RSpec is **3.0.0.beta2 or later**.
 
 Targets:
 
@@ -1376,7 +1347,7 @@ end
 
 ### Hook scope aliases
 
-**This conversion is disabled by default and available only if your project's RSpec is `3.0.0.beta2` or later.**
+This conversion is **disabled by default** and available only if your project's RSpec is **3.0.0.beta2 or later**.
 
 Targets:
 
