@@ -1031,6 +1031,13 @@ Will be converted to:
 ```ruby
 RSpec.configure do |rspec|
   rspec.mock_with :rspec do |mocks|
+    # In RSpec 3, `any_instance` implementation blocks will be yielded the receiving
+    # instance as the first block argument to allow the implementation block to use
+    # the state of the receiver.
+    # In RSpec 2.99, to maintain compatibility with RSpec 3 you need to either set
+    # this config option to `false` OR set this to `true` and update your
+    # `any_instance` implementation blocks to account for the first block argument
+    # being the receiving instance.
     mocks.yield_receiver_to_any_instance_implementation_blocks = true
   end
 end
@@ -1045,6 +1052,13 @@ end
 # With `--no-yield-any-instance`
 RSpec.configure do |rspec|
   rspec.mock_with :rspec do |mocks|
+    # In RSpec 3, `any_instance` implementation blocks will be yielded the receiving
+    # instance as the first block argument to allow the implementation block to use
+    # the state of the receiver.
+    # In RSpec 2.99, to maintain compatibility with RSpec 3 you need to either set
+    # this config option to `false` OR set this to `true` and update your
+    # `any_instance` implementation blocks to account for the first block argument
+    # being the receiving instance.
     mocks.yield_receiver_to_any_instance_implementation_blocks = false
   end
 end
@@ -1282,6 +1296,15 @@ end
 
 # With `--no-explicit-spec-type`
 RSpec.configure do |rspec|
+  # rspec-rails 3 will no longer automatically infer an example group's spec type
+  # from the file location. You can explicitly opt-in to the feature using this
+  # config option.
+  # To explicitly tag specs without using automatic inference, set the `:type`
+  # metadata manually:
+  #
+  #     describe ThingsController, :type => :controller do
+  #       # Equivalent to being in spec/controllers
+  #     end
   rspec.infer_spec_type_from_file_location!
 end
 
@@ -1328,6 +1351,13 @@ Will be converted to:
 
 ```ruby
 RSpec.configure do |rspec|
+  # Setting this config option `false` removes rspec-core's monkey patching of the
+  # top level methods like `describe`, `shared_examples_for` and `shared_context`
+  # on `main` and `Module`. The methods are always available through the `RSpec`
+  # module like `RSpec.describe` regardless of this setting.
+  # For backwards compatibility this defaults to `true`.
+  #
+  # https://relishapp.com/rspec/rspec-core/v/3-0/docs/configuration/global-namespace-dsl
   rspec.expose_dsl_globally = false
 end
 

@@ -15,14 +15,14 @@ module Transpec
 
         private
 
-        def set_config!(config_name, value)
+        def set_config!(config_name, value, comment = nil)
           setter_node = find_config_node("#{config_name}=")
 
           if setter_node
             arg_node = setter_node.children[2]
             source_rewriter.replace(arg_node.loc.expression, value.to_s)
           else
-            add_config!(config_name, value)
+            add_config!(config_name, value, comment)
           end
         end
 
@@ -46,8 +46,8 @@ module Transpec
 
         # TODO: Refactor this to remove messy overrides in Framework.
         module ConfigAddition
-          def add_config!(config_name, value = nil)
-            lines = generate_config_lines(config_name, value)
+          def add_config!(config_name, value = nil, comment = nil)
+            lines = generate_config_lines(config_name, value, comment)
             lines.unshift('') unless empty_block_body?
             lines.map! { |line| line + "\n" }
 
@@ -57,10 +57,21 @@ module Transpec
             block_node_to_insert_code.metadata[:added_config] = true
           end
 
-          def generate_config_lines(config_name, value = nil)
-            line = body_indentation + "#{config_variable_name}.#{config_name}"
-            line << " = #{value}" unless value.nil?
-            [line]
+          def generate_config_lines(config_name, value = nil, comment = nil)
+            lines = []
+
+            if comment
+              comment_lines = comment.each_line.map do |line|
+                "#{body_indentation}# #{line.chomp}".rstrip
+              end
+              lines.concat(comment_lines)
+            end
+
+            config_line = body_indentation + "#{config_variable_name}.#{config_name}"
+            config_line << " = #{value}" unless value.nil?
+            lines << config_line
+
+            lines
           end
 
           def config_variable_name

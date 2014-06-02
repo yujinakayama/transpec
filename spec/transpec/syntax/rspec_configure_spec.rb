@@ -25,8 +25,24 @@ module Transpec
         let(:expected_source) do
           <<-END
             RSpec.configure do |config|
+              # Setting this config option `false` removes rspec-core's monkey patching of the
+              # top level methods like `describe`, `shared_examples_for` and `shared_context`
+              # on `main` and `Module`. The methods are always available through the `RSpec`
+              # module like `RSpec.describe` regardless of this setting.
+              # For backwards compatibility this defaults to `true`.
+              #
+              # https://relishapp.com/rspec/rspec-core/v/3-0/docs/configuration/global-namespace-dsl
               config.expose_dsl_globally = true
 
+              # rspec-rails 3 will no longer automatically infer an example group's spec type
+              # from the file location. You can explicitly opt-in to the feature using this
+              # config option.
+              # To explicitly tag specs without using automatic inference, set the `:type`
+              # metadata manually:
+              #
+              #     describe ThingsController, :type => :controller do
+              #       # Equivalent to being in spec/controllers
+              #     end
               config.infer_spec_type_from_file_location!
             end
           END
@@ -75,12 +91,19 @@ module Transpec
           let(:expected_source) do
             <<-END
               RSpec.configure do |config|
+                # Setting this config option `false` removes rspec-core's monkey patching of the
+                # top level methods like `describe`, `shared_examples_for` and `shared_context`
+                # on `main` and `Module`. The methods are always available through the `RSpec`
+                # module like `RSpec.describe` regardless of this setting.
+                # For backwards compatibility this defaults to `true`.
+                #
+                # https://relishapp.com/rspec/rspec-core/v/3-0/docs/configuration/global-namespace-dsl
                 config.expose_dsl_globally = true
               end
             END
           end
 
-          it 'adds #expose_dsl_globally= statement' do
+          it 'adds #expose_dsl_globally= statement along with comment' do
             rewritten_source.should == expected_source
           end
         end
@@ -99,6 +122,13 @@ module Transpec
               RSpec.configure do |config|
                 config.foo = 1
 
+                # Setting this config option `false` removes rspec-core's monkey patching of the
+                # top level methods like `describe`, `shared_examples_for` and `shared_context`
+                # on `main` and `Module`. The methods are always available through the `RSpec`
+                # module like `RSpec.describe` regardless of this setting.
+                # For backwards compatibility this defaults to `true`.
+                #
+                # https://relishapp.com/rspec/rspec-core/v/3-0/docs/configuration/global-namespace-dsl
                 config.expose_dsl_globally = true
               end
             END
@@ -126,12 +156,21 @@ module Transpec
           let(:expected_source) do
             <<-END
               RSpec.configure do |config|
+                # rspec-rails 3 will no longer automatically infer an example group's spec type
+                # from the file location. You can explicitly opt-in to the feature using this
+                # config option.
+                # To explicitly tag specs without using automatic inference, set the `:type`
+                # metadata manually:
+                #
+                #     describe ThingsController, :type => :controller do
+                #       # Equivalent to being in spec/controllers
+                #     end
                 config.infer_spec_type_from_file_location!
               end
             END
           end
 
-          it 'adds #infer_spec_type_from_file_location! statement' do
+          it 'adds #infer_spec_type_from_file_location! statement along with comment' do
             rewritten_source.should == expected_source
           end
         end
@@ -174,6 +213,15 @@ module Transpec
                 end
 
                 RSpec.configure do |config|
+                  # rspec-rails 3 will no longer automatically infer an example group's spec type
+                  # from the file location. You can explicitly opt-in to the feature using this
+                  # config option.
+                  # To explicitly tag specs without using automatic inference, set the `:type`
+                  # metadata manually:
+                  #
+                  #     describe ThingsController, :type => :controller do
+                  #       # Equivalent to being in spec/controllers
+                  #     end
                   config.infer_spec_type_from_file_location!
                 end
               END
@@ -498,13 +546,20 @@ module Transpec
               <<-END
                 RSpec.configure do |config|
                   config.mock_with :rspec do |c|
+                    # In RSpec 3, `any_instance` implementation blocks will be yielded the receiving
+                    # instance as the first block argument to allow the implementation block to use
+                    # the state of the receiver.
+                    # In RSpec 2.99, to maintain compatibility with RSpec 3 you need to either set
+                    # this config option to `false` OR set this to `true` and update your
+                    # `any_instance` implementation blocks to account for the first block argument
+                    # being the receiving instance.
                     c.yield_receiver_to_any_instance_implementation_blocks = true
                   end
                 end
               END
             end
 
-            it 'adds #yield_receiver_to_any_instance_implementation_blocks= statement' do
+            it 'adds #yield_receiver_to_any_instance_implementation_blocks= statement along with comment' do
               rewritten_source.should == expected_source
             end
           end
@@ -523,6 +578,13 @@ module Transpec
               <<-END
                 RSpec.configure do |config|
                   config.mock_with :rspec do |mocks|
+                    # In RSpec 3, `any_instance` implementation blocks will be yielded the receiving
+                    # instance as the first block argument to allow the implementation block to use
+                    # the state of the receiver.
+                    # In RSpec 2.99, to maintain compatibility with RSpec 3 you need to either set
+                    # this config option to `false` OR set this to `true` and update your
+                    # `any_instance` implementation blocks to account for the first block argument
+                    # being the receiving instance.
                     mocks.yield_receiver_to_any_instance_implementation_blocks = true
                   end
                 end
@@ -530,7 +592,7 @@ module Transpec
             end
 
             it 'adds #mock_with block ' \
-               'and #yield_receiver_to_any_instance_implementation_blocks= statement' do
+               'and #yield_receiver_to_any_instance_implementation_blocks= statement along with comment' do
               rewritten_source.should == expected_source
             end
 
@@ -546,6 +608,13 @@ module Transpec
                 <<-END
                   RSpec.configure do |mocks|
                     mocks.mock_with :rspec do |config|
+                      # In RSpec 3, `any_instance` implementation blocks will be yielded the receiving
+                      # instance as the first block argument to allow the implementation block to use
+                      # the state of the receiver.
+                      # In RSpec 2.99, to maintain compatibility with RSpec 3 you need to either set
+                      # this config option to `false` OR set this to `true` and update your
+                      # `any_instance` implementation blocks to account for the first block argument
+                      # being the receiving instance.
                       config.yield_receiver_to_any_instance_implementation_blocks = true
                     end
                   end
@@ -576,9 +645,23 @@ module Transpec
         let(:expected_source) do
           <<-END
             RSpec.configure do |config|
+              # Setting this config option `false` removes rspec-core's monkey patching of the
+              # top level methods like `describe`, `shared_examples_for` and `shared_context`
+              # on `main` and `Module`. The methods are always available through the `RSpec`
+              # module like `RSpec.describe` regardless of this setting.
+              # For backwards compatibility this defaults to `true`.
+              #
+              # https://relishapp.com/rspec/rspec-core/v/3-0/docs/configuration/global-namespace-dsl
               config.expose_dsl_globally = true
 
               config.mock_with :rspec do |mocks|
+                # In RSpec 3, `any_instance` implementation blocks will be yielded the receiving
+                # instance as the first block argument to allow the implementation block to use
+                # the state of the receiver.
+                # In RSpec 2.99, to maintain compatibility with RSpec 3 you need to either set
+                # this config option to `false` OR set this to `true` and update your
+                # `any_instance` implementation blocks to account for the first block argument
+                # being the receiving instance.
                 mocks.yield_receiver_to_any_instance_implementation_blocks = false
               end
             end

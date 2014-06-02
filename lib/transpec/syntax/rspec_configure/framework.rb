@@ -34,7 +34,7 @@ module Transpec
           fail NotImplementedError
         end
 
-        def generate_config_lines(config_name, value = nil)
+        def generate_config_lines(config_name, value = nil, comment = nil)
           lines = super
 
           unless block_node
