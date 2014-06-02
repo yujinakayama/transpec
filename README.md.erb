@@ -8,17 +8,15 @@
 
 **Transpec** is a tool for converting your specs to the latest [RSpec](http://rspec.info/) syntax with static and dynamic code analysis.
 
-This aims to facilitate a smooth transition to RSpec 3, and it's now ready for RSpec 2.99 and 3.0 beta!
+With Transpec you can upgrade your RSpec 2 specs to RSpec 3 in no time.
+It supports [conversions](#supported-conversions) for almost all of the RSpec 3 changes – not only the `expect` syntax.
+Also, you can use it on your RSpec 2 project even if you're not going to upgrade it to RSpec 3 for now.
 
-See the following pages for the new RSpec syntax and the plan for RSpec 3:
+Check out the following pages for the new RSpec syntax and the changes in RSpec 3:
 
 * [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax)
 * [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
-* [Myron Marston » The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3)
-
-Transpec now supports conversions for almost all of the RSpec 3 changes,
-but the changes are not fixed and may vary in the future.
-So it's recommended to follow updates of both RSpec and Transpec.
+* [Myron Marston » Notable Changes in RSpec 3](http://myronmars.to/n/dev-blog/2014/05/notable-changes-in-rspec-3)
 
 ## Examples
 
