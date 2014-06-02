@@ -18,6 +18,11 @@ Check out the following pages for the new RSpec syntax and the changes in RSpec 
 * [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
 * [Myron Marston » Notable Changes in RSpec 3](http://myronmars.to/n/dev-blog/2014/05/notable-changes-in-rspec-3)
 
+If you are going to use Transpec in the upgrade process to RSpec 3,
+read the RSpec official guide:
+
+* https://relishapp.com/rspec/docs/upgrade
+
 ## Examples
 
 Here's an example spec:
@@ -190,13 +195,6 @@ $ transpec --keep its --convert example_group
 ```
 
 See [`-k/--keep`](#-k--keep) and [`-v/--convert`](#-v--convert) for more details.
-
-## Upgrade Process to RSpec 3 beta
-
-If you are going to use Transpec in the upgrade process to RSpec 3 beta,
-read this article by [Myron Marston](https://github.com/myronmarston), who is the lead maintainer of RSpec:
-
-* [Myron Marston » RSpec 2.99 and 3.0 betas have been released!](http://myronmars.to/n/dev-blog/2013/11/rspec-2-99-and-3-0-betas-have-been-released)
 
 ## Options
 
