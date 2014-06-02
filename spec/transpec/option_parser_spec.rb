@@ -184,6 +184,10 @@ module Transpec
       describe '--no-parentheses-matcher-arg option' do
         let(:args) { ['--no-parentheses-matcher-arg'] }
 
+        before do
+          parser.stub(:warn)
+        end
+
         it 'sets Config#parenthesize_matcher_arg? false' do
           parser.parse(args)
           config.parenthesize_matcher_arg.should be_false
