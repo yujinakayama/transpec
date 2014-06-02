@@ -20,8 +20,9 @@ module Transpec
     end
 
     describe '#to_s' do
-      it 'wraps lines within 72 characters' do
+      it 'wraps lines within 72 characters except URLs' do
         commit_message.to_s.each_line do |line|
+          next if line.match(%r{\bhttps?://})
           line.chomp.size.should <= 72
         end
       end
@@ -71,7 +72,8 @@ module Transpec
         end
 
         it 'has the URL at the last line' do
-          body_lines[-1].chomp.should == 'See also: https://github.com/yujinakayama/transpec#supported-conversions'
+          body_lines[-1].chomp.should ==
+            'For more details: https://github.com/yujinakayama/transpec#supported-conversions'
         end
       end
     end

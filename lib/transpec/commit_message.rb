@@ -21,7 +21,7 @@ module Transpec
         |
         |#{conversion_summary}
         |
-        |See also: https://github.com/yujinakayama/transpec#supported-conversions
+        |For more details: https://github.com/yujinakayama/transpec#supported-conversions
       END
     end
 
