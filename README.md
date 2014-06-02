@@ -12,7 +12,7 @@ With Transpec you can upgrade your RSpec 2 specs to RSpec 3 in no time.
 It supports [conversions](#supported-conversions) for almost all of the RSpec 3 changes – not only the `expect` syntax.
 Also, you can use it on your RSpec 2 project even if you're not going to upgrade it to RSpec 3 for now.
 
-Check out the following pages for the new RSpec syntax and the changes in RSpec 3:
+Check out the following posts for the new RSpec syntax and the changes in RSpec 3:
 
 * [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax)
 * [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
