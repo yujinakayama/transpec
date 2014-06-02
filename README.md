@@ -1048,8 +1048,10 @@ describe 'example' do
     allow_any_instance_of(Klass).to receive(:message) { |instance, arg| puts arg }
   end
 end
+```
 
-# With `--no-yield-any-instance`
+Or with `--no-yield-any-instance` option they will be converted to:
+```
 RSpec.configure do |rspec|
   rspec.mock_with :rspec do |mocks|
     # In RSpec 3, `any_instance` implementation blocks will be yielded the receiving
@@ -1070,25 +1072,6 @@ describe 'example' do
   end
 end
 ```
-
-Here's an excerpt from [the warning](https://github.com/rspec/rspec-mocks/blob/aab8dc9/lib/rspec/mocks/message_expectation.rb#L478-L491) for `any_instance` implementation blocks in RSpec 2.99:
-
-> In RSpec 3, `any_instance` implementation blocks will be yielded the receiving
-> instance as the first block argument to allow the implementation block to use
-> the state of the receiver.  To maintain compatibility with RSpec 3 you need to
-> either set rspec-mocks' `yield_receiver_to_any_instance_implementation_blocks`
-> config option to `false` OR set it to `true` and update your `any_instance`
-> implementation blocks to account for the first block argument being the receiving instance.
->
-> To set the config option, use a snippet like:
->
-> ```ruby
-> RSpec.configure do |rspec|
->   rspec.mock_with :rspec do |mocks|
->     mocks.yield_receiver_to_any_instance_implementation_blocks = false
->   end
-> end
-> ```
 
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 2.99
@@ -1293,8 +1276,11 @@ end
 
 describe SomeModel, :type => :model do
 end
+```
 
-# With `--no-explicit-spec-type`
+Or with `--no-explicit-spec-type` option they will be converted to:
+
+```
 RSpec.configure do |rspec|
   # rspec-rails 3 will no longer automatically infer an example group's spec type
   # from the file location. You can explicitly opt-in to the feature using this
@@ -1311,18 +1297,6 @@ end
 describe SomeModel do
 end
 ```
-
-Here's an excerpt from [the warning](https://github.com/rspec/rspec-rails/blob/ab6313b/lib/rspec/rails/infer_type_configuration.rb#L13-L22) in RSpec 2.99:
-
-> rspec-rails 3 will no longer automatically infer an example group's spec type from the file location. You can explicitly opt-in to this feature using this snippet:
->
-> ```ruby
-> RSpec.configure do |config|
->   config.infer_spec_type_from_file_location!
-> end
-> ```
->
-> If you wish to manually label spec types via metadata you can safely ignore this warning and continue upgrading to RSpec 3 without addressing it.
 
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
