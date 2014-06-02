@@ -481,7 +481,7 @@ Will be converted to:
 
 ### One-liner expectations
 
-**This conversion is available only if your project's RSpec is `<%= rspec_version = Transpec::RSpecVersion.oneliner_is_expected_available_version %>` or later.**
+This conversion is available only if your project's RSpec is **<%= rspec_version = Transpec::RSpecVersion.oneliner_is_expected_available_version %> or later**.
 
 Targets:
 
@@ -546,7 +546,7 @@ This conversion is combined with the conversion of [standard expectations](#stan
 
 ### Boolean matchers
 
-**This conversion is available only if your project's RSpec is `<%= rspec_version = Transpec::RSpecVersion.be_truthy_available_version %>` or later.**
+This conversion is available only if your project's RSpec is **<%= rspec_version = Transpec::RSpecVersion.be_truthy_available_version %> or later**.
 
 Targets:
 
@@ -607,7 +607,7 @@ Will be converted to:
 
 ### `have(n).items` matcher
 
-**This conversion will be disabled automatically if `rspec-collection_matchers` is loaded in your spec.**
+This conversion will be **disabled automatically if `rspec-collection_matchers` is loaded** in your spec.
 
 Targets:
 
@@ -751,7 +751,7 @@ So using rspec-collection_matchers gem is recommended for now.
 
 ### One-liner expectations with `have(n).items` matcher
 
-**This conversion will be disabled automatically if `rspec-collection_matchers` is loaded in your spec.**
+This conversion will be **disabled automatically if `rspec-collection_matchers` is loaded** in your spec.
 
 Targets:
 
@@ -819,7 +819,7 @@ Will be converted to:
 
 ### Expectations on attribute of subject with `its`
 
-**This conversion will be disabled automatically if `rspec-its` is loaded in your spec.**
+This conversion will be **disabled automatically if `rspec-its` is loaded** in your spec.
 
 Targets:
 
@@ -1112,7 +1112,7 @@ Will be converted to:
 
 ### `any_instance` implementation blocks
 
-**This conversion is available only if your project's RSpec is `>= <%= Transpec::RSpecVersion::RSPEC_2_99 %>` and `< <%= Transpec::RSpecVersion::RSPEC_3_0 %>`.**
+This conversion is available only if your project's RSpec is **`>= <%= Transpec::RSpecVersion::RSPEC_2_99 %>` and `< <%= Transpec::RSpecVersion::RSPEC_3_0 %>`**.
 
 Targets:
 
@@ -1174,7 +1174,7 @@ Will be converted to:
 
 ### Pending examples
 
-**This conversion is available only if your project's RSpec is `>= <%= Transpec::RSpecVersion::RSPEC_2_99 %>` and `< <%= Transpec::RSpecVersion::RSPEC_3_0 %>`.**
+This conversion is available only if your project's RSpec is **`>= <%= Transpec::RSpecVersion::RSPEC_2_99 %>` and `< <%= Transpec::RSpecVersion::RSPEC_3_0 %>`**.
 
 Targets:
 
@@ -1232,7 +1232,7 @@ Here's an excerpt from [the warning](https://github.com/rspec/rspec-core/blob/v2
 
 ### Current example object
 
-**This conversion is available only if your project's RSpec is `<%= rspec_version = Transpec::RSpecVersion.yielded_example_available_version %>` or later.**
+This conversion is available only if your project's RSpec is **<%= rspec_version = Transpec::RSpecVersion.yielded_example_available_version %> or later**.
 
 Targets:
 
@@ -1282,7 +1282,7 @@ Here's an excerpt from [the warning](https://github.com/rspec/rspec-core/blob/7d
 
 ### Custom matcher DSL
 
-**This conversion is available only if your project's RSpec is `<%= rspec_version = Transpec::RSpecVersion.non_should_matcher_protocol_available_version %>` or later.**
+This conversion is available only if your project's RSpec is **<%= rspec_version = Transpec::RSpecVersion.non_should_matcher_protocol_available_version %> or later**.
 
 Targets:
 
@@ -1311,7 +1311,7 @@ Will be converted to:
 
 ### Implicit spec types in rspec-rails
 
-**This conversion is available only if `rspec-rails` is loaded in your spec and your project's RSpec is `<%= rspec_version = Transpec::RSpecVersion.implicit_spec_type_disablement_available_version %>` or later.**
+This conversion is **available only if `rspec-rails` is loaded** in your spec and your project's RSpec is **<%= rspec_version = Transpec::RSpecVersion.implicit_spec_type_disablement_available_version %> or later**.
 
 Targets:
 
@@ -1346,7 +1346,7 @@ Or with `--no-explicit-spec-type` option they will be converted to:
 
 ### Monkey-patched example groups
 
-**This conversion is disabled by default and available only if your project's RSpec is `<%= rspec_version = Transpec::RSpecVersion.non_monkey_patch_example_group_available_version %>` or later.**
+This conversion is **disabled by default** and available only if your project's RSpec is **<%= rspec_version = Transpec::RSpecVersion.non_monkey_patch_example_group_available_version %> or later**.
 
 Targets:
 
@@ -1379,7 +1379,7 @@ Will be converted to:
 
 ### Hook scope aliases
 
-**This conversion is disabled by default and available only if your project's RSpec is `<%= rspec_version = Transpec::RSpecVersion.hook_scope_alias_available_version %>` or later.**
+This conversion is **disabled by default** and available only if your project's RSpec is **<%= rspec_version = Transpec::RSpecVersion.hook_scope_alias_available_version %> or later**.
 
 Targets:
 

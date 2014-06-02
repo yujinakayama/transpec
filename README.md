@@ -509,7 +509,7 @@ expect(obj).to_not matcher # with `--negative-form to_not`
 
 ### One-liner expectations
 
-**This conversion is available only if your project's RSpec is `2.99.0.beta2` or later.**
+This conversion is available only if your project's RSpec is **2.99.0.beta2 or later**.
 
 Targets:
 
@@ -566,7 +566,7 @@ This conversion is combined with the conversion of [standard expectations](#stan
 
 ### Boolean matchers
 
-**This conversion is available only if your project's RSpec is `2.99.0.beta1` or later.**
+This conversion is available only if your project's RSpec is **2.99.0.beta1 or later**.
 
 Targets:
 
@@ -622,7 +622,7 @@ expect(1.0 / 3.0).to be_within(0.001).of(0.333)
 
 ### `have(n).items` matcher
 
-**This conversion will be disabled automatically if `rspec-collection_matchers` is loaded in your spec.**
+This conversion will be **disabled automatically if `rspec-collection_matchers` is loaded** in your spec.
 
 Targets:
 
@@ -696,7 +696,7 @@ So using rspec-collection_matchers gem is recommended for now.
 
 ### One-liner expectations with `have(n).items` matcher
 
-**This conversion will be disabled automatically if `rspec-collection_matchers` is loaded in your spec.**
+This conversion will be **disabled automatically if `rspec-collection_matchers` is loaded** in your spec.
 
 Targets:
 
@@ -746,7 +746,7 @@ expect { do_something }.to raise_error
 
 ### Expectations on attribute of subject with `its`
 
-**This conversion will be disabled automatically if `rspec-its` is loaded in your spec.**
+This conversion will be **disabled automatically if `rspec-its` is loaded** in your spec.
 
 Targets:
 
@@ -1010,7 +1010,7 @@ allow(obj).to receive(:message)
 
 ### `any_instance` implementation blocks
 
-**This conversion is available only if your project's RSpec is `>= 2.99.0.beta1` and `< 3.0.0.beta1`.**
+This conversion is available only if your project's RSpec is **`>= 2.99.0.beta1` and `< 3.0.0.beta1`**.
 
 Targets:
 
@@ -1051,6 +1051,7 @@ end
 ```
 
 Or with `--no-yield-any-instance` option they will be converted to:
+
 ```
 RSpec.configure do |rspec|
   rspec.mock_with :rspec do |mocks|
@@ -1098,7 +1099,7 @@ double('something')
 
 ### Pending examples
 
-**This conversion is available only if your project's RSpec is `>= 2.99.0.beta1` and `< 3.0.0.beta1`.**
+This conversion is available only if your project's RSpec is **`>= 2.99.0.beta1` and `< 3.0.0.beta1`**.
 
 Targets:
 
@@ -1167,7 +1168,7 @@ Here's an excerpt from [the warning](https://github.com/rspec/rspec-core/blob/v2
 
 ### Current example object
 
-**This conversion is available only if your project's RSpec is `2.99.0.beta1` or later.**
+This conversion is available only if your project's RSpec is **2.99.0.beta1 or later**.
 
 Targets:
 
@@ -1225,7 +1226,7 @@ Here's an excerpt from [the warning](https://github.com/rspec/rspec-core/blob/7d
 
 ### Custom matcher DSL
 
-**This conversion is available only if your project's RSpec is `3.0.0.beta2` or later.**
+This conversion is available only if your project's RSpec is **3.0.0.beta2 or later**.
 
 Targets:
 
@@ -1255,7 +1256,7 @@ end
 
 ### Implicit spec types in rspec-rails
 
-**This conversion is available only if `rspec-rails` is loaded in your spec and your project's RSpec is `2.99.0.rc1` or later.**
+This conversion is **available only if `rspec-rails` is loaded** in your spec and your project's RSpec is **2.99.0.rc1 or later**.
 
 Targets:
 
@@ -1304,7 +1305,7 @@ end
 
 ### Monkey-patched example groups
 
-**This conversion is disabled by default and available only if your project's RSpec is `3.0.0.beta2` or later.**
+This conversion is **disabled by default** and available only if your project's RSpec is **3.0.0.beta2 or later**.
 
 Targets:
 
@@ -1350,7 +1351,7 @@ end
 
 ### Hook scope aliases
 
-**This conversion is disabled by default and available only if your project's RSpec is `3.0.0.beta2` or later.**
+This conversion is **disabled by default** and available only if your project's RSpec is **3.0.0.beta2 or later**.
 
 Targets:
 
