@@ -2,6 +2,8 @@
 
 ## Development
 
+## v2.2.1
+
 * Fix invalid conversion of `pending` with block including an empty line.
 
 ## v2.2.0
