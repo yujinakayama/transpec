@@ -3,7 +3,7 @@ require 'rspec/core/rake_task'
 require 'rubocop/rake_task'
 
 RSpec::Core::RakeTask.new(:spec)
-Rubocop::RakeTask.new(:style)
+RuboCop::RakeTask.new(:style)
 
 Dir['tasks/**/*.rake'].each do |path|
   load(path)
