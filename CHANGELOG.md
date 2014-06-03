@@ -2,6 +2,8 @@
 
 ## Development
 
+* Fix invalid conversion of `pending` with block including an empty line.
+
 ## v2.2.0
 
 * Add descriptive comments to auto-added configurations in `RSpec.configure`.

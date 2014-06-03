@@ -224,6 +224,39 @@ module Transpec
           it 'converts to `pending; do_something_fail` form' do
             rewritten_source.should == expected_source
           end
+
+          context 'and the block body includes an empty line' do
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'is expected to fail' do
+                    pending do
+                      do_something_first
+
+                      do_something_fail
+                    end
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                describe 'example' do
+                  it 'is expected to fail' do
+                    pending
+                    do_something_first
+
+                    do_something_fail
+                  end
+                end
+              END
+            end
+
+            it 'properly converts' do
+              rewritten_source.should == expected_source
+            end
+          end
         end
 
         context "with expression multiline `pending('some reason') { do_something_fail }`" do

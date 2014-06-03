@@ -55,6 +55,8 @@ module Transpec
         return unless indentation_width > 0
 
         each_line_range(target_node) do |line_range|
+          line_source = line_range.source.chomp
+          next if line_source.length < indentation_width
           remove(line_range.resize(indentation_width))
         end
       end
