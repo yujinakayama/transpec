@@ -6,7 +6,7 @@
 
 # Transpec
 
-**Transpec** is a tool for converting your specs to the latest [RSpec](http://rspec.info/) syntax with static and dynamic code analysis.
+**Transpec** is a tool for converting your specs to the latest [RSpec](https://relishapp.com/rspec/) syntax with static and dynamic code analysis.
 
 With Transpec you can upgrade your RSpec 2 specs to RSpec 3 in no time.
 It supports [conversions](#supported-conversions) for almost all of the RSpec 3 changes – not only the `expect` syntax.
