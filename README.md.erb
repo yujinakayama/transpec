@@ -799,6 +799,7 @@ example = <<END
 lambda { do_something }.should raise_error
 proc { do_something }.should raise_error
 -> { do_something }.should raise_error
+expect { do_something }.should raise_error
 END
 -%>
 ```

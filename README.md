@@ -728,6 +728,7 @@ Targets:
 lambda { do_something }.should raise_error
 proc { do_something }.should raise_error
 -> { do_something }.should raise_error
+expect { do_something }.should raise_error
 ```
 
 Will be converted to:
