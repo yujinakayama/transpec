@@ -15,7 +15,7 @@ require 'English'
 module Transpec
   class DynamicAnalyzer
     ANALYSIS_METHOD = 'transpec_analyze'
-    HELPER_FILE = 'transpec_analysis_helper.rb'
+    HELPER_TEMPLATE_FILE = 'transpec_analysis_helper.rb.erb'
     RESULT_FILE = 'transpec_analysis_result.json'
 
     attr_reader :project, :rspec_command, :silent
@@ -45,7 +45,7 @@ module Transpec
       in_copied_project do
         rewrite_specs(paths)
 
-        File.write(HELPER_FILE, helper_source)
+        File.write(helper_filename, helper_source)
 
         run_rspec(paths)
 
@@ -77,7 +77,7 @@ module Transpec
 
     def run_rspec(paths)
       project.with_bundler_clean_env do
-        ENV['SPEC_OPTS'] = ['-r', "./#{HELPER_FILE}"].shelljoin
+        ENV['SPEC_OPTS'] = ['-r', "./#{helper_filename}"].shelljoin
 
         command = "#{rspec_command} #{paths.shelljoin}"
 
@@ -118,8 +118,12 @@ module Transpec
       end
     end
 
+    def helper_filename
+      File.basename(HELPER_TEMPLATE_FILE, '.erb')
+    end
+
     def helper_source
-      erb_path = File.join(File.dirname(__FILE__), 'dynamic_analyzer', 'helper.rb.erb')
+      erb_path = File.join(File.dirname(__FILE__), 'dynamic_analyzer', HELPER_TEMPLATE_FILE)
       erb = ERB.new(File.read(erb_path), nil)
       erb.result(binding)
     end
