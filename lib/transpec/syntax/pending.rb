@@ -29,7 +29,7 @@ module Transpec
 
       def convert_to_skip!
         replace(selector_range, 'skip')
-        register_record('pending', 'skip')
+        add_record('pending', 'skip')
       end
 
       def unblock!
@@ -46,7 +46,7 @@ module Transpec
           remove(line_range(block_node.loc.end))
         end
 
-        register_record('pending { do_something_fail }', 'pending; do_something_fail')
+        add_record('pending { do_something_fail }', 'pending; do_something_fail')
       end
 
       def outdent!(target_node, base_node)
@@ -97,7 +97,7 @@ module Transpec
         block_body_node.loc.expression.end.join(block_node.loc.end)
       end
 
-      def register_record(original_syntax, converted_syntax)
+      def add_record(original_syntax, converted_syntax)
         report.records << Record.new(original_syntax, converted_syntax)
       end
     end

@@ -42,7 +42,7 @@ module Transpec
         replace(should_range, positive? ? 'to' : negative_form)
 
         @current_syntax_type = :expect
-        register_record(negative_form)
+        add_record(negative_form)
       end
 
       private
@@ -64,7 +64,7 @@ module Transpec
         send_node.loc.expression
       end
 
-      def register_record(negative_form_of_to)
+      def add_record(negative_form_of_to)
         if proc_subject?
           original_syntax = "#{range_of_subject_method_taking_block.source} { }.should"
           converted_syntax = 'expect { }.'

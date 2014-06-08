@@ -15,12 +15,12 @@ module Transpec
       def convert_to_double!
         return if method_name == :double
         replace(selector_range, 'double')
-        register_record
+        add_record
       end
 
       private
 
-      def register_record
+      def add_record
         report.records << Record.new("#{method_name}('something')", "double('something')")
       end
     end

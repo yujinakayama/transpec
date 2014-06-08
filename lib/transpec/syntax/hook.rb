@@ -21,7 +21,7 @@ module Transpec
       def convert_scope_name!
         return if !scope_name || !replacement_scope_name
         replace(arg_range, replacement_scope_name.inspect)
-        register_record
+        add_record
       end
 
       private
@@ -35,7 +35,7 @@ module Transpec
         SCOPE_ALIASES[scope_name]
       end
 
-      def register_record
+      def add_record
         original_syntax = "#{method_name}(#{scope_name.inspect}) { }"
         converted_syntax = "#{method_name}(#{replacement_scope_name.inspect}) { }"
         report.records << Record.new(original_syntax, converted_syntax)

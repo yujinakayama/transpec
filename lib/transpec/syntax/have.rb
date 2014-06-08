@@ -37,7 +37,7 @@ module Transpec
       def convert_to_standard_expectation!(parenthesize_matcher_arg = true)
         replace(expectation.subject_range, replacement_subject_source) if explicit_subject?
         replace(matcher_range, source_builder.replacement_matcher_source(parenthesize_matcher_arg))
-        register_record if explicit_subject?
+        add_record if explicit_subject?
       end
 
       def explicit_subject?
@@ -131,7 +131,7 @@ module Transpec
         end
       end
 
-      def register_record
+      def add_record
         report.records << HaveRecord.new(self)
       end
     end

@@ -28,7 +28,7 @@ module Transpec
       def convert_pending_selector_to_skip!
         return unless method_name == :pending
         replace(selector_range, 'skip')
-        register_record("pending 'is an example' { }", "skip 'is an example' { }")
+        add_record("pending 'is an example' { }", "skip 'is an example' { }")
       end
 
       def convert_pending_metadata_to_skip!
@@ -36,11 +36,11 @@ module Transpec
           next unless pending_symbol?(node)
           replace(symbol_range_without_colon(node), 'skip')
           if node.parent_node.pair_type?
-            register_record("it 'is an example', :pending => value { }",
-                            "it 'is an example', :skip => value { }")
+            add_record("it 'is an example', :pending => value { }",
+                       "it 'is an example', :skip => value { }")
           else
-            register_record("it 'is an example', :pending { }",
-                            "it 'is an example', :skip { }")
+            add_record("it 'is an example', :pending { }",
+                       "it 'is an example', :skip { }")
           end
         end
       end
@@ -60,7 +60,7 @@ module Transpec
         end
       end
 
-      def register_record(original_syntax, converted_syntax)
+      def add_record(original_syntax, converted_syntax)
         report.records << Record.new(original_syntax, converted_syntax)
       end
     end

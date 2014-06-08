@@ -21,12 +21,12 @@ module Transpec
 
         remove(parentheses_range)
 
-        register_record
+        add_record
       end
 
       private
 
-      def register_record
+      def add_record
         original_syntax = 'expect { }.not_to raise_error('
 
         if arg_nodes.first.const_type?

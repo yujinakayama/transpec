@@ -23,12 +23,12 @@ module Transpec
 
         replace(expression_range, be_within_source)
 
-        register_record
+        add_record
       end
 
       private
 
-      def register_record
+      def add_record
         report.records << Record.new('be_close(expected, delta)', 'be_within(delta).of(expected)')
       end
     end

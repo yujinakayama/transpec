@@ -30,7 +30,7 @@ module Transpec
         replace(range_from_its_to_front_of_block, 'it ')
         insert_after(block_node.loc.expression, rear)
 
-        register_record
+        add_record
       end
 
       def attribute_expression
@@ -93,7 +93,7 @@ module Transpec
         expression_range.join(block_node.loc.begin.begin)
       end
 
-      def register_record
+      def add_record
         report.records << Record.new(original_syntax, converted_syntax)
       end
 

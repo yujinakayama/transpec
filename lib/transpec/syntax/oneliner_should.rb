@@ -31,7 +31,7 @@ module Transpec
 
         @current_syntax_type = :expect
 
-        register_record(negative_form)
+        add_record(negative_form)
       end
 
       def convert_have_items_to_standard_should!
@@ -140,7 +140,7 @@ module Transpec
         expand_range_to_adjacent_whitespaces(example_block_node.loc.end, :begin)
       end
 
-      def register_record(negative_form_of_to)
+      def add_record(negative_form_of_to)
         original_syntax = 'it { should'
         converted_syntax = 'it { is_expected.'
 

@@ -64,13 +64,13 @@ module Transpec
         handle_anterior_of_operator!
         replace(selector_range, 'eq')
         parenthesize!(parenthesize_arg)
-        register_record(nil, 'eq(expected)')
+        add_record(nil, 'eq(expected)')
       end
 
       def convert_to_be_operator!
         return if prefixed_with_be?
         insert_before(selector_range, 'be ')
-        register_record(nil, "be #{method_name} expected")
+        add_record(nil, "be #{method_name} expected")
       end
 
       def convert_to_match!(parenthesize_arg)
@@ -89,9 +89,9 @@ module Transpec
         # Need to register record after all source rewrites are done
         # to avoid false record when failed with overlapped rewrite.
         if enumerable_arg?
-          register_record('=~ [1, 2]', 'match_array([1, 2])', accurate)
+          add_record('=~ [1, 2]', 'match_array([1, 2])', accurate)
         else
-          register_record('=~ /pattern/', 'match(/pattern/)', accurate)
+          add_record('=~ /pattern/', 'match(/pattern/)', accurate)
         end
       end
 
@@ -157,7 +157,7 @@ module Transpec
         end
       end
 
-      def register_record(original_syntax, converted_syntax, accurate = true)
+      def add_record(original_syntax, converted_syntax, accurate = true)
         original_syntax ||= "#{method_name} expected"
         annotation = AccuracyAnnotation.new(matcher_range) unless accurate
         report.records << Record.new(original_syntax, converted_syntax, annotation)

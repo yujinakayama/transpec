@@ -71,7 +71,7 @@ module Transpec
 
         replace(expression_range, source)
 
-        register_record(type)
+        add_record(type)
       end
 
       def convert_deprecated_method!
@@ -79,21 +79,21 @@ module Transpec
 
         replace(selector_range, replacement_method_for_deprecated_method)
 
-        register_record(:deprecated)
+        add_record(:deprecated)
       end
 
       def remove_no_message_allowance!
         return unless allow_no_message?
         super
-        register_record(:no_message_allowance)
+        add_record(:no_message_allowance)
       end
 
       def remove_useless_and_return!
-        super && register_record(:useless_and_return)
+        super && add_record(:useless_and_return)
       end
 
       def add_receiver_arg_to_any_instance_implementation_block!
-        super && register_record(:any_instance_block)
+        super && add_record(:any_instance_block)
       end
 
       private
@@ -169,7 +169,7 @@ module Transpec
         end
       end
 
-      def register_record(conversion_type)
+      def add_record(conversion_type)
         record_class = case conversion_type
                        when :deprecated           then DeprecatedMethodRecord
                        when :no_message_allowance then NoMessageAllowanceRecord

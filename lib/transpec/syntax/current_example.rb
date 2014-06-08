@@ -28,7 +28,7 @@ module Transpec
           replace(selector_range, 'RSpec.current_example')
         end
 
-        register_record
+        add_record
       end
 
       private
@@ -69,7 +69,7 @@ module Transpec
         send_node.children[1]
       end
 
-      def register_record
+      def add_record
         if block_node
           prefix = "#{block_method_name}"
           prefix << '(:name)' if HELPER_METHODS.include?(block_method_name)

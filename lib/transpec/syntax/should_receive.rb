@@ -51,7 +51,7 @@ module Transpec
         end
 
         convert_to_syntax!('expect', negative_form)
-        register_record(ExpectRecord, negative_form)
+        add_record(ExpectRecord, negative_form)
       end
 
       def allowize_useless_expectation!(negative_form = 'not_to')
@@ -64,7 +64,7 @@ module Transpec
         convert_to_syntax!('allow', negative_form)
         remove_no_message_allowance!
 
-        register_record(AllowRecord, negative_form)
+        add_record(AllowRecord, negative_form)
       end
 
       def stubize_useless_expectation!
@@ -73,15 +73,15 @@ module Transpec
         replace(selector_range, 'stub')
         remove_no_message_allowance!
 
-        register_record(StubRecord)
+        add_record(StubRecord)
       end
 
       def remove_useless_and_return!
-        super && register_record(MonkeyPatchUselessAndReturnRecord)
+        super && add_record(MonkeyPatchUselessAndReturnRecord)
       end
 
       def add_receiver_arg_to_any_instance_implementation_block!
-        super && register_record(MonkeyPatchAnyInstanceBlockRecord)
+        super && add_record(MonkeyPatchAnyInstanceBlockRecord)
       end
 
       private
@@ -158,7 +158,7 @@ module Transpec
         end
       end
 
-      def register_record(record_class, negative_form_of_to = nil)
+      def add_record(record_class, negative_form_of_to = nil)
         report.records << record_class.new(self, negative_form_of_to)
       end
 

@@ -19,18 +19,18 @@ module Transpec
       def convert_to_conditional_matcher!(form_of_be_falsey = 'be_falsey')
         replacement = be_true? ? 'be_truthy' : form_of_be_falsey
         replace(expression_range, replacement)
-        register_record(replacement)
+        add_record(replacement)
       end
 
       def convert_to_exact_matcher!
         replacement = be_true? ? 'be true' : 'be false'
         replace(expression_range, replacement)
-        register_record(replacement)
+        add_record(replacement)
       end
 
       private
 
-      def register_record(converted_syntax)
+      def add_record(converted_syntax)
         report.records << Record.new(method_name.to_s, converted_syntax)
       end
     end
