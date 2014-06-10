@@ -58,6 +58,24 @@ module Transpec
       end
     end
 
+    def copy_recursively(source_root, destination_root)
+      source_root = File.expand_path(source_root)
+      source_root_pathname = Pathname.new(source_root)
+
+      destination_root = File.expand_path(destination_root)
+      if File.directory?(destination_root)
+        destination_root = File.join(destination_root, File.basename(source_root))
+      end
+
+      Find.find(source_root) do |source_path|
+        relative_path = Pathname.new(source_path).relative_path_from(source_root_pathname).to_s
+        destination_path = File.join(destination_root, relative_path)
+        copy(source_path, destination_path)
+      end
+    end
+
+    private
+
     def in_copied_project
       return yield if @in_copied_project
 
@@ -85,24 +103,6 @@ module Transpec
         end
       end
     end
-
-    def copy_recursively(source_root, destination_root)
-      source_root = File.expand_path(source_root)
-      source_root_pathname = Pathname.new(source_root)
-
-      destination_root = File.expand_path(destination_root)
-      if File.directory?(destination_root)
-        destination_root = File.join(destination_root, File.basename(source_root))
-      end
-
-      Find.find(source_root) do |source_path|
-        relative_path = Pathname.new(source_path).relative_path_from(source_root_pathname).to_s
-        destination_path = File.join(destination_root, relative_path)
-        copy(source_path, destination_path)
-      end
-    end
-
-    private
 
     def rewrite_specs(paths)
       rewriter = Rewriter.new
