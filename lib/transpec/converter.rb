@@ -36,7 +36,6 @@ module Transpec
       ast.each_node do |node|
         begin
           dispatch_node(node, source_rewriter, runtime_data, report)
-        rescue OverlappedRewriteError # rubocop:disable HandleExceptions
         rescue ConversionError => error
           report.conversion_errors << error
         end

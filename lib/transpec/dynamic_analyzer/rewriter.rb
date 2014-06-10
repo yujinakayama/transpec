@@ -79,7 +79,6 @@ module Transpec
 
         source_rewriter.insert_before(source_range, front)
         source_rewriter.insert_after(source_range, rear)
-      rescue OverlappedRewriteError # rubocop:disable HandleExceptions
       end
 
       def build_wrapper_codes(node, analysis_codes)

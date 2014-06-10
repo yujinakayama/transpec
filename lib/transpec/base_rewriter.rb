@@ -26,14 +26,14 @@ module Transpec
     def rewrite(processed_source)
       fail processed_source.syntax_error if processed_source.syntax_error
 
-      source_rewriter = Parser::Source::Rewriter.new(processed_source.buffer)
+      source_rewriter = create_source_rewriter(processed_source)
       incomplete = false
-      source_rewriter.diagnostics.consumer = proc do
-        incomplete = true
-        fail OverlappedRewriteError
-      end
 
-      process(processed_source.ast, source_rewriter)
+      begin
+        process(processed_source.ast, source_rewriter)
+      rescue OverlappedRewriteError
+        incomplete = true
+      end
 
       rewritten_source = source_rewriter.process
       rewritten_source = rewrite_source(rewritten_source, processed_source.path) if incomplete
@@ -42,6 +42,14 @@ module Transpec
     end
 
     private
+
+    def create_source_rewriter(processed_source)
+      Parser::Source::Rewriter.new(processed_source.buffer).tap do |source_rewriter|
+        source_rewriter.diagnostics.consumer = proc do
+          fail OverlappedRewriteError
+        end
+      end
+    end
 
     def process(ast, source_rewriter) # rubocop:disable UnusedMethodArgument
       fail NotImplementedError
