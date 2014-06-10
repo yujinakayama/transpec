@@ -61,6 +61,7 @@ module Transpec
       end
 
       def example_has_description?
+        return if example_block_node.nil?
         send_node = example_block_node.children.first
         send_node.children[2]
       end
@@ -92,6 +93,7 @@ module Transpec
         end
 
         unless example_has_description?
+          return if example_block_node.nil?
           insert_before(example_block_node.loc.begin, "'#{generated_description}' ")
         end
 
@@ -123,20 +125,24 @@ module Transpec
       end
 
       def linefeed_at_beginning_of_block?
+        return if example_block_node.nil?
         beginning_to_body_range = example_block_node.loc.begin.join(expression_range.begin)
         beginning_to_body_range.source.include?("\n")
       end
 
       def linefeed_at_end_of_block?
+        return if example_block_node.nil?
         body_to_end_range = expression_range.end.join(example_block_node.loc.end)
         body_to_end_range.source.include?("\n")
       end
 
       def left_curly_and_whitespaces_range
+        return if example_block_node.nil?
         expand_range_to_adjacent_whitespaces(example_block_node.loc.begin, :end)
       end
 
       def whitespaces_and_right_curly_range
+        return if example_block_node.nil?
         expand_range_to_adjacent_whitespaces(example_block_node.loc.end, :begin)
       end
 
