@@ -2,6 +2,8 @@
 
 ## Development
 
+* Fix error on dynamic analysis when the project have `.rspec` file containing some `--require` options and the required file contains some RSpec API.
+
 ## v2.2.1
 
 * Fix invalid conversion of `pending` with block including an empty line.

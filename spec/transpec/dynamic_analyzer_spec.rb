@@ -9,6 +9,11 @@ module Transpec
     include ::AST::Sexp
     include_context 'isolated environment'
 
+    def find_node_in_file(file_path, &block)
+      processed_source = ProcessedSource.parse_file(file_path)
+      processed_source.ast.each_node.find(&block)
+    end
+
     subject(:dynamic_analyzer) { DynamicAnalyzer.new(rspec_command: rspec_command, silent: true) }
     let(:rspec_command) { nil }
 
@@ -65,6 +70,12 @@ module Transpec
     end
 
     describe '#analyze' do
+      before do
+        create_file(spec_file_path, source)
+      end
+
+      let(:spec_file_path) { 'spec/example_spec.rb' }
+
       let(:source) do
         <<-END
           describe [1, 2] do
@@ -73,12 +84,6 @@ module Transpec
             end
           end
         END
-      end
-
-      let(:file_path) { 'spec/example_spec.rb' }
-
-      before do
-        create_file(file_path, source)
       end
 
       context 'when already in copied project directory' do
@@ -93,7 +98,7 @@ module Transpec
       context 'when no path is passed' do
         it 'rewrites all files in the "spec" directory' do
           DynamicAnalyzer::Rewriter.any_instance.should_receive(:rewrite_file!) do |spec|
-            spec.path.should == file_path
+            spec.path.should == spec_file_path
           end
 
           dynamic_analyzer.analyze
@@ -107,10 +112,10 @@ module Transpec
 
         it 'rewrites only files in the passed paths' do
           DynamicAnalyzer::Rewriter.any_instance.should_receive(:rewrite_file!) do |spec|
-            spec.path.should == file_path
+            spec.path.should == spec_file_path
           end
 
-          dynamic_analyzer.analyze([file_path])
+          dynamic_analyzer.analyze([spec_file_path])
         end
       end
 
@@ -156,6 +161,45 @@ module Transpec
         end
       end
 
+      context 'when there is a .rspec file containing `--require spec_helper`' do
+        before do
+          create_file('.rspec', '--require spec_helper')
+        end
+
+        context 'and the spec/spec_helper.rb contains some code that is dynamic analysis target' do
+          before do
+            create_file('spec/spec_helper.rb', <<-END)
+              RSpec.configure { }
+
+              def some_helper_method_used_in_each_spec
+              end
+            END
+          end
+
+          let(:source) do
+            <<-END
+              some_helper_method_used_in_each_spec
+
+              describe 'something' do
+              end
+            END
+          end
+
+          it 'does not raise error' do
+            -> { dynamic_analyzer.analyze }.should_not raise_error
+          end
+
+          it 'preserves the existing `--require`' do
+            describe_node = find_node_in_file(spec_file_path) do |node|
+              node.send_type? && node.children[1] == :describe
+            end
+
+            runtime_data = dynamic_analyzer.analyze
+            runtime_data.run?(describe_node).should be_true
+          end
+        end
+      end
+
       runtime_data_cache = {}
 
       subject(:runtime_data) do
@@ -171,19 +215,9 @@ module Transpec
       end
 
       describe 'an element of the runtime data' do
-        let(:ast) do
-          source_buffer = Parser::Source::Buffer.new(file_path)
-          source_buffer.source = source
-
-          builder = AST::Builder.new
-
-          parser = Parser::CurrentRuby.new(builder)
-          parser.parse(source_buffer)
-        end
-
         let(:target_node) do
-          ast.each_descendent_node do |node|
-            return node if node == s(:send, nil, :subject)
+          find_node_in_file(spec_file_path) do |node|
+            node == s(:send, nil, :subject)
           end
         end
 

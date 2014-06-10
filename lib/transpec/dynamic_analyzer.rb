@@ -44,9 +44,8 @@ module Transpec
     def analyze(paths = [])
       in_copied_project do
         rewrite_specs(paths)
-
-        File.write(helper_filename, helper_source)
-
+        put_analysis_helper
+        modify_dot_rspec
         run_rspec(paths)
 
         begin
@@ -77,8 +76,6 @@ module Transpec
 
     def run_rspec(paths)
       project.with_bundler_clean_env do
-        ENV['SPEC_OPTS'] = ['-r', "./#{helper_filename}"].shelljoin
-
         command = "#{rspec_command} #{paths.shelljoin}"
 
         if silent?
@@ -126,6 +123,17 @@ module Transpec
       erb_path = File.join(File.dirname(__FILE__), 'dynamic_analyzer', HELPER_TEMPLATE_FILE)
       erb = ERB.new(File.read(erb_path), nil)
       erb.result(binding)
+    end
+
+    def put_analysis_helper
+      File.write(helper_filename, helper_source)
+    end
+
+    def modify_dot_rspec
+      filename = '.rspec'
+      content = "--require ./#{helper_filename}\n"
+      content << File.read(filename) if File.exist?(filename)
+      File.write(filename, content)
     end
 
     def copy(source, destination)
