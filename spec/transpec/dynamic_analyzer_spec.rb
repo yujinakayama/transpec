@@ -161,6 +161,21 @@ module Transpec
         end
       end
 
+      context 'when rspec is run via rake task' do
+        before do
+          create_file('Rakefile', <<-END)
+            require 'rspec/core/rake_task'
+            RSpec::Core::RakeTask.new(:spec)
+          END
+        end
+
+        let(:rspec_command) { 'rake spec' }
+
+        it 'does not raise error' do
+          -> { dynamic_analyzer.analyze }.should_not raise_error
+        end
+      end
+
       context 'when there is a .rspec file containing `--require spec_helper`' do
         before do
           create_file('.rspec', '--require spec_helper')
