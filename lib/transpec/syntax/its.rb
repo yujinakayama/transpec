@@ -25,15 +25,18 @@ module Transpec
       end
 
       def convert_to_describe_subject_it!
-        front, rear = build_wrapper_codes
-
-        insert_before(beginning_of_line_range(block_node), front)
+        insert_before(beginning_of_line_range(block_node), front_code)
+        insert_before(expression_range, additional_indentation_for_it)
         replace(range_from_its_to_front_of_block, 'it ')
-        insert_after(block_node.loc.expression, rear)
+        insert_after(block_node.loc.expression, rear_code)
 
         increment_block_base_indentation!
 
         add_record
+      end
+
+      def insert_blank_line_above!
+        insert_before(line_range(node), "\n")
       end
 
       def attribute_expression
@@ -56,25 +59,36 @@ module Transpec
 
       private
 
-      def build_wrapper_codes
-        front = ''
-        rear = ''
+      def front_code
+        code = ''
 
-        front << "\n" if !previous_line_is_blank? &&
-                         previous_and_current_line_are_same_indentation_level?
+        if !previous_line_is_blank? && previous_and_current_line_are_same_indentation_level?
+          code << "\n"
+        end
 
         attributes.each_with_index do |attribute, index|
           indentation = block_base_indentation + '  ' * index
-
-          front << indentation + "describe #{attribute.description} do\n"
-          front << indentation + "  subject { super()#{attribute.selector} }\n"
-
-          rear = "\n#{indentation}end" + rear
+          code << indentation + "describe #{attribute.description} do\n"
+          code << indentation + "  subject { super()#{attribute.selector} }\n"
         end
 
-        front << '  ' * attributes.size
+        code
+      end
 
-        [front, rear]
+      def rear_code
+        code = ''
+
+        attributes.size.downto(1) do |level|
+          indentation = block_base_indentation + '  ' * (level - 1)
+          code << "\n"
+          code << "#{indentation}end"
+        end
+
+        code
+      end
+
+      def additional_indentation_for_it
+        '  ' * attributes.size
       end
 
       def previous_line_is_blank?

@@ -123,6 +123,8 @@ module Transpec
         end
 
         example.convert_singleline_block_to_multiline!
+
+        example.insert_blank_line_above! if in_its?
       end
 
       def in_its?

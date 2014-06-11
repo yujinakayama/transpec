@@ -97,6 +97,7 @@ module Transpec
 
               describe '#chars' do
                 subject { super().chars }
+
                 it 'has 3 items' do
                   expect(subject.size).to eq(3)
                 end
