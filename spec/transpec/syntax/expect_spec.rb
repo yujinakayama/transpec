@@ -9,6 +9,96 @@ module Transpec
       include_context 'parsed objects'
       include_context 'syntax object', Expect, :expect_object
 
+      describe '#conversion_target?' do
+        let(:target_node) do
+          ast.each_node do |node|
+            next unless node.send_type?
+            method_name = node.children[1]
+            next unless method_name == :expect
+            return node
+          end
+          fail 'No #expect node is found!'
+        end
+
+        let(:expect_object) do
+          Expect.new(target_node)
+        end
+
+        subject { expect_object.conversion_target? }
+
+        context 'when the #expect node is chained by #to' do
+          context 'and taking a matcher properly' do
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'is valid expectation' do
+                    expect(obj).to matcher
+                  end
+                end
+              END
+            end
+
+            it { should be_true }
+          end
+
+          context 'but taking no matcher' do
+            let(:source) do
+              <<-END
+                describe 'example' do
+                  it 'is invalid expectation' do
+                    expect(obj).to
+                  end
+                end
+              END
+            end
+
+            it { should be_false }
+          end
+        end
+
+        context 'when the #expect node is chained by #not_to' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'is valid expectation' do
+                  expect(obj).not_to matcher
+                end
+              end
+            END
+          end
+
+          it { should be_true }
+        end
+
+        context 'when the #expect node is not chained' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'is invalid expectation' do
+                  expect(obj)
+                end
+              end
+            END
+          end
+
+          it { should be_false }
+        end
+
+        context 'when the #expect node is not chained and taken as a argument by another method' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'is invalid expectation' do
+                  do_something(expect(obj))
+                end
+              end
+            END
+          end
+
+          it { should be_false }
+        end
+      end
+
       describe '#subject_node' do
         context 'when the subject is a normal argument' do
           let(:source) do

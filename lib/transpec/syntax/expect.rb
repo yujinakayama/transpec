@@ -14,7 +14,7 @@ module Transpec
       add_matcher RaiseError
 
       def dynamic_analysis_target?
-        super && receiver_node.nil? && [:expect, :expect_any_instance_of].include?(method_name)
+        super && [:expect, :expect_any_instance_of].include?(method_name)
       end
 
       def method_name_for_instance

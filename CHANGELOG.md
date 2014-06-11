@@ -2,6 +2,8 @@
 
 ## Development
 
+* Avoid crash on invalid `expect` syntax expectations (e.g. `expect(obj)` without following `to` or `expect(obj).to` taking no matcher).
+
 ## v2.2.3
 
 * Handle `its(:attr) { should have(n).items }`. ([#68](https://github.com/yujinakayama/transpec/pull/68))

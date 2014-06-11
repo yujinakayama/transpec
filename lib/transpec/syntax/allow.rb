@@ -9,7 +9,7 @@ module Transpec
       include Mixin::ExpectBase
 
       def dynamic_analysis_target?
-        super && receiver_node.nil? && [:allow, :allow_any_instance_of].include?(method_name)
+        super && [:allow, :allow_any_instance_of].include?(method_name)
       end
 
       def method_name_for_instance
