@@ -2,7 +2,7 @@
 
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/should_base'
-require 'transpec/rspec_dsl'
+require 'transpec/syntax/example'
 require 'transpec/util'
 require 'active_support/inflector/methods'
 require 'active_support/inflector/inflections'
@@ -60,9 +60,20 @@ module Transpec
         report.records << OnelinerShouldHaveRecord.new(self, have_matcher, negative_form)
       end
 
-      def example_has_description?
-        send_node = example_block_node.children.first
-        send_node.children[2]
+      def example
+        return @example if instance_variable_defined?(:@example)
+
+        @example = nil
+
+        node.each_ancestor_node do |node|
+          next unless node.block_type?
+          send_node = node.children[0]
+          example = Example.new(send_node, source_rewriter, runtime_data)
+          next unless example.conversion_target?
+          @example = example
+        end
+
+        @example
       end
 
       def build_description(size)
@@ -91,53 +102,11 @@ module Transpec
           fail 'This one-liner #should does not have #have matcher!'
         end
 
-        unless example_has_description?
-          insert_before(example_block_node.loc.begin, "'#{generated_description}' ")
+        unless example.description?
+          example.insert_description!(build_description(have_matcher.size_source))
         end
 
-        indentation = indentation_of_line(example_block_node)
-
-        unless linefeed_at_beginning_of_block?
-          replace(left_curly_and_whitespaces_range, "do\n#{indentation}  ")
-        end
-
-        unless linefeed_at_end_of_block?
-          replace(whitespaces_and_right_curly_range, "\n#{indentation}end")
-        end
-      end
-
-      def example_block_node
-        return @example_block_node if instance_variable_defined?(:@example_block_node)
-
-        @example_block_node = node.each_ancestor_node.find do |node|
-          next false unless node.block_type?
-          send_node = node.children.first
-          receiver_node, method_name, = *send_node
-          next false if receiver_node
-          EXAMPLE_METHODS.include?(method_name)
-        end
-      end
-
-      def generated_description
-        build_description(have_matcher.size_source)
-      end
-
-      def linefeed_at_beginning_of_block?
-        beginning_to_body_range = example_block_node.loc.begin.join(expression_range.begin)
-        beginning_to_body_range.source.include?("\n")
-      end
-
-      def linefeed_at_end_of_block?
-        body_to_end_range = expression_range.end.join(example_block_node.loc.end)
-        body_to_end_range.source.include?("\n")
-      end
-
-      def left_curly_and_whitespaces_range
-        expand_range_to_adjacent_whitespaces(example_block_node.loc.begin, :end)
-      end
-
-      def whitespaces_and_right_curly_range
-        expand_range_to_adjacent_whitespaces(example_block_node.loc.end, :begin)
+        example.convert_singleline_block_to_multiline!
       end
 
       def add_record(negative_form_of_to)
@@ -170,9 +139,9 @@ module Transpec
         private
 
         def build_original_syntax
-          syntax = should.example_has_description? ? "it '...' do" : 'it {'
+          syntax = should.example.description? ? "it '...' do" : 'it {'
           syntax << " #{should.method_name} #{have.method_name}(n).#{original_items} "
-          syntax << (should.example_has_description? ? 'end' : '}')
+          syntax << (should.example.description? ? 'end' : '}')
         end
 
         def build_converted_syntax
@@ -185,7 +154,7 @@ module Transpec
         end
 
         def converted_description
-          if should.example_has_description?
+          if should.example.description?
             "it '...' do"
           else
             "it '#{should.build_description('n')}' do"

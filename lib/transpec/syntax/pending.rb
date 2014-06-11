@@ -1,13 +1,14 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/mixin/block_owner'
 require 'transpec/syntax/mixin/context_sensitive'
 require 'transpec/util'
 
 module Transpec
   class Syntax
     class Pending < Syntax
-      include Mixin::ContextSensitive, Util
+      include Mixin::BlockOwner, Mixin::ContextSensitive, Util
 
       def dynamic_analysis_target?
         super && receiver_node.nil? && method_name == :pending
@@ -67,22 +68,6 @@ module Transpec
 
       def block_node
         block_node_taken_by_method(node)
-      end
-
-      def block_body_node
-        block_node.children[2]
-      end
-
-      def block_beginning_line
-        block_node.loc.begin.line
-      end
-
-      def block_body_line
-        block_body_node.loc.expression.line
-      end
-
-      def block_end_line
-        block_node.loc.end.line
       end
 
       def range_between_pending_and_body

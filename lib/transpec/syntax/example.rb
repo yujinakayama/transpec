@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/mixin/block_owner'
 require 'transpec/syntax/mixin/context_sensitive'
 require 'transpec/syntax/mixin/metadata'
 require 'transpec/rspec_dsl'
@@ -8,7 +9,7 @@ require 'transpec/rspec_dsl'
 module Transpec
   class Syntax
     class Example < Syntax
-      include Mixin::ContextSensitive, Mixin::Metadata, RSpecDSL
+      include Mixin::BlockOwner, Mixin::ContextSensitive, Mixin::Metadata, RSpecDSL
 
       def dynamic_analysis_target?
         super && receiver_node.nil? && EXAMPLE_METHODS.include?(method_name)
@@ -21,6 +22,19 @@ module Transpec
       def convert_pending_to_skip!
         convert_pending_selector_to_skip!
         convert_pending_metadata_to_skip!
+      end
+
+      def block_node
+        parent_node.block_type? ? parent_node : nil
+      end
+
+      def description?
+        !arg_node.nil?
+      end
+
+      def insert_description!(description)
+        fail 'This example already has description' if description?
+        insert_before(block_node.loc.begin, "'#{description}' ")
       end
 
       private
