@@ -2,7 +2,9 @@
 
 ## Development
 
-* Avoid crash on invalid `expect` syntax expectations (e.g. `expect(obj)` without following `to` or `expect(obj).to` taking no matcher).
+## v2.2.4
+
+* Avoid crash on invalid `expect` syntax expectations (e.g. `expect(obj)` without following `to` or `expect(obj).to` taking no matcher). ([#71](https://github.com/yujinakayama/transpec/issues/71))
 
 ## v2.2.3
 
