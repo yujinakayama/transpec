@@ -79,6 +79,37 @@ module Transpec
       it 'is converted properly' do
         converted_source.should == expected_source
       end
+
+      context 'with #its' do
+        let(:source) do
+          <<-END
+            describe 'example' do
+              subject { 'foo' }
+              its(:chars) { should have(3).items }
+            end
+          END
+        end
+
+        let(:expected_source) do
+          <<-END
+            describe 'example' do
+              subject { 'foo' }
+
+              describe '#chars' do
+                subject { super().chars }
+
+                it 'has 3 items' do
+                  expect(subject.size).to eq(3)
+                end
+              end
+            end
+          END
+        end
+
+        it 'is converted properly' do
+          converted_source.should == expected_source
+        end
+      end
     end
 
     describe 'one-liner expectation with operator matcher' do

@@ -2,6 +2,8 @@
 
 ## Development
 
+* Handle `its(:attr) { should have(n).items }`. ([#68](https://github.com/yujinakayama/transpec/pull/68))
+
 ## v2.2.2
 
 * Fix error on dynamic analysis when the project have `.rspec` file containing some `--require` options and the required file contains some RSpec API.

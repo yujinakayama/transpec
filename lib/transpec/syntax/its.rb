@@ -1,13 +1,14 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/mixin/examplish'
 require 'transpec/syntax/mixin/send'
 require 'transpec/util'
 
 module Transpec
   class Syntax
     class Its < Syntax
-      include Mixin::Send, Util
+      include Mixin::Examplish, Mixin::Send, Util
 
       define_dynamic_analysis do |rewriter|
         key = :project_requires_its?
@@ -24,13 +25,18 @@ module Transpec
       end
 
       def convert_to_describe_subject_it!
-        front, rear = build_wrapper_codes
-
-        insert_before(beginning_of_line_range(block_node), front)
+        insert_before(beginning_of_line_range(block_node), front_code)
+        insert_before(expression_range, additional_indentation_for_it)
         replace(range_from_its_to_front_of_block, 'it ')
-        insert_after(block_node.loc.expression, rear)
+        insert_after(block_node.loc.expression, rear_code)
+
+        increment_block_base_indentation!
 
         add_record
+      end
+
+      def insert_blank_line_above!
+        insert_before(line_range(node), "\n")
       end
 
       def attribute_expression
@@ -47,27 +53,42 @@ module Transpec
         node.parent_node
       end
 
+      def description?
+        false
+      end
+
       private
 
-      def build_wrapper_codes
-        front = ''
-        rear = ''
+      def front_code
+        code = ''
 
-        front << "\n" if !previous_line_is_blank? &&
-                         previous_and_current_line_are_same_indentation_level?
-
-        attributes.each_with_index do |attribute, index|
-          indentation = base_indentation + '  ' * index
-
-          front << indentation + "describe #{attribute.description} do\n"
-          front << indentation + "  subject { super()#{attribute.selector} }\n"
-
-          rear = "\n#{indentation}end" + rear
+        if !previous_line_is_blank? && previous_and_current_line_are_same_indentation_level?
+          code << "\n"
         end
 
-        front << '  ' * attributes.size
+        attributes.each_with_index do |attribute, index|
+          indentation = block_base_indentation + '  ' * index
+          code << indentation + "describe #{attribute.description} do\n"
+          code << indentation + "  subject { super()#{attribute.selector} }\n"
+        end
 
-        [front, rear]
+        code
+      end
+
+      def rear_code
+        code = ''
+
+        attributes.size.downto(1) do |level|
+          indentation = block_base_indentation + '  ' * (level - 1)
+          code << "\n"
+          code << "#{indentation}end"
+        end
+
+        code
+      end
+
+      def additional_indentation_for_it
+        '  ' * attributes.size
       end
 
       def previous_line_is_blank?
@@ -76,7 +97,7 @@ module Transpec
       end
 
       def previous_and_current_line_are_same_indentation_level?
-        indentation_of_line(previous_line_source) == base_indentation
+        indentation_of_line(previous_line_source) == block_base_indentation
       end
 
       def previous_line_source
@@ -85,8 +106,13 @@ module Transpec
         nil
       end
 
-      def base_indentation
-        @base_indentation ||= indentation_of_line(node)
+      # TODO: This is an ad-hoc solution for nested indentation manipulations.
+      def block_base_indentation
+        block_node.metadata[:indentation] ||= indentation_of_line(node)
+      end
+
+      def increment_block_base_indentation!
+        block_node.metadata[:indentation] = block_base_indentation + '  '
       end
 
       def range_from_its_to_front_of_block

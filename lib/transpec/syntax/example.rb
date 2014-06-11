@@ -2,13 +2,14 @@
 
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/context_sensitive'
+require 'transpec/syntax/mixin/examplish'
 require 'transpec/syntax/mixin/metadata'
 require 'transpec/rspec_dsl'
 
 module Transpec
   class Syntax
     class Example < Syntax
-      include Mixin::ContextSensitive, Mixin::Metadata, RSpecDSL
+      include Mixin::ContextSensitive, Mixin::Examplish, Mixin::Metadata, RSpecDSL
 
       def dynamic_analysis_target?
         super && receiver_node.nil? && EXAMPLE_METHODS.include?(method_name)
@@ -21,6 +22,10 @@ module Transpec
       def convert_pending_to_skip!
         convert_pending_selector_to_skip!
         convert_pending_metadata_to_skip!
+      end
+
+      def description?
+        !arg_node.nil?
       end
 
       private
