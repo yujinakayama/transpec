@@ -2,6 +2,8 @@
 
 ## Development
 
+## v2.2.3
+
 * Handle `its(:attr) { should have(n).items }`. ([#68](https://github.com/yujinakayama/transpec/pull/68))
 
 ## v2.2.2
