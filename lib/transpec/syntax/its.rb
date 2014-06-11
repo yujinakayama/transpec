@@ -1,13 +1,14 @@
 # coding: utf-8
 
 require 'transpec/syntax'
+require 'transpec/syntax/mixin/examplish'
 require 'transpec/syntax/mixin/send'
 require 'transpec/util'
 
 module Transpec
   class Syntax
     class Its < Syntax
-      include Mixin::Send, Util
+      include Mixin::Examplish, Mixin::Send, Util
 
       define_dynamic_analysis do |rewriter|
         key = :project_requires_its?
@@ -30,6 +31,8 @@ module Transpec
         replace(range_from_its_to_front_of_block, 'it ')
         insert_after(block_node.loc.expression, rear)
 
+        increment_block_base_indentation!
+
         add_record
       end
 
@@ -47,6 +50,10 @@ module Transpec
         node.parent_node
       end
 
+      def description?
+        false
+      end
+
       private
 
       def build_wrapper_codes
@@ -57,7 +64,7 @@ module Transpec
                          previous_and_current_line_are_same_indentation_level?
 
         attributes.each_with_index do |attribute, index|
-          indentation = base_indentation + '  ' * index
+          indentation = block_base_indentation + '  ' * index
 
           front << indentation + "describe #{attribute.description} do\n"
           front << indentation + "  subject { super()#{attribute.selector} }\n"
@@ -76,7 +83,7 @@ module Transpec
       end
 
       def previous_and_current_line_are_same_indentation_level?
-        indentation_of_line(previous_line_source) == base_indentation
+        indentation_of_line(previous_line_source) == block_base_indentation
       end
 
       def previous_line_source
@@ -85,8 +92,13 @@ module Transpec
         nil
       end
 
-      def base_indentation
-        @base_indentation ||= indentation_of_line(node)
+      # TODO: This is an ad-hoc solution for nested indentation manipulations.
+      def block_base_indentation
+        block_node.metadata[:indentation] ||= indentation_of_line(node)
+      end
+
+      def increment_block_base_indentation!
+        block_node.metadata[:indentation] = block_base_indentation + '  '
       end
 
       def range_from_its_to_front_of_block

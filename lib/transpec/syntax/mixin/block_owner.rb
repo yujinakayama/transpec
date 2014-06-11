@@ -13,17 +13,15 @@ module Transpec
         def convert_singleline_block_to_multiline!
           return unless block_has_body? # TODO
 
-          indentation = Util.indentation_of_line(block_node)
-
           has_inserted_linefeed = false
 
           if block_beginning_line == block_body_line
-            replace(range_between_block_begin_and_body, "\n#{indentation}  ")
+            replace(range_between_block_begin_and_body, "\n#{block_base_indentation}  ")
             has_inserted_linefeed = true
           end
 
           if block_end_line == block_body_line
-            replace(range_between_block_body_and_end, "\n#{indentation}")
+            replace(range_between_block_body_and_end, "\n#{block_base_indentation}")
             has_inserted_linefeed = true
           end
 
@@ -31,6 +29,10 @@ module Transpec
             replace(block_node.loc.begin, 'do')
             replace(block_node.loc.end, 'end')
           end
+        end
+
+        def block_base_indentation
+          Util.indentation_of_line(block_node)
         end
 
         def block_has_body?

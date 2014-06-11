@@ -24,6 +24,16 @@ module Transpec
         super && receiver_node.nil? && [:should, :should_not].include?(method_name)
       end
 
+      def conversion_target?
+        return false unless dynamic_analysis_target?
+        return true unless runtime_data.run?(send_analysis_target_node)
+        return false unless defined_in_rspec_source?
+        # #should inside of #its is dynamically defined in MemoizedHelper,
+        # so it cannot be differentiated from user-defined methods by the dynamic analysis in Send.
+        # https://github.com/rspec/rspec-core/blob/v2.14.8/lib/rspec/core/memoized_helpers.rb#L439
+        !example_method_defined_by_user? || in_its?
+      end
+
       def expectize!(negative_form = 'not_to')
         replacement = 'is_expected.'
         replacement << (positive? ? 'to' : negative_form)
@@ -68,9 +78,15 @@ module Transpec
         node.each_ancestor_node do |node|
           next unless node.block_type?
           send_node = node.children[0]
-          example = Example.new(send_node, source_rewriter, runtime_data)
-          next unless example.conversion_target?
-          @example = example
+
+          found = Syntax.all_syntaxes.find do |syntax_class|
+            next unless syntax_class.ancestors.include?(Mixin::Examplish)
+            syntax = syntax_class.new(send_node, source_rewriter, runtime_data)
+            next unless syntax.conversion_target?
+            @example = syntax
+          end
+
+          break if found
         end
 
         @example
@@ -107,6 +123,10 @@ module Transpec
         end
 
         example.convert_singleline_block_to_multiline!
+      end
+
+      def in_its?
+        example.is_a?(Its)
       end
 
       def add_record(negative_form_of_to)
