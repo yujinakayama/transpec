@@ -60,7 +60,7 @@ module Transpec
           indentation = base_indentation + '  ' * index
 
           front << indentation + "describe #{attribute.description} do\n"
-          front << indentation + "  subject { super()#{attribute.selector} }\n"
+          front << indentation + "  subject { super#{attribute.selector} }\n\n"
 
           rear = "\n#{indentation}end" + rear
         end
