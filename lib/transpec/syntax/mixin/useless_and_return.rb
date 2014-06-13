@@ -53,14 +53,14 @@ module Transpec
             @host = host
           end
 
-          def build_original_syntax
+          def build_old_syntax
             syntax = base_syntax
             syntax << '.and_return'
             syntax << ' { value }' if @host.and_return_with_block?
             syntax
           end
 
-          def build_converted_syntax
+          def build_new_syntax
             syntax = base_syntax
             syntax << ' { value }' if @host.and_return_with_block?
             syntax

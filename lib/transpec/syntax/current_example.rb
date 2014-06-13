@@ -73,14 +73,14 @@ module Transpec
         if block_node
           prefix = "#{block_method_name}"
           prefix << '(:name)' if HELPER_METHODS.include?(block_method_name)
-          original_syntax = "#{prefix} { example }"
-          converted_syntax = "#{prefix} { |example| example }"
+          old_syntax = "#{prefix} { example }"
+          new_syntax = "#{prefix} { |example| example }"
         else
-          original_syntax = 'def helper_method example; end'
-          converted_syntax = 'def helper_method RSpec.current_example; end'
+          old_syntax = 'def helper_method example; end'
+          new_syntax = 'def helper_method RSpec.current_example; end'
         end
 
-        report.records << Record.new(original_syntax, converted_syntax)
+        report.records << Record.new(old_syntax, new_syntax)
       end
     end
   end

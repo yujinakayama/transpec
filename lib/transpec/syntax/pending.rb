@@ -82,8 +82,8 @@ module Transpec
         block_body_node.loc.expression.end.join(block_node.loc.end)
       end
 
-      def add_record(original_syntax, converted_syntax)
-        report.records << Record.new(original_syntax, converted_syntax)
+      def add_record(old_syntax, new_syntax)
+        report.records << Record.new(old_syntax, new_syntax)
       end
     end
   end

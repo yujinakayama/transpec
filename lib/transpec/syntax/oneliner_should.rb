@@ -132,21 +132,21 @@ module Transpec
       end
 
       def add_record(negative_form_of_to)
-        original_syntax = 'it { should'
-        converted_syntax = 'it { is_expected.'
+        old_syntax = 'it { should'
+        new_syntax = 'it { is_expected.'
 
         if positive?
-          converted_syntax << 'to'
+          new_syntax << 'to'
         else
-          original_syntax << '_not'
-          converted_syntax << negative_form_of_to
+          old_syntax << '_not'
+          new_syntax << negative_form_of_to
         end
 
-        [original_syntax, converted_syntax].each do |syntax|
+        [old_syntax, new_syntax].each do |syntax|
           syntax << ' ... }'
         end
 
-        report.records << Record.new(original_syntax, converted_syntax)
+        report.records << Record.new(old_syntax, new_syntax)
       end
 
       class OnelinerShouldHaveRecord < Have::HaveRecord
@@ -160,22 +160,22 @@ module Transpec
 
         private
 
-        def build_original_syntax
+        def build_old_syntax
           syntax = should.example.description? ? "it '...' do" : 'it {'
-          syntax << " #{should.method_name} #{have.method_name}(n).#{original_items} "
+          syntax << " #{should.method_name} #{have.method_name}(n).#{old_items} "
           syntax << (should.example.description? ? 'end' : '}')
         end
 
-        def build_converted_syntax
-          syntax = converted_description
+        def build_new_syntax
+          syntax = new_description
           syntax << ' '
-          syntax << converted_expectation
+          syntax << new_expectation
           syntax << ' '
           syntax << source_builder.replacement_matcher_source
           syntax << ' end'
         end
 
-        def converted_description
+        def new_description
           if should.example.description?
             "it '...' do"
           else
@@ -183,17 +183,17 @@ module Transpec
           end
         end
 
-        def converted_expectation
+        def new_expectation
           case should.current_syntax_type
           when :should
-            "#{converted_subject}.#{should.method_name}"
+            "#{new_subject}.#{should.method_name}"
           when :expect
-            "expect(#{converted_subject})." + (should.positive? ? 'to' : negative_form_of_to)
+            "expect(#{new_subject})." + (should.positive? ? 'to' : negative_form_of_to)
           end
         end
 
-        def converted_subject
-          build_converted_subject('subject')
+        def new_subject
+          build_new_subject('subject')
         end
       end
     end

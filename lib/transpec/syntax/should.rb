@@ -66,21 +66,21 @@ module Transpec
 
       def add_record(negative_form_of_to)
         if proc_subject?
-          original_syntax = "#{range_of_subject_method_taking_block.source} { }.should"
-          converted_syntax = 'expect { }.'
+          old_syntax = "#{range_of_subject_method_taking_block.source} { }.should"
+          new_syntax = 'expect { }.'
         else
-          original_syntax = 'obj.should'
-          converted_syntax = 'expect(obj).'
+          old_syntax = 'obj.should'
+          new_syntax = 'expect(obj).'
         end
 
         if positive?
-          converted_syntax << 'to'
+          new_syntax << 'to'
         else
-          original_syntax << '_not'
-          converted_syntax << negative_form_of_to
+          old_syntax << '_not'
+          new_syntax << negative_form_of_to
         end
 
-        report.records << Record.new(original_syntax, converted_syntax)
+        report.records << Record.new(old_syntax, new_syntax)
       end
     end
   end

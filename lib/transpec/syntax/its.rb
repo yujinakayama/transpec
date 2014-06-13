@@ -120,10 +120,10 @@ module Transpec
       end
 
       def add_record
-        report.records << Record.new(original_syntax, converted_syntax)
+        report.records << Record.new(old_syntax, new_syntax)
       end
 
-      def original_syntax
+      def old_syntax
         if attribute_expression.brackets?
           'its([:key]) { }'
         else
@@ -131,7 +131,7 @@ module Transpec
         end
       end
 
-      def converted_syntax
+      def new_syntax
         if attribute_expression.brackets?
           "describe '[:key]' do subject { super()[:key] }; it { } end"
         else

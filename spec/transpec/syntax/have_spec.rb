@@ -253,8 +253,8 @@ module Transpec
 
           it 'adds record `collection.should have(n).items` -> `collection.size.should == n`' do
             have_object.convert_to_standard_expectation!
-            record.original_syntax.should  == 'collection.should have(n).items'
-            record.converted_syntax.should == 'collection.size.should == n'
+            record.old_syntax.should  == 'collection.should have(n).items'
+            record.new_syntax.should == 'collection.size.should == n'
           end
 
           context 'and Should#expectize! is invoked before it' do
@@ -280,8 +280,8 @@ module Transpec
             end
 
             it 'adds record `collection.should have(n).items` -> `expect(collection.size).to eq(n)`' do
-              record.original_syntax.should  == 'collection.should have(n).items'
-              record.converted_syntax.should == 'expect(collection.size).to eq(n)'
+              record.old_syntax.should  == 'collection.should have(n).items'
+              record.new_syntax.should == 'expect(collection.size).to eq(n)'
             end
 
             context 'and false is passed as `parenthesize_matcher_arg` argument' do
@@ -302,8 +302,8 @@ module Transpec
               end
 
               it 'adds record `collection.should have(n).items` -> `expect(collection.size).to eq(n)`' do
-                record.original_syntax.should  == 'collection.should have(n).items'
-                record.converted_syntax.should == 'expect(collection.size).to eq(n)'
+                record.old_syntax.should  == 'collection.should have(n).items'
+                record.new_syntax.should == 'expect(collection.size).to eq(n)'
               end
             end
           end
@@ -339,8 +339,8 @@ module Transpec
 
           it 'adds record `collection.should_not have(n).items` -> `collection.size.should_not == n`' do
             have_object.convert_to_standard_expectation!
-            record.original_syntax.should  == 'collection.should_not have(n).items'
-            record.converted_syntax.should == 'collection.size.should_not == n'
+            record.old_syntax.should  == 'collection.should_not have(n).items'
+            record.new_syntax.should == 'collection.size.should_not == n'
           end
         end
 
@@ -374,8 +374,8 @@ module Transpec
 
           it 'adds record `collection.should have_at_least(n).items` -> `collection.size.should >= n`' do
             have_object.convert_to_standard_expectation!
-            record.original_syntax.should  == 'collection.should have_at_least(n).items'
-            record.converted_syntax.should == 'collection.size.should >= n'
+            record.old_syntax.should  == 'collection.should have_at_least(n).items'
+            record.new_syntax.should == 'collection.size.should >= n'
           end
         end
 
@@ -409,8 +409,8 @@ module Transpec
 
           it 'adds record `collection.should have_at_most(n).items` -> `collection.size.should <= n`' do
             have_object.convert_to_standard_expectation!
-            record.original_syntax.should  == 'collection.should have_at_most(n).items'
-            record.converted_syntax.should == 'collection.size.should <= n'
+            record.old_syntax.should  == 'collection.should have_at_most(n).items'
+            record.new_syntax.should == 'collection.size.should <= n'
           end
         end
 
@@ -461,8 +461,8 @@ module Transpec
               it 'adds record `expect(collection).to have(n).items` -> `expect(collection.size).to eq(n)` ' \
                  'without annotation' do
                 have_object.convert_to_standard_expectation!
-                record.original_syntax.should  == 'expect(collection).to have(n).items'
-                record.converted_syntax.should == 'expect(collection.size).to eq(n)'
+                record.old_syntax.should  == 'expect(collection).to have(n).items'
+                record.new_syntax.should == 'expect(collection.size).to eq(n)'
                 record.annotation.should be_nil
               end
             end
@@ -498,8 +498,8 @@ module Transpec
                'with annotation' do
               have_object.convert_to_standard_expectation!
 
-              record.original_syntax.should  == 'expect(collection).to have(n).items'
-              record.converted_syntax.should == 'expect(collection.size).to eq(n)'
+              record.old_syntax.should  == 'expect(collection).to have(n).items'
+              record.new_syntax.should == 'expect(collection.size).to eq(n)'
 
               record.annotation.message.should ==
                 'The `have(2).items` has been converted but it might possibly be incorrect ' \
@@ -539,8 +539,8 @@ module Transpec
 
           it 'adds record `expect(collection).not_to have(n).items` -> `expect(collection.size).not_to eq(n)`' do
             have_object.convert_to_standard_expectation!
-            record.original_syntax.should  == 'expect(collection).not_to have(n).items'
-            record.converted_syntax.should == 'expect(collection.size).not_to eq(n)'
+            record.old_syntax.should  == 'expect(collection).not_to have(n).items'
+            record.new_syntax.should == 'expect(collection.size).not_to eq(n)'
           end
         end
 
@@ -574,8 +574,8 @@ module Transpec
 
           it 'adds record `expect(collection).to have_at_least(n).items` -> `expect(collection.size).to be >= n`' do
             have_object.convert_to_standard_expectation!
-            record.original_syntax.should  == 'expect(collection).to have_at_least(n).items'
-            record.converted_syntax.should == 'expect(collection.size).to be >= n'
+            record.old_syntax.should  == 'expect(collection).to have_at_least(n).items'
+            record.new_syntax.should == 'expect(collection.size).to be >= n'
           end
         end
 
@@ -609,8 +609,8 @@ module Transpec
 
           it 'adds record `expect(collection).to have_at_most(n).items` -> `expect(collection.size).to be <= n`' do
             have_object.convert_to_standard_expectation!
-            record.original_syntax.should  == 'expect(collection).to have_at_most(n).items'
-            record.converted_syntax.should == 'expect(collection.size).to be <= n'
+            record.old_syntax.should  == 'expect(collection).to have_at_most(n).items'
+            record.new_syntax.should == 'expect(collection.size).to be <= n'
           end
         end
 
@@ -661,8 +661,8 @@ module Transpec
 
                 it 'adds record `expect(obj).to have(n).words` -> `expect(obj.words.size).to eq(n)`' do
                   have_object.convert_to_standard_expectation!
-                  record.original_syntax.should  == 'expect(obj).to have(n).words'
-                  record.converted_syntax.should == 'expect(obj.words.size).to eq(n)'
+                  record.old_syntax.should  == 'expect(obj).to have(n).words'
+                  record.new_syntax.should == 'expect(obj.words.size).to eq(n)'
                 end
               end
 
@@ -718,8 +718,8 @@ module Transpec
 
                 it 'adds record `expect(obj).to have(n).words` -> `expect(obj.words.count).to eq(n)`' do
                   have_object.convert_to_standard_expectation!
-                  record.original_syntax.should  == 'expect(obj).to have(n).words'
-                  record.converted_syntax.should == 'expect(obj.words.count).to eq(n)'
+                  record.old_syntax.should  == 'expect(obj).to have(n).words'
+                  record.new_syntax.should == 'expect(obj.words.count).to eq(n)'
                 end
               end
             end
@@ -753,8 +753,8 @@ module Transpec
 
                 it 'adds record `expect(collection).to have(n).items` -> `expect(collection.size).to eq(n)`' do
                   have_object.convert_to_standard_expectation!
-                  record.original_syntax.should  == 'expect(collection).to have(n).items'
-                  record.converted_syntax.should == 'expect(collection.size).to eq(n)'
+                  record.old_syntax.should  == 'expect(collection).to have(n).items'
+                  record.new_syntax.should == 'expect(collection.size).to eq(n)'
                 end
               end
 
@@ -800,8 +800,8 @@ module Transpec
 
                 it 'adds record `expect(obj).to have(n).words` -> `expect(obj.send(:words).size).to eq(n)`' do
                   have_object.convert_to_standard_expectation!
-                  record.original_syntax.should  == 'expect(obj).to have(n).words'
-                  record.converted_syntax.should == 'expect(obj.send(:words).size).to eq(n)'
+                  record.old_syntax.should  == 'expect(obj).to have(n).words'
+                  record.new_syntax.should == 'expect(obj.send(:words).size).to eq(n)'
                 end
               end
             end
@@ -847,8 +847,8 @@ module Transpec
 
             it 'adds record `expect(collection).to have(n).items` -> `expect(collection.size).to eq(n)`' do
               have_object.convert_to_standard_expectation!
-              record.original_syntax.should  == 'expect(collection).to have(n).items'
-              record.converted_syntax.should == 'expect(collection.size).to eq(n)'
+              record.old_syntax.should  == 'expect(collection).to have(n).items'
+              record.new_syntax.should == 'expect(collection.size).to eq(n)'
             end
           end
         end
@@ -904,8 +904,8 @@ module Transpec
 
                 it 'adds record `expect(obj).to have(n).words` -> `expect(obj.words.size).to eq(n)`' do
                   have_object.convert_to_standard_expectation!
-                  record.original_syntax.should  == 'expect(obj).to have(n).words'
-                  record.converted_syntax.should == 'expect(obj.words.size).to eq(n)'
+                  record.old_syntax.should  == 'expect(obj).to have(n).words'
+                  record.new_syntax.should == 'expect(obj.words.size).to eq(n)'
                 end
               end
 
@@ -949,8 +949,8 @@ module Transpec
 
                 it 'adds record `expect(collection).to have(n).items` -> `expect(collection.size).to eq(n)`' do
                   have_object.convert_to_standard_expectation!
-                  record.original_syntax.should  == 'expect(collection).to have(n).items'
-                  record.converted_syntax.should == 'expect(collection.size).to eq(n)'
+                  record.old_syntax.should  == 'expect(collection).to have(n).items'
+                  record.new_syntax.should == 'expect(collection.size).to eq(n)'
                 end
               end
             end
@@ -1000,8 +1000,8 @@ module Transpec
 
             it 'adds record `expect(collection).to have(n).items` -> `expect(collection.size).to eq(n)`' do
               have_object.convert_to_standard_expectation!
-              record.original_syntax.should  == 'expect(collection).to have(n).items'
-              record.converted_syntax.should == 'expect(collection.size).to eq(n)'
+              record.old_syntax.should  == 'expect(collection).to have(n).items'
+              record.new_syntax.should == 'expect(collection.size).to eq(n)'
             end
           end
         end
@@ -1053,8 +1053,8 @@ module Transpec
               it 'adds record ' \
                  '`expect(obj).to have(n).attrs_on(...)` -> `expect(obj.attrs_on(...).size).to eq(n)`' do
                 have_object.convert_to_standard_expectation!
-                record.original_syntax.should  == 'expect(obj).to have(n).attrs_on(...)'
-                record.converted_syntax.should == 'expect(obj.attrs_on(...).size).to eq(n)'
+                record.old_syntax.should  == 'expect(obj).to have(n).attrs_on(...)'
+                record.new_syntax.should == 'expect(obj.attrs_on(...).size).to eq(n)'
               end
             end
 
@@ -1103,8 +1103,8 @@ module Transpec
               it 'adds record ' \
                  '`expect(obj).to have(n).attrs_on(...)` -> `expect(obj.send(:attrs_on, ...).size).to eq(n)`' do
                 have_object.convert_to_standard_expectation!
-                record.original_syntax.should  == 'expect(obj).to have(n).attrs_on(...)'
-                record.converted_syntax.should == 'expect(obj.send(:attrs_on, ...).size).to eq(n)'
+                record.old_syntax.should  == 'expect(obj).to have(n).attrs_on(...)'
+                record.new_syntax.should == 'expect(obj.send(:attrs_on, ...).size).to eq(n)'
               end
             end
           end
@@ -1150,8 +1150,8 @@ module Transpec
             it 'adds record ' \
                '`expect(obj).to have(n).attrs_on(...)` -> `expect(obj.attrs_on(...).size).to eq(n)`' do
               have_object.convert_to_standard_expectation!
-              record.original_syntax.should  == 'expect(obj).to have(n).attrs_on(...)'
-              record.converted_syntax.should == 'expect(obj.attrs_on(...).size).to eq(n)'
+              record.old_syntax.should  == 'expect(obj).to have(n).attrs_on(...)'
+              record.new_syntax.should == 'expect(obj.attrs_on(...).size).to eq(n)'
             end
           end
         end

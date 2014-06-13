@@ -5,15 +5,15 @@ require 'transpec/record'
 
 module Transpec
   describe Record do
-    subject(:report) { Record.new(original_syntax, converted_syntax) }
-    let(:original_syntax) { 'obj.should' }
-    let(:converted_syntax) { 'expect(obj).to' }
+    subject(:report) { Record.new(old_syntax, new_syntax) }
+    let(:old_syntax) { 'obj.should' }
+    let(:new_syntax) { 'expect(obj).to' }
 
     [
-      :original_syntax,
-      :original_syntax_type,
-      :converted_syntax,
-      :converted_syntax_type
+      :old_syntax,
+      :old_syntax_type,
+      :new_syntax,
+      :new_syntax_type
     ].each do |method|
       it "forbids override of ##{method}" do
         lambda do

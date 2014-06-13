@@ -27,18 +27,18 @@ module Transpec
       private
 
       def add_record
-        original_syntax = 'expect { }.not_to raise_error('
+        old_syntax = 'expect { }.not_to raise_error('
 
         if arg_nodes.first.const_type?
-          original_syntax << 'SpecificErrorClass'
-          original_syntax << ', message' if arg_nodes.count >= 2
+          old_syntax << 'SpecificErrorClass'
+          old_syntax << ', message' if arg_nodes.count >= 2
         else
-          original_syntax << 'message'
+          old_syntax << 'message'
         end
 
-        original_syntax << ')'
+        old_syntax << ')'
 
-        report.records << Record.new(original_syntax, 'expect { }.not_to raise_error')
+        report.records << Record.new(old_syntax, 'expect { }.not_to raise_error')
       end
     end
   end

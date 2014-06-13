@@ -186,7 +186,7 @@ module Transpec
           @conversion_type = conversion_type
         end
 
-        def build_original_syntax
+        def build_old_syntax
           syntax = @method_stub.any_instance? ? 'Klass.any_instance' : 'obj'
           syntax << ".#{@method_stub.method_name}"
 
@@ -197,7 +197,7 @@ module Transpec
           end
         end
 
-        def build_converted_syntax
+        def build_new_syntax
           syntax = @method_stub.any_instance? ? 'allow_any_instance_of(Klass)' : 'allow(obj)'
           syntax << '.to '
 
@@ -221,12 +221,12 @@ module Transpec
           @method_stub = method_stub
         end
 
-        def build_original_syntax
+        def build_old_syntax
           syntax = @method_stub.any_instance? ? 'Klass.any_instance' : 'obj'
           syntax << ".#{@method_stub.method_name}(:message)"
         end
 
-        def build_converted_syntax
+        def build_new_syntax
           syntax = 'obj.'
           syntax << @method_stub.send(:replacement_method_for_deprecated_method)
           syntax << '(:message)'
@@ -240,14 +240,14 @@ module Transpec
 
         private
 
-        def build_original_syntax
+        def build_old_syntax
           syntax = base_syntax
           syntax << '.any_number_of_times' if @method_stub.any_number_of_times?
           syntax << '.at_least(0)' if @method_stub.at_least_zero?
           syntax
         end
 
-        def build_converted_syntax
+        def build_new_syntax
           base_syntax
         end
 

@@ -103,11 +103,11 @@ module Transpec
           @example_group = example_group
         end
 
-        def build_original_syntax
+        def build_old_syntax
           base_syntax
         end
 
-        def build_converted_syntax
+        def build_new_syntax
           "RSpec.#{base_syntax}"
         end
 
@@ -123,11 +123,11 @@ module Transpec
           @example_group = example_group
         end
 
-        def build_original_syntax
+        def build_old_syntax
           "describe 'some #{type}' { }"
         end
 
-        def build_converted_syntax
+        def build_new_syntax
           "describe 'some #{type}', :type => #{type.inspect} { }"
         end
 

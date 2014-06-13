@@ -27,7 +27,7 @@ module Transpec
       end
 
       sorted_record_counts = record_counts.sort_by do |record, count|
-        [-count, record.original_syntax_type, record.converted_syntax_type]
+        [-count, record.old_syntax_type, record.new_syntax_type]
       end
 
       Hash[sorted_record_counts]
@@ -93,8 +93,8 @@ module Transpec
                     end
 
       text = entry_prefix + colorize(pluralize(count, 'conversion'), :cyan) + "\n"
-      text << indentation + '  ' + colorize('from: ', :cyan) + record.original_syntax + "\n"
-      text << indentation + '    ' + colorize('to: ', :cyan) + record.converted_syntax + "\n"
+      text << indentation + '  ' + colorize('from: ', :cyan) + record.old_syntax + "\n"
+      text << indentation + '    ' + colorize('to: ', :cyan) + record.new_syntax + "\n"
     end
 
     def conversion_incomplete_warning_stats(color)

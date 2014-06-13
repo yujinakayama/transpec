@@ -166,8 +166,8 @@ module Transpec
 
           it 'adds record `it { should ... }` -> `it { is_expected.to ... }`' do
             should_object.expectize!
-            record.original_syntax.should  == 'it { should ... }'
-            record.converted_syntax.should == 'it { is_expected.to ... }'
+            record.old_syntax.should  == 'it { should ... }'
+            record.new_syntax.should == 'it { is_expected.to ... }'
           end
         end
 
@@ -226,8 +226,8 @@ module Transpec
 
           it 'adds record ' \
              '`it { should have(n).items }` -> `it \'has n items\' do subject.size.should == n end`' do
-            record.original_syntax.should  == 'it { should have(n).items }'
-            record.converted_syntax.should == "it 'has n items' do subject.size.should == n end"
+            record.old_syntax.should  == 'it { should have(n).items }'
+            record.new_syntax.should == "it 'has n items' do subject.size.should == n end"
           end
         end
 
@@ -256,8 +256,8 @@ module Transpec
 
           it 'adds record `it { should_not have(n).items }`' \
              ' -> `it \'does not have n items\' do subject.size.should_not == n end`' do
-            record.original_syntax.should  == 'it { should_not have(n).items }'
-            record.converted_syntax.should == "it 'does not have n items' do subject.size.should_not == n end"
+            record.old_syntax.should  == 'it { should_not have(n).items }'
+            record.new_syntax.should == "it 'does not have n items' do subject.size.should_not == n end"
           end
         end
 
@@ -286,8 +286,8 @@ module Transpec
 
           it 'adds record ' \
              '`it { should have(n).items }` -> `it \'has n items\' do subject.size.should == n end`' do
-            record.original_syntax.should  == 'it { should have(n).items }'
-            record.converted_syntax.should == "it 'has n items' do subject.size.should == n end"
+            record.old_syntax.should  == 'it { should have(n).items }'
+            record.new_syntax.should == "it 'has n items' do subject.size.should == n end"
           end
         end
 
@@ -316,8 +316,8 @@ module Transpec
 
           it 'adds record ' \
              '`it { should have(n).items }` -> `it \'has n items\' do subject.size.should == n end`' do
-            record.original_syntax.should  == 'it { should have(n).items }'
-            record.converted_syntax.should == "it 'has n items' do subject.size.should == n end"
+            record.old_syntax.should  == 'it { should have(n).items }'
+            record.new_syntax.should == "it 'has n items' do subject.size.should == n end"
           end
         end
 
@@ -346,8 +346,8 @@ module Transpec
 
           it 'adds record ' \
              '`it { should have(n).items }` -> `it \'has n items\' do subject.size.should == n end`' do
-            record.original_syntax.should  == 'it { should have(n).items }'
-            record.converted_syntax.should == "it 'has n items' do subject.size.should == n end"
+            record.old_syntax.should  == 'it { should have(n).items }'
+            record.new_syntax.should == "it 'has n items' do subject.size.should == n end"
           end
         end
 
@@ -376,8 +376,8 @@ module Transpec
 
           it 'adds record `it { should_not have(n).items }`' \
              ' -> `it \'does not have n items\' do subject.size.should_not == n end`' do
-            record.original_syntax.should  == 'it { should_not have(n).items }'
-            record.converted_syntax.should == "it 'does not have n items' do subject.size.should_not == n end"
+            record.old_syntax.should  == 'it { should_not have(n).items }'
+            record.new_syntax.should == "it 'does not have n items' do subject.size.should_not == n end"
           end
         end
 
@@ -408,8 +408,8 @@ module Transpec
 
           it 'adds record ' \
              '`it { should have(n).items }` -> `it \'has n items\' do subject.size.should == n end`' do
-            record.original_syntax.should  == 'it { should have(n).items }'
-            record.converted_syntax.should == "it 'has n items' do subject.size.should == n end"
+            record.old_syntax.should  == 'it { should have(n).items }'
+            record.new_syntax.should == "it 'has n items' do subject.size.should == n end"
           end
         end
 
@@ -440,8 +440,8 @@ module Transpec
 
           it 'adds record ' \
              '`it \'...\' { should have(n).items }` -> `it \'...\' do subject.size.should == n end`' do
-            record.original_syntax.should  == "it '...' do should have(n).items end"
-            record.converted_syntax.should == "it '...' do subject.size.should == n end"
+            record.old_syntax.should  == "it '...' do should have(n).items end"
+            record.new_syntax.should == "it '...' do subject.size.should == n end"
           end
         end
 
@@ -470,8 +470,8 @@ module Transpec
 
           it 'adds record `it { should have_at_least(n).items }` ' \
              '-> `it \'has at least n items\' do subject.size.should >= n end`' do
-            record.original_syntax.should  == 'it { should have_at_least(n).items }'
-            record.converted_syntax.should == "it 'has at least n items' do subject.size.should >= n end"
+            record.old_syntax.should  == 'it { should have_at_least(n).items }'
+            record.new_syntax.should == "it 'has at least n items' do subject.size.should >= n end"
           end
         end
 
@@ -516,8 +516,8 @@ module Transpec
 
               it 'adds record `it { should have(n).words }` ' \
                  '-> `it \'has n words\' do subject.words.size.should == n end`' do
-                record.original_syntax.should  == 'it { should have(n).words }'
-                record.converted_syntax.should == "it 'has n words' do subject.words.size.should == n end"
+                record.old_syntax.should  == 'it { should have(n).words }'
+                record.new_syntax.should == "it 'has n words' do subject.words.size.should == n end"
               end
             end
           end
@@ -555,8 +555,8 @@ module Transpec
 
           it 'adds record ' \
              '`it { should have(n).items }` -> `it \'has n items\' do expect(subject.size).to eq(n) end`' do
-            record.original_syntax.should  == 'it { should have(n).items }'
-            record.converted_syntax.should == "it 'has n items' do expect(subject.size).to eq(n) end"
+            record.old_syntax.should  == 'it { should have(n).items }'
+            record.new_syntax.should == "it 'has n items' do expect(subject.size).to eq(n) end"
           end
         end
 
@@ -585,8 +585,8 @@ module Transpec
 
           it 'adds record `it { should_not have(n).items }`' \
              ' -> `it \'does not have n items\' do expect(subject.size).not_to eq(n) end`' do
-            record.original_syntax.should  == 'it { should_not have(n).items }'
-            record.converted_syntax.should == "it 'does not have n items' do expect(subject.size).not_to eq(n) end"
+            record.old_syntax.should  == 'it { should_not have(n).items }'
+            record.new_syntax.should == "it 'does not have n items' do expect(subject.size).not_to eq(n) end"
           end
         end
       end
