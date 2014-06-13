@@ -8,16 +8,16 @@ module Transpec
   end
 
   class ContextError < ConversionError
-    def initialize(original_syntax, target_syntax, source_range)
-      message = build_message(original_syntax, target_syntax)
+    def initialize(old_syntax, new_syntax, source_range)
+      message = build_message(old_syntax, new_syntax)
       super(message, source_range)
     end
 
     private
 
-    def build_message(original_syntax, target_syntax)
-      "Cannot convert #{original_syntax} into #{target_syntax} " \
-      "since #{target_syntax} is not available in the context."
+    def build_message(old_syntax, new_syntax)
+      "Cannot convert #{old_syntax} into #{new_syntax} " \
+      "since #{new_syntax} is not available in the context."
     end
   end
 end
