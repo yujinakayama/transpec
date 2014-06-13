@@ -51,7 +51,8 @@ module Transpec
         end
 
         convert_to_syntax!('expect', negative_form)
-        add_record(ExpectRecord, negative_form)
+
+        add_record(ExpectRecordBuilder.build(self, negative_form))
       end
 
       def allowize_useless_expectation!(negative_form = 'not_to')
@@ -64,7 +65,7 @@ module Transpec
         convert_to_syntax!('allow', negative_form)
         remove_no_message_allowance!
 
-        add_record(AllowRecord, negative_form)
+        add_record(AllowRecordBuilder.build(self, negative_form))
       end
 
       def stubize_useless_expectation!
@@ -73,15 +74,17 @@ module Transpec
         replace(selector_range, 'stub')
         remove_no_message_allowance!
 
-        add_record(StubRecord)
+        add_record(StubRecordBuilder.build(self))
       end
 
       def remove_useless_and_return!
-        super && add_record(MonkeyPatchUselessAndReturnRecord)
+        return unless super
+        add_record(Mixin::UselessAndReturn::MonkeyPatchRecordBuilder.build(self))
       end
 
       def add_receiver_arg_to_any_instance_implementation_block!
-        super && add_record(MonkeyPatchAnyInstanceBlockRecord)
+        return unless super
+        add_record(Mixin::AnyInstanceBlock::MonkeyPatchRecordBuilder.build(self))
       end
 
       private
@@ -158,11 +161,9 @@ module Transpec
         end
       end
 
-      def add_record(record_class, negative_form_of_to = nil)
-        report.records << record_class.new(self, negative_form_of_to)
-      end
+      class ExpectBaseRecordBuilder < RecordBuilder
+        attr_reader :should_receive, :negative_form_of_to
 
-      class ExpectBaseRecord < Record
         def initialize(should_receive, negative_form_of_to)
           @should_receive = should_receive
           @negative_form_of_to = negative_form_of_to
@@ -172,58 +173,60 @@ module Transpec
           fail NotImplementedError
         end
 
-        def build_old_syntax
-          syntax = if @should_receive.any_instance?
+        def old_syntax
+          syntax = if should_receive.any_instance?
                      'Klass.any_instance.'
                    else
                      'obj.'
                    end
-          syntax << "#{@should_receive.method_name}(:message)"
+          syntax << "#{should_receive.method_name}(:message)"
         end
 
-        def build_new_syntax
-          syntax = if @should_receive.any_instance?
+        def new_syntax
+          syntax = if should_receive.any_instance?
                      "#{syntax_name}_any_instance_of(Klass)."
                    else
                      "#{syntax_name}(obj)."
                    end
-          syntax << (@should_receive.positive? ? 'to' : @negative_form_of_to)
+          syntax << (should_receive.positive? ? 'to' : negative_form_of_to)
           syntax << ' receive(:message)'
         end
       end
 
-      class ExpectRecord < ExpectBaseRecord
+      class ExpectRecordBuilder < ExpectBaseRecordBuilder
         def syntax_name
           'expect'
         end
       end
 
-      class AllowRecord < ExpectBaseRecord
+      class AllowRecordBuilder < ExpectBaseRecordBuilder
         def syntax_name
           'allow'
         end
 
-        def build_old_syntax
+        def old_syntax
           syntax = super
-          syntax << '.any_number_of_times' if @should_receive.any_number_of_times?
-          syntax << '.at_least(0)' if @should_receive.at_least_zero?
+          syntax << '.any_number_of_times' if should_receive.any_number_of_times?
+          syntax << '.at_least(0)' if should_receive.at_least_zero?
           syntax
         end
       end
 
-      class StubRecord < Record
-        def initialize(should_receive, *)
+      class StubRecordBuilder < RecordBuilder
+        attr_reader :should_receive
+
+        def initialize(should_receive)
           @should_receive = should_receive
         end
 
-        def build_old_syntax
-          syntax = "obj.#{@should_receive.method_name}(:message)"
-          syntax << '.any_number_of_times' if @should_receive.any_number_of_times?
-          syntax << '.at_least(0)' if @should_receive.at_least_zero?
+        def old_syntax
+          syntax = "obj.#{should_receive.method_name}(:message)"
+          syntax << '.any_number_of_times' if should_receive.any_number_of_times?
+          syntax << '.at_least(0)' if should_receive.at_least_zero?
           syntax
         end
 
-        def build_new_syntax
+        def new_syntax
           'obj.stub(:message)'
         end
       end

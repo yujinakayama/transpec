@@ -3,6 +3,7 @@
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/should_base'
 require 'transpec/syntax/example'
+require 'transpec/syntax/its'
 require 'transpec/util'
 require 'active_support/inflector/methods'
 require 'active_support/inflector/inflections'
@@ -41,7 +42,7 @@ module Transpec
 
         @current_syntax_type = :expect
 
-        add_record(negative_form)
+        add_record(ExpectRecordBuilder.build(self, negative_form))
       end
 
       def convert_have_items_to_standard_should!
@@ -52,7 +53,7 @@ module Transpec
         subject_source = have_matcher.replacement_subject_source('subject')
         insert_before(expression_range, "#{subject_source}.")
 
-        report.records << OnelinerShouldHaveRecord.new(self, have_matcher)
+        add_record(HaveRecordBuilder.build(self, have_matcher))
       end
 
       def convert_have_items_to_standard_expect!(negative_form = 'not_to')
@@ -67,7 +68,7 @@ module Transpec
 
         @current_syntax_type = :expect
 
-        report.records << OnelinerShouldHaveRecord.new(self, have_matcher, negative_form)
+        add_record(HaveRecordBuilder.build(self, have_matcher, negative_form))
       end
 
       def example
@@ -131,25 +132,28 @@ module Transpec
         example.is_a?(Its)
       end
 
-      def add_record(negative_form_of_to)
-        old_syntax = 'it { should'
-        new_syntax = 'it { is_expected.'
+      class ExpectRecordBuilder < RecordBuilder
+        attr_reader :should, :negative_form_of_to
 
-        if positive?
-          new_syntax << 'to'
-        else
-          old_syntax << '_not'
-          new_syntax << negative_form_of_to
+        def initialize(should, negative_form_of_to = nil)
+          @should = should
+          @negative_form_of_to = negative_form_of_to
         end
 
-        [old_syntax, new_syntax].each do |syntax|
+        def old_syntax
+          syntax = 'it { should'
+          syntax << '_not' unless should.positive?
           syntax << ' ... }'
         end
 
-        report.records << Record.new(old_syntax, new_syntax)
+        def new_syntax
+          syntax = 'it { is_expected.'
+          syntax << (should.positive? ? 'to' : negative_form_of_to)
+          syntax << ' ... }'
+        end
       end
 
-      class OnelinerShouldHaveRecord < Have::HaveRecord
+      class HaveRecordBuilder < Have::RecordBuilder
         attr_reader :should, :negative_form_of_to
 
         def initialize(should, have, negative_form_of_to = nil)
@@ -158,15 +162,13 @@ module Transpec
           @negative_form_of_to = negative_form_of_to
         end
 
-        private
-
-        def build_old_syntax
+        def old_syntax
           syntax = should.example.description? ? "it '...' do" : 'it {'
           syntax << " #{should.method_name} #{have.method_name}(n).#{old_items} "
           syntax << (should.example.description? ? 'end' : '}')
         end
 
-        def build_new_syntax
+        def new_syntax
           syntax = new_description
           syntax << ' '
           syntax << new_expectation

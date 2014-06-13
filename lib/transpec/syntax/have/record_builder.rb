@@ -5,7 +5,7 @@ require 'transpec/syntax/have'
 module Transpec
   class Syntax
     class Have
-      class HaveRecord < Record
+      class RecordBuilder < Transpec::RecordBuilder
         attr_reader :have
 
         def initialize(have)
@@ -22,15 +22,13 @@ module Transpec
                         end
         end
 
-        private
-
-        def build_old_syntax
+        def old_syntax
           type = have.expectation.class.snake_case_name.to_sym
           syntax = build_expectation(old_subject, type)
           syntax << " #{have.method_name}(n).#{old_items}"
         end
 
-        def build_new_syntax
+        def new_syntax
           type = have.expectation.current_syntax_type
           syntax = build_expectation(new_subject, type)
           syntax << " #{source_builder.replacement_matcher_source}"
@@ -74,7 +72,7 @@ module Transpec
         end
 
         def new_subject
-          if @have.subject_is_owner_of_collection?
+          if have.subject_is_owner_of_collection?
             build_new_subject('obj')
           else
             build_new_subject('collection')

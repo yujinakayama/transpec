@@ -15,30 +15,50 @@ module Transpec
 
       def remove_error_specification_with_negative_expectation!
         return if expectation.positive?
-
-        _receiver_node, _method_name, *arg_nodes = *node
-        return if arg_nodes.empty?
-
+        return unless specific_error?
         remove(parentheses_range)
-
-        add_record
+        add_record(RecordBuilder.build(self))
       end
 
-      private
+      def specific_error?
+        !arg_nodes.empty?
+      end
 
-      def add_record
-        old_syntax = 'expect { }.not_to raise_error('
+      def specific_class?
+        specific_error? && arg_nodes.first.const_type?
+      end
 
-        if arg_nodes.first.const_type?
-          old_syntax << 'SpecificErrorClass'
-          old_syntax << ', message' if arg_nodes.count >= 2
+      def specific_message?
+        if specific_class?
+          arg_nodes.count >= 2
         else
-          old_syntax << 'message'
+          specific_error?
+        end
+      end
+
+      class RecordBuilder < Transpec::RecordBuilder
+        attr_reader :raise_error
+
+        def initialize(raise_error)
+          @raise_error = raise_error
         end
 
-        old_syntax << ')'
+        def old_syntax
+          syntax = 'expect { }.not_to raise_error('
 
-        report.records << Record.new(old_syntax, 'expect { }.not_to raise_error')
+          if raise_error.specific_class?
+            syntax << 'SpecificErrorClass'
+            syntax << ', ' if raise_error.specific_message?
+          end
+
+          syntax << 'message' if raise_error.specific_message?
+
+          syntax << ')'
+        end
+
+        def new_syntax
+          'expect { }.not_to raise_error'
+        end
       end
     end
   end

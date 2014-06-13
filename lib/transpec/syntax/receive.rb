@@ -17,13 +17,13 @@ module Transpec
       def remove_useless_and_return!
         removed = super
         return unless removed
-        report.records << ReceiveUselessAndReturnRecord.new(self)
+        add_record(UselessAndReturnRecordBuilder.build(self))
       end
 
       def add_receiver_arg_to_any_instance_implementation_block!
         added = super
         return unless added
-        report.records << ReceiveAnyInstanceBlockRecord.new(self)
+        add_record(AnyInstanceBlockRecordBuilder.build(self))
       end
 
       def any_instance?
@@ -35,15 +35,15 @@ module Transpec
         super || expectation.block_node
       end
 
-      class ReceiveAnyInstanceBlockRecord < AnyInstanceBlockRecord
+      class UselessAndReturnRecordBuilder < Mixin::UselessAndReturn::RecordBuilder
         def base_syntax
-          "#{@host.expectation.method_name}(Klass).to receive(:message)"
+          "#{host.expectation.method_name_for_instance}(obj).to receive(:message)"
         end
       end
 
-      class ReceiveUselessAndReturnRecord < UselessAndReturnRecord
+      class AnyInstanceBlockRecordBuilder < Mixin::AnyInstanceBlock::RecordBuilder
         def base_syntax
-          "#{@host.expectation.method_name_for_instance}(obj).to receive(:message)"
+          "#{host.expectation.method_name}(Klass).to receive(:message)"
         end
       end
     end

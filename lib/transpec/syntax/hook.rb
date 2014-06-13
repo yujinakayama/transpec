@@ -38,7 +38,7 @@ module Transpec
       def add_record
         old_syntax = "#{method_name}(#{scope_name.inspect}) { }"
         new_syntax = "#{method_name}(#{replacement_scope_name.inspect}) { }"
-        report.records << Record.new(old_syntax, new_syntax)
+        super(old_syntax, new_syntax)
       end
     end
   end

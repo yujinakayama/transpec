@@ -39,7 +39,7 @@ module Transpec
       def convert_to_non_monkey_patch!
         return if receiver_node
         insert_before(expression_range, 'RSpec.')
-        report.records << NonMonkeyPatchDescribeRecord.new(self)
+        add_record(NonMonkeyPatchRecordBuilder.build(self))
       end
 
       def add_explicit_type_metadata!
@@ -59,7 +59,7 @@ module Transpec
 
         insert_after(arg_node.loc.expression, code)
 
-        report.records << ExplicitTypeMetadataRecord.new(self)
+        add_record(ExplicitTypeMetadataRecordBuilder.build(self))
       end
 
       def implicit_type_metadata
@@ -96,18 +96,18 @@ module Transpec
         end
       end
 
-      class NonMonkeyPatchDescribeRecord < Record
+      class NonMonkeyPatchRecordBuilder < RecordBuilder
         attr_reader :example_group
 
         def initialize(example_group)
           @example_group = example_group
         end
 
-        def build_old_syntax
+        def old_syntax
           base_syntax
         end
 
-        def build_new_syntax
+        def new_syntax
           "RSpec.#{base_syntax}"
         end
 
@@ -116,18 +116,18 @@ module Transpec
         end
       end
 
-      class ExplicitTypeMetadataRecord < Record
+      class ExplicitTypeMetadataRecordBuilder < RecordBuilder
         attr_reader :example_group
 
         def initialize(example_group)
           @example_group = example_group
         end
 
-        def build_old_syntax
+        def old_syntax
           "describe 'some #{type}' { }"
         end
 
-        def build_new_syntax
+        def new_syntax
           "describe 'some #{type}', :type => #{type.inspect} { }"
         end
 

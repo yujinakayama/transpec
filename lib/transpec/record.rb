@@ -4,16 +4,12 @@ require 'transpec/annotatable'
 
 module Transpec
   class Record
-    OVERRIDE_FORBIDDEN_METHODS = [
-      :old_syntax,
-      :old_syntax_type,
-      :new_syntax,
-      :new_syntax_type
-    ]
-
     attr_reader :old_syntax_type, :new_syntax_type, :annotation
 
     def initialize(old_syntax, new_syntax, annotation = nil)
+      # Keep these syntax data as symbols for:
+      #   * Better memory footprint
+      #   * Better summarizing performance in Report
       @old_syntax_type = old_syntax.to_sym
       @new_syntax_type = new_syntax.to_sym
       @annotation = annotation
@@ -25,14 +21,6 @@ module Transpec
 
     def new_syntax
       new_syntax_type.to_s
-    end
-
-    def old_syntax_type
-      @old_syntax_type ||= build_old_syntax.to_sym
-    end
-
-    def new_syntax_type
-      @new_syntax_type ||= build_new_syntax.to_sym
     end
 
     def ==(other)
@@ -50,20 +38,38 @@ module Transpec
     def to_s
       "`#{old_syntax_type}` -> `#{new_syntax_type}`"
     end
+  end
+
+  # This class is intended to be inherited to build complex record.
+  # The reasons why you should inherit this class rather than Record are:
+  #   * You need to care about String and Symbol around Record#old_syntax and #new_syntax.
+  #   * All record instances are kept in a Report until the end of Transpec process.
+  #     This mean that if a custom record keeps a syntax object as an ivar,
+  #     the AST kept by the syntax object won't be GCed.
+  class RecordBuilder
+    def self.build(*args)
+      new(*args).build
+    end
+
+    def build
+      Record.new(old_syntax, new_syntax, annotation)
+    end
 
     private
 
-    def build_old_syntax
-      fail NotImplementedError
+    def initialize(*)
     end
 
-    def build_new_syntax
-      fail NotImplementedError
+    def old_syntax
+      nil
     end
 
-    def self.method_added(method_name)
-      return unless OVERRIDE_FORBIDDEN_METHODS.include?(method_name)
-      fail "Do not override Record##{method_name}."
+    def new_syntax
+      nil
+    end
+
+    def annotation
+      nil
     end
   end
 

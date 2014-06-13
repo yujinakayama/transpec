@@ -64,10 +64,6 @@ module Transpec
           range
         end
       end
-
-      def add_record(old_syntax, new_syntax)
-        report.records << Record.new(old_syntax, new_syntax)
-      end
     end
   end
 end

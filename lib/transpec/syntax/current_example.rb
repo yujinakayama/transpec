@@ -28,13 +28,7 @@ module Transpec
           replace(selector_range, 'RSpec.current_example')
         end
 
-        add_record
-      end
-
-      private
-
-      def block_has_argument?
-        block_arg_node || block_node.metadata[:added_example_block_arg]
+        add_record(RecordBuilder.build(self))
       end
 
       def block_node
@@ -49,6 +43,12 @@ module Transpec
 
       def block_method_name
         method_name_of_block_node(block_node)
+      end
+
+      private
+
+      def block_has_argument?
+        block_arg_node || block_node.metadata[:added_example_block_arg]
       end
 
       def block_arg_node
@@ -69,18 +69,36 @@ module Transpec
         send_node.children[1]
       end
 
-      def add_record
-        if block_node
-          prefix = "#{block_method_name}"
-          prefix << '(:name)' if HELPER_METHODS.include?(block_method_name)
-          old_syntax = "#{prefix} { example }"
-          new_syntax = "#{prefix} { |example| example }"
-        else
-          old_syntax = 'def helper_method example; end'
-          new_syntax = 'def helper_method RSpec.current_example; end'
+      class RecordBuilder < Transpec::RecordBuilder
+        include RSpecDSL
+
+        attr_reader :current_example
+
+        def initialize(current_example)
+          @current_example = current_example
         end
 
-        report.records << Record.new(old_syntax, new_syntax)
+        def old_syntax
+          if current_example.block_node
+            "#{base_dsl} { example }"
+          else
+            'def helper_method example; end'
+          end
+        end
+
+        def new_syntax
+          if current_example.block_node
+            "#{base_dsl} { |example| example }"
+          else
+            'def helper_method RSpec.current_example; end'
+          end
+        end
+
+        def base_dsl
+          dsl = "#{current_example.block_method_name}"
+          dsl << '(:name)' if HELPER_METHODS.include?(current_example.block_method_name)
+          dsl
+        end
       end
     end
   end
