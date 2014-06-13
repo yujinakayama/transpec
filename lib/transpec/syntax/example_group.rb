@@ -124,14 +124,14 @@ module Transpec
         end
 
         def old_syntax
-          "describe 'some #{type}' { }"
+          "describe 'some #{spec_type}' { }"
         end
 
         def new_syntax
-          "describe 'some #{type}', :type => #{type.inspect} { }"
+          "describe 'some #{spec_type}', :type => #{spec_type.inspect} { }"
         end
 
-        def type
+        def spec_type
           example_group.implicit_type_metadata
         end
       end

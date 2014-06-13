@@ -10,9 +10,11 @@ module Transpec
     subject(:report) { Report.new }
 
     before do
-      report.records << Record.new('obj.stub(:message)', 'allow(obj).to receive(:message)', double('annotation'))
+      options = { annotation: double('annotation') }
+      report.records << Record.new('obj.stub(:message)', 'allow(obj).to receive(:message)', options)
       report.records << Record.new('obj.should', 'expect(obj).to')
-      report.records << Record.new('obj.should', 'expect(obj).to', double('annotation'))
+      report.records << Record.new('obj.should', 'expect(obj).to', options)
+      report.records << Record.new(nil, 'RSpec.configure { |c| c.infer_spec_type_from_file_location! }')
       report.conversion_errors << ContextError.new('#should', '#expect', double('range'))
     end
 
@@ -20,7 +22,7 @@ module Transpec
       subject(:unique_record_counts) { report.unique_record_counts }
 
       it 'returns counts for unique records' do
-        unique_record_counts.size.should == 2
+        unique_record_counts.size.should == 3
       end
 
       it 'returns hash with record as key and count as value' do
@@ -35,7 +37,7 @@ module Transpec
       end
 
       it 'is sorted by count in descending order' do
-        unique_record_counts.values.should == [2, 1]
+        unique_record_counts.values.should == [2, 1, 1]
       end
     end
 
@@ -48,6 +50,8 @@ module Transpec
           |1 conversion
           |  from: obj.stub(:message)
           |    to: allow(obj).to receive(:message)
+          |1 addition
+          |    of: RSpec.configure { |c| c.infer_spec_type_from_file_location! }
         END
       end
 
@@ -61,6 +65,9 @@ module Transpec
             |1 conversion
             |  from: obj.stub(:message)
             |    to: allow(obj).to receive(:message)
+            |
+            |1 addition
+            |    of: RSpec.configure { |c| c.infer_spec_type_from_file_location! }
           END
         end
       end
@@ -74,6 +81,8 @@ module Transpec
             |- 1 conversion
             |    from: obj.stub(:message)
             |      to: allow(obj).to receive(:message)
+            |- 1 addition
+            |      of: RSpec.configure { |c| c.infer_spec_type_from_file_location! }
           END
         end
       end
@@ -81,7 +90,7 @@ module Transpec
 
     describe '#stats' do
       it 'returns stats string' do
-        report.stats.should == '3 conversions, 1 incomplete, 2 warnings, 0 errors'
+        report.stats.should == '4 conversions, 1 incomplete, 2 warnings, 0 errors'
       end
     end
 
@@ -102,7 +111,7 @@ module Transpec
       end
 
       it 'concats records' do
-        concated_report.should have(4).records
+        concated_report.should have(5).records
       end
 
       it 'concats conversion errors' do

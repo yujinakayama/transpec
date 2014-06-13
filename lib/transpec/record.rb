@@ -4,23 +4,42 @@ require 'transpec/annotatable'
 
 module Transpec
   class Record
+    include Comparable
+
+    TYPES = [:conversion, :addition, :removal, :modification]
+    COMPARISON_ATTRIBUTES = [:type_sort_key, :old_syntax, :new_syntax].freeze
+
     attr_reader :old_syntax_type, :new_syntax_type, :annotation
 
-    def initialize(old_syntax, new_syntax, annotation = nil)
+    def initialize(old_syntax, new_syntax, options = {})
       # Keep these syntax data as symbols for:
       #   * Better memory footprint
       #   * Better summarizing performance in Report
-      @old_syntax_type = old_syntax.to_sym
-      @new_syntax_type = new_syntax.to_sym
-      @annotation = annotation
+      @old_syntax_type = old_syntax && old_syntax.to_sym
+      @new_syntax_type = new_syntax && new_syntax.to_sym
+
+      @type = options[:type]
+      @annotation = options[:annotation]
+
+      fail ArgumentError, "Invalid type: #{type}" unless TYPES.include?(type)
+    end
+
+    def type
+      @type ||= if old_syntax_type && new_syntax_type
+                  :conversion
+                elsif new_syntax_type
+                  :addition
+                else
+                  :removal
+                end
     end
 
     def old_syntax
-      old_syntax_type.to_s
+      old_syntax_type && old_syntax_type.to_s
     end
 
     def new_syntax
-      new_syntax_type.to_s
+      new_syntax_type && new_syntax_type.to_s
     end
 
     def ==(other)
@@ -36,7 +55,35 @@ module Transpec
     end
 
     def to_s
-      "`#{old_syntax_type}` -> `#{new_syntax_type}`"
+      string = type.to_s.capitalize
+
+      string << case type
+                when :conversion, :modification
+                  " from `#{old_syntax_type}` to `#{new_syntax_type}`"
+                when :addition
+                  " of `#{new_syntax_type}`"
+                when :removal
+                  " of `#{old_syntax_type}`"
+                end
+    end
+
+    def <=>(other)
+      COMPARISON_ATTRIBUTES.each do |attribute|
+        result = send(attribute) <=> other.send(attribute)
+        return result unless result == 0
+      end
+      0
+    end
+
+    private
+
+    def type_sort_key
+      case type
+      when :conversion   then 1
+      when :modification then 2
+      when :addition     then 3
+      when :removal      then 4
+      end
     end
   end
 
@@ -52,7 +99,7 @@ module Transpec
     end
 
     def build
-      Record.new(old_syntax, new_syntax, annotation)
+      Record.new(old_syntax, new_syntax, { type: type, annotation: annotation })
     end
 
     private
@@ -65,6 +112,10 @@ module Transpec
     end
 
     def new_syntax
+      nil
+    end
+
+    def type
       nil
     end
 

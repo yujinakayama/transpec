@@ -27,7 +27,7 @@ module Transpec
       end
 
       sorted_record_counts = record_counts.sort_by do |record, count|
-        [-count, record.old_syntax_type, record.new_syntax_type]
+        [-count, record]
       end
 
       Hash[sorted_record_counts]
@@ -85,16 +85,24 @@ module Transpec
     end
 
     def format_record(record, count, bullet = nil)
-      entry_prefix = bullet ? bullet + ' ' : ''
-      indentation = if bullet
-                      ' ' * entry_prefix.length
-                    else
-                      ''
-                    end
+      entry_prefix = bullet ? "#{bullet} " : ''
+      text = entry_prefix + colorize(pluralize(count, record.type), :cyan) + "\n"
 
-      text = entry_prefix + colorize(pluralize(count, 'conversion'), :cyan) + "\n"
-      text << indentation + '  ' + colorize('from: ', :cyan) + record.old_syntax + "\n"
-      text << indentation + '    ' + colorize('to: ', :cyan) + record.new_syntax + "\n"
+      justification = entry_prefix.length + 6
+
+      case record.type
+      when :conversion
+        text << labeled_line('from', record.old_syntax, justification)
+        text << labeled_line('to',   record.new_syntax, justification)
+      when :addition
+        text << labeled_line('of',   record.new_syntax, justification)
+      when :removal
+        text << labeled_line('of',   record.old_syntax, justification)
+      end
+    end
+
+    def labeled_line(label, content, justification)
+      colorize("#{label.rjust(justification)}: ", :cyan) + content + "\n"
     end
 
     def conversion_incomplete_warning_stats(color)
