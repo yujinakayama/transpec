@@ -677,8 +677,9 @@ module Transpec
             let(:source) do
               <<-END
                 describe 'example' do
-                  it 'does not respond to #foo' do
+                  it 'does not respond to #foo or #bar' do
                     subject.#{method}(:foo)
+                    subject.#{method} :bar
                   end
                 end
               END
@@ -687,8 +688,9 @@ module Transpec
             let(:expected_source) do
               <<-END
                 describe 'example' do
-                  it 'does not respond to #foo' do
+                  it 'does not respond to #foo or #bar' do
                     allow(subject).to receive(:foo).and_call_original
+                    allow(subject).to receive(:bar).and_call_original
                   end
                 end
               END
