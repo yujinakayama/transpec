@@ -42,13 +42,7 @@ module Transpec
         replace(should_range, positive? ? 'to' : negative_form)
 
         @current_syntax_type = :expect
-        add_record(negative_form)
-      end
-
-      private
-
-      def expect_available?
-        syntax_available?(__method__)
+        add_record(RecordBuilder.build(self, negative_form))
       end
 
       def proc_subject?
@@ -59,28 +53,49 @@ module Transpec
         receiver_node.nil? && method_name == :expect
       end
 
+      def name_of_subject_method_taking_block
+        range_of_subject_method_taking_block.source
+      end
+
+      private
+
+      def expect_available?
+        syntax_available?(__method__)
+      end
+
       def range_of_subject_method_taking_block
         send_node = subject_node.children.first
         send_node.loc.expression
       end
 
-      def add_record(negative_form_of_to)
-        if proc_subject?
-          original_syntax = "#{range_of_subject_method_taking_block.source} { }.should"
-          converted_syntax = 'expect { }.'
-        else
-          original_syntax = 'obj.should'
-          converted_syntax = 'expect(obj).'
+      class RecordBuilder < Transpec::RecordBuilder
+        attr_reader :should, :negative_form_of_to
+
+        def initialize(should, negative_form_of_to)
+          @should = should
+          @negative_form_of_to = negative_form_of_to
         end
 
-        if positive?
-          converted_syntax << 'to'
-        else
-          original_syntax << '_not'
-          converted_syntax << negative_form_of_to
+        def old_syntax
+          syntax = if should.proc_subject?
+                     "#{should.name_of_subject_method_taking_block} { }.should"
+                   else
+                     'obj.should'
+                   end
+
+          syntax << '_not' unless should.positive?
+          syntax
         end
 
-        report.records << Record.new(original_syntax, converted_syntax)
+        def new_syntax
+          syntax = if should.proc_subject?
+                     'expect { }.'
+                   else
+                     'expect(obj).'
+                   end
+
+          syntax << (should.positive? ? 'to' : negative_form_of_to)
+        end
       end
     end
   end

@@ -8,8 +8,8 @@ module Transpec
   class Syntax
     class Have < Syntax
       require 'transpec/syntax/have/dynamic_analysis'
+      require 'transpec/syntax/have/record_builder'
       require 'transpec/syntax/have/source_builder'
-      require 'transpec/syntax/have/have_record'
 
       include Mixin::Send, Mixin::OwnedMatcher, DynamicAnalysis
 
@@ -132,7 +132,7 @@ module Transpec
       end
 
       def add_record
-        report.records << HaveRecord.new(self)
+        super(Have::RecordBuilder.build(self))
       end
     end
   end

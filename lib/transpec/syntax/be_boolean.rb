@@ -30,8 +30,8 @@ module Transpec
 
       private
 
-      def add_record(converted_syntax)
-        report.records << Record.new(method_name.to_s, converted_syntax)
+      def add_record(new_syntax)
+        super(method_name, new_syntax)
       end
     end
   end

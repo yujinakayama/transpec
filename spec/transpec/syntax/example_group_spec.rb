@@ -42,8 +42,8 @@ module Transpec
 
               it "adds record `#{method} 'something' { }` -> `RSpec.#{method} 'something' { }`" do
                 example_group.convert_to_non_monkey_patch!
-                record.original_syntax.should  == "#{method} 'something' { }"
-                record.converted_syntax.should == "RSpec.#{method} 'something' { }"
+                record.old_syntax.should  == "#{method} 'something' { }"
+                record.new_syntax.should == "RSpec.#{method} 'something' { }"
               end
             end
           end
@@ -224,8 +224,8 @@ module Transpec
 
                 it "adds record `describe 'some #{type}' { }` " \
                    "-> `describe 'some #{type}', :type => #{type.inspect} { }`" do
-                  record.original_syntax.should  == "describe 'some #{type}' { }"
-                  record.converted_syntax.should  == "describe 'some #{type}', :type => #{type.inspect} { }"
+                  record.old_syntax.should  == "describe 'some #{type}' { }"
+                  record.new_syntax.should  == "describe 'some #{type}', :type => #{type.inspect} { }"
                 end
               end
             end

@@ -21,7 +21,7 @@ module Transpec
       private
 
       def add_record
-        report.records << Record.new("#{method_name}('something')", "double('something')")
+        super("#{method_name}('something')", "double('something')")
       end
     end
   end

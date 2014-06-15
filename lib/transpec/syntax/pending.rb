@@ -81,10 +81,6 @@ module Transpec
       def range_from_body_end_to_block_close
         block_body_node.loc.expression.end.join(block_node.loc.end)
       end
-
-      def add_record(original_syntax, converted_syntax)
-        report.records << Record.new(original_syntax, converted_syntax)
-      end
     end
   end
 end

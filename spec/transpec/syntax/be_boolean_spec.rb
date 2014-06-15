@@ -44,8 +44,8 @@ module Transpec
           end
 
           it 'adds record `be_true` -> `be_truthy`' do
-            record.original_syntax.should  == 'be_true'
-            record.converted_syntax.should == 'be_truthy'
+            record.old_syntax.should  == 'be_true'
+            record.new_syntax.should == 'be_truthy'
           end
         end
 
@@ -75,8 +75,8 @@ module Transpec
           end
 
           it 'adds record `be_false` -> `be_falsey`' do
-            record.original_syntax.should  == 'be_false'
-            record.converted_syntax.should == 'be_falsey'
+            record.old_syntax.should  == 'be_false'
+            record.new_syntax.should == 'be_falsey'
           end
 
           context 'and "be_falsy" is passed' do
@@ -97,8 +97,8 @@ module Transpec
             end
 
             it 'adds record `be_false` -> `be_falsy`' do
-              record.original_syntax.should  == 'be_false'
-              record.converted_syntax.should == 'be_falsy'
+              record.old_syntax.should  == 'be_false'
+              record.new_syntax.should == 'be_falsy'
             end
           end
         end
@@ -135,8 +135,8 @@ module Transpec
           end
 
           it 'adds record `be_true` -> `be true`' do
-            record.original_syntax.should  == 'be_true'
-            record.converted_syntax.should == 'be true'
+            record.old_syntax.should  == 'be_true'
+            record.new_syntax.should == 'be true'
           end
         end
 
@@ -166,8 +166,8 @@ module Transpec
           end
 
           it 'adds record `be_false` -> `be false`' do
-            record.original_syntax.should  == 'be_false'
-            record.converted_syntax.should == 'be false'
+            record.old_syntax.should  == 'be_false'
+            record.new_syntax.should == 'be false'
           end
         end
       end

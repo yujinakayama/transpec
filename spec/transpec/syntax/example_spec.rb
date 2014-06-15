@@ -184,8 +184,8 @@ module Transpec
           end
 
           it "adds record `pending 'is an example' { }` -> `skip 'is an example' { }`" do
-            record.original_syntax.should  == "pending 'is an example' { }"
-            record.converted_syntax.should == "skip 'is an example' { }"
+            record.old_syntax.should  == "pending 'is an example' { }"
+            record.new_syntax.should == "skip 'is an example' { }"
           end
         end
 
@@ -231,8 +231,8 @@ module Transpec
           end
 
           it "adds record `it 'is an example', :pending { }` -> `it 'is an example', :skip { }`" do
-            record.original_syntax.should  == "it 'is an example', :pending { }"
-            record.converted_syntax.should == "it 'is an example', :skip { }"
+            record.old_syntax.should  == "it 'is an example', :pending { }"
+            record.new_syntax.should == "it 'is an example', :skip { }"
           end
         end
 
@@ -262,8 +262,8 @@ module Transpec
           end
 
           it "adds record `it 'is an example', :pending => value { }` -> `it 'is an example', :skip => value { }`" do
-            record.original_syntax.should  == "it 'is an example', :pending => value { }"
-            record.converted_syntax.should == "it 'is an example', :skip => value { }"
+            record.old_syntax.should  == "it 'is an example', :pending => value { }"
+            record.new_syntax.should == "it 'is an example', :skip => value { }"
           end
         end
 
@@ -293,8 +293,8 @@ module Transpec
           end
 
           it "adds record `it 'is an example', :pending => value { }` -> `it 'is an example', :skip => value { }`" do
-            record.original_syntax.should  == "it 'is an example', :pending => value { }"
-            record.converted_syntax.should == "it 'is an example', :skip => value { }"
+            record.old_syntax.should  == "it 'is an example', :pending => value { }"
+            record.new_syntax.should == "it 'is an example', :skip => value { }"
           end
         end
       end

@@ -88,8 +88,8 @@ module Transpec
           end
 
           it "adds record `its(:attr) { }` -> `describe '#attr' do subject { super().attr }; it { } end`" do
-            record.original_syntax.should  == 'its(:attr) { }'
-            record.converted_syntax.should == "describe '#attr' do subject { super().attr }; it { } end"
+            record.old_syntax.should  == 'its(:attr) { }'
+            record.new_syntax.should == "describe '#attr' do subject { super().attr }; it { } end"
           end
 
           context 'and there are consecutive blanks between the #its and the block' do
@@ -213,8 +213,8 @@ module Transpec
           end
 
           it "adds record `its(:attr) { }` -> `describe '#attr' do subject { super().attr }; it { } end`" do
-            record.original_syntax.should  == 'its(:attr) { }'
-            record.converted_syntax.should == "describe '#attr' do subject { super().attr }; it { } end"
+            record.old_syntax.should  == 'its(:attr) { }'
+            record.new_syntax.should == "describe '#attr' do subject { super().attr }; it { } end"
           end
         end
 
@@ -250,8 +250,8 @@ module Transpec
           end
 
           it "adds record `its(:attr) { }` -> `describe '#attr' do subject { super().attr }; it { } end`" do
-            record.original_syntax.should  == 'its(:attr) { }'
-            record.converted_syntax.should == "describe '#attr' do subject { super().attr }; it { } end"
+            record.old_syntax.should  == 'its(:attr) { }'
+            record.new_syntax.should == "describe '#attr' do subject { super().attr }; it { } end"
           end
         end
 
@@ -284,8 +284,8 @@ module Transpec
           end
 
           it "adds record `its([:key]) { }` -> `describe '[:key]' do subject { super()[:key] }; it { } end`" do
-            record.original_syntax.should  == 'its([:key]) { }'
-            record.converted_syntax.should == "describe '[:key]' do subject { super()[:key] }; it { } end"
+            record.old_syntax.should  == 'its([:key]) { }'
+            record.new_syntax.should == "describe '[:key]' do subject { super()[:key] }; it { } end"
           end
         end
 
@@ -318,8 +318,8 @@ module Transpec
           end
 
           it "adds record `its([:key]) { }` -> `describe '[:key]' do subject { super()[:key] }; it { } end`" do
-            record.original_syntax.should  == 'its([:key]) { }'
-            record.converted_syntax.should == "describe '[:key]' do subject { super()[:key] }; it { } end"
+            record.old_syntax.should  == 'its([:key]) { }'
+            record.new_syntax.should == "describe '[:key]' do subject { super()[:key] }; it { } end"
           end
         end
 
@@ -352,8 +352,8 @@ module Transpec
           end
 
           it "adds record `its([:key]) { }` -> `describe '[:key]' do subject { super()[:key] }; it { } end`" do
-            record.original_syntax.should  == 'its([:key]) { }'
-            record.converted_syntax.should == "describe '[:key]' do subject { super()[:key] }; it { } end"
+            record.old_syntax.should  == 'its([:key]) { }'
+            record.new_syntax.should == "describe '[:key]' do subject { super()[:key] }; it { } end"
           end
         end
 
@@ -396,8 +396,8 @@ module Transpec
           end
 
           it "adds record `its(:attr) { }` -> `describe '#attr' do subject { super().attr }; it { } end`" do
-            record.original_syntax.should  == 'its(:attr) { }'
-            record.converted_syntax.should == "describe '#attr' do subject { super().attr }; it { } end"
+            record.old_syntax.should  == 'its(:attr) { }'
+            record.new_syntax.should == "describe '#attr' do subject { super().attr }; it { } end"
           end
         end
 
@@ -440,8 +440,8 @@ module Transpec
           end
 
           it "adds record `its([:key]) { }` -> `describe '[:key]' do subject { super()[:key] }; it { } end`" do
-            record.original_syntax.should  == 'its([:key]) { }'
-            record.converted_syntax.should == "describe '[:key]' do subject { super()[:key] }; it { } end"
+            record.old_syntax.should  == 'its([:key]) { }'
+            record.new_syntax.should == "describe '[:key]' do subject { super()[:key] }; it { } end"
           end
         end
       end

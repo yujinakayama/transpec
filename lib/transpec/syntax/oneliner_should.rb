@@ -3,6 +3,7 @@
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/should_base'
 require 'transpec/syntax/example'
+require 'transpec/syntax/its'
 require 'transpec/util'
 require 'active_support/inflector/methods'
 require 'active_support/inflector/inflections'
@@ -41,7 +42,7 @@ module Transpec
 
         @current_syntax_type = :expect
 
-        add_record(negative_form)
+        add_record(ExpectRecordBuilder.build(self, negative_form))
       end
 
       def convert_have_items_to_standard_should!
@@ -52,7 +53,7 @@ module Transpec
         subject_source = have_matcher.replacement_subject_source('subject')
         insert_before(expression_range, "#{subject_source}.")
 
-        report.records << OnelinerShouldHaveRecord.new(self, have_matcher)
+        add_record(HaveRecordBuilder.build(self, have_matcher))
       end
 
       def convert_have_items_to_standard_expect!(negative_form = 'not_to')
@@ -67,7 +68,7 @@ module Transpec
 
         @current_syntax_type = :expect
 
-        report.records << OnelinerShouldHaveRecord.new(self, have_matcher, negative_form)
+        add_record(HaveRecordBuilder.build(self, have_matcher, negative_form))
       end
 
       def example
@@ -131,25 +132,28 @@ module Transpec
         example.is_a?(Its)
       end
 
-      def add_record(negative_form_of_to)
-        original_syntax = 'it { should'
-        converted_syntax = 'it { is_expected.'
+      class ExpectRecordBuilder < RecordBuilder
+        attr_reader :should, :negative_form_of_to
 
-        if positive?
-          converted_syntax << 'to'
-        else
-          original_syntax << '_not'
-          converted_syntax << negative_form_of_to
+        def initialize(should, negative_form_of_to = nil)
+          @should = should
+          @negative_form_of_to = negative_form_of_to
         end
 
-        [original_syntax, converted_syntax].each do |syntax|
+        def old_syntax
+          syntax = 'it { should'
+          syntax << '_not' unless should.positive?
           syntax << ' ... }'
         end
 
-        report.records << Record.new(original_syntax, converted_syntax)
+        def new_syntax
+          syntax = 'it { is_expected.'
+          syntax << (should.positive? ? 'to' : negative_form_of_to)
+          syntax << ' ... }'
+        end
       end
 
-      class OnelinerShouldHaveRecord < Have::HaveRecord
+      class HaveRecordBuilder < Have::RecordBuilder
         attr_reader :should, :negative_form_of_to
 
         def initialize(should, have, negative_form_of_to = nil)
@@ -158,24 +162,22 @@ module Transpec
           @negative_form_of_to = negative_form_of_to
         end
 
-        private
-
-        def build_original_syntax
+        def old_syntax
           syntax = should.example.description? ? "it '...' do" : 'it {'
-          syntax << " #{should.method_name} #{have.method_name}(n).#{original_items} "
+          syntax << " #{should.method_name} #{have.method_name}(n).#{old_items} "
           syntax << (should.example.description? ? 'end' : '}')
         end
 
-        def build_converted_syntax
-          syntax = converted_description
+        def new_syntax
+          syntax = new_description
           syntax << ' '
-          syntax << converted_expectation
+          syntax << new_expectation
           syntax << ' '
           syntax << source_builder.replacement_matcher_source
           syntax << ' end'
         end
 
-        def converted_description
+        def new_description
           if should.example.description?
             "it '...' do"
           else
@@ -183,17 +185,17 @@ module Transpec
           end
         end
 
-        def converted_expectation
+        def new_expectation
           case should.current_syntax_type
           when :should
-            "#{converted_subject}.#{should.method_name}"
+            "#{new_subject}.#{should.method_name}"
           when :expect
-            "expect(#{converted_subject})." + (should.positive? ? 'to' : negative_form_of_to)
+            "expect(#{new_subject})." + (should.positive? ? 'to' : negative_form_of_to)
           end
         end
 
-        def converted_subject
-          build_converted_subject('subject')
+        def new_subject
+          build_new_subject('subject')
         end
       end
     end

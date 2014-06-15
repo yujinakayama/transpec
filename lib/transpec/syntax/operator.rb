@@ -157,10 +157,10 @@ module Transpec
         end
       end
 
-      def add_record(original_syntax, converted_syntax, accurate = true)
-        original_syntax ||= "#{method_name} expected"
+      def add_record(old_syntax, new_syntax, accurate = true)
+        old_syntax ||= "#{method_name} expected"
         annotation = AccuracyAnnotation.new(matcher_range) unless accurate
-        report.records << Record.new(original_syntax, converted_syntax, annotation)
+        super(old_syntax, new_syntax, { annotation: annotation })
       end
     end
   end

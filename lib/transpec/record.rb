@@ -4,66 +4,123 @@ require 'transpec/annotatable'
 
 module Transpec
   class Record
-    OVERRIDE_FORBIDDEN_METHODS = [
-      :original_syntax,
-      :original_syntax_type,
-      :converted_syntax,
-      :converted_syntax_type
-    ]
+    include Comparable
 
-    attr_reader :original_syntax_type, :converted_syntax_type, :annotation
+    TYPES = [:conversion, :addition, :removal, :modification]
+    COMPARISON_ATTRIBUTES = [:type_sort_key, :old_syntax, :new_syntax].freeze
 
-    def initialize(original_syntax, converted_syntax, annotation = nil)
-      @original_syntax_type = original_syntax.to_sym
-      @converted_syntax_type = converted_syntax.to_sym
-      @annotation = annotation
+    attr_reader :old_syntax_type, :new_syntax_type, :annotation
+
+    def initialize(old_syntax, new_syntax, options = {})
+      # Keep these syntax data as symbols for:
+      #   * Better memory footprint
+      #   * Better summarizing performance in Report
+      @old_syntax_type = old_syntax && old_syntax.to_sym
+      @new_syntax_type = new_syntax && new_syntax.to_sym
+
+      @type = options[:type]
+      @annotation = options[:annotation]
+
+      fail ArgumentError, "Invalid type: #{type}" unless TYPES.include?(type)
     end
 
-    def original_syntax
-      original_syntax_type.to_s
+    def type
+      @type ||= if old_syntax_type && new_syntax_type
+                  :conversion
+                elsif new_syntax_type
+                  :addition
+                else
+                  :removal
+                end
     end
 
-    def converted_syntax
-      converted_syntax_type.to_s
+    def old_syntax
+      old_syntax_type && old_syntax_type.to_s
     end
 
-    def original_syntax_type
-      @original_syntax_type ||= build_original_syntax.to_sym
-    end
-
-    def converted_syntax_type
-      @converted_syntax_type ||= build_converted_syntax.to_sym
+    def new_syntax
+      new_syntax_type && new_syntax_type.to_s
     end
 
     def ==(other)
       self.class == other.class &&
-        original_syntax_type == other.original_syntax_type &&
-        converted_syntax_type == other.converted_syntax_type
+        old_syntax_type == other.old_syntax_type &&
+        new_syntax_type == other.new_syntax_type
     end
 
     alias_method :eql?, :==
 
     def hash
-      original_syntax_type.hash ^ converted_syntax_type.hash
+      old_syntax_type.hash ^ new_syntax_type.hash
     end
 
     def to_s
-      "`#{original_syntax_type}` -> `#{converted_syntax_type}`"
+      string = type.to_s.capitalize
+
+      string << case type
+                when :conversion, :modification
+                  " from `#{old_syntax_type}` to `#{new_syntax_type}`"
+                when :addition
+                  " of `#{new_syntax_type}`"
+                when :removal
+                  " of `#{old_syntax_type}`"
+                end
+    end
+
+    def <=>(other)
+      COMPARISON_ATTRIBUTES.each do |attribute|
+        result = send(attribute) <=> other.send(attribute)
+        return result unless result == 0
+      end
+      0
     end
 
     private
 
-    def build_original_syntax
-      fail NotImplementedError
+    def type_sort_key
+      case type
+      when :conversion   then 1
+      when :modification then 2
+      when :addition     then 3
+      when :removal      then 4
+      end
+    end
+  end
+
+  # This class is intended to be inherited to build complex record.
+  # The reasons why you should inherit this class rather than Record are:
+  #   * You need to care about String and Symbol around Record#old_syntax and #new_syntax.
+  #   * All record instances are kept in a Report until the end of Transpec process.
+  #     This mean that if a custom record keeps a syntax object as an ivar,
+  #     the AST kept by the syntax object won't be GCed.
+  class RecordBuilder
+    def self.build(*args)
+      new(*args).build
     end
 
-    def build_converted_syntax
-      fail NotImplementedError
+    def build
+      Record.new(old_syntax, new_syntax, { type: type, annotation: annotation })
     end
 
-    def self.method_added(method_name)
-      return unless OVERRIDE_FORBIDDEN_METHODS.include?(method_name)
-      fail "Do not override Record##{method_name}."
+    private
+
+    def initialize(*)
+    end
+
+    def old_syntax
+      nil
+    end
+
+    def new_syntax
+      nil
+    end
+
+    def type
+      nil
+    end
+
+    def annotation
+      nil
     end
   end
 

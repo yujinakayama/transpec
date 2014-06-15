@@ -43,8 +43,8 @@ module Transpec
             end
 
             it "adds record `#{hook_method}(:each) { }` -> `#{hook_method}(:example) { }`" do
-              record.original_syntax.should  == "#{hook_method}(:each) { }"
-              record.converted_syntax.should == "#{hook_method}(:example) { }"
+              record.old_syntax.should  == "#{hook_method}(:each) { }"
+              record.new_syntax.should == "#{hook_method}(:example) { }"
             end
           end
         end
@@ -76,8 +76,8 @@ module Transpec
             end
 
             it "adds record `#{hook_method}(:all) { }` -> `#{hook_method}(:context) { }`" do
-              record.original_syntax.should  == "#{hook_method}(:all) { }"
-              record.converted_syntax.should == "#{hook_method}(:context) { }"
+              record.old_syntax.should  == "#{hook_method}(:all) { }"
+              record.new_syntax.should == "#{hook_method}(:context) { }"
             end
           end
 
@@ -107,8 +107,8 @@ module Transpec
             end
 
             it "adds record `#{hook_method}(:each) { }` -> `#{hook_method}(:example) { }`" do
-              record.original_syntax.should  == "#{hook_method}(:each) { }"
-              record.converted_syntax.should == "#{hook_method}(:example) { }"
+              record.old_syntax.should  == "#{hook_method}(:each) { }"
+              record.new_syntax.should == "#{hook_method}(:example) { }"
             end
           end
 
@@ -205,8 +205,8 @@ module Transpec
           end
 
           it 'adds record `before(:each) { }` -> `before(:example) { }`' do
-            record.original_syntax.should  == 'before(:each) { }'
-            record.converted_syntax.should == 'before(:example) { }'
+            record.old_syntax.should  == 'before(:each) { }'
+            record.new_syntax.should == 'before(:example) { }'
           end
         end
       end

@@ -5,7 +5,7 @@ require 'transpec/syntax/have'
 module Transpec
   class Syntax
     class Have
-      class HaveRecord < Record
+      class RecordBuilder < Transpec::RecordBuilder
         attr_reader :have
 
         def initialize(have)
@@ -22,17 +22,15 @@ module Transpec
                         end
         end
 
-        private
-
-        def build_original_syntax
+        def old_syntax
           type = have.expectation.class.snake_case_name.to_sym
-          syntax = build_expectation(original_subject, type)
-          syntax << " #{have.method_name}(n).#{original_items}"
+          syntax = build_expectation(old_subject, type)
+          syntax << " #{have.method_name}(n).#{old_items}"
         end
 
-        def build_converted_syntax
+        def new_syntax
           type = have.expectation.current_syntax_type
-          syntax = build_expectation(converted_subject, type)
+          syntax = build_expectation(new_subject, type)
           syntax << " #{source_builder.replacement_matcher_source}"
         end
 
@@ -53,7 +51,7 @@ module Transpec
           have.expectation.positive?
         end
 
-        def original_subject
+        def old_subject
           if have.subject_is_owner_of_collection?
             'obj'
           else
@@ -61,7 +59,7 @@ module Transpec
           end
         end
 
-        def original_items
+        def old_items
           if have.subject_is_owner_of_collection?
             if have.items_method_has_arguments?
               "#{have.collection_accessor}(...)"
@@ -73,23 +71,23 @@ module Transpec
           end
         end
 
-        def converted_subject
-          if @have.subject_is_owner_of_collection?
-            build_converted_subject('obj')
+        def new_subject
+          if have.subject_is_owner_of_collection?
+            build_new_subject('obj')
           else
-            build_converted_subject('collection')
+            build_new_subject('collection')
           end
         end
 
-        def build_converted_subject(subject)
+        def build_new_subject(subject)
           if have.subject_is_owner_of_collection?
-            converted_owner_of_collection(subject)
+            new_owner_of_collection(subject)
           else
             subject << ".#{have.default_query_method}"
           end
         end
 
-        def converted_owner_of_collection(subject)
+        def new_owner_of_collection(subject)
           subject << '.'
 
           if have.collection_accessor_is_private?

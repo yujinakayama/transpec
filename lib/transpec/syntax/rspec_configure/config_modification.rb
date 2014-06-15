@@ -15,12 +15,13 @@ module Transpec
 
         private
 
-        def set_config!(config_name, value, comment = nil)
-          setter_node = find_config_node("#{config_name}=")
+        def set_config_value!(config_name, value, comment = nil)
+          config_node = find_config_node("#{config_name}=")
 
-          if setter_node
-            arg_node = setter_node.children[2]
-            source_rewriter.replace(arg_node.loc.expression, value.to_s)
+          if config_node
+            current_value = config_node.children[2].loc.expression.source
+            return if value.to_s == current_value
+            modify_config_value!(config_node, value)
           else
             add_config!(config_name, value, comment)
           end
@@ -39,9 +40,40 @@ module Transpec
           end
         end
 
+        def modify_config_value!(config_node, value)
+          arg_range = config_node.children[2].loc.expression
+          source_rewriter.replace(arg_range, value.to_s)
+
+          config_name = config_node.loc.selector.source
+          old_syntax = config_record_syntax(config_name, arg_range.source)
+          new_syntax = config_record_syntax(config_name, value)
+          add_record(old_syntax, new_syntax, type: :modification)
+        end
+
+        def replace_config!(old_config_name, new_config_name)
+          config_node = find_config_node(old_config_name)
+          return unless config_node
+          new_selector = new_config_name.to_s.sub(/=$/, '')
+          source_rewriter.replace(config_node.loc.selector, new_selector)
+
+          old_syntax = config_record_syntax(old_config_name)
+          new_syntax = config_record_syntax(new_config_name)
+          add_record(old_syntax, new_syntax)
+        end
+
         def block_arg_name
           return nil unless block_node
           first_block_arg_name(block_node)
+        end
+
+        def config_record_syntax(config_name, value = nil)
+          selector = config_name.to_s.sub(/=$/, '')
+          syntax = "RSpec.configure { |c| c.#{selector}"
+
+          value = 'something' if config_name.to_s.end_with?('=')
+          syntax << " = #{value}" unless value.nil?
+
+          syntax << ' }'
         end
 
         # TODO: Refactor this to remove messy overrides in Framework.
@@ -55,6 +87,8 @@ module Transpec
             source_rewriter.insert_before(insertion_position, lines.join(''))
 
             block_node_to_insert_code.metadata[:added_config] = true
+
+            add_record(nil, config_record_syntax(config_name, value))
           end
 
           def generate_config_lines(config_name, value = nil, comment = nil)

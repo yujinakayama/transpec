@@ -189,5 +189,15 @@ module Transpec
     def inspect
       "#<#{self.class}: #{node.type}>"
     end
+
+    def add_record(*args)
+      record = if args.first.is_a?(Record)
+                 args.first
+               else
+                 Record.new(*args)
+               end
+
+      report.records << record
+    end
   end
 end

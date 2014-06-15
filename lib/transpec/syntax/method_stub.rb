@@ -71,29 +71,37 @@ module Transpec
 
         replace(expression_range, source)
 
-        add_record(type)
+        add_record(AllowRecordBuilder.build(self, type))
       end
 
       def convert_deprecated_method!
-        return unless replacement_method_for_deprecated_method
-
-        replace(selector_range, replacement_method_for_deprecated_method)
-
-        add_record(:deprecated)
+        return unless replacement_for_deprecated_method
+        replace(selector_range, replacement_for_deprecated_method)
+        add_record(DeprecatedMethodRecordBuilder.build(self))
       end
 
       def remove_no_message_allowance!
         return unless allow_no_message?
         super
-        add_record(:no_message_allowance)
+        add_record(NoMessageAllowanceRecordBuilder.build(self))
       end
 
       def remove_useless_and_return!
-        super && add_record(:useless_and_return)
+        return unless super
+        add_record(Mixin::UselessAndReturn::MonkeyPatchRecordBuilder.build(self))
       end
 
       def add_receiver_arg_to_any_instance_implementation_block!
-        super && add_record(:any_instance_block)
+        return unless super
+        add_record(Mixin::AnyInstanceBlock::MonkeyPatchRecordBuilder.build(self))
+      end
+
+      def replacement_for_deprecated_method
+        case method_name
+        when :stub!   then 'stub'
+        when :unstub! then 'unstub'
+        else nil
+        end
       end
 
       private
@@ -161,51 +169,34 @@ module Transpec
         message_source
       end
 
-      def replacement_method_for_deprecated_method
-        case method_name
-        when :stub!   then 'stub'
-        when :unstub! then 'unstub'
-        else nil
-        end
-      end
+      class AllowRecordBuilder < RecordBuilder
+        attr_reader :method_stub, :conversion_type
 
-      def add_record(conversion_type)
-        record_class = case conversion_type
-                       when :deprecated           then DeprecatedMethodRecord
-                       when :no_message_allowance then NoMessageAllowanceRecord
-                       when :useless_and_return   then MonkeyPatchUselessAndReturnRecord
-                       when :any_instance_block   then MonkeyPatchAnyInstanceBlockRecord
-                       else                            AllowRecord
-                       end
-        report.records << record_class.new(self, conversion_type)
-      end
-
-      class AllowRecord < Record
         def initialize(method_stub, conversion_type)
           @method_stub = method_stub
           @conversion_type = conversion_type
         end
 
-        def build_original_syntax
-          syntax = @method_stub.any_instance? ? 'Klass.any_instance' : 'obj'
-          syntax << ".#{@method_stub.method_name}"
+        def old_syntax
+          syntax = method_stub.any_instance? ? 'Klass.any_instance' : 'obj'
+          syntax << ".#{method_stub.method_name}"
 
-          if @method_stub.method_name == :stub_chain
+          if method_stub.method_name == :stub_chain
             syntax << '(:message1, :message2)'
           else
-            syntax << (@method_stub.hash_arg? ? '(:message => value)' : '(:message)')
+            syntax << (method_stub.hash_arg? ? '(:message => value)' : '(:message)')
           end
         end
 
-        def build_converted_syntax
-          syntax = @method_stub.any_instance? ? 'allow_any_instance_of(Klass)' : 'allow(obj)'
+        def new_syntax
+          syntax = method_stub.any_instance? ? 'allow_any_instance_of(Klass)' : 'allow(obj)'
           syntax << '.to '
 
-          case @conversion_type
+          case conversion_type
           when :allow_to_receive
             syntax << 'receive(:message)'
-            syntax << '.and_return(value)' if @method_stub.hash_arg?
-            syntax << '.and_call_original' if @method_stub.unstub?
+            syntax << '.and_return(value)' if method_stub.hash_arg?
+            syntax << '.and_call_original' if method_stub.unstub?
           when :allow_to_receive_messages
             syntax << 'receive_messages(:message => value)'
           when :allow_to_receive_message_chain
@@ -216,38 +207,40 @@ module Transpec
         end
       end
 
-      class DeprecatedMethodRecord < Record
-        def initialize(method_stub, *)
+      class DeprecatedMethodRecordBuilder < RecordBuilder
+        attr_reader :method_stub
+
+        def initialize(method_stub)
           @method_stub = method_stub
         end
 
-        def build_original_syntax
-          syntax = @method_stub.any_instance? ? 'Klass.any_instance' : 'obj'
-          syntax << ".#{@method_stub.method_name}(:message)"
+        def old_syntax
+          syntax = method_stub.any_instance? ? 'Klass.any_instance' : 'obj'
+          syntax << ".#{method_stub.method_name}(:message)"
         end
 
-        def build_converted_syntax
+        def new_syntax
           syntax = 'obj.'
-          syntax << @method_stub.send(:replacement_method_for_deprecated_method)
+          syntax << method_stub.replacement_for_deprecated_method
           syntax << '(:message)'
         end
       end
 
-      class NoMessageAllowanceRecord < Record
-        def initialize(method_stub, *)
+      class NoMessageAllowanceRecordBuilder < RecordBuilder
+        attr_reader :method_stub
+
+        def initialize(method_stub)
           @method_stub = method_stub
         end
 
-        private
-
-        def build_original_syntax
+        def old_syntax
           syntax = base_syntax
           syntax << '.any_number_of_times' if @method_stub.any_number_of_times?
           syntax << '.at_least(0)' if @method_stub.at_least_zero?
           syntax
         end
 
-        def build_converted_syntax
+        def new_syntax
           base_syntax
         end
 

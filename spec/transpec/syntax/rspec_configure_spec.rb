@@ -2,12 +2,15 @@
 
 require 'spec_helper'
 require 'transpec/syntax/rspec_configure'
+require 'transpec/rspec_version'
 
 module Transpec
   class Syntax
     describe RSpecConfigure do
       include_context 'parsed objects'
       include_context 'syntax object', RSpecConfigure, :rspec_configure
+
+      let(:record) { rspec_configure.report.records.first }
 
       context 'when multiple configurations are added' do
         before do
@@ -53,31 +56,172 @@ module Transpec
         end
       end
 
+      describe '#convert_deprecated_options!' do
+        before do
+          rspec_configure.convert_deprecated_options!(RSpecVersion.new('3.0.0'))
+        end
+
+        [
+          [:output,                   :output_stream],
+          [:out,                      :output_stream],
+          [:filename_pattern,         :pattern],
+          [:backtrace_cleaner,        :backtrace_formatter],
+          [:backtrace_clean_patterns, :backtrace_exclusion_patterns],
+          [:warnings,                 :warnings?]
+        ].each do |old_config, new_config|
+          context "with `c.#{old_config}`" do
+            let(:source) do
+              <<-END
+                RSpec.configure do |config|
+                  if config.#{old_config} == something
+                    do_something
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                RSpec.configure do |config|
+                  if config.#{new_config} == something
+                    do_something
+                  end
+                end
+              END
+            end
+
+            it "converts to `c.#{new_config}`" do
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record of conversion ' \
+               "`RSpec.configure { |c| c.#{old_config} }` -> " \
+               "`RSpec.configure { |c| c.#{new_config} }`" do
+              record.type.should == :conversion
+              record.old_syntax.should == "RSpec.configure { |c| c.#{old_config} }"
+              record.new_syntax.should == "RSpec.configure { |c| c.#{new_config} }"
+            end
+          end
+        end
+
+        [
+          [:output,                   :output_stream],
+          [:out,                      :output_stream],
+          [:filename_pattern,         :pattern],
+          [:backtrace_clean_patterns, :backtrace_exclusion_patterns],
+          [:color_enabled,            :color]
+        ].each do |old_config, new_config|
+          context "with `c.#{old_config} = something`" do
+            let(:source) do
+              <<-END
+                RSpec.configure do |config|
+                  config.#{old_config} = something
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                RSpec.configure do |config|
+                  config.#{new_config} = something
+                end
+              END
+            end
+
+            it "converts to `c.#{new_config} = something`" do
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record of conversion ' \
+               "`RSpec.configure { |c| c.#{old_config} = something }` -> " \
+               "`RSpec.configure { |c| c.#{new_config} = something }`" do
+              record.type.should == :conversion
+              record.old_syntax.should == "RSpec.configure { |c| c.#{old_config} = something }"
+              record.new_syntax.should == "RSpec.configure { |c| c.#{new_config} = something }"
+            end
+          end
+        end
+
+        context 'with `c.color?(io)`' do
+          let(:source) do
+            <<-END
+              RSpec.configure do |config|
+                if config.color?($stdout)
+                  do_something
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              RSpec.configure do |config|
+                if config.color_enabled?($stdout)
+                  do_something
+                end
+              end
+            END
+          end
+
+          it 'convertes to `c.color_enabled?(io)`' do
+            rewritten_source.should == expected_source
+          end
+        end
+      end
+
       describe '#expose_dsl_globally=' do
         before do
-          rspec_configure.expose_dsl_globally = value
+          rspec_configure.expose_dsl_globally = false
         end
 
-        let(:value) { true }
-
-        let(:source) do
-          <<-END
-            RSpec.configure do |config|
-              config.expose_dsl_globally = false
+        context 'when #expose_dsl_globally= already exists' do
+          context 'and the current value is same as the new value' do
+            let(:source) do
+              <<-END
+                RSpec.configure do |config|
+                  config.expose_dsl_globally = false
+                end
+              END
             end
-          END
-        end
 
-        let(:expected_source) do
-          <<-END
-            RSpec.configure do |config|
-              config.expose_dsl_globally = true
+            it 'does nothing' do
+              rewritten_source.should == source
             end
-          END
-        end
 
-        it 'rewrites the `expose_dsl_globally` configuration' do
-          rewritten_source.should == expected_source
+            it 'reports nothing' do
+              record.should be_nil
+            end
+          end
+
+          context 'and the current value is different from the new value' do
+            let(:source) do
+              <<-END
+                RSpec.configure do |config|
+                  config.expose_dsl_globally = true
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                RSpec.configure do |config|
+                  config.expose_dsl_globally = false
+                end
+              END
+            end
+
+            it 'rewrites the value' do
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record of modification ' \
+               '`RSpec.configure { |c| c.expose_dsl_globally = true }` -> ' \
+               '`RSpec.configure { |c| c.expose_dsl_globally = false }`' do
+              record.type.should == :modification
+              record.old_syntax.should == 'RSpec.configure { |c| c.expose_dsl_globally = true }'
+              record.new_syntax.should == 'RSpec.configure { |c| c.expose_dsl_globally = false }'
+            end
+          end
         end
 
         context 'when #expose_dsl_globally= does not exist' do
@@ -98,7 +242,7 @@ module Transpec
                 # For backwards compatibility this defaults to `true`.
                 #
                 # https://relishapp.com/rspec/rspec-core/v/3-0/docs/configuration/global-namespace-dsl
-                config.expose_dsl_globally = true
+                config.expose_dsl_globally = false
               end
             END
           end
@@ -106,9 +250,14 @@ module Transpec
           it 'adds #expose_dsl_globally= statement along with comment' do
             rewritten_source.should == expected_source
           end
+
+          it 'adds record of addition `RSpec.configure { |c| c.expose_dsl_globally = value }`' do
+            record.type.should == :addition
+            record.new_syntax.should == 'RSpec.configure { |c| c.expose_dsl_globally = false }'
+          end
         end
 
-        context 'when there are already some configurations' do
+        context 'when there are already some other configurations' do
           let(:source) do
             <<-END
               RSpec.configure do |config|
@@ -129,7 +278,7 @@ module Transpec
                 # For backwards compatibility this defaults to `true`.
                 #
                 # https://relishapp.com/rspec/rspec-core/v/3-0/docs/configuration/global-namespace-dsl
-                config.expose_dsl_globally = true
+                config.expose_dsl_globally = false
               end
             END
           end
@@ -173,6 +322,11 @@ module Transpec
           it 'adds #infer_spec_type_from_file_location! statement along with comment' do
             rewritten_source.should == expected_source
           end
+
+          it 'adds record of addition `RSpec.configure { |c| c.expose_dsl_globally = value }`' do
+            record.type.should == :addition
+            record.new_syntax.should == 'RSpec.configure { |c| c.infer_spec_type_from_file_location! }'
+          end
         end
 
         context 'when #infer_spec_type_from_file_location! already exists' do
@@ -186,6 +340,10 @@ module Transpec
 
           it 'does nothing' do
             rewritten_source.should == source
+          end
+
+          it 'reports nothing' do
+            record.should be_nil
           end
         end
 
@@ -509,6 +667,16 @@ module Transpec
               it 'rewrites the setter argument to `true`' do
                 rewritten_source.should == expected_source
               end
+
+              # rubocop:disable LineLength
+              it 'adds record of modification ' \
+                 '`RSpec.configure { |c| c.mock_with :rspec { |m| m.yield_receiver_to_any_instance_implementation_blocks = foo } }` ->' \
+                 '`RSpec.configure { |c| c.mock_with :rspec { |m| m.yield_receiver_to_any_instance_implementation_blocks = true } }`' do
+                record.type.should == :modification
+                record.old_syntax.should == 'RSpec.configure { |c| c.mock_with :rspec { |m| m.yield_receiver_to_any_instance_implementation_blocks = foo } }'
+                record.new_syntax.should == 'RSpec.configure { |c| c.mock_with :rspec { |m| m.yield_receiver_to_any_instance_implementation_blocks = true } }'
+              end
+              # rubocop:enable LineLength
             end
 
             context 'when false is passed' do
@@ -562,6 +730,14 @@ module Transpec
             it 'adds #yield_receiver_to_any_instance_implementation_blocks= statement along with comment' do
               rewritten_source.should == expected_source
             end
+
+            # rubocop:disable LineLength
+            it 'adds record of addition ' \
+               '`RSpec.configure { |c| c.mock_with :rspec { |m| m.yield_receiver_to_any_instance_implementation_blocks = true } }`' do
+              record.type.should == :addition
+              record.new_syntax.should == 'RSpec.configure { |c| c.mock_with :rspec { |m| m.yield_receiver_to_any_instance_implementation_blocks = true } }'
+            end
+            # rubocop:enable LineLength
           end
 
           context 'when #mock_with block does not exist' do
@@ -595,6 +771,14 @@ module Transpec
                'and #yield_receiver_to_any_instance_implementation_blocks= statement along with comment' do
               rewritten_source.should == expected_source
             end
+
+            # rubocop:disable LineLength
+            it 'adds record of addition ' \
+               '`RSpec.configure { |c| c.mock_with :rspec { |m| m.yield_receiver_to_any_instance_implementation_blocks = true } }`' do
+              record.type.should == :addition
+              record.new_syntax.should == 'RSpec.configure { |c| c.mock_with :rspec { |m| m.yield_receiver_to_any_instance_implementation_blocks = true } }'
+            end
+            # rubocop:enable LineLength
 
             context "when RSpec.configure's block argument name is `mocks`" do
               let(:source) do

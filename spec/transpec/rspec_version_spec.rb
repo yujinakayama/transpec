@@ -26,6 +26,7 @@ module Transpec
     [
       :be_truthy_available?,
       :yielded_example_available?,
+      :config_output_stream_available?,
       :yielding_receiver_to_any_instance_implementation_block_available?
     ].each do |method|
       include_examples 'version comparisons', method, [
@@ -59,6 +60,10 @@ module Transpec
     end
 
     [
+      :config_pattern_available?,
+      :config_backtrace_formatter_available?,
+      :config_predicate_color_enabled_available?,
+      :config_predicate_warnings_available?,
       :implicit_spec_type_disablement_available?
     ].each do |method|
       include_examples 'version comparisons', method, [

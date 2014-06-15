@@ -63,8 +63,8 @@ module Transpec
           end
 
           it 'adds record `== expected` -> `eq(expected)`' do
-            record.original_syntax.should == '== expected'
-            record.converted_syntax.should == 'eq(expected)'
+            record.old_syntax.should == '== expected'
+            record.new_syntax.should == 'eq(expected)'
             record.annotation.should be_nil
           end
 
@@ -184,8 +184,8 @@ module Transpec
           end
 
           it 'adds record `== expected` -> `eq(expected)`' do
-            record.original_syntax.should == '== expected'
-            record.converted_syntax.should == 'eq(expected)'
+            record.old_syntax.should == '== expected'
+            record.new_syntax.should == 'eq(expected)'
             record.annotation.should be_nil
           end
         end
@@ -335,8 +335,8 @@ module Transpec
             end
 
             it "adds record `#{operator} expected` -> `be #{operator} expected`" do
-              record.original_syntax.should == "#{operator} expected"
-              record.converted_syntax.should == "be #{operator} expected"
+              record.old_syntax.should == "#{operator} expected"
+              record.new_syntax.should == "be #{operator} expected"
               record.annotation.should be_nil
             end
           end
@@ -388,8 +388,8 @@ module Transpec
           end
 
           it 'adds record `=~ /pattern/` -> `match(/pattern/)` without annotation' do
-            record.original_syntax.should == '=~ /pattern/'
-            record.converted_syntax.should == 'match(/pattern/)'
+            record.old_syntax.should == '=~ /pattern/'
+            record.new_syntax.should == 'match(/pattern/)'
             record.annotation.should be_nil
           end
         end
@@ -472,8 +472,8 @@ module Transpec
           end
 
           it 'adds record `=~ [1, 2]` -> `match_array([1, 2])` without annotation' do
-            record.original_syntax.should == '=~ [1, 2]'
-            record.converted_syntax.should == 'match_array([1, 2])'
+            record.old_syntax.should == '=~ [1, 2]'
+            record.new_syntax.should == 'match_array([1, 2])'
             record.annotation.should be_nil
           end
         end
@@ -561,8 +561,8 @@ module Transpec
             end
 
             it 'adds record `=~ [1, 2]` -> `match_array([1, 2])` without annotation' do
-              record.original_syntax.should == '=~ [1, 2]'
-              record.converted_syntax.should == 'match_array([1, 2])'
+              record.old_syntax.should == '=~ [1, 2]'
+              record.new_syntax.should == 'match_array([1, 2])'
               record.annotation.should be_nil
             end
           end
@@ -597,8 +597,8 @@ module Transpec
             end
 
             it 'adds record `=~ /pattern/` -> `match(/pattern/)` without annotation' do
-              record.original_syntax.should == '=~ /pattern/'
-              record.converted_syntax.should == 'match(/pattern/)'
+              record.old_syntax.should == '=~ /pattern/'
+              record.new_syntax.should == 'match(/pattern/)'
               record.annotation.should be_nil
             end
           end
@@ -629,8 +629,8 @@ module Transpec
             end
 
             it 'adds record `=~ /pattern/` -> `match(/pattern/)` with annotation' do
-              record.original_syntax.should == '=~ /pattern/'
-              record.converted_syntax.should == 'match(/pattern/)'
+              record.old_syntax.should == '=~ /pattern/'
+              record.new_syntax.should == 'match(/pattern/)'
 
               record.annotation.message.should ==
                 'The `=~ variable` has been converted but it might possibly be incorrect ' \
@@ -667,8 +667,8 @@ module Transpec
             end
 
             it 'adds record `=~ /pattern/` -> `match(/pattern/)` with annotation' do
-              record.original_syntax.should == '=~ /pattern/'
-              record.converted_syntax.should == 'match(/pattern/)'
+              record.old_syntax.should == '=~ /pattern/'
+              record.new_syntax.should == 'match(/pattern/)'
 
               record.annotation.message.should ==
                 'The `be =~ variable` has been converted but it might possibly be incorrect ' \

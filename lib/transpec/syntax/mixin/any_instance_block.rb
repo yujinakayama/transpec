@@ -36,16 +36,18 @@ module Transpec
           Util.each_backward_chained_node(node).find(&:block_type?)
         end
 
-        class AnyInstanceBlockRecord < Record
-          def initialize(host, *)
+        class RecordBuilder < Transpec::RecordBuilder
+          attr_reader :host
+
+          def initialize(host)
             @host = host
           end
 
-          def build_original_syntax
+          def old_syntax
             "#{base_syntax} { |arg| }"
           end
 
-          def build_converted_syntax
+          def new_syntax
             "#{base_syntax} { |instance, arg| }"
           end
 
@@ -54,9 +56,9 @@ module Transpec
           end
         end
 
-        class MonkeyPatchAnyInstanceBlockRecord < AnyInstanceBlockRecord
+        class MonkeyPatchRecordBuilder < AnyInstanceBlock::RecordBuilder
           def base_syntax
-            "Klass.any_instance.#{@host.method_name}(:message)"
+            "Klass.any_instance.#{host.method_name}(:message)"
           end
         end
       end

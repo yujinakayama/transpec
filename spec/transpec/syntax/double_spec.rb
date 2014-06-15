@@ -146,8 +146,8 @@ module Transpec
 
             it "adds record `#{method}('something')` -> `double('something')`" do
               record = double_object.report.records.first
-              record.original_syntax.should  == "#{method}('something')"
-              record.converted_syntax.should == "double('something')"
+              record.old_syntax.should  == "#{method}('something')"
+              record.new_syntax.should == "double('something')"
             end
           end
         end

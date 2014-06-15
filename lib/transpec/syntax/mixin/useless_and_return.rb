@@ -48,21 +48,23 @@ module Transpec
           receiver_node.loc.expression.end.join(and_return_node.loc.expression.end)
         end
 
-        class UselessAndReturnRecord < Record
+        class RecordBuilder < Transpec::RecordBuilder
+          attr_reader :host
+
           def initialize(host, *)
             @host = host
           end
 
-          def build_original_syntax
+          def old_syntax
             syntax = base_syntax
             syntax << '.and_return'
-            syntax << ' { value }' if @host.and_return_with_block?
+            syntax << ' { value }' if host.and_return_with_block?
             syntax
           end
 
-          def build_converted_syntax
+          def new_syntax
             syntax = base_syntax
-            syntax << ' { value }' if @host.and_return_with_block?
+            syntax << ' { value }' if host.and_return_with_block?
             syntax
           end
 
@@ -71,9 +73,9 @@ module Transpec
           end
         end
 
-        class MonkeyPatchUselessAndReturnRecord < UselessAndReturnRecord
+        class MonkeyPatchRecordBuilder < UselessAndReturn::RecordBuilder
           def base_syntax
-            "obj.#{@host.method_name}(:message)"
+            "obj.#{host.method_name}(:message)"
           end
         end
       end

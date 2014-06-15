@@ -120,23 +120,7 @@ module Transpec
       end
 
       def add_record
-        report.records << Record.new(original_syntax, converted_syntax)
-      end
-
-      def original_syntax
-        if attribute_expression.brackets?
-          'its([:key]) { }'
-        else
-          'its(:attr) { }'
-        end
-      end
-
-      def converted_syntax
-        if attribute_expression.brackets?
-          "describe '[:key]' do subject { super()[:key] }; it { } end"
-        else
-          "describe '#attr' do subject { super().attr }; it { } end"
-        end
+        super(RecordBuilder.build(self))
       end
 
       class AttributeExpression
@@ -196,6 +180,30 @@ module Transpec
       end
 
       Attribute = Struct.new(:selector, :description)
+
+      class RecordBuilder < Transpec::RecordBuilder
+        attr_reader :its
+
+        def initialize(its)
+          @its = its
+        end
+
+        def old_syntax
+          if its.attribute_expression.brackets?
+            'its([:key]) { }'
+          else
+            'its(:attr) { }'
+          end
+        end
+
+        def new_syntax
+          if its.attribute_expression.brackets?
+            "describe '[:key]' do subject { super()[:key] }; it { } end"
+          else
+            "describe '#attr' do subject { super().attr }; it { } end"
+          end
+        end
+      end
     end
   end
 end

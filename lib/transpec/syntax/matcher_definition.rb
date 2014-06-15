@@ -22,8 +22,7 @@ module Transpec
       def convert_deprecated_method!
         replacement_method_name = CONVERSION_CORRESPONDENCE[method_name].to_s
         replace(selector_range, replacement_method_name)
-
-        report.records << Record.new("#{method_name} { }", "#{replacement_method_name} { }")
+        add_record("#{method_name} { }", "#{replacement_method_name} { }")
       end
     end
   end
