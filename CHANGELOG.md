@@ -2,6 +2,8 @@
 
 ## Development
 
+## v2.3.0
+
 * Report configuration modifications of `RSpec.configure` in the final summary.
 * Support conversion of configuration options `backtrace_clean_patterns`, `backtrace_clean_patterns=`, `color_enabled=`, `output`, `output=`, `out`, `out=`, `filename_pattern`, `filename_pattern=`, `backtrace_cleaner`, `backtrace_cleaner=`, `color?` and `warnings`.
 
