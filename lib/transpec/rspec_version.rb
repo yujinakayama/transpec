@@ -43,11 +43,20 @@ module Transpec
 
     define_feature :be_truthy,                      '2.99.0.beta1'
     define_feature :yielded_example,                '2.99.0.beta1'
+    define_feature :config_output_stream,           '2.99.0.beta1'
     define_feature :yielding_receiver_to_any_instance_implementation_block, '2.99.0.beta1'
 
     define_feature :oneliner_is_expected,           '2.99.0.beta2', except: '3.0.0.beta1'
     define_feature :skip,                           '2.99.0.beta2', except: '3.0.0.beta1'
 
+    define_feature :config_pattern,                 '2.99.0.rc1',
+                   except: ['3.0.0.beta1', '3.0.0.beta2']
+    define_feature :config_backtrace_formatter,     '2.99.0.rc1',
+                   except: ['3.0.0.beta1', '3.0.0.beta2']
+    define_feature :config_predicate_color_enabled, '2.99.0.rc1',
+                   except: ['3.0.0.beta1', '3.0.0.beta2']
+    define_feature :config_predicate_warnings,      '2.99.0.rc1',
+                   except: ['3.0.0.beta1', '3.0.0.beta2']
     define_feature :implicit_spec_type_disablement, '2.99.0.rc1',
                    except: ['3.0.0.beta1', '3.0.0.beta2']
 

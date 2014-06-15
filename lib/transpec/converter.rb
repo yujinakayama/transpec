@@ -165,21 +165,23 @@ module Transpec
     end
 
     def process_rspec_configure(rspec_configure)
-      return unless spec_suite.main_rspec_configure_node?(rspec_configure.node)
+      rspec_configure.convert_deprecated_options!(rspec_version)
 
-      if rspec_version.non_monkey_patch_example_group_available? &&
-         config.convert_example_group?
-        rspec_configure.expose_dsl_globally = false
-      end
+      if spec_suite.main_rspec_configure_node?(rspec_configure.node)
+        if rspec_version.non_monkey_patch_example_group_available? &&
+           config.convert_example_group?
+          rspec_configure.expose_dsl_globally = false
+        end
 
-      if need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?
-        should_yield = config.add_receiver_arg_to_any_instance_implementation_block?
-        rspec_configure.mocks.yield_receiver_to_any_instance_implementation_blocks = should_yield
-      end
+        if need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?
+          should_yield = config.add_receiver_arg_to_any_instance_implementation_block?
+          rspec_configure.mocks.yield_receiver_to_any_instance_implementation_blocks = should_yield
+        end
 
-      if rspec_version.implicit_spec_type_disablement_available? &&
-         !config.add_explicit_type_metadata_to_example_group?
-        rspec_configure.infer_spec_type_from_file_location!
+        if rspec_version.implicit_spec_type_disablement_available? &&
+           !config.add_explicit_type_metadata_to_example_group?
+          rspec_configure.infer_spec_type_from_file_location!
+        end
       end
     end
 

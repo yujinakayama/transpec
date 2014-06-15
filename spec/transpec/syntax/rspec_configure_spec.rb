@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require 'transpec/syntax/rspec_configure'
+require 'transpec/rspec_version'
 
 module Transpec
   class Syntax
@@ -52,6 +53,119 @@ module Transpec
 
         it 'properly adds them' do
           rewritten_source.should == expected_source
+        end
+      end
+
+      describe '#convert_deprecated_options!' do
+        before do
+          rspec_configure.convert_deprecated_options!(RSpecVersion.new('3.0.0'))
+        end
+
+        [
+          [:output,                   :output_stream],
+          [:out,                      :output_stream],
+          [:filename_pattern,         :pattern],
+          [:backtrace_cleaner,        :backtrace_formatter],
+          [:backtrace_clean_patterns, :backtrace_exclusion_patterns],
+          [:warnings,                 :warnings?]
+        ].each do |old_config, new_config|
+          context "with `c.#{old_config}`" do
+            let(:source) do
+              <<-END
+                RSpec.configure do |config|
+                  if config.#{old_config} == something
+                    do_something
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                RSpec.configure do |config|
+                  if config.#{new_config} == something
+                    do_something
+                  end
+                end
+              END
+            end
+
+            it "converts to `c.#{new_config}`" do
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record of conversion ' \
+               "`RSpec.configure { |c| c.#{old_config} }` -> " \
+               "`RSpec.configure { |c| c.#{new_config} }`" do
+              record.type.should == :conversion
+              record.old_syntax.should == "RSpec.configure { |c| c.#{old_config} }"
+              record.new_syntax.should == "RSpec.configure { |c| c.#{new_config} }"
+            end
+          end
+        end
+
+        [
+          [:output,                   :output_stream],
+          [:out,                      :output_stream],
+          [:filename_pattern,         :pattern],
+          [:backtrace_clean_patterns, :backtrace_exclusion_patterns],
+          [:color_enabled,            :color]
+        ].each do |old_config, new_config|
+          context "with `c.#{old_config} = something`" do
+            let(:source) do
+              <<-END
+                RSpec.configure do |config|
+                  config.#{old_config} = something
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                RSpec.configure do |config|
+                  config.#{new_config} = something
+                end
+              END
+            end
+
+            it "converts to `c.#{new_config} = something`" do
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record of conversion ' \
+               "`RSpec.configure { |c| c.#{old_config} = something }` -> " \
+               "`RSpec.configure { |c| c.#{new_config} = something }`" do
+              record.type.should == :conversion
+              record.old_syntax.should == "RSpec.configure { |c| c.#{old_config} = something }"
+              record.new_syntax.should == "RSpec.configure { |c| c.#{new_config} = something }"
+            end
+          end
+        end
+
+        context 'with `c.color?(io)`' do
+          let(:source) do
+            <<-END
+              RSpec.configure do |config|
+                if config.color?($stdout)
+                  do_something
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              RSpec.configure do |config|
+                if config.color_enabled?($stdout)
+                  do_something
+                end
+              end
+            END
+          end
+
+          it 'convertes to `c.color_enabled?(io)`' do
+            rewritten_source.should == expected_source
+          end
         end
       end
 

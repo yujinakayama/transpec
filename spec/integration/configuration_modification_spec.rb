@@ -16,7 +16,7 @@ module Transpec
     end
 
     context 'when there are multiple RSpec.configure in the spec suite' do
-      before do
+      it 'adds new options only to the one that was run first' do
         create_file('spec/spec_helper.rb', <<-END)
           RSpec.configure do |config|
           end
@@ -39,9 +39,7 @@ module Transpec
             end
           end
         END
-      end
 
-      it 'modifies only the one that was run first' do
         cli.project.stub(:rspec_version).and_return(RSpecVersion.new('2.99.0'))
         cli.run([])
 
@@ -64,6 +62,48 @@ module Transpec
           require 'spec_helper'
 
           RSpec.configure do |config|
+          end
+        END
+      end
+
+      it 'converts deprecated options in all RSpec.configure' do
+        create_file('spec/spec_helper.rb', <<-END)
+          RSpec.configure do |config|
+            config.color_enabled = true
+          end
+        END
+
+        create_file('spec/unit/spec_helper.rb', <<-END)
+          require 'spec_helper'
+
+          RSpec.configure do |config|
+            config.color_enabled = true
+          end
+        END
+
+        create_file('spec/unit/unit_spec.rb', <<-END)
+          require 'unit/spec_helper'
+
+          describe 'example' do
+            it 'is true' do
+              expect(true).to be true
+            end
+          end
+        END
+
+        cli.run([])
+
+        File.read('spec/spec_helper.rb').should == <<-END
+          RSpec.configure do |config|
+            config.color = true
+          end
+        END
+
+        File.read('spec/unit/spec_helper.rb').should == <<-END
+          require 'spec_helper'
+
+          RSpec.configure do |config|
+            config.color = true
           end
         END
       end

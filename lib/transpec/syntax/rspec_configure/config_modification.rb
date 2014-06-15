@@ -50,14 +50,29 @@ module Transpec
           add_record(old_syntax, new_syntax, type: :modification)
         end
 
+        def replace_config!(old_config_name, new_config_name)
+          config_node = find_config_node(old_config_name)
+          return unless config_node
+          new_selector = new_config_name.to_s.sub(/=$/, '')
+          source_rewriter.replace(config_node.loc.selector, new_selector)
+
+          old_syntax = config_record_syntax(old_config_name)
+          new_syntax = config_record_syntax(new_config_name)
+          add_record(old_syntax, new_syntax)
+        end
+
         def block_arg_name
           return nil unless block_node
           first_block_arg_name(block_node)
         end
 
         def config_record_syntax(config_name, value = nil)
-          syntax = "RSpec.configure { |c| c.#{config_name}"
+          selector = config_name.to_s.sub(/=$/, '')
+          syntax = "RSpec.configure { |c| c.#{selector}"
+
+          value = 'something' if config_name.to_s.end_with?('=')
           syntax << " = #{value}" unless value.nil?
+
           syntax << ' }'
         end
 

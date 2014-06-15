@@ -69,6 +69,37 @@ module Transpec
         !find_config_node(:infer_spec_type_from_file_location!).nil?
       end
 
+      def convert_deprecated_options!(rspec_version) # rubocop:disable MethodLength
+        replace_config!(:backtrace_clean_patterns,  :backtrace_exclusion_patterns)
+        replace_config!(:backtrace_clean_patterns=, :backtrace_exclusion_patterns=)
+        replace_config!(:color_enabled=, :color=)
+
+        if rspec_version.config_output_stream_available?
+          replace_config!(:output,  :output_stream)
+          replace_config!(:output=, :output_stream=)
+          replace_config!(:out,     :output_stream)
+          replace_config!(:out=,    :output_stream=)
+        end
+
+        if rspec_version.config_pattern_available?
+          replace_config!(:filename_pattern,  :pattern)
+          replace_config!(:filename_pattern=, :pattern=)
+        end
+
+        if rspec_version.config_backtrace_formatter_available?
+          replace_config!(:backtrace_cleaner,  :backtrace_formatter)
+          replace_config!(:backtrace_cleaner=, :backtrace_formatter=)
+        end
+
+        if rspec_version.config_predicate_color_enabled_available?
+          replace_config!(:color?, :color_enabled?)
+        end
+
+        if rspec_version.config_predicate_warnings_available?
+          replace_config!(:warnings, :warnings?)
+        end
+      end
+
       def expectations
         @expectations ||= Expectations.new(self)
       end
