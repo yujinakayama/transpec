@@ -116,7 +116,7 @@ module Transpec
             end
 
             it "adds record `#{method} { example }` -> `#{method} { |example| example }`" do
-              record.old_syntax.should  == "#{method} { example }"
+              record.old_syntax.should == "#{method} { example }"
               record.new_syntax.should == "#{method} { |example| example }"
             end
           end
@@ -149,7 +149,7 @@ module Transpec
             end
 
             it "adds record `#{method}(:name) { example }` -> `#{method}(:name) { |example| example }`" do
-              record.old_syntax.should  == "#{method}(:name) { example }"
+              record.old_syntax.should == "#{method}(:name) { example }"
               record.new_syntax.should == "#{method}(:name) { |example| example }"
             end
           end
@@ -312,7 +312,7 @@ module Transpec
           end
 
           it 'adds record `def helper_method example; end` -> `def helper_method RSpec.current_example; end`' do
-            record.old_syntax.should  == 'def helper_method example; end'
+            record.old_syntax.should == 'def helper_method example; end'
             record.new_syntax.should == 'def helper_method RSpec.current_example; end'
           end
         end

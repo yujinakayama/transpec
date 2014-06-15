@@ -100,7 +100,7 @@ module Transpec
           end
 
           it 'adds record `pending` -> `skip`' do
-            record.old_syntax.should  == 'pending'
+            record.old_syntax.should == 'pending'
             record.new_syntax.should == 'skip'
           end
         end
@@ -131,7 +131,7 @@ module Transpec
           end
 
           it 'adds record `pending` -> `skip`' do
-            record.old_syntax.should  == 'pending'
+            record.old_syntax.should == 'pending'
             record.new_syntax.should == 'skip'
           end
         end
@@ -163,7 +163,7 @@ module Transpec
           end
 
           it 'adds record `pending { do_something_fail }` -> `pending; do_something_fail`' do
-            record.old_syntax.should  == 'pending { do_something_fail }'
+            record.old_syntax.should == 'pending { do_something_fail }'
             record.new_syntax.should == 'pending; do_something_fail'
           end
         end

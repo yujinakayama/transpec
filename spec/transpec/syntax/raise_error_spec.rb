@@ -180,7 +180,7 @@ module Transpec
 
           it 'adds record ' \
              '`expect { }.not_to raise_error(SpecificErrorClass)` -> `expect { }.not_to raise_error`' do
-            record.old_syntax.should  == 'expect { }.not_to raise_error(SpecificErrorClass)'
+            record.old_syntax.should == 'expect { }.not_to raise_error(SpecificErrorClass)'
             record.new_syntax.should == 'expect { }.not_to raise_error'
           end
         end
@@ -242,7 +242,7 @@ module Transpec
 
           it 'adds record ' \
              '`expect { }.not_to raise_error(SpecificErrorClass)` -> `expect { }.not_to raise_error`' do
-            record.old_syntax.should  == 'expect { }.not_to raise_error(SpecificErrorClass)'
+            record.old_syntax.should == 'expect { }.not_to raise_error(SpecificErrorClass)'
             record.new_syntax.should == 'expect { }.not_to raise_error'
           end
         end
@@ -276,7 +276,7 @@ module Transpec
 
           it 'adds record ' \
              '`expect { }.not_to raise_error(SpecificErrorClass)` -> `expect { }.not_to raise_error`' do
-            record.old_syntax.should  == 'expect { }.not_to raise_error(SpecificErrorClass)'
+            record.old_syntax.should == 'expect { }.not_to raise_error(SpecificErrorClass)'
             record.new_syntax.should == 'expect { }.not_to raise_error'
           end
         end
@@ -310,7 +310,7 @@ module Transpec
 
           it 'adds record ' \
              '`expect { }.not_to raise_error(SpecificErrorClass, message)` -> `expect { }.not_to raise_error`' do
-            record.old_syntax.should  == 'expect { }.not_to raise_error(SpecificErrorClass, message)'
+            record.old_syntax.should == 'expect { }.not_to raise_error(SpecificErrorClass, message)'
             record.new_syntax.should == 'expect { }.not_to raise_error'
           end
         end
@@ -344,7 +344,7 @@ module Transpec
 
           it 'adds record ' \
              '`expect { }.not_to raise_error(message)` -> `expect { }.not_to raise_error`' do
-            record.old_syntax.should  == 'expect { }.not_to raise_error(message)'
+            record.old_syntax.should == 'expect { }.not_to raise_error(message)'
             record.new_syntax.should == 'expect { }.not_to raise_error'
           end
         end

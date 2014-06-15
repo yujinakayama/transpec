@@ -184,7 +184,7 @@ module Transpec
           end
 
           it "adds record `pending 'is an example' { }` -> `skip 'is an example' { }`" do
-            record.old_syntax.should  == "pending 'is an example' { }"
+            record.old_syntax.should == "pending 'is an example' { }"
             record.new_syntax.should == "skip 'is an example' { }"
           end
         end
@@ -231,7 +231,7 @@ module Transpec
           end
 
           it "adds record `it 'is an example', :pending { }` -> `it 'is an example', :skip { }`" do
-            record.old_syntax.should  == "it 'is an example', :pending { }"
+            record.old_syntax.should == "it 'is an example', :pending { }"
             record.new_syntax.should == "it 'is an example', :skip { }"
           end
         end
@@ -262,7 +262,7 @@ module Transpec
           end
 
           it "adds record `it 'is an example', :pending => value { }` -> `it 'is an example', :skip => value { }`" do
-            record.old_syntax.should  == "it 'is an example', :pending => value { }"
+            record.old_syntax.should == "it 'is an example', :pending => value { }"
             record.new_syntax.should == "it 'is an example', :skip => value { }"
           end
         end
@@ -293,7 +293,7 @@ module Transpec
           end
 
           it "adds record `it 'is an example', :pending => value { }` -> `it 'is an example', :skip => value { }`" do
-            record.old_syntax.should  == "it 'is an example', :pending => value { }"
+            record.old_syntax.should == "it 'is an example', :pending => value { }"
             record.new_syntax.should == "it 'is an example', :skip => value { }"
           end
         end

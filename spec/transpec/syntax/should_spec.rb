@@ -182,7 +182,7 @@ module Transpec
 
           it 'adds record `obj.should` -> `expect(obj).to`' do
             should_object.expectize!
-            record.old_syntax.should  == 'obj.should'
+            record.old_syntax.should == 'obj.should'
             record.new_syntax.should == 'expect(obj).to'
           end
 
@@ -313,7 +313,7 @@ module Transpec
 
           it 'adds record `obj.should_not` -> `expect(obj).not_to`' do
             should_object.expectize!
-            record.old_syntax.should  == 'obj.should_not'
+            record.old_syntax.should == 'obj.should_not'
             record.new_syntax.should == 'expect(obj).not_to'
           end
 
@@ -335,7 +335,7 @@ module Transpec
 
             it 'adds record `obj.should_not` -> `expect(obj).to_not`' do
               should_object.expectize!('to_not')
-              record.old_syntax.should  == 'obj.should_not'
+              record.old_syntax.should == 'obj.should_not'
               record.new_syntax.should == 'expect(obj).to_not'
             end
           end
@@ -430,7 +430,7 @@ module Transpec
 
             it "adds record `#{method} { }.should` -> `expect { }.to`" do
               should_object.expectize!
-              record.old_syntax.should  == "#{method} { }.should"
+              record.old_syntax.should == "#{method} { }.should"
               record.new_syntax.should == 'expect { }.to'
             end
           end

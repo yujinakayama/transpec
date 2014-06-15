@@ -41,7 +41,7 @@ module Transpec
 
           it 'adds record `be_close(expected, delta)` -> `be_within(delta).of(expected)`' do
             record = be_close_object.report.records.first
-            record.old_syntax.should  == 'be_close(expected, delta)'
+            record.old_syntax.should == 'be_close(expected, delta)'
             record.new_syntax.should == 'be_within(delta).of(expected)'
           end
         end

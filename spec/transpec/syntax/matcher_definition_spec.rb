@@ -48,7 +48,7 @@ module Transpec
             end
 
             it "adds record `#{target_method} { }` -> `#{converted_method} { }`" do
-              record.old_syntax.should  == "#{target_method} { }"
+              record.old_syntax.should == "#{target_method} { }"
               record.new_syntax.should == "#{converted_method} { }"
             end
           end

@@ -88,7 +88,7 @@ module Transpec
           end
 
           it "adds record `its(:attr) { }` -> `describe '#attr' do subject { super().attr }; it { } end`" do
-            record.old_syntax.should  == 'its(:attr) { }'
+            record.old_syntax.should == 'its(:attr) { }'
             record.new_syntax.should == "describe '#attr' do subject { super().attr }; it { } end"
           end
 
@@ -213,7 +213,7 @@ module Transpec
           end
 
           it "adds record `its(:attr) { }` -> `describe '#attr' do subject { super().attr }; it { } end`" do
-            record.old_syntax.should  == 'its(:attr) { }'
+            record.old_syntax.should == 'its(:attr) { }'
             record.new_syntax.should == "describe '#attr' do subject { super().attr }; it { } end"
           end
         end
@@ -250,7 +250,7 @@ module Transpec
           end
 
           it "adds record `its(:attr) { }` -> `describe '#attr' do subject { super().attr }; it { } end`" do
-            record.old_syntax.should  == 'its(:attr) { }'
+            record.old_syntax.should == 'its(:attr) { }'
             record.new_syntax.should == "describe '#attr' do subject { super().attr }; it { } end"
           end
         end
@@ -284,7 +284,7 @@ module Transpec
           end
 
           it "adds record `its([:key]) { }` -> `describe '[:key]' do subject { super()[:key] }; it { } end`" do
-            record.old_syntax.should  == 'its([:key]) { }'
+            record.old_syntax.should == 'its([:key]) { }'
             record.new_syntax.should == "describe '[:key]' do subject { super()[:key] }; it { } end"
           end
         end
@@ -318,7 +318,7 @@ module Transpec
           end
 
           it "adds record `its([:key]) { }` -> `describe '[:key]' do subject { super()[:key] }; it { } end`" do
-            record.old_syntax.should  == 'its([:key]) { }'
+            record.old_syntax.should == 'its([:key]) { }'
             record.new_syntax.should == "describe '[:key]' do subject { super()[:key] }; it { } end"
           end
         end
@@ -352,7 +352,7 @@ module Transpec
           end
 
           it "adds record `its([:key]) { }` -> `describe '[:key]' do subject { super()[:key] }; it { } end`" do
-            record.old_syntax.should  == 'its([:key]) { }'
+            record.old_syntax.should == 'its([:key]) { }'
             record.new_syntax.should == "describe '[:key]' do subject { super()[:key] }; it { } end"
           end
         end
@@ -396,7 +396,7 @@ module Transpec
           end
 
           it "adds record `its(:attr) { }` -> `describe '#attr' do subject { super().attr }; it { } end`" do
-            record.old_syntax.should  == 'its(:attr) { }'
+            record.old_syntax.should == 'its(:attr) { }'
             record.new_syntax.should == "describe '#attr' do subject { super().attr }; it { } end"
           end
         end
@@ -440,7 +440,7 @@ module Transpec
           end
 
           it "adds record `its([:key]) { }` -> `describe '[:key]' do subject { super()[:key] }; it { } end`" do
-            record.old_syntax.should  == 'its([:key]) { }'
+            record.old_syntax.should == 'its([:key]) { }'
             record.new_syntax.should == "describe '[:key]' do subject { super()[:key] }; it { } end"
           end
         end

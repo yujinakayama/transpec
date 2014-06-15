@@ -210,7 +210,7 @@ module Transpec
           end
 
           it 'adds record `obj.stub(:message)` -> `allow(obj).to receive(:message)`' do
-            record.old_syntax.should  == 'obj.stub(:message)'
+            record.old_syntax.should == 'obj.stub(:message)'
             record.new_syntax.should == 'allow(obj).to receive(:message)'
           end
 
@@ -317,7 +317,7 @@ module Transpec
           end
 
           it 'adds record `obj.stub!(:message)` -> `allow(obj).to receive(:message)`' do
-            record.old_syntax.should  == 'obj.stub!(:message)'
+            record.old_syntax.should == 'obj.stub!(:message)'
             record.new_syntax.should == 'allow(obj).to receive(:message)'
           end
         end
@@ -445,7 +445,7 @@ module Transpec
 
             it 'adds record ' \
                '`obj.stub(:message => value)` -> `allow(obj).to receive_messages(:message => value)`' do
-              record.old_syntax.should  == 'obj.stub(:message => value)'
+              record.old_syntax.should == 'obj.stub(:message => value)'
               record.new_syntax.should == 'allow(obj).to receive_messages(:message => value)'
             end
           end
@@ -477,7 +477,7 @@ module Transpec
 
             it 'adds record ' \
                '`obj.stub(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`' do
-              record.old_syntax.should  == 'obj.stub(:message => value)'
+              record.old_syntax.should == 'obj.stub(:message => value)'
               record.new_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
             end
           end
@@ -510,7 +510,7 @@ module Transpec
 
           it 'adds record ' \
              '`obj.stub(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`' do
-            record.old_syntax.should  == 'obj.stub(:message => value)'
+            record.old_syntax.should == 'obj.stub(:message => value)'
             record.new_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
           end
         end
@@ -544,7 +544,7 @@ module Transpec
 
           it 'adds record ' \
              '`obj.stub(:message => value)` -> `allow(obj).to receive(:message).and_return(value)`' do
-            record.old_syntax.should  == 'obj.stub(:message => value)'
+            record.old_syntax.should == 'obj.stub(:message => value)'
             record.new_syntax.should == 'allow(obj).to receive(:message).and_return(value)'
           end
 
@@ -660,7 +660,7 @@ module Transpec
 
             it "adds record `obj.stub_chain(:message1, :message2)` -> ' +
                '`allow(obj).to receive_message_chain(:message1, :message2)`" do
-              record.old_syntax.should  == 'obj.stub_chain(:message1, :message2)'
+              record.old_syntax.should == 'obj.stub_chain(:message1, :message2)'
               record.new_syntax.should == 'allow(obj).to receive_message_chain(:message1, :message2)'
             end
           end
@@ -699,7 +699,7 @@ module Transpec
             end
 
             it "adds record `obj.#{method}(:message)` -> `allow(obj).to receive(:message).and_call_original`" do
-              record.old_syntax.should  == "obj.#{method}(:message)"
+              record.old_syntax.should == "obj.#{method}(:message)"
               record.new_syntax.should == 'allow(obj).to receive(:message).and_call_original'
             end
           end
@@ -758,7 +758,7 @@ module Transpec
 
           it 'adds record `Klass.any_instance.stub(:message)` ' \
              '-> `allow_any_instance_of(obj).to receive(:message)`' do
-            record.old_syntax.should  == 'Klass.any_instance.stub(:message)'
+            record.old_syntax.should == 'Klass.any_instance.stub(:message)'
             record.new_syntax.should == 'allow_any_instance_of(Klass).to receive(:message)'
           end
 
@@ -829,7 +829,7 @@ module Transpec
 
           it 'adds record `Klass.any_instance.stub(:message)` ' \
              '-> `allow_any_instance_of(obj).to receive(:message)`' do
-            record.old_syntax.should  == 'Klass.any_instance.stub(:message)'
+            record.old_syntax.should == 'Klass.any_instance.stub(:message)'
             record.new_syntax.should == 'allow_any_instance_of(Klass).to receive(:message)'
           end
         end
@@ -867,7 +867,7 @@ module Transpec
 
             it 'adds record `Klass.any_instance.stub(:message)` ' \
                '-> `allow_any_instance_of(obj).to receive(:message)`' do
-              record.old_syntax.should  == 'Klass.any_instance.stub(:message)'
+              record.old_syntax.should == 'Klass.any_instance.stub(:message)'
               record.new_syntax.should == 'allow_any_instance_of(Klass).to receive(:message)'
             end
           end
@@ -901,7 +901,7 @@ module Transpec
 
             it "adds record `Klass.any_instance.#{method}(:message)` " \
                '-> `allow_any_instance_of(Klass).to receive(:message).and_call_original`' do
-              record.old_syntax.should  == "Klass.any_instance.#{method}(:message)"
+              record.old_syntax.should == "Klass.any_instance.#{method}(:message)"
               record.new_syntax.should == 'allow_any_instance_of(Klass).to receive(:message).and_call_original'
             end
           end
@@ -944,7 +944,7 @@ module Transpec
 
             it 'adds record ' \
                "`obj.#{method}(:message)` -> `obj.#{replacement_method}(:message)`" do
-              record.old_syntax.should  == "obj.#{method}(:message)"
+              record.old_syntax.should == "obj.#{method}(:message)"
               record.new_syntax.should == "obj.#{replacement_method}(:message)"
             end
           end
@@ -1068,7 +1068,7 @@ module Transpec
 
           it 'adds record ' \
              '`obj.stub(:message).any_number_of_times` -> `obj.stub(:message)`' do
-            record.old_syntax.should  == 'obj.stub(:message).any_number_of_times'
+            record.old_syntax.should == 'obj.stub(:message).any_number_of_times'
             record.new_syntax.should == 'obj.stub(:message)'
           end
         end
@@ -1100,7 +1100,7 @@ module Transpec
 
           it 'adds record ' \
              '`obj.stub(:message).at_least(0)` -> `obj.stub(:message)`' do
-            record.old_syntax.should  == 'obj.stub(:message).at_least(0)'
+            record.old_syntax.should == 'obj.stub(:message).at_least(0)'
             record.new_syntax.should == 'obj.stub(:message)'
           end
         end
@@ -1153,7 +1153,7 @@ module Transpec
           end
 
           it 'adds record `obj.stub(:message).and_return { value }` -> `obj.stub(:message) { value }`' do
-            record.old_syntax.should  == 'obj.stub(:message).and_return { value }'
+            record.old_syntax.should == 'obj.stub(:message).and_return { value }'
             record.new_syntax.should == 'obj.stub(:message) { value }'
           end
         end
@@ -1240,7 +1240,7 @@ module Transpec
           end
 
           it 'adds record `obj.stub(:message).and_return` -> `obj.stub(:message)`' do
-            record.old_syntax.should  == 'obj.stub(:message).and_return'
+            record.old_syntax.should == 'obj.stub(:message).and_return'
             record.new_syntax.should == 'obj.stub(:message)'
           end
         end
@@ -1297,7 +1297,7 @@ module Transpec
 
           it 'adds record `Klass.any_instance.stub(:message) { |arg| }` ' \
              '-> `Klass.any_instance.stub(:message) { |instance, arg| }`' do
-            record.old_syntax.should  == 'Klass.any_instance.stub(:message) { |arg| }'
+            record.old_syntax.should == 'Klass.any_instance.stub(:message) { |arg| }'
             record.new_syntax.should == 'Klass.any_instance.stub(:message) { |instance, arg| }'
           end
         end
