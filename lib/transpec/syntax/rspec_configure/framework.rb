@@ -5,14 +5,23 @@ require 'transpec/syntax/rspec_configure/config_modification'
 module Transpec
   class Syntax
     class RSpecConfigure
+      # This cannot be a Syntax class since this can be instanciated and used even when there's no
+      # corresponding node in the existing code.
       class Framework
         include ConfigModification
 
-        attr_reader :rspec_configure, :source_rewriter
+        attr_reader :rspec_configure
 
-        def initialize(rspec_configure, source_rewriter)
+        def initialize(rspec_configure)
           @rspec_configure = rspec_configure
-          @source_rewriter = source_rewriter
+        end
+
+        def source_rewriter
+          rspec_configure.source_rewriter
+        end
+
+        def add_record(*args)
+          rspec_configure.add_record(*args)
         end
 
         def block_node
@@ -50,12 +59,15 @@ module Transpec
         end
 
         def new_config_variable_name
-          framework_name = self.class.name.split('::').last.downcase
-          if rspec_configure.block_arg_name.to_s == framework_name
+          if rspec_configure.block_arg_name.to_s == framework_type_name
             'config'
           else
-            framework_name
+            framework_type_name
           end
+        end
+
+        def framework_type_name
+          @framework_type_name ||= self.class.name.split('::').last.downcase
         end
 
         def body_indentation
@@ -86,6 +98,14 @@ module Transpec
           indentation_of_line(rspec_configure.node) + (' ' * 2)
         end
 
+        def config_record_syntax(config_name, value = nil)
+          inner_block_arg = framework_type_name[0]
+          syntax = "RSpec.configure { |c| c.#{block_method_name} :rspec "
+          syntax << "{ |#{inner_block_arg}| #{inner_block_arg}.#{config_name}"
+          syntax << " = #{value}" unless value.nil?
+          syntax << ' } }'
+        end
+
         module SyntaxConfig
           def syntaxes
             return [] unless syntaxes_node
@@ -107,7 +127,7 @@ module Transpec
               fail ArgumentError, 'Syntaxes must be either an array or a symbol.'
             end
 
-            set_config!(:syntax, syntaxes.inspect)
+            set_config_value!(:syntax, syntaxes.inspect)
           end
 
           private

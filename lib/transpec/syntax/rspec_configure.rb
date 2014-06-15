@@ -25,7 +25,7 @@ module Transpec
         const_name(receiver_node) == 'RSpec' && method_name == :configure && parent_node.block_type?
       end
 
-      def expose_dsl_globally=(boolean)
+      def expose_dsl_globally=(value)
         comment = <<-END.gsub(/^\s+\|/, '').chomp
           |Setting this config option `false` removes rspec-core's monkey patching of the
           |top level methods like `describe`, `shared_examples_for` and `shared_context`
@@ -35,7 +35,7 @@ module Transpec
           |
           |https://relishapp.com/rspec/rspec-core/v/3-0/docs/configuration/global-namespace-dsl
         END
-        set_config!(:expose_dsl_globally, boolean, comment)
+        set_config_value!(:expose_dsl_globally, value, comment)
       end
 
       def infer_spec_type_from_file_location!
@@ -70,11 +70,11 @@ module Transpec
       end
 
       def expectations
-        @expectations ||= Expectations.new(self, source_rewriter)
+        @expectations ||= Expectations.new(self)
       end
 
       def mocks
-        @mocks ||= Mocks.new(self, source_rewriter)
+        @mocks ||= Mocks.new(self)
       end
 
       alias_method :block_node, :parent_node

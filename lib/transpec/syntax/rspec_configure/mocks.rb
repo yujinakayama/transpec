@@ -10,7 +10,7 @@ module Transpec
           :mock_with
         end
 
-        def yield_receiver_to_any_instance_implementation_blocks=(boolean)
+        def yield_receiver_to_any_instance_implementation_blocks=(value)
           # rubocop:disable LineLength
           #
           # Based on the deprecation warning in RSpec 2.99:
@@ -26,7 +26,7 @@ module Transpec
             |`any_instance` implementation blocks to account for the first block argument
             |being the receiving instance.
           END
-          set_config!(:yield_receiver_to_any_instance_implementation_blocks, boolean, comment)
+          set_config_value!(:yield_receiver_to_any_instance_implementation_blocks, value, comment)
         end
       end
     end

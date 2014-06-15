@@ -1,6 +1,6 @@
 Convert specs to RSpec 2.99.0.beta2 syntax with Transpec
 
-This conversion is done by Transpec 2.2.0 with the following command:
+This conversion is done by Transpec 2.2.5 with the following command:
     transpec --force
 
 * 899 conversions

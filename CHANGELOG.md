@@ -2,6 +2,8 @@
 
 ## Development
 
+* Report configuration modifications of `RSpec.configure` in the final summary.
+
 ## v2.2.5
 
 * Fix invalid conversion of `unstub` without parentheses (`obj.unstub :message`). ([#74](https://github.com/yujinakayama/transpec/pull/74))
