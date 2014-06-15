@@ -2,6 +2,8 @@
 
 ## Development
 
+## v2.2.5
+
 * Fix invalid conversion of `unstub` without parentheses (`obj.unstub :message`). ([#74](https://github.com/yujinakayama/transpec/pull/74))
 
 ## v2.2.4
