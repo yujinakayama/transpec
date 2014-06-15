@@ -705,6 +705,32 @@ module Transpec
           end
         end
 
+        context 'with expression `obj.unstub :message`' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'does not respond to #foo' do
+                  subject.unstub :foo
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'does not respond to #foo' do
+                  allow(subject).to receive(:foo).and_call_original
+                end
+              end
+            END
+          end
+
+          it 'converts to `allow(subject).to receive(:method).and_call_original`' do
+            rewritten_source.should == expected_source
+          end
+        end
+
         context 'with expression `Klass.any_instance.stub(:message)`' do
           let(:source) do
             <<-END

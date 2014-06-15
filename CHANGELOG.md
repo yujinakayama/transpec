@@ -2,6 +2,8 @@
 
 ## Development
 
+* Fix invalid conversion of `unstub` without parentheses (`obj.unstub :message`). ([#74](https://github.com/yujinakayama/transpec/pull/74))
+
 ## v2.2.4
 
 * Avoid crash on invalid `expect` syntax expectations (e.g. `expect(obj)` without following `to` or `expect(obj).to` taking no matcher). ([#71](https://github.com/yujinakayama/transpec/issues/71))

@@ -109,7 +109,7 @@ module Transpec
               [build_multiple_allow_to_receive_with_hash(arg_node), :allow_to_receive]
             end
           else
-            [build_allow_to_receive(arg_node), :allow_to_receive]
+            [build_allow_to_receive(arg_node, nil, !unstub?), :allow_to_receive]
           end
         end
       end
