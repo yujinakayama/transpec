@@ -479,6 +479,7 @@ The one-liner (implicit receiver) `should`:
 * [Current example object](#current-example-object)
 * [Custom matcher DSL](#custom-matcher-dsl)
 * [Implicit spec types in rspec-rails](#implicit-spec-types-in-rspec-rails)
+* [Deprecated configuration options](#deprecated-configuration-options)
 * [Monkey-patched example groups](#monkey-patched-example-groups)
 * [Hook scope aliases](#hook-scope-aliases)
 
@@ -1299,6 +1300,54 @@ end
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
 * See also: [Consider making example group mixins more explicit · rspec/rspec-rails](https://github.com/rspec/rspec-rails/issues/662)
+
+### Deprecated configuration options
+
+Targets:
+
+```ruby
+RSpec.configure do |c|
+  c.backtrace_clean_patterns
+  c.backtrace_clean_patterns = [/lib\/something/]
+  c.color_enabled = true
+
+  c.out
+  c.out = File.open('output.txt', 'w')
+  c.output
+  c.output = File.open('output.txt', 'w')
+
+  c.backtrace_cleaner
+  c.color?(output)
+  c.filename_pattern
+  c.filename_pattern = '**/*_test.rb'
+  c.warnings
+end
+```
+
+Will be converted to:
+
+```ruby
+RSpec.configure do |c|
+  c.backtrace_exclusion_patterns
+  c.backtrace_exclusion_patterns = [/lib\/something/]
+  c.color = true
+
+  # RSpec 2.99.0.beta1 or later
+  c.output_stream
+  c.output_stream = File.open('output.txt', 'w')
+  c.output_stream
+  c.output_stream = File.open('output.txt', 'w')
+
+  # RSpec 2.99.0.rc1 or later
+  c.backtrace_formatter
+  c.color_enabled?(output)
+  c.pattern
+  c.pattern = '**/*_test.rb'
+  c.warnings?
+end
+```
+
+* This conversion can be disabled by: `--keep deprecated`
 
 ### Monkey-patched example groups
 

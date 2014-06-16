@@ -339,16 +339,15 @@ END
 <%= convert(example).gsub('original spec', 'converted spec') -%>
 
 <%=
-convert(example, cli: ['-p'])
-  .gsub(
-    'original spec',
-    'converted spec with -p/--no-parens-matcher-arg option'
-  )
-  .gsub(/^.+\{ key: value \}/) do |match|
-    "    # With non-operator method, the parentheses are always required\n" +
-    "    # to prevent the hash from being interpreted as a block.\n" +
-    match
-  end
+converted = convert(example, cli: ['-p'])
+converted.gsub!(
+  'original spec',
+  'converted spec with -p/--no-parens-matcher-arg option'
+)
+insert_comment_above(converted, '{ key: value }', [
+  'With non-operator method, the parentheses are always required',
+  'to prevent the hash from being interpreted as a block.'
+])
 -%>
 ```
 
@@ -1340,6 +1339,53 @@ Or with `--no-explicit-spec-type` option they will be converted to:
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
 * See also: [Consider making example group mixins more explicit · rspec/rspec-rails](https://github.com/rspec/rspec-rails/issues/662)
+
+### Deprecated configuration options
+
+Targets:
+
+```ruby
+<%=
+example = <<END
+RSpec.configure do |c|
+  c.backtrace_clean_patterns
+  c.backtrace_clean_patterns = [/lib\\/something/]
+  c.color_enabled = true
+
+  c.out
+  c.out = File.open('output.txt', 'w')
+  c.output
+  c.output = File.open('output.txt', 'w')
+
+  c.backtrace_cleaner
+  c.color?(output)
+  c.filename_pattern
+  c.filename_pattern = '**/*_test.rb'
+  c.warnings
+end
+END
+-%>
+```
+
+Will be converted to:
+
+```ruby
+<%=
+converted = convert(example, rspec_version: RSpecVersion.new('3.0.0'))
+
+[
+  ['c.output_stream',       :config_output_stream],
+  ['c.backtrace_formatter', :config_backtrace_formatter],
+].each do |pattern, feature|
+  rspec_version = RSpecVersion.send("#{feature}_available_version")
+  converted = insert_comment_above(converted, pattern, "RSpec #{rspec_version} or later")
+end
+
+converted
+-%>
+```
+
+* This conversion can be disabled by: `--keep deprecated`
 
 ### Monkey-patched example groups
 

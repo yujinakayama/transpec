@@ -162,4 +162,18 @@ class READMEContext
       fail "No descriptions for syntax types #{types_missing_description}"
     end
   end
+
+  def insert_comment_above(code, pattern, comments)
+    regexp = Regexp.new('^([ \t]*).*' + Regexp.escape(pattern))
+
+    code.sub(regexp) do |match|
+      indentation = Regexp.last_match(1)
+      replacement = ''
+      Array(comments).each do |comment|
+        comment = comment.to_s.chomp
+        replacement << "#{indentation}# #{comment}\n"
+      end
+      replacement << match
+    end
+  end
 end
