@@ -2,6 +2,8 @@
 
 ## Development
 
+* Remove conversion support for non-existent configuration option `backtrace_cleaner=`.
+
 ## v2.3.0
 
 * Report configuration modifications of `RSpec.configure` in the final summary.
