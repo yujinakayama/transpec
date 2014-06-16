@@ -1140,6 +1140,24 @@ module Transpec
         ).as_null_object
       end
 
+      context 'when Config#convert_deprecated_method? returns true' do
+        before { config.convert_deprecated_method = true }
+
+        it 'invokes RSpecConfigure#convert_deprecated_options! with RSpecVersion' do
+          rspec_configure.should_receive(:convert_deprecated_options!).with(rspec_version)
+          converter.process_rspec_configure(rspec_configure)
+        end
+      end
+
+      context 'when Config#convert_deprecated_method? returns false' do
+        before { config.convert_deprecated_method = false }
+
+        it 'does not invoke RSpecConfigure#convert_deprecated_options!' do
+          rspec_configure.should_not_receive(:convert_deprecated_options!)
+          converter.process_rspec_configure(rspec_configure)
+        end
+      end
+
       context 'when RSpecVersion#rspec_2_99? returns true' do
         before do
           rspec_version.stub(:rspec_2_99?).and_return(true)

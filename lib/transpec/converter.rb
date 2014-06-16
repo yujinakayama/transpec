@@ -165,7 +165,9 @@ module Transpec
     end
 
     def process_rspec_configure(rspec_configure)
-      rspec_configure.convert_deprecated_options!(rspec_version)
+      if config.convert_deprecated_method?
+        rspec_configure.convert_deprecated_options!(rspec_version)
+      end
 
       if spec_suite.main_rspec_configure_node?(rspec_configure.node)
         if rspec_version.non_monkey_patch_example_group_available? &&

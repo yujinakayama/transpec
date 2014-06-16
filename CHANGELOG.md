@@ -3,6 +3,7 @@
 ## Development
 
 * Remove conversion support for non-existent configuration option `backtrace_cleaner=`.
+* Add missing way to disable conversion of deprecated configuration options with `--keep deprecated`.
 
 ## v2.3.0
 
