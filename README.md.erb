@@ -234,7 +234,7 @@ conversion_type_table = <<END
 `deprecated`     | All other deprecated syntaxes  | Latest syntaxes
 END
 
-validate_syntax_type_table(conversion_type_table, Transpec::OptionParser::CONFIG_ATTRS_FOR_KEEP_TYPES.keys)
+validate_syntax_type_table(conversion_type_table, OptionParser::CONFIG_ATTRS_FOR_KEEP_TYPES.keys)
 conversion_type_table
 -%>
 
@@ -263,7 +263,7 @@ conversion_type_table = <<END
 `stub_with_hash` | `obj.stub(:message => value)`  | `allow(obj).to receive(:message).and_return(value)`
 END
 
-validate_syntax_type_table(conversion_type_table, Transpec::OptionParser::CONFIG_ATTRS_FOR_CONVERT_TYPES.keys)
+validate_syntax_type_table(conversion_type_table, OptionParser::CONFIG_ATTRS_FOR_CONVERT_TYPES.keys)
 conversion_type_table
 -%>
 
@@ -477,7 +477,7 @@ Will be converted to:
 
 ### One-liner expectations
 
-This conversion is available only if your project's RSpec is **<%= rspec_version = Transpec::RSpecVersion.oneliner_is_expected_available_version %> or later**.
+This conversion is available only if your project's RSpec is **<%= rspec_version = RSpecVersion.oneliner_is_expected_available_version %> or later**.
 
 Targets:
 
@@ -542,7 +542,7 @@ This conversion is combined with the conversion of [standard expectations](#stan
 
 ### Boolean matchers
 
-This conversion is available only if your project's RSpec is **<%= rspec_version = Transpec::RSpecVersion.be_truthy_available_version %> or later**.
+This conversion is available only if your project's RSpec is **<%= rspec_version = RSpecVersion.be_truthy_available_version %> or later**.
 
 Targets:
 
@@ -978,7 +978,7 @@ Will be converted to:
 <%= convert(example, wrap_with: :example).lines.to_a.uniq.join("\n") -%>
 
 # Conversion from `stub_chain` to `receive_message_chain` is available
-# only if the target project's RSpec is <%= rspec_version = Transpec::RSpecVersion.receive_message_chain_available_version %> or later
+# only if the target project's RSpec is <%= rspec_version = RSpecVersion.receive_message_chain_available_version %> or later
 <%= convert(stub_chain_example, wrap_with: :example, rspec_version: rspec_version) -%>
 
 <%= convert(any_instance_example, wrap_with: :example) -%>
@@ -1007,13 +1007,13 @@ END
 Will be converted to:
 
 ```ruby
-# If the target project's RSpec is <%= rspec_version = Transpec::RSpecVersion.receive_messages_available_version %> or later
+# If the target project's RSpec is <%= rspec_version = RSpecVersion.receive_messages_available_version %> or later
 <%= convert(example, wrap_with: :example, rspec_version: rspec_version) -%>
 
-# If the target project's RSpec is prior to <%= Transpec::RSpecVersion.receive_messages_available_version %>
+# If the target project's RSpec is prior to <%= RSpecVersion.receive_messages_available_version %>
 <%= convert(example, wrap_with: :example, rspec_version: Transpec.required_rspec_version).chomp -%> # No conversion
 
-# If the target project's RSpec is prior to <%= Transpec::RSpecVersion.receive_messages_available_version %>
+# If the target project's RSpec is prior to <%= RSpecVersion.receive_messages_available_version %>
 # and `--convert stub-with-hash` is specified
 <%= convert(example, wrap_with: :example, rspec_version: Transpec.required_rspec_version, cli: ['--convert', 'stub_with_hash']) -%>
 ```
@@ -1109,7 +1109,7 @@ Will be converted to:
 
 ### `any_instance` implementation blocks
 
-This conversion is available only if your project's RSpec is **`>= <%= Transpec::RSpecVersion::RSPEC_2_99 %>` and `< <%= Transpec::RSpecVersion::RSPEC_3_0 %>`**.
+This conversion is available only if your project's RSpec is **`>= <%= RSpecVersion::RSPEC_2_99 %>` and `< <%= RSpecVersion::RSPEC_3_0 %>`**.
 
 Targets:
 
@@ -1132,7 +1132,7 @@ END
 Will be converted to:
 
 ```ruby
-<% rspec_version = Transpec::RSpecVersion.yielding_receiver_to_any_instance_implementation_block_available_version -%>
+<% rspec_version = RSpecVersion.yielding_receiver_to_any_instance_implementation_block_available_version -%>
 <%= convert(example, rspec_version: rspec_version) -%>
 ```
 
@@ -1171,7 +1171,7 @@ Will be converted to:
 
 ### Pending examples
 
-This conversion is available only if your project's RSpec is **`>= <%= Transpec::RSpecVersion::RSPEC_2_99 %>` and `< <%= Transpec::RSpecVersion::RSPEC_3_0 %>`**.
+This conversion is available only if your project's RSpec is **`>= <%= RSpecVersion::RSPEC_2_99 %>` and `< <%= RSpecVersion::RSPEC_3_0 %>`**.
 
 Targets:
 
@@ -1206,7 +1206,7 @@ Will be converted to:
 
 ```ruby
 <%=
-convert(example, rspec_version: Transpec::RSpecVersion.skip_available_version)
+convert(example, rspec_version: RSpecVersion.skip_available_version)
   .gsub('pending', 'pending # #pending with block is no longer supported')
 -%>
 ```
@@ -1229,7 +1229,7 @@ Here's an excerpt from [the warning](https://github.com/rspec/rspec-core/blob/v2
 
 ### Current example object
 
-This conversion is available only if your project's RSpec is **<%= rspec_version = Transpec::RSpecVersion.yielded_example_available_version %> or later**.
+This conversion is available only if your project's RSpec is **<%= rspec_version = RSpecVersion.yielded_example_available_version %> or later**.
 
 Targets:
 
@@ -1279,7 +1279,7 @@ Here's an excerpt from [the warning](https://github.com/rspec/rspec-core/blob/7d
 
 ### Custom matcher DSL
 
-This conversion is available only if your project's RSpec is **<%= rspec_version = Transpec::RSpecVersion.non_should_matcher_protocol_available_version %> or later**.
+This conversion is available only if your project's RSpec is **<%= rspec_version = RSpecVersion.non_should_matcher_protocol_available_version %> or later**.
 
 Targets:
 
@@ -1308,7 +1308,7 @@ Will be converted to:
 
 ### Implicit spec types in rspec-rails
 
-This conversion is **available only if `rspec-rails` is loaded** in your spec and your project's RSpec is **<%= rspec_version = Transpec::RSpecVersion.implicit_spec_type_disablement_available_version %> or later**.
+This conversion is **available only if `rspec-rails` is loaded** in your spec and your project's RSpec is **<%= rspec_version = RSpecVersion.implicit_spec_type_disablement_available_version %> or later**.
 
 Targets:
 
@@ -1343,7 +1343,7 @@ Or with `--no-explicit-spec-type` option they will be converted to:
 
 ### Monkey-patched example groups
 
-This conversion is **disabled by default** and available only if your project's RSpec is **<%= rspec_version = Transpec::RSpecVersion.non_monkey_patch_example_group_available_version %> or later**.
+This conversion is **disabled by default** and available only if your project's RSpec is **<%= rspec_version = RSpecVersion.non_monkey_patch_example_group_available_version %> or later**.
 
 Targets:
 
@@ -1376,7 +1376,7 @@ Will be converted to:
 
 ### Hook scope aliases
 
-This conversion is **disabled by default** and available only if your project's RSpec is **<%= rspec_version = Transpec::RSpecVersion.hook_scope_alias_available_version %> or later**.
+This conversion is **disabled by default** and available only if your project's RSpec is **<%= rspec_version = RSpecVersion.hook_scope_alias_available_version %> or later**.
 
 Targets:
 

@@ -1,5 +1,7 @@
 # coding: utf-8
 
+require 'transpec'
+
 desc 'Generate README.md'
 task :readme do
   puts 'Generating README.md...'
@@ -33,11 +35,12 @@ def generate_readme
 end
 
 class READMEContext
+  include Transpec
+
   attr_reader :readme
 
   def initialize(readme)
     @readme = readme
-    require 'transpec'
     require 'transpec/cli'
     require 'stringio'
     require 'tmpdir'
