@@ -138,7 +138,7 @@ And you are done!
 
 ## Advanced Usage
 
-### Convert only specific specs
+### Convert only specific files
 
 You can pass `transpec` arbitrary paths to convert:
 
@@ -164,8 +164,10 @@ so that Transpec can copy the project in dynamic analysis.
 You can disable specific conversions that are enabled by default with `-k/--keep` option,
 and enable conversions that are disabled by default with the `-v/--convert` option.
 
-```bash
-$ transpec --keep its --convert example_group
+If you are willing to try the latest and modern syntax, type the following:
+
+```
+$ transpec --convert example_group,hook_scope
 ```
 
 See [`-k/--keep`](#-k--keep) and [`-v/--convert`](#-v--convert) for more details.
