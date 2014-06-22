@@ -62,12 +62,7 @@ module Transpec
       end
 
       class RecordBuilder < Transpec::RecordBuilder
-        attr_reader :should, :negative_form_of_to
-
-        def initialize(should, negative_form_of_to)
-          @should = should
-          @negative_form_of_to = negative_form_of_to
-        end
+        param_names :should, :negative_form_of_to
 
         def old_syntax
           syntax = if should.proc_subject?

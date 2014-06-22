@@ -37,11 +37,7 @@ module Transpec
         end
 
         class RecordBuilder < Transpec::RecordBuilder
-          attr_reader :host
-
-          def initialize(host)
-            @host = host
-          end
+          param_names :host
 
           def old_syntax
             "#{base_syntax} { |arg| }"

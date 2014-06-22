@@ -98,13 +98,22 @@ module Transpec
       new(*args).build
     end
 
+    def self.param_names(*names)
+      names.each_with_index do |name, index|
+        define_method(name) do
+          @initializer_params[index]
+        end
+      end
+    end
+
     def build
       Record.new(old_syntax, new_syntax, { type: type, annotation: annotation })
     end
 
     private
 
-    def initialize(*)
+    def initialize(*params)
+      @initializer_params = params
     end
 
     def old_syntax

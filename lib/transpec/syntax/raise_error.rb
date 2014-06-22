@@ -37,11 +37,7 @@ module Transpec
       end
 
       class RecordBuilder < Transpec::RecordBuilder
-        attr_reader :raise_error
-
-        def initialize(raise_error)
-          @raise_error = raise_error
-        end
+        param_names :raise_error
 
         def old_syntax
           syntax = 'expect { }.not_to raise_error('

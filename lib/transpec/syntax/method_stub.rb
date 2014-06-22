@@ -170,12 +170,7 @@ module Transpec
       end
 
       class AllowRecordBuilder < RecordBuilder
-        attr_reader :method_stub, :conversion_type
-
-        def initialize(method_stub, conversion_type)
-          @method_stub = method_stub
-          @conversion_type = conversion_type
-        end
+        param_names :method_stub, :conversion_type
 
         def old_syntax
           syntax = method_stub.any_instance? ? 'Klass.any_instance' : 'obj'
@@ -208,11 +203,7 @@ module Transpec
       end
 
       class DeprecatedMethodRecordBuilder < RecordBuilder
-        attr_reader :method_stub
-
-        def initialize(method_stub)
-          @method_stub = method_stub
-        end
+        param_names :method_stub
 
         def old_syntax
           syntax = method_stub.any_instance? ? 'Klass.any_instance' : 'obj'
@@ -227,16 +218,12 @@ module Transpec
       end
 
       class NoMessageAllowanceRecordBuilder < RecordBuilder
-        attr_reader :method_stub
-
-        def initialize(method_stub)
-          @method_stub = method_stub
-        end
+        param_names :method_stub
 
         def old_syntax
           syntax = base_syntax
-          syntax << '.any_number_of_times' if @method_stub.any_number_of_times?
-          syntax << '.at_least(0)' if @method_stub.at_least_zero?
+          syntax << '.any_number_of_times' if method_stub.any_number_of_times?
+          syntax << '.at_least(0)' if method_stub.at_least_zero?
           syntax
         end
 
@@ -245,7 +232,7 @@ module Transpec
         end
 
         def base_syntax
-          "obj.#{@method_stub.method_name}(:message)"
+          "obj.#{method_stub.method_name}(:message)"
         end
       end
     end

@@ -126,12 +126,7 @@ module Transpec
       end
 
       class ExpectRecordBuilder < RecordBuilder
-        attr_reader :should, :negative_form_of_to
-
-        def initialize(should, negative_form_of_to = nil)
-          @should = should
-          @negative_form_of_to = negative_form_of_to
-        end
+        param_names :should, :negative_form_of_to
 
         def old_syntax
           syntax = 'it { should'
@@ -147,13 +142,7 @@ module Transpec
       end
 
       class HaveRecordBuilder < Have::RecordBuilder
-        attr_reader :should, :negative_form_of_to
-
-        def initialize(should, have, negative_form_of_to = nil)
-          super(have)
-          @should = should
-          @negative_form_of_to = negative_form_of_to
-        end
+        param_names :should, :have, :negative_form_of_to
 
         def old_syntax
           syntax = should.example.description? ? "it '...' do" : 'it {'

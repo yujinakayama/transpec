@@ -182,11 +182,7 @@ module Transpec
       Attribute = Struct.new(:selector, :description)
 
       class RecordBuilder < Transpec::RecordBuilder
-        attr_reader :its
-
-        def initialize(its)
-          @its = its
-        end
+        param_names :its
 
         def old_syntax
           if its.attribute_expression.brackets?

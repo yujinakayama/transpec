@@ -97,11 +97,7 @@ module Transpec
       end
 
       class NonMonkeyPatchRecordBuilder < RecordBuilder
-        attr_reader :example_group
-
-        def initialize(example_group)
-          @example_group = example_group
-        end
+        param_names :example_group
 
         def old_syntax
           base_syntax
@@ -117,11 +113,7 @@ module Transpec
       end
 
       class ExplicitTypeMetadataRecordBuilder < RecordBuilder
-        attr_reader :example_group
-
-        def initialize(example_group)
-          @example_group = example_group
-        end
+        param_names :example_group
 
         def old_syntax
           "describe 'some #{spec_type}' { }"

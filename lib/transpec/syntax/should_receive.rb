@@ -162,12 +162,7 @@ module Transpec
       end
 
       class ExpectBaseRecordBuilder < RecordBuilder
-        attr_reader :should_receive, :negative_form_of_to
-
-        def initialize(should_receive, negative_form_of_to)
-          @should_receive = should_receive
-          @negative_form_of_to = negative_form_of_to
-        end
+        param_names :should_receive, :negative_form_of_to
 
         def syntax_name
           fail NotImplementedError
@@ -213,11 +208,7 @@ module Transpec
       end
 
       class StubRecordBuilder < RecordBuilder
-        attr_reader :should_receive
-
-        def initialize(should_receive)
-          @should_receive = should_receive
-        end
+        param_names :should_receive
 
         def old_syntax
           syntax = "obj.#{should_receive.method_name}(:message)"

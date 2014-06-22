@@ -72,11 +72,7 @@ module Transpec
       class RecordBuilder < Transpec::RecordBuilder
         include RSpecDSL
 
-        attr_reader :current_example
-
-        def initialize(current_example)
-          @current_example = current_example
-        end
+        param_names :current_example
 
         def old_syntax
           if current_example.block_node

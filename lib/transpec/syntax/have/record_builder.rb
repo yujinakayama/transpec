@@ -6,11 +6,7 @@ module Transpec
   class Syntax
     class Have
       class RecordBuilder < Transpec::RecordBuilder
-        attr_reader :have
-
-        def initialize(have)
-          @have = have
-        end
+        param_names :have
 
         def annotation
           return @annotation if instance_variable_defined?(:@annotation)
