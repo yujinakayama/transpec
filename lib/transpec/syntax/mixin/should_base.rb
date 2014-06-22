@@ -21,6 +21,10 @@ module Transpec
           add_matcher RaiseError
         end
 
+        def current_syntax_type
+          @current_syntax_type ||= :should
+        end
+
         def positive?
           method_name == :should
         end

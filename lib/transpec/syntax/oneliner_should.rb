@@ -14,13 +14,6 @@ module Transpec
     class OnelinerShould < Syntax
       include Mixin::ShouldBase, RSpecDSL, Util
 
-      attr_reader :current_syntax_type
-
-      def initialize(*)
-        super
-        @current_syntax_type = :should
-      end
-
       def dynamic_analysis_target?
         super && receiver_node.nil? && [:should, :should_not].include?(method_name)
       end

@@ -11,19 +11,12 @@ module Transpec
     class Should < Syntax
       include Mixin::ShouldBase, Mixin::MonkeyPatch, Mixin::Expectizable, Util
 
-      attr_reader :current_syntax_type
-
       define_dynamic_analysis do |rewriter|
         register_syntax_availability_analysis_request(
           rewriter,
           :expect_available?,
           [:expect]
         )
-      end
-
-      def initialize(*)
-        super
-        @current_syntax_type = :should
       end
 
       def dynamic_analysis_target?
