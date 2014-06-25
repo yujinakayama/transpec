@@ -47,9 +47,7 @@ module Transpec
           # `expect(owner).to have(n).things` invokes private owner#things with Object#__send__
           # if the owner does not respond to any of #size, #count and #length.
           #
-          # rubocop:disable LineLength
           # https://github.com/rspec/rspec-expectations/blob/v2.14.3/lib/rspec/matchers/built_in/have.rb#L48-L58
-          # rubocop:enable LineLength
           @collection_accessor_inspection_code ||= <<-END.gsub(/^\s+\|/, '').chomp
             |begin
             |  exact_name = #{items_name.inspect}

@@ -11,12 +11,8 @@ module Transpec
         end
 
         def yield_receiver_to_any_instance_implementation_blocks=(value)
-          # rubocop:disable LineLength
-          #
           # Based on the deprecation warning in RSpec 2.99:
           # https://github.com/rspec/rspec-mocks/blob/aab8dc9/lib/rspec/mocks/message_expectation.rb#L478-L491
-          #
-          # rubocop:enable LineLength
           comment = <<-END.gsub(/^\s+\|/, '').chomp
             |In RSpec 3, `any_instance` implementation blocks will be yielded the receiving
             |instance as the first block argument to allow the implementation block to use

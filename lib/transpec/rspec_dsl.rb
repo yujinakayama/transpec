@@ -3,8 +3,6 @@
 # Aliases by Capybara:
 # https://github.com/jnicklas/capybara/blob/2.2.0/lib/capybara/rspec/features.rb
 
-# rubocop:disable LineLength
-
 module Transpec
   module RSpecDSL
     # https://github.com/rspec/rspec-core/blob/77cc21e/lib/rspec/core/example_group.rb#L239-L265

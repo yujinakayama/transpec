@@ -11,13 +11,11 @@ module Transpec
     class MethodStub < Syntax
       include Mixin::MonkeyPatchAnyInstance, Mixin::MessagingHost, Util
 
-      # rubocop:disable LineLength
       CLASSES_DEFINING_OWN_STUB_METHOD = [
         'Typhoeus', # https://github.com/typhoeus/typhoeus/blob/6a59c62/lib/typhoeus.rb#L66-L85
         'Excon',    # https://github.com/geemus/excon/blob/6af4f9c/lib/excon.rb#L143-L178
         'Factory'   # https://github.com/thoughtbot/factory_girl/blob/v3.6.2/lib/factory_girl/syntax/vintage.rb#L112
       ]
-      # rubocop:enable LineLength
 
       define_dynamic_analysis do |rewriter|
         register_syntax_availability_analysis_request(
