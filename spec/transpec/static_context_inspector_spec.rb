@@ -160,11 +160,6 @@ module Transpec
       end
 
       def eval_with_rspec_in_context(eval_source, spec_source)
-        # Clear SPEC_OPTS environment variable so that this spec does not fail
-        # with dynamic analysis in self-testing.
-        original_spec_opts = ENV['SPEC_OPTS']
-        ENV['SPEC_OPTS'] = nil
-
         result_path = 'result'
 
         helper_source = <<-END
@@ -182,8 +177,6 @@ module Transpec
         `rspec #{source_path}`
 
         Marshal.load(File.read(result_path))
-      ensure
-        ENV['SPEC_OPTS'] = original_spec_opts
       end
 
       describe '#non_monkey_patch_expectation_available?' do
