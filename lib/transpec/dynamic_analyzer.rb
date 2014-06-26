@@ -45,14 +45,7 @@ module Transpec
         put_analysis_helper
         modify_dot_rspec
         run_rspec(paths)
-
-        begin
-          File.open(RESULT_FILE) do |file|
-            RuntimeData.load(file)
-          end
-        rescue
-          raise AnalysisError
-        end
+        load_analysis_result
       end
     end
 
@@ -115,6 +108,14 @@ module Transpec
       content = "--require ./#{helper_filename}\n"
       content << File.read(filename) if File.exist?(filename)
       File.write(filename, content)
+    end
+
+    def load_analysis_result
+      File.open(RESULT_FILE) do |file|
+        RuntimeData.load(file)
+      end
+    rescue
+      raise AnalysisError
     end
 
     class AnalysisError < StandardError; end
