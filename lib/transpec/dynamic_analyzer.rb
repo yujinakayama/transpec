@@ -2,14 +2,12 @@
 
 require 'transpec/dynamic_analyzer/rewriter'
 require 'transpec/dynamic_analyzer/runtime_data'
+require 'transpec/directory_cloner'
 require 'transpec/project'
 require 'transpec/spec_suite'
-require 'tmpdir'
-require 'find'
-require 'pathname'
-require 'fileutils'
-require 'shellwords'
 require 'erb'
+require 'shellwords'
+require 'tmpdir'
 require 'English'
 
 module Transpec
@@ -58,22 +56,6 @@ module Transpec
       end
     end
 
-    def copy_recursively(source_root, destination_root)
-      source_root = File.expand_path(source_root)
-      source_root_pathname = Pathname.new(source_root)
-
-      destination_root = File.expand_path(destination_root)
-      if File.directory?(destination_root)
-        destination_root = File.join(destination_root, File.basename(source_root))
-      end
-
-      Find.find(source_root) do |source_path|
-        relative_path = Pathname.new(source_path).relative_path_from(source_root_pathname).to_s
-        destination_path = File.join(destination_root, relative_path)
-        copy(source_path, destination_path)
-      end
-    end
-
     private
 
     def in_copied_project
@@ -82,8 +64,7 @@ module Transpec
       @in_copied_project = true
 
       Dir.mktmpdir do |tmpdir|
-        copy_recursively(project.path, tmpdir)
-        copied_project_path = File.join(tmpdir, project.basename)
+        copied_project_path = DirectoryCloner.copy_recursively(project.path, tmpdir)
         Dir.chdir(copied_project_path) do
           yield
         end
@@ -134,28 +115,6 @@ module Transpec
       content = "--require ./#{helper_filename}\n"
       content << File.read(filename) if File.exist?(filename)
       File.write(filename, content)
-    end
-
-    def copy(source, destination)
-      if File.symlink?(source)
-        File.symlink(File.readlink(source), destination)
-      elsif File.directory?(source)
-        FileUtils.mkdir_p(destination)
-      elsif File.file?(source)
-        FileUtils.copy_file(source, destination)
-      end
-
-      copy_permission(source, destination) if File.exist?(destination)
-    end
-
-    def copy_permission(source, destination)
-      source_mode = File.lstat(source).mode
-      begin
-        File.lchmod(source_mode, destination)
-      rescue NotImplementedError, Errno::ENOSYS
-        # Should not change mode of symlink's destination.
-        File.chmod(source_mode, destination) unless File.symlink?(destination)
-      end
     end
 
     class AnalysisError < StandardError; end
