@@ -147,7 +147,7 @@ Converting spec/transpec/ast/node_spec.rb
 
 This will run the specs, convert them, and overwrite all spec files in the `spec` directory.
 
-After the conversion, run `rspec` again and check whether everything is green:
+After the conversion, run `rspec` again and check whether everything is still green:
 
 ```bash
 $ bundle exec rspec
@@ -183,7 +183,7 @@ $ transpec spec/baz_spec.rb
 ```
 
 Note that the current working directory always needs to be the project root directory,
-so that Transpec can copy the project in dynamic analysis.
+so that Transpec can know where the root is.
 
 ### Enable/disable specific conversions
 
