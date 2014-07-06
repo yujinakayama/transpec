@@ -84,8 +84,8 @@ module Transpec
         let(:main_rspec_configure_node) do
           spec_suite.specs.each do |spec|
             next unless spec.path == 'spec/spec_helper.rb'
-            spec.ast.each_node do |node|
-              return node if node.send_type? && node.children[1] == :configure
+            spec.ast.each_node(:send) do |send_node|
+              return send_node if send_node.children[1] == :configure
             end
           end
           fail 'Main RSpec.configure node not found!'

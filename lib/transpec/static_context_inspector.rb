@@ -68,7 +68,7 @@ module Transpec
     def valid_ancestor_nodes
       valid_nodes = []
 
-      self_and_ancestor_nodes = [node] + node.ancestor_nodes
+      self_and_ancestor_nodes = [node] + node.each_ancestor.to_a
 
       self_and_ancestor_nodes.each_cons(2) do |child, parent|
         valid_nodes << parent unless belong_to_direct_outer_scope?(child)
@@ -78,8 +78,8 @@ module Transpec
     end
 
     def belong_to_direct_outer_scope?(node)
-      return false unless TWISTED_SCOPE_TYPES.include?(node.parent_node.type)
-      scope_node = node.parent_node
+      return false unless TWISTED_SCOPE_TYPES.include?(node.parent.type)
+      scope_node = node.parent
       return true if node.equal?(scope_node.children[0])
       scope_node.class_type? && node.equal?(scope_node.children[1])
     end

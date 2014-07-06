@@ -13,12 +13,10 @@ module Transpec
 
       describe '#conversion_target?' do
         let(:target_node) do
-          ast.each_descendent_node do |node|
-            next unless node.send_type?
-            method_name = node.children[1]
-            return node if method_name == :pending
+          ast.each_node(:send).find do |send_node|
+            method_name = send_node.children[1]
+            method_name == :pending
           end
-          fail 'No #pending node is found!'
         end
 
         let(:pending_object) do

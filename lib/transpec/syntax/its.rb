@@ -50,7 +50,7 @@ module Transpec
       alias_method :attribute_node, :arg_node
 
       def block_node
-        node.parent_node
+        node.parent
       end
 
       def description?

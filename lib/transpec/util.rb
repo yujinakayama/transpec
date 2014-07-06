@@ -67,7 +67,7 @@ module Transpec
     end
 
     def block_node_taken_by_method(node)
-      parent_node = node.parent_node
+      parent_node = node.parent
       return nil unless parent_node
       return nil unless parent_node.block_type?
       return nil unless parent_node.children.first.equal?(node)
@@ -104,8 +104,7 @@ module Transpec
 
       yield origin_node if mode == :include_origin
 
-      origin_node.each_ancestor_node.reduce(origin_node) do |child_node, parent_node|
-        return unless [:send, :block].include?(parent_node.type)
+      origin_node.each_ancestor(:send, :block).reduce(origin_node) do |child_node, parent_node|
         return unless parent_node.children.first.equal?(child_node)
 
         if mode == :child_as_second_arg

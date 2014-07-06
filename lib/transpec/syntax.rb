@@ -179,7 +179,7 @@ module Transpec
     end
 
     def parent_node
-      node.parent_node
+      node.parent
     end
 
     def expression_range

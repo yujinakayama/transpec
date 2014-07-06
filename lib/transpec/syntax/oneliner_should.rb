@@ -69,9 +69,8 @@ module Transpec
 
         @example = nil
 
-        node.each_ancestor_node do |node|
-          next unless node.block_type?
-          send_node = node.children[0]
+        node.each_ancestor(:block) do |block_node|
+          send_node = block_node.children[0]
 
           found = Syntax.all_syntaxes.find do |syntax_class|
             next unless syntax_class.ancestors.include?(Mixin::Examplish)

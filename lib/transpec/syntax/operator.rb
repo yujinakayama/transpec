@@ -23,7 +23,7 @@ module Transpec
 
       def initialize(node, expectation, source_rewriter = nil, runtime_data = nil, report = nil)
         operator_node = if node == BE_NODE
-                          node.parent_node
+                          node.parent
                         else
                           node
                         end

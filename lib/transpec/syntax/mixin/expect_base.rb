@@ -43,7 +43,7 @@ module Transpec
           return nil unless parent_node
 
           if parent_node.block_type? && parent_node.children.first.equal?(node)
-            parent_node.parent_node
+            parent_node.parent
           elsif parent_node.send_type? && parent_node.children.first.equal?(node)
             parent_node
           else

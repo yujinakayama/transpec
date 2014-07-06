@@ -40,7 +40,7 @@ module Transpec
         metadata_key_nodes.each do |node|
           next unless pending_symbol?(node)
           replace(symbol_range_without_colon(node), 'skip')
-          if node.parent_node.pair_type?
+          if node.parent.pair_type?
             add_record("it 'is an example', :pending => value { }",
                        "it 'is an example', :skip => value { }")
           else

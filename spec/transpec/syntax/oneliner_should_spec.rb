@@ -13,13 +13,10 @@ module Transpec
 
       describe '#conversion_target?' do
         let(:target_node) do
-          ast.each_descendent_node do |node|
-            next unless node.send_type?
-            method_name = node.children[1]
-            next unless method_name == :should
-            return node
+          ast.each_node(:send).find do |send_node|
+            method_name = send_node.children[1]
+            method_name == :should
           end
-          fail 'No #should node is found!'
         end
 
         let(:should_object) do

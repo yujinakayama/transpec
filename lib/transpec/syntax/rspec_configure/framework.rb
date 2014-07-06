@@ -27,9 +27,8 @@ module Transpec
         def block_node
           return @block_node if instance_variable_defined?(:@block_node)
 
-          @block_node = rspec_configure.block_node.each_descendent_node.find do |node|
-            next unless node.block_type?
-            send_node = node.children.first
+          @block_node = rspec_configure.block_node.each_descendant(:block).find do |block_node|
+            send_node = block_node.children.first
             receiver_node, method_name, *_ = *send_node
             next unless receiver_node == s(:lvar, rspec_configure.block_arg_name)
             method_name == block_method_name

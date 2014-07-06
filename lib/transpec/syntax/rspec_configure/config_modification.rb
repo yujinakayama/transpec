@@ -32,9 +32,8 @@ module Transpec
 
           config_method_name = config_method_name.to_sym
 
-          block_node.each_descendent_node.find do |node|
-            next unless node.send_type?
-            receiver_node, method_name, = *node
+          block_node.each_descendant(:send).find do |send_node|
+            receiver_node, method_name, = *send_node
             next unless receiver_node == s(:lvar, block_arg_name)
             method_name == config_method_name
           end

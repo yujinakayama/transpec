@@ -11,13 +11,10 @@ module Transpec
 
       describe '#conversion_target?' do
         let(:target_node) do
-          ast.each_node do |node|
-            next unless node.send_type?
-            method_name = node.children[1]
-            next unless method_name == :expect
-            return node
+          ast.each_node(:send).find do |send_node|
+            method_name = send_node.children[1]
+            method_name == :expect
           end
-          fail 'No #expect node is found!'
         end
 
         let(:expect_object) do
