@@ -52,16 +52,14 @@ module Transpec
 
     private
 
-    def in_copied_project
+    def in_copied_project(&block)
       return yield if @in_copied_project
 
       @in_copied_project = true
 
       Dir.mktmpdir do |tmpdir|
         copied_project_path = DirectoryCloner.copy_recursively(project.path, tmpdir)
-        Dir.chdir(copied_project_path) do
-          yield
-        end
+        Dir.chdir(copied_project_path, &block)
       end
     ensure
       @in_copied_project = false
