@@ -2,6 +2,8 @@
 
 ## Development
 
+## v2.3.3
+
 * Fix failure on dynamic analysis when there's a RSpec-like method invocation in a context that undefines `Object` methods (e.g. `after` callback in [factory_girl definition context](https://github.com/thoughtbot/factory_girl/blob/v4.4.0/lib/factory_girl/definition_proxy.rb#L3-L7)). ([#66](https://github.com/yujinakayama/transpec/issues/66))
 
 ## v2.3.2
