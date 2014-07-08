@@ -2,10 +2,12 @@
 
 require 'spec_helper'
 require 'transpec/syntax/example_group'
+require 'ast'
 
 module Transpec
   class Syntax
     describe ExampleGroup do
+      include ::AST::Sexp
       include_context 'parsed objects'
       include_context 'syntax object', ExampleGroup, :example_group
 
@@ -182,6 +184,75 @@ module Transpec
         end
       end
 
+      describe '#metadata_key_nodes' do
+        subject { example_group.metadata_key_nodes }
+
+        context "with expression `describe 'something' { }`" do
+          let(:source) do
+            <<-END
+              describe 'example' do
+              end
+            END
+          end
+
+          it 'returns empty array' do
+            should be_empty
+          end
+        end
+
+        context "with expression `describe 'something', '#some_method' { }`" do
+          let(:source) do
+            <<-END
+              describe 'something', '#some_method' do
+              end
+            END
+          end
+
+          it 'returns empty array' do
+            should be_empty
+          end
+        end
+
+        context "with expression `describe 'something', :foo { }`" do
+          let(:source) do
+            <<-END
+              describe 'something', :foo do
+              end
+            END
+          end
+
+          it 'returns [(sym :foo)]' do
+            should == [s(:sym, :foo)]
+          end
+        end
+
+        context "with expression `describe 'something', foo: true { }`" do
+          let(:source) do
+            <<-END
+              describe 'something', foo: true do
+              end
+            END
+          end
+
+          it 'returns [(sym :foo)]' do
+            should == [s(:sym, :foo)]
+          end
+        end
+
+        context "with expression `describe 'something', :foo, :bar, baz: true { }`" do
+          let(:source) do
+            <<-END
+              describe 'something', :foo, :bar, baz: true do
+              end
+            END
+          end
+
+          it 'returns [s(:sym, :foo), s(:sym, :bar), s(:sym, :baz)]' do
+            should == [s(:sym, :foo), s(:sym, :bar), s(:sym, :baz)]
+          end
+        end
+      end
+
       describe '#add_explicit_type_metadata!' do
         before do
           example_group.add_explicit_type_metadata!
@@ -280,7 +351,31 @@ module Transpec
                 END
               end
 
-              it 'adds metadata ":type => :controller"' do
+              it 'adds metadata ":type => :controller" to the beginning of the hash metadata' do
+                rewritten_source.should == expected_source
+              end
+            end
+          end
+
+          context "and expression `describe 'something', '#some_method', :foo, :bar => true do ... end`" do
+            let(:source) do
+              <<-END
+                  describe 'something', '#some_method', :foo, :bar => true do
+                  end
+              END
+            end
+
+            context 'and the file path is "spec/controllers/some_spec.rb"' do
+              let(:source_path) { 'spec/controllers/some_spec.rb' }
+
+              let(:expected_source) do
+                <<-END
+                  describe 'something', '#some_method', :foo, :type => :controller, :bar => true do
+                  end
+                END
+              end
+
+              it 'adds metadata ":type => :controller" to the beginning of the hash metadata' do
                 rewritten_source.should == expected_source
               end
             end

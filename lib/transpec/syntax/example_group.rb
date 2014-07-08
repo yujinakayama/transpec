@@ -57,7 +57,7 @@ module Transpec
                   "type: #{type.inspect}"
                 end
 
-        insert_after(arg_node.loc.expression, code)
+        insert_after(metadata_insertion_point, code)
 
         add_record(ExplicitTypeMetadataRecordBuilder.build(self))
       end
@@ -94,6 +94,18 @@ module Transpec
         else
           :arrow
         end
+      end
+
+      def metadata_insertion_point
+        hash_metadata_node_index = arg_nodes.find_index(&:hash_type?)
+
+        last_non_hash_arg_node = if hash_metadata_node_index
+                                   arg_nodes[hash_metadata_node_index - 1]
+                                 else
+                                   arg_nodes.last
+                                 end
+
+        last_non_hash_arg_node.loc.expression.end
       end
 
       class NonMonkeyPatchRecordBuilder < RecordBuilder

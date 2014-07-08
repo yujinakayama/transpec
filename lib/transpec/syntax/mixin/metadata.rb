@@ -11,7 +11,16 @@ module Transpec
         include Send
 
         def metadata_nodes
-          arg_nodes[1..-1] || []
+          return arg_nodes if arg_nodes.empty?
+
+          # The first argument must be always description.
+          non_description_arg_nodes = arg_nodes.drop(1)
+
+          non_description_arg_nodes.drop_while do |node|
+            # Possibly there still may be descriptions after the first arg.
+            #   describe 'something', '#some_method', :foo, bar: true { }
+            ![:hash, :sym].include?(node.type)
+          end
         end
 
         def metadata_key_nodes

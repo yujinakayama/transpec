@@ -2,6 +2,8 @@
 
 ## Development
 
+* Fix a bug where explicit spec type metadata are added to wrong position when the `describe` has multiple non-metadata arguments (e.g. `describe Something, '#some_method' { }`). ([#77](https://github.com/yujinakayama/transpec/issues/77))
+
 ## v2.3.1
 
 * Remove conversion support for non-existent configuration option `backtrace_cleaner=`.
