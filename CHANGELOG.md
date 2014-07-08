@@ -2,6 +2,8 @@
 
 ## Development
 
+* Fix failure on dynamic analysis when there's a RSpec-like method invocation in a context that undefines `Object` methods (e.g. `after` callback in [factory_girl definition context](https://github.com/thoughtbot/factory_girl/blob/v4.4.0/lib/factory_girl/definition_proxy.rb#L3-L7)). ([#66](https://github.com/yujinakayama/transpec/issues/66))
+
 ## v2.3.2
 
 * Fix a bug where explicit spec type metadata are added to wrong position when the `describe` has multiple non-metadata arguments (e.g. `describe Something, '#some_method' { }`). ([#77](https://github.com/yujinakayama/transpec/issues/77))

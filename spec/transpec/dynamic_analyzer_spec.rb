@@ -215,6 +215,39 @@ module Transpec
         end
       end
 
+      context 'when there is a proxy/delegator Class that undefines Object methods' do
+        let(:source) do
+          # https://github.com/thoughtbot/factory_girl/blob/v4.4.0/lib/factory_girl/definition_proxy.rb#L3-L7
+          <<-END
+            class SomeProxy
+              UNPROXIED_METHODS = %w(__send__ object_id initialize instance_eval).map(&:to_sym)
+
+              (instance_methods + private_instance_methods).each do |method|
+                undef_method(method) unless UNPROXIED_METHODS.include?(method)
+              end
+            end
+
+            describe 'example' do
+              it 'is 1' do
+                proxy = SomeProxy.new
+                proxy.instance_eval do
+                  1.should == 1
+                end
+              end
+            end
+          END
+        end
+
+        it 'properly analyzes even in such context' do
+          should_node = find_node_in_file(spec_file_path) do |node|
+            node.send_type? && node.children[1] == :should
+          end
+
+          runtime_data = dynamic_analyzer.analyze
+          runtime_data.run?(should_node).should be_true
+        end
+      end
+
       runtime_data_cache = {}
 
       subject(:runtime_data) do

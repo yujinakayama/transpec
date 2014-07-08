@@ -82,7 +82,7 @@ module Transpec
       end
 
       def build_wrapper_codes(node, analysis_codes)
-        front = "#{ANALYSIS_METHOD}(("
+        front = "#{ANALYSIS_MODULE}.#{ANALYSIS_METHOD}(("
         rear = format('), self, %s, %s)', node_id(node).inspect, hash_literal(analysis_codes))
         [front, rear]
       end

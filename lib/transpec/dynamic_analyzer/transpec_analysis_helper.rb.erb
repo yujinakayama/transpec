@@ -1,12 +1,34 @@
-module TranspecAnalysis
+module <%= ANALYSIS_MODULE %>
   @base_path = Dir.pwd
 
-  def self.temporary_data
+  module_function
+
+  def temporary_data
     @temporary_data ||= {}
   end
 
-  def self.data
+  def data
     @data ||= {}
+  end
+
+  def <%= ANALYSIS_METHOD %>(object, context, node_id, analysis_codes)
+    node_data = {}
+
+    analysis_codes.each do |key, (target_type, code)|
+      target = case target_type
+               when :object  then object
+               when :context then context
+               end
+
+      begin
+        node_data[key] = target.instance_eval(code)
+      rescue Exception
+      end
+    end
+
+    data[node_id] = node_data
+
+    object
   end
 
   at_exit do
@@ -21,24 +43,4 @@ module TranspecAnalysis
       JSON.dump(data, file)
     end
   end
-end
-
-def <%= ANALYSIS_METHOD %>(object, context, node_id, analysis_codes)
-  node_data = {}
-
-  analysis_codes.each do |key, (target_type, code)|
-    target = case target_type
-             when :object  then object
-             when :context then context
-             end
-
-    begin
-      node_data[key] = target.instance_eval(code)
-    rescue Exception
-    end
-  end
-
-  TranspecAnalysis.data[node_id] = node_data
-
-  object
 end
