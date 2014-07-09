@@ -391,14 +391,14 @@ end
 * `expect` is defined on `RSpec::Matchers` module which is included by `RSpec::Core::ExampleGroup` class, so you can use `expect` only where `self` is an instance of `RSpec::Core::ExampleGroup` (i.e. in `it` blocks, `:each` hook blocks or included module methods) or other classes that explicitly include `RSpec::Matchers`.
 
 With the above example, in the context of `1.should == 1`, the `self` is an instance of `MyAwesomeTestRunner`.
-Transpec tracks contexts and skips conversion if the target syntax cannot be converted in a case like this.
+Transpec tracks contexts and skips conversion if the syntax cannot be converted in a case like this.
 
 ### Solution
 
-Include or extend any of the following module to make `expect` or `allow` available in the context:
+Include or extend any of the following module to make RSpec syntax available in the context:
 
-* `RSpec::Matchers` for `expect`
-* `RSpec::Mocks::ExampleMethods` for `allow`
+* `RSpec::Matchers` for `expect(obj).to some_matcher`
+* `RSpec::Mocks::ExampleMethods` for `expect/allow(obj).to receive(:message)`
 
 ```ruby
   class MyAwesomeTestRunner
