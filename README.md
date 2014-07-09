@@ -411,7 +411,10 @@ Transpec tracks contexts and skips conversion if the target syntax cannot be con
 
 ### Solution
 
-Include or extend `RSpec::Matchers` module to make `expect` available in the context:
+Include or extend any of the following module to make `expect` or `allow` available in the context:
+
+* `RSpec::Matchers` for `expect`
+* `RSpec::Mocks::ExampleMethods` for `allow`
 
 ```ruby
   class MyAwesomeTestRunner
