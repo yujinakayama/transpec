@@ -12,7 +12,7 @@ require 'English'
 
 module Transpec
   class DynamicAnalyzer
-    ANALYSIS_MODULE = 'TranspecAnalysis'
+    ANALYSIS_MODULE = 'Transpec'
     ANALYSIS_METHOD = 'analyze'
     HELPER_TEMPLATE_FILE = 'transpec_analysis_helper.rb.erb'
     RESULT_FILE = 'transpec_analysis_result.json'

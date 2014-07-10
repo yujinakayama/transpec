@@ -3,6 +3,7 @@
 require 'transpec/syntax'
 require 'transpec/syntax/mixin/rspec_rails'
 require 'transpec/syntax/mixin/send'
+require 'transpec/dynamic_analyzer'
 require 'transpec/util'
 
 module Transpec
@@ -15,8 +16,9 @@ module Transpec
       include Mixin::Send, Mixin::RSpecRails, ConfigModification
 
       define_dynamic_analysis do |rewriter|
-        code = "TranspecAnalysis.temporary_data[:rspec_configure_run_order] ||= 0\n" \
-               'TranspecAnalysis.temporary_data[:rspec_configure_run_order] += 1'
+        run_order = "#{DynamicAnalyzer::ANALYSIS_MODULE}.temporary_data[:rspec_configure_run_order]"
+        code = "#{run_order} ||= 0\n" \
+               "#{run_order} += 1"
         rewriter.register_request(node, :run_order, code)
       end
 
