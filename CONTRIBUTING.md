@@ -4,10 +4,11 @@ If you're going to report an issue or submit a pull request, please follow these
 
 ## Reporting an Issue
 
-* Provide the problematic code or the project's URL.
-* Include the version of Ruby you're using (`ruby --version`).
-* Include the version of Transpec you're using (`transpec --version`).
-* Include complete command-line options you passed to `transpec`.
+* Provide the following information:
+    * The problematic code or the project's URL
+    * The version of Ruby you're using (`ruby --version`)
+    * The version of Transpec you're using (`transpec --version`)
+    * The complete command-line options you passed to `transpec`
 
 ## Pull Requests
 
