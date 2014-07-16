@@ -34,12 +34,8 @@ module Transpec
         return false
       end
 
-      begin
-        process(paths)
-      rescue DynamicAnalyzer::AnalysisError
-        warn_dynamic_analysis_error
-        return false
-      end
+      done = process(paths)
+      return false unless done
 
       display_summary
       generate_commit_message
@@ -49,10 +45,9 @@ module Transpec
     end
 
     def process(paths)
-      runtime_data = nil
-
       unless config.skip_dynamic_analysis?
         runtime_data = run_dynamic_analysis(paths)
+        return false unless runtime_data
       end
 
       spec_suite = SpecSuite.new(paths, runtime_data)
@@ -65,6 +60,26 @@ module Transpec
       spec_suite.specs.each do |spec|
         convert_spec(spec, spec_suite)
       end
+
+      true
+    end
+
+    def run_dynamic_analysis(paths)
+      runtime_data = nil
+
+      puts 'Copying the project for dynamic analysis...'
+
+      DynamicAnalyzer.new(rspec_command: config.rspec_command) do |analyzer|
+        puts "Running dynamic analysis with command #{analyzer.rspec_command.inspect}..."
+        runtime_data = analyzer.analyze(paths)
+      end
+
+      puts
+
+      runtime_data
+    rescue DynamicAnalyzer::AnalysisError => error
+      warn "\n" + error.message.color(:red)
+      return nil
     end
 
     def convert_spec(spec, spec_suite)
@@ -94,21 +109,6 @@ module Transpec
         fail "Your project must have rspec gem dependency #{Transpec.required_rspec_version} " \
              "or later but currently it's #{project.rspec_version}. Aborting."
       end
-    end
-
-    def run_dynamic_analysis(paths)
-      runtime_data = nil
-
-      puts 'Copying the project for dynamic analysis...'
-
-      DynamicAnalyzer.new(rspec_command: config.rspec_command) do |analyzer|
-        puts "Running dynamic analysis with command #{analyzer.rspec_command.inspect}..."
-        runtime_data = analyzer.analyze(paths)
-      end
-
-      puts
-
-      runtime_data
     end
 
     def display_summary
@@ -143,13 +143,6 @@ module Transpec
 
       puts
       puts "Done! Now run #{'rspec'.bright} and check if everything is green."
-    end
-
-    def warn_dynamic_analysis_error
-      warn 'Failed running dynamic analysis. ' \
-           'Transpec runs your specs in a copied project directory. ' \
-           'If your project requires some special setup or commands to run specs, ' \
-           'use -c/--rspec-command option.'
     end
 
     def warn_syntax_error(error)

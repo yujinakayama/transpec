@@ -2,6 +2,8 @@
 
 ## Development
 
+* Detect whether RSpec configuration `config.raise_errors_for_deprecations!` which interferes with Transpec's dynamic analysis is enabled in the user's specs and abort processing if so. ([#80](https://github.com/yujinakayama/transpec/issues/80))
+
 ## v2.3.3
 
 * Fix failure on dynamic analysis when there's a RSpec-like method invocation in a context that undefines `Object` methods (e.g. `after` callback in [factory_girl definition context](https://github.com/thoughtbot/factory_girl/blob/v4.4.0/lib/factory_girl/definition_proxy.rb#L3-L7)). ([#66](https://github.com/yujinakayama/transpec/issues/66))

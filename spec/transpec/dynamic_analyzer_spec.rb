@@ -149,7 +149,8 @@ module Transpec
         let(:source) { 'exit!' }
 
         it 'raises AnalysisError' do
-          -> { dynamic_analyzer.analyze }.should raise_error(DynamicAnalyzer::AnalysisError)
+          -> { dynamic_analyzer.analyze }
+            .should raise_error(DynamicAnalyzer::AnalysisError, /Failed running dynamic analysis/)
         end
       end
 
@@ -245,6 +246,50 @@ module Transpec
 
           runtime_data = dynamic_analyzer.analyze
           runtime_data.run?(should_node).should be_true
+        end
+      end
+
+      context 'when a deprecated syntax is used with `RSpec.configure { |c| c.raise_errors_for_deprecations! }`' do
+        include CacheHelper
+
+        around do |example|
+          with_cached_dir('rspec-2.99-project') do |cached|
+            unless cached
+              create_file('Gemfile', <<-END)
+                source 'https://rubygems.org'
+                gem 'rspec', '~> 2.99'
+              END
+
+              Project.new.with_bundler_clean_env do
+                `bundle install --path vendor/bundle`
+              end
+
+              create_file('spec/spec_helper.rb', <<-END)
+                RSpec.configure do |config|
+                  config.raise_errors_for_deprecations!
+                end
+              END
+            end
+
+            example.run
+          end
+        end
+
+        let(:source) do
+          <<-END
+            require 'spec_helper'
+
+            describe 'example' do
+              it 'is deprecated syntax' do
+                mock('something')
+              end
+            end
+          END
+        end
+
+        it 'raises AnalysisError with a warning message about `raise_errors_for_deprecations!`' do
+          -> { dynamic_analyzer.analyze }
+            .should raise_error(DynamicAnalyzer::AnalysisError, /raise_errors_for_deprecations!/)
         end
       end
 

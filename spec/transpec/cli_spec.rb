@@ -134,7 +134,6 @@ module Transpec
 
       context "when the project's RSpec dependency is older than the required version" do
         before do
-          Git.stub(:command_available?).and_return(false)
           cli.project.stub(:rspec_version).and_return(RSpecVersion.new('2.13.0'))
         end
 
@@ -148,19 +147,10 @@ module Transpec
 
       context 'when analysis error is raised in the dynamic analysis' do
         before do
-          Git.stub(:command_available?).and_return(false)
           DynamicAnalyzer.any_instance.stub(:analyze).and_raise(DynamicAnalyzer::AnalysisError)
         end
 
         include_examples 'aborts processing'
-
-        it 'suggests using -c/--rspec-command option' do
-          cli.should_receive(:warn) do |message|
-            message.should include('use -c/--rspec-command')
-          end
-
-          cli.run(args)
-        end
       end
 
       context 'when a syntax error is raised while processing files' do

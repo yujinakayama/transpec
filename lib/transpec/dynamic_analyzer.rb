@@ -14,6 +14,7 @@ module Transpec
   class DynamicAnalyzer
     ANALYSIS_MODULE = 'Transpec'
     ANALYSIS_METHOD = 'analyze'
+    RUNTIME_DATA_ERROR_MESSAGE_KEY = :error_message
     HELPER_TEMPLATE_FILE = 'transpec_analysis_helper.rb.erb'
     RESULT_FILE = 'transpec_analysis_result.json'
 
@@ -113,8 +114,12 @@ module Transpec
       File.open(RESULT_FILE) do |file|
         RuntimeData.load(file)
       end
-    rescue
-      raise AnalysisError
+    rescue Errno::ENOENT
+      message = 'Failed running dynamic analysis. ' \
+                'Transpec runs your specs in a copied project directory. ' \
+                'If your project requires some special setup or commands to run specs, ' \
+                'use -c/--rspec-command option.'
+      raise AnalysisError, message
     end
 
     class AnalysisError < StandardError; end

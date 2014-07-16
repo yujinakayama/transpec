@@ -18,6 +18,9 @@ module Transpec
       end
 
       def initialize(data = CompatibleOpenStruct.new)
+        error_message = data[RUNTIME_DATA_ERROR_MESSAGE_KEY]
+        fail AnalysisError, error_message if error_message
+
         @data = data
       end
 
