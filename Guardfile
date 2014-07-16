@@ -1,5 +1,5 @@
-# A sample Guardfile
-# More info at https://github.com/guard/guard#readme
+
+ignore %r{^\.cache/}
 
 # This group allows to skip running RuboCop if RSpec failed,
 # like Red > Green (RSpec) > Refactor (RuboCop).
