@@ -2,6 +2,8 @@
 
 ## Development
 
+## v2.3.4
+
 * Detect whether RSpec configuration `config.raise_errors_for_deprecations!` which interferes with Transpec's dynamic analysis is enabled in the user's specs and abort processing if so. ([#80](https://github.com/yujinakayama/transpec/issues/80))
 
 ## v2.3.3
