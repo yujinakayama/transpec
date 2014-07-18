@@ -55,7 +55,7 @@ module Transpec
         let(:source) { "puts 'foo'" }
 
         it 'returns nil' do
-          processed_source.syntax_error.should be_nil
+          processed_source.error.should be_nil
         end
       end
 
@@ -63,7 +63,17 @@ module Transpec
         let(:source) { '<' }
 
         it 'returns syntax error' do
-          processed_source.syntax_error.should be_a(Parser::SyntaxError)
+          processed_source.error.should be_a(Parser::SyntaxError)
+        end
+      end
+
+      context 'when the source includes invalid byte sequence for the encoding' do
+        it 'returns encoding error' do
+          processed_source = ProcessedSource.new(<<-END)
+            # coding: utf-8
+            \xff
+          END
+          processed_source.error.should be_a(EncodingError)
         end
       end
     end

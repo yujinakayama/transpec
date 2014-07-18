@@ -12,7 +12,7 @@ require 'transpec/ast/builder'
 
 module Transpec
   class ProcessedSource
-    attr_reader :buffer, :ast, :path, :syntax_error
+    attr_reader :buffer, :ast, :path, :error
 
     def self.from_file(path)
       source = File.read(path)
@@ -37,11 +37,9 @@ module Transpec
       builder = AST::Builder.new
       parser = Parser::CurrentRuby.new(builder)
 
-      begin
-        @ast = parser.parse(@buffer)
-      rescue Parser::SyntaxError => error
-        @syntax_error = error
-      end
+      @ast = parser.parse(@buffer)
+    rescue Parser::SyntaxError, EncodingError => error
+      @error = error
     end
   end
 end

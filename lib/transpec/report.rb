@@ -4,18 +4,18 @@ require 'rainbow'
 
 module Transpec
   class Report
-    attr_reader :records, :conversion_errors, :syntax_errors
+    attr_reader :records, :conversion_errors, :file_errors
 
     def initialize
       @records = []
       @conversion_errors = []
-      @syntax_errors = []
+      @file_errors = []
     end
 
     def <<(other)
       records.concat(other.records)
       conversion_errors.concat(other.conversion_errors)
-      syntax_errors.concat(other.syntax_errors)
+      file_errors.concat(other.file_errors)
       self
     end
 
@@ -113,13 +113,13 @@ module Transpec
     end
 
     def error_stats(base_color)
-      color = if syntax_errors.empty?
+      color = if file_errors.empty?
                 base_color
               else
                 :red
               end
 
-      colorize(pluralize(syntax_errors.count, 'error'), color)
+      colorize(pluralize(file_errors.count, 'error'), color)
     end
 
     def pluralize(number, thing, options = {})

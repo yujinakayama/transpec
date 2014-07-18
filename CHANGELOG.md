@@ -2,6 +2,8 @@
 
 ## Development
 
+* Avoid crash on processing invalid encoding source files and warn of the encoding errors. ([#81](https://github.com/yujinakayama/transpec/issues/81))
+
 ## v2.3.4
 
 * Detect whether RSpec configuration `config.raise_errors_for_deprecations!` which interferes with Transpec's dynamic analysis is enabled in the user's specs and abort processing if so. ([#80](https://github.com/yujinakayama/transpec/issues/80))

@@ -84,7 +84,7 @@ module Transpec
       spec_suite = SpecSuite.new(paths)
 
       spec_suite.specs.each do |spec|
-        next if spec.syntax_error
+        next if spec.error
         rewriter.rewrite_file!(spec)
       end
     end

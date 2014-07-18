@@ -24,7 +24,7 @@ module Transpec
     end
 
     def rewrite(processed_source)
-      fail processed_source.syntax_error if processed_source.syntax_error
+      fail processed_source.error if processed_source.error
 
       source_rewriter = create_source_rewriter(processed_source)
       incomplete = false

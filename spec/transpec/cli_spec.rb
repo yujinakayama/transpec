@@ -176,6 +176,33 @@ module Transpec
         end
       end
 
+      context 'when an encoding error is raised while processing files' do
+        let(:args) { [invalid_encoding_file_path, valid_encoding_file_path] }
+        let(:invalid_encoding_file_path) { 'spec/invalid_example.rb' }
+        let(:valid_encoding_file_path) { 'spec/valid_example.rb' }
+
+        before do
+          create_file(invalid_encoding_file_path, <<-END)
+            # coding: utf-8
+            \xff
+          END
+
+          create_file(valid_encoding_file_path, 'this_is_valid_encoding')
+        end
+
+        it 'warns to the user' do
+          cli.should_receive(:warn)
+            .with('Encoding error in spec/invalid_example.rb. Skipping the file.')
+          cli.run(args)
+        end
+
+        it 'continues processing files' do
+          cli.should_receive(:puts).with("Converting #{invalid_encoding_file_path}")
+          cli.should_receive(:puts).with("Converting #{valid_encoding_file_path}")
+          cli.run(args)
+        end
+      end
+
       context 'when any other error is raised while running' do
         let(:args) { ['non-existent-file'] }
 

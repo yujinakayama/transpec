@@ -90,9 +90,9 @@ module Transpec
 
       warn_annotations(converter.report)
       report << converter.report
-    rescue Parser::SyntaxError => error
-      report.syntax_errors << error
-      warn_syntax_error(error)
+    rescue Parser::SyntaxError, EncodingError => error
+      warn_file_error(error, spec.path)
+      report.file_errors << error
     end
 
     private
@@ -145,8 +145,18 @@ module Transpec
       puts "Done! Now run #{'rspec'.bright} and check if everything is green."
     end
 
-    def warn_syntax_error(error)
-      warn "Syntax error at #{error.diagnostic.location}. Skipping the file.".color(:red)
+    def warn_file_error(error, path)
+      message = case error
+                when Parser::SyntaxError
+                  "Syntax error at #{error.diagnostic.location}."
+                when EncodingError
+                  "Encoding error in #{path}."
+                else
+                  "#{error.message.capitalize} in #{path}."
+                end
+
+      message << ' Skipping the file.'
+      warn message.color(:red)
     end
 
     def warn_annotations(report)

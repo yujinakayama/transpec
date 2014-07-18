@@ -102,7 +102,7 @@ module Transpec
         report.records << Record.new('obj.stub(:message)', 'allow(obj).to receive(:message)')
         report.conversion_errors << ContextError.new('#should', '#expect', double('range'))
         report.conversion_errors << ContextError.new('#stub', '#allow', double('range'))
-        report.syntax_errors << double('syntax error')
+        report.file_errors << double('file error')
         report
       end
 
@@ -118,8 +118,8 @@ module Transpec
         concated_report.should have(3).conversion_errors
       end
 
-      it 'concats syntax errors' do
-        concated_report.should have(1).syntax_errors
+      it 'concats file errors' do
+        concated_report.should have(1).file_errors
       end
     end
   end
