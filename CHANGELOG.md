@@ -2,6 +2,8 @@
 
 ## Development
 
+* Fix error `Unresolved dependency found during sorting - parser` on `gem install transpec`.
+
 ## v2.3.5
 
 * Avoid crash on processing invalid encoding source files and warn of the encoding errors. ([#81](https://github.com/yujinakayama/transpec/issues/81))
