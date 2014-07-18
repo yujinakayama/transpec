@@ -2,6 +2,8 @@
 
 ## Development
 
+## v2.3.6
+
 * Fix error `Unresolved dependency found during sorting - parser` on `gem install transpec`.
 
 ## v2.3.5

@@ -5,7 +5,7 @@ module Transpec
   module Version
     MAJOR = 2
     MINOR = 3
-    PATCH = 5
+    PATCH = 6
 
     def self.to_s
       [MAJOR, MINOR, PATCH].join('.')
