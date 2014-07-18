@@ -139,7 +139,7 @@ module Transpec
 
         include_examples 'aborts processing'
 
-        it 'warns to the user' do
+        it 'warns to the version' do
           cli.should_receive(:warn).with(/rspec.+dependency/i)
           cli.run(args)
         end
@@ -190,7 +190,7 @@ module Transpec
           create_file(valid_encoding_file_path, 'this_is_valid_encoding')
         end
 
-        it 'warns to the user' do
+        it 'warns of the error' do
           cli.should_receive(:warn)
             .with('Encoding error in spec/invalid_example.rb. Skipping the file.')
           cli.run(args)
@@ -268,7 +268,7 @@ module Transpec
           END
         end
 
-        it 'warns to user' do
+        it 'warns of the conversion error' do
           cli.should_receive(:warn) do |message|
             message.should =~ /cannot/i
             message.should =~ /context/i
@@ -289,7 +289,7 @@ module Transpec
           END
         end
 
-        it 'warns to user' do
+        it 'warns of less accurate conversion' do
           cli.should_receive(:warn).with(/converted.+but.+incorrect/i)
           cli.convert_spec(processed_source, spec_suite)
         end
