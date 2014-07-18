@@ -10,7 +10,7 @@ module Transpec
     include_context 'isolated environment'
 
     def find_node_in_file(file_path, &block)
-      processed_source = ProcessedSource.parse_file(file_path)
+      processed_source = ProcessedSource.from_file(file_path)
       processed_source.ast.each_node.find(&block)
     end
 

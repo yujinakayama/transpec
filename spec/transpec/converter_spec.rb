@@ -29,7 +29,7 @@ module Transpec
       end
 
       context 'when a processed source is passed' do
-        let(:processed_source) { ProcessedSource.parse_file(file_path) }
+        let(:processed_source) { ProcessedSource.from_file(file_path) }
 
         it 'overwrites the file that the processed source was derived from' do
           converter.convert_file!(processed_source)

@@ -20,7 +20,7 @@ module Transpec
 
     def specs
       @specs ||= FileFinder.find(@base_paths).map do |path|
-        ProcessedSource.parse_file(path)
+        ProcessedSource.from_file(path)
       end
     end
 

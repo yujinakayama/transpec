@@ -215,7 +215,7 @@ module Transpec
       let(:processed_source) do
         path = 'example.rb'
         create_file(path, source)
-        ProcessedSource.parse_file(path)
+        ProcessedSource.from_file(path)
       end
 
       let(:spec_suite) { SpecSuite.new }

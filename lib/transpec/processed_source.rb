@@ -14,35 +14,34 @@ module Transpec
   class ProcessedSource
     attr_reader :buffer, :ast, :path, :syntax_error
 
-    def self.parse_file(path)
+    def self.from_file(path)
       source = File.read(path)
-      parse(source, path)
+      new(source, path)
     end
 
-    def self.parse(source, path = nil)
-      buffer = Parser::Source::Buffer.new(path || '(string)')
-      buffer.source = source
+    def initialize(source, path = nil)
+      @path = path
+      parse(source)
+    end
+
+    def to_s
+      buffer.source
+    end
+
+    private
+
+    def parse(source)
+      @buffer = Parser::Source::Buffer.new(@path || '(string)')
+      @buffer.source = source
 
       builder = AST::Builder.new
       parser = Parser::CurrentRuby.new(builder)
 
       begin
-        ast = parser.parse(buffer)
-        new(buffer, ast, path)
+        @ast = parser.parse(@buffer)
       rescue Parser::SyntaxError => error
-        new(buffer, nil, path, error)
+        @syntax_error = error
       end
-    end
-
-    def initialize(buffer, ast, path = nil, syntax_error = nil)
-      @buffer = buffer
-      @ast = ast
-      @path = path
-      @syntax_error = syntax_error
-    end
-
-    def to_s
-      buffer.source
     end
   end
 end

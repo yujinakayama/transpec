@@ -6,7 +6,7 @@ shared_context 'parsed objects' do
 
   let(:processed_source) do
     require 'transpec/processed_source'
-    Transpec::ProcessedSource.parse(source, source_path)
+    Transpec::ProcessedSource.new(source, source_path)
   end
 
   let(:ast) do

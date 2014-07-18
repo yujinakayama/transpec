@@ -6,7 +6,7 @@ module Transpec
   class BaseRewriter
     def rewrite_file!(arg)
       processed_source = case arg
-                         when String          then ProcessedSource.parse_file(arg)
+                         when String          then ProcessedSource.from_file(arg)
                          when ProcessedSource then arg
                          else fail "Invalid argument: #{arg}"
                          end
@@ -19,7 +19,7 @@ module Transpec
     end
 
     def rewrite_source(source, path = nil)
-      processed_source = ProcessedSource.parse(source, path)
+      processed_source = ProcessedSource.new(source, path)
       rewrite(processed_source)
     end
 
