@@ -15,6 +15,9 @@ MethodLength:
 CyclomaticComplexity:
   Max: 8
 
+PerceivedComplexity:
+  Max: 10
+
 WordArray:
   Enabled: false
 
