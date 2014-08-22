@@ -68,7 +68,7 @@ module Transpec
     def valid_ancestor_nodes
       valid_nodes = []
 
-      self_and_ancestor_nodes = [node] + node.each_ancestor.to_a
+      self_and_ancestor_nodes = [node] + node.ancestors
 
       self_and_ancestor_nodes.each_cons(2) do |child, parent|
         valid_nodes << parent unless belong_to_direct_outer_scope?(child)
