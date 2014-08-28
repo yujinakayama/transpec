@@ -129,8 +129,9 @@ module Transpec
           'Force processing even if the current Git repository is not clean.'
         ],
         '-s' => [
-          'Skip dynamic analysis and convert with only static analysis. Note',
-          'that specifying this option decreases the conversion accuracy.'
+          'Skip dynamic analysis and convert with only static analysis. The',
+          'use of this option is basically *discouraged* since it',
+          'significantly decreases the overall conversion accuracy.'
         ],
         '-c' => [
           'Specify a command to run your specs that is used for dynamic',

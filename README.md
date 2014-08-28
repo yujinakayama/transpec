@@ -292,7 +292,12 @@ See [Supported Conversions - Method stubs with a hash argument](#method-stubs-wi
 
 ### `-s/--skip-dynamic-analysis`
 
-Skip dynamic analysis and convert with only static analysis. Note that specifying this option decreases the conversion accuracy especially in the conversion of [`have(n).items` matcher](#havenitems-matcher).
+Skip dynamic analysis and convert with only static analysis.
+The use of this option is basically **discouraged**
+since it significantly decreases the overall conversion accuracy.
+
+This would be useful only if your spec suite takes really long (like an hour) to run
+and you prefer a combination of the rough but fast conversion by Transpec and manual fixes after that.
 
 ### `-n/--negative-form`
 
