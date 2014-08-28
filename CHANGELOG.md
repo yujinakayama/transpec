@@ -2,6 +2,8 @@
 
 ## Development
 
+## v2.3.7
+
 * Fix a bug where nested example groups in `RSpec.describe` are wrongly converted to non-monkey-patch form when dynamic analysis is skipped. ([#89](https://github.com/yujinakayama/transpec/issues/89))
 
 ## v2.3.6
