@@ -126,6 +126,42 @@ module Transpec
           end
         end
 
+        context 'when the #describe is in another RSpec.describe' do
+          include_context 'multiple #describes'
+
+          let(:source) do
+            <<-END
+              RSpec.describe 'something' do
+                describe '#some_method' do
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              RSpec.describe 'something' do
+                describe '#some_method' do
+                end
+              end
+            END
+          end
+
+          context 'without runtime information' do
+            it 'does nothing' do
+              rewritten_source.should == source
+            end
+          end
+
+          context 'with runtime information' do
+            include_context 'dynamic analysis objects'
+
+            it 'does nothing' do
+              rewritten_source.should == source
+            end
+          end
+        end
+
         context 'when logical-inner #describe is placed outside of the outer #describe in source' do
           include_context 'multiple #describes'
 

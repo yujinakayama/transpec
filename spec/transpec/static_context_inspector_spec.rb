@@ -49,6 +49,10 @@ module Transpec
             end
           end
 
+          RSpec.describe 'something' do
+            in_rspec_describe
+          end
+
           feature 'Capybara DSL' do
             background do
               in_background
@@ -118,6 +122,10 @@ module Transpec
           'send nil :in_block',
           'in normal block in #describe in module',
           [:module]
+        ], [
+          'send nil :in_rspec_describe',
+          'in RSpec.describe',
+          [:example_group]
         ], [
           'send nil :in_background',
           'in #background block in #feature',
