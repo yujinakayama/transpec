@@ -2,7 +2,7 @@
 [![Dependency Status](http://img.shields.io/gemnasium/yujinakayama/transpec.svg)](https://gemnasium.com/yujinakayama/transpec)
 [![Build Status](https://travis-ci.org/yujinakayama/transpec.svg?branch=master)](https://travis-ci.org/yujinakayama/transpec)
 [![Coverage Status](http://img.shields.io/coveralls/yujinakayama/transpec/master.svg)](https://coveralls.io/r/yujinakayama/transpec)
-[![Code Climate](http://img.shields.io/codeclimate/github/yujinakayama/transpec.svg)](https://codeclimate.com/github/yujinakayama/transpec)
+[![Code Climate](https://codeclimate.com/github/yujinakayama/transpec/badges/gpa.svg)](https://codeclimate.com/github/yujinakayama/transpec)
 
 # Transpec
 
