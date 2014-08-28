@@ -3,7 +3,7 @@
 require 'find'
 
 module Transpec
-  module FileFinder
+  module SpecFileFinder
     module_function
 
     def find(paths)

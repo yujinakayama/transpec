@@ -1,10 +1,10 @@
 # coding: utf-8
 
 require 'spec_helper'
-require 'transpec/file_finder'
+require 'transpec/spec_file_finder'
 
 module Transpec
-  describe FileFinder do
+  describe SpecFileFinder do
     include FileHelper
 
     describe '.find' do
@@ -16,7 +16,7 @@ module Transpec
         end
       end
 
-      subject { FileFinder.find(paths) }
+      subject { SpecFileFinder.find(paths) }
 
       context 'when no path is passed' do
         let(:paths) { [] }
@@ -33,7 +33,7 @@ module Transpec
 
         context 'and there is not "spec" directory' do
           it 'raises error' do
-            -> { FileFinder.find(paths) }.should raise_error(ArgumentError)
+            -> { SpecFileFinder.find(paths) }.should raise_error(ArgumentError)
           end
         end
       end
@@ -58,7 +58,7 @@ module Transpec
         let(:paths) { ['non-existent-file'] }
 
         it 'raises error' do
-          -> { FileFinder.find(paths) }.should raise_error(ArgumentError) { |error|
+          -> { SpecFileFinder.find(paths) }.should raise_error(ArgumentError) { |error|
             error.message.should == 'No such file or directory "non-existent-file"'
           }
         end
@@ -76,7 +76,7 @@ module Transpec
     describe '.base_paths' do
       include_context 'isolated environment'
 
-      subject { FileFinder.base_paths(paths) }
+      subject { SpecFileFinder.base_paths(paths) }
 
       context 'when target paths are specified' do
         let(:paths) { ['foo_spec.rb', 'spec/bar_spec.rb'] }
@@ -90,7 +90,7 @@ module Transpec
         let(:paths) { ['../foo_spec.rb', 'spec/bar_spec.rb'] }
 
         it 'raises error' do
-          -> { FileFinder.base_paths(paths) }.should raise_error(ArgumentError)
+          -> { SpecFileFinder.base_paths(paths) }.should raise_error(ArgumentError)
         end
       end
 
@@ -109,7 +109,7 @@ module Transpec
 
         context 'and there is not "spec" directory' do
           it 'raises error' do
-            -> { FileFinder.base_paths(paths) }.should raise_error(ArgumentError)
+            -> { SpecFileFinder.base_paths(paths) }.should raise_error(ArgumentError)
           end
         end
       end

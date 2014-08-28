@@ -1,7 +1,7 @@
 # coding: utf-8
 
-require 'transpec/file_finder'
 require 'transpec/processed_source'
+require 'transpec/spec_file_finder'
 require 'transpec/syntax'
 
 Transpec::Syntax.require_all
@@ -19,7 +19,7 @@ module Transpec
     end
 
     def specs
-      @specs ||= FileFinder.find(@base_paths).map do |path|
+      @specs ||= SpecFileFinder.find(@base_paths).map do |path|
         ProcessedSource.from_file(path)
       end
     end
