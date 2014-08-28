@@ -1,5 +1,6 @@
 # coding: utf-8
 
+require 'transpec/dynamic_analyzer/constants'
 require 'transpec/dynamic_analyzer/rewriter'
 require 'transpec/dynamic_analyzer/runtime_data'
 require 'transpec/directory_cloner'
@@ -12,12 +13,6 @@ require 'English'
 
 module Transpec
   class DynamicAnalyzer
-    ANALYSIS_MODULE = 'Transpec'
-    ANALYSIS_METHOD = 'analyze'
-    RUNTIME_DATA_ERROR_MESSAGE_KEY = :error_message
-    HELPER_TEMPLATE_FILE = 'transpec_analysis_helper.rb.erb'
-    RESULT_FILE = 'transpec_analysis_result.json'
-
     attr_reader :project, :rspec_command, :silent
     alias_method :silent?, :silent
 

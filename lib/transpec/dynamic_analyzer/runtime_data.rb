@@ -1,5 +1,6 @@
 # coding: utf-8
 
+require 'transpec/dynamic_analyzer/constants'
 require 'transpec/dynamic_analyzer/node_util'
 require 'json'
 require 'ostruct'

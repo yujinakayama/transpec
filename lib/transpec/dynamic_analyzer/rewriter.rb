@@ -1,7 +1,7 @@
 # coding: utf-8
 
 require 'transpec/base_rewriter'
-require 'transpec/dynamic_analyzer'
+require 'transpec/dynamic_analyzer/constants'
 require 'transpec/dynamic_analyzer/node_util'
 require 'transpec/util'
 require 'transpec/syntax'
