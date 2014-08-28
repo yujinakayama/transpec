@@ -138,15 +138,6 @@ module Transpec
             END
           end
 
-          let(:expected_source) do
-            <<-END
-              RSpec.describe 'something' do
-                describe '#some_method' do
-                end
-              end
-            END
-          end
-
           context 'without runtime information' do
             it 'does nothing' do
               rewritten_source.should == source
