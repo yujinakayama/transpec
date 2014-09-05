@@ -128,21 +128,6 @@ Then, run `transpec` in the project root directory:
 ```bash
 $ cd some-project
 $ transpec
-Copying the project for dynamic analysis...
-Running dynamic analysis with command "bundle exec rspec"...
-...............................................................................
-...................
-
-Finished in 13.07 seconds
-100 examples, 0 failures
-
-Gathering the spec suite data...
-
-Converting spec/spec_helper.rb
-Converting spec/support/cache_helper.rb
-Converting spec/support/file_helper.rb
-Converting spec/support/shared_context.rb
-Converting spec/transpec/ast/node_spec.rb
 ```
 
 This will run the specs, convert them, and overwrite all spec files in the `spec` directory.
