@@ -2,6 +2,8 @@
 
 ## Development
 
+* Fix an error on processing one-liner `should` that is not directly encloses in an example block. ([#93](https://github.com/yujinakayama/transpec/issues/93))
+
 ## v2.3.7
 
 * Fix a bug where nested example groups in `RSpec.describe` are wrongly converted to non-monkey-patch form when dynamic analysis is skipped. ([#89](https://github.com/yujinakayama/transpec/issues/89))

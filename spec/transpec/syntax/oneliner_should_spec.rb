@@ -586,6 +586,42 @@ module Transpec
             record.new_syntax.should == "it 'does not have n items' do expect(subject.size).not_to eq(n) end"
           end
         end
+
+        context 'when the oneliner #should is not directly enclosed in an example block' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                def some_method
+                  should have(2).items
+                end
+
+                it { some_method }
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                def some_method
+                  expect(subject.size).to eq(2)
+                end
+
+                it { some_method }
+              end
+            END
+          end
+
+          it 'does not insert example description' do
+            rewritten_source.should == expected_source
+          end
+
+          it 'adds record ' \
+             '`it { should have(n).items }` -> `it { expect(subject.size).to eq(n) }`' do
+            record.old_syntax.should == 'it { should have(n).items }'
+            record.new_syntax.should == 'it { expect(subject.size).to eq(n) }'
+          end
+        end
       end
     end
   end

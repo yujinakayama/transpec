@@ -111,6 +111,8 @@ module Transpec
           fail 'This one-liner #should does not have #have matcher!'
         end
 
+        return unless example
+
         unless example.description?
           example.insert_description!(build_description(have_matcher.size_source))
         end
@@ -144,9 +146,9 @@ module Transpec
         param_names :should, :have, :negative_form_of_to
 
         def old_syntax
-          syntax = should.example.description? ? "it '...' do" : 'it {'
+          syntax = had_description? ? "it '...' do" : 'it {'
           syntax << " #{should.method_name} #{have.method_name}(n).#{old_items} "
-          syntax << (should.example.description? ? 'end' : '}')
+          syntax << (had_description? ? 'end' : '}')
         end
 
         def new_syntax
@@ -155,14 +157,19 @@ module Transpec
           syntax << new_expectation
           syntax << ' '
           syntax << source_builder.replacement_matcher_source
-          syntax << ' end'
+          syntax << ' '
+          syntax << (has_description? ? 'end' : '}')
         end
 
         def new_description
-          if should.example.description?
-            "it '...' do"
+          if has_description?
+            if had_description?
+              "it '...' do"
+            else
+              "it '#{should.build_description('n')}' do"
+            end
           else
-            "it '#{should.build_description('n')}' do"
+            'it {'
           end
         end
 
@@ -177,6 +184,15 @@ module Transpec
 
         def new_subject
           build_new_subject('subject')
+        end
+
+        def had_description?
+          return false unless should.example
+          should.example.description?
+        end
+
+        def has_description? # rubocop:disable PredicateName
+          !should.example.nil?
         end
       end
     end
