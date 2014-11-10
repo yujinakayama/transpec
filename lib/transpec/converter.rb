@@ -102,7 +102,7 @@ module Transpec
     def process_operator(operator)
       return unless config.convert_should?
       return if operator.expectation.is_a?(Syntax::OnelinerShould) &&
-        !rspec_version.oneliner_is_expected_available?
+                !rspec_version.oneliner_is_expected_available?
       operator.convert_operator!(config.parenthesize_matcher_arg?)
     end
 

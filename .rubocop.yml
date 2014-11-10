@@ -18,6 +18,9 @@ CyclomaticComplexity:
 PerceivedComplexity:
   Max: 10
 
+AbcSize:
+  Max: 44
+
 WordArray:
   Enabled: false
 

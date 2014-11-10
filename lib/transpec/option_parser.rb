@@ -204,7 +204,7 @@ module Transpec
 
     def highlight_text(text)
       text.gsub(/`.+?`/) { |code| code.gsub('`', '').underline }
-          .gsub(/\*.+?\*/) { |code| code.gsub('*', '').bright }
+        .gsub(/\*.+?\*/) { |code| code.gsub('*', '').bright }
     end
 
     def convert_deprecated_options(raw_args)
