@@ -163,12 +163,12 @@ module Transpec
         end
       end
 
-      describe '-t/--no-explicit-spec-type option' do
-        let(:args) { ['--no-explicit-spec-type'] }
+      describe '-e/--explicit-spec-type option' do
+        let(:args) { ['--explicit-spec-type'] }
 
-        it 'sets Config#add_explicit_type_metadata_to_example_group? false' do
+        it 'sets Config#add_explicit_type_metadata_to_example_group? true' do
           parser.parse(args)
-          config.add_explicit_type_metadata_to_example_group?.should be_false
+          config.add_explicit_type_metadata_to_example_group?.should be_true
         end
       end
 

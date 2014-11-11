@@ -306,6 +306,12 @@ $ transpec --boolean-matcher true,false
 
 See [Supported Conversions - Boolean matchers](#boolean-matchers) for more details.
 
+### `-e/--explicit-spec-type`
+
+Add explicit spec `:type` metadata to example groups in a project using rspec-rails.
+
+See [Supported Conversions - Implicit spec types in rspec-rails](#implicit-spec-types-in-rspec-rails) for more details.
+
 ### `-a/--no-yield-any-instance`
 
 Suppress yielding receiver instances to `any_instance` implementation blocks as the first block argument.
@@ -316,12 +322,6 @@ Specifying this option suppresses the conversion and keeps them compatible with 
 Note that this is not same as `--keep deprecated` since this configures `yield_receiver_to_any_instance_implementation_blocks` with `RSpec.configure`.
 
 See [Supported Conversions - `any_instance` implementation blocks](#any_instance-implementation-blocks) for more details.
-
-### `-t/--no-explicit-spec-type`
-
-Suppress adding explicit spec `:type` metadata to example groups in a project using rspec-rails.
-
-See [Supported Conversions - Implicit spec types in rspec-rails](#implicit-spec-types-in-rspec-rails) for more details.
 
 ### `-p/--no-parens-matcher-arg`
 
@@ -1272,16 +1272,6 @@ Will be converted to:
 
 ```ruby
 RSpec.configure do |rspec|
-end
-
-describe SomeModel, :type => :model do
-end
-```
-
-Or with `--no-explicit-spec-type` option they will be converted to:
-
-```ruby
-RSpec.configure do |rspec|
   # rspec-rails 3 will no longer automatically infer an example group's spec type
   # from the file location. You can explicitly opt-in to the feature using this
   # config option.
@@ -1295,6 +1285,16 @@ RSpec.configure do |rspec|
 end
 
 describe SomeModel do
+end
+```
+
+Or with `--explicit-spec-type` option they will be converted to:
+
+```ruby
+RSpec.configure do |rspec|
+end
+
+describe SomeModel, :type => :model do
 end
 ```
 
@@ -1345,6 +1345,17 @@ RSpec.configure do |c|
   c.pattern
   c.pattern = '**/*_test.rb'
   c.warnings?
+
+  # rspec-rails 3 will no longer automatically infer an example group's spec type
+  # from the file location. You can explicitly opt-in to the feature using this
+  # config option.
+  # To explicitly tag specs without using automatic inference, set the `:type`
+  # metadata manually:
+  #
+  #     describe ThingsController, :type => :controller do
+  #       # Equivalent to being in spec/controllers
+  #     end
+  c.infer_spec_type_from_file_location!
 end
 ```
 

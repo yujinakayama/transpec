@@ -294,6 +294,12 @@ $ transpec --boolean-matcher true,false
 
 See [Supported Conversions - Boolean matchers](#boolean-matchers) for more details.
 
+### `-e/--explicit-spec-type`
+
+Add explicit spec `:type` metadata to example groups in a project using rspec-rails.
+
+See [Supported Conversions - Implicit spec types in rspec-rails](#implicit-spec-types-in-rspec-rails) for more details.
+
 ### `-a/--no-yield-any-instance`
 
 Suppress yielding receiver instances to `any_instance` implementation blocks as the first block argument.
@@ -304,12 +310,6 @@ Specifying this option suppresses the conversion and keeps them compatible with 
 Note that this is not same as `--keep deprecated` since this configures `yield_receiver_to_any_instance_implementation_blocks` with `RSpec.configure`.
 
 See [Supported Conversions - `any_instance` implementation blocks](#any_instance-implementation-blocks) for more details.
-
-### `-t/--no-explicit-spec-type`
-
-Suppress adding explicit spec `:type` metadata to example groups in a project using rspec-rails.
-
-See [Supported Conversions - Implicit spec types in rspec-rails](#implicit-spec-types-in-rspec-rails) for more details.
 
 ### `-p/--no-parens-matcher-arg`
 
@@ -1331,10 +1331,10 @@ Will be converted to:
 <%= convert(example, rspec_version: rspec_version, path: 'spec/models/some_model_spec.rb') -%>
 ```
 
-Or with `--no-explicit-spec-type` option they will be converted to:
+Or with `--explicit-spec-type` option they will be converted to:
 
 ```ruby
-<%= convert(example, rspec_version: rspec_version, path: 'spec/models/some_model_spec.rb', cli: ['--no-explicit-spec-type']) -%>
+<%= convert(example, rspec_version: rspec_version, path: 'spec/models/some_model_spec.rb', cli: ['--explicit-spec-type']) -%>
 ```
 
 * This conversion can be disabled by: `--keep deprecated`
