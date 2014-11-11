@@ -2,6 +2,8 @@
 
 ## Development
 
+## v2.3.8
+
 * Fix an error on processing one-liner `should` that is not directly encloses in an example block. ([#93](https://github.com/yujinakayama/transpec/issues/93))
 
 ## v2.3.7
