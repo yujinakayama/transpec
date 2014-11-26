@@ -34,8 +34,12 @@ module Transpec
         return false
       end
 
-      done = process(paths)
-      return false unless done
+      begin
+        process(paths)
+      rescue DynamicAnalyzer::AnalysisError => error
+        warn "\n" + error.message.color(:red)
+        return false
+      end
 
       display_summary
       generate_commit_message
@@ -47,7 +51,6 @@ module Transpec
     def process(paths)
       unless config.skip_dynamic_analysis?
         runtime_data = run_dynamic_analysis(paths)
-        return false unless runtime_data
       end
 
       spec_suite = SpecSuite.new(paths, runtime_data)
@@ -60,8 +63,6 @@ module Transpec
       spec_suite.specs.each do |spec|
         convert_spec(spec, spec_suite)
       end
-
-      true
     end
 
     def run_dynamic_analysis(paths)
@@ -77,9 +78,6 @@ module Transpec
       puts
 
       runtime_data
-    rescue DynamicAnalyzer::AnalysisError => error
-      warn "\n" + error.message.color(:red)
-      return nil
     end
 
     def convert_spec(spec, spec_suite)
