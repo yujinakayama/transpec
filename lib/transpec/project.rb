@@ -16,8 +16,17 @@ module Transpec
     end
 
     def require_bundler?
-      gemfile_path = File.join(path, 'Gemfile')
-      File.exist?(gemfile_path)
+      File.exist?(gemfile_lock_path)
+    end
+
+    def depend_on_rspec_rails?
+      return @depend_on_rspec_rails if instance_variable_defined?(:@depend_on_rspec_rails)
+      return @depend_on_rspec_rails = false unless require_bundler?
+
+      require 'bundler'
+      gemfile_lock_content = File.read(gemfile_lock_path)
+      lockfile = Bundler::LockfileParser.new(gemfile_lock_content)
+      @depend_on_rspec_rails = lockfile.specs.any? { |gem| gem.name == 'rspec-rails' }
     end
 
     def rspec_version
@@ -37,6 +46,10 @@ module Transpec
     end
 
     private
+
+    def gemfile_lock_path
+      @gemfile_lock_path ||= File.join(path, 'Gemfile.lock')
+    end
 
     def fetch_rspec_version
       command = 'rspec --version'
