@@ -1,6 +1,10 @@
 # coding: utf-8
 
+original_verbose = $VERBOSE
+$VERBOSE = nil
 require 'parser/current'
+$VERBOSE = original_verbose
+
 require 'transpec/ast/builder'
 
 module Transpec
