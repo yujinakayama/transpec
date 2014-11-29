@@ -11,10 +11,10 @@ module Transpec
 
     subject(:project) { Project.new }
 
-    describe '#require_bundler?' do
+    describe '#using_bundler?' do
       include_context 'isolated environment'
 
-      subject { project.require_bundler? }
+      subject { project.using_bundler? }
 
       context 'when the project has a Gemfile.lock' do
         before do

@@ -29,7 +29,7 @@ module Transpec
     end
 
     def default_rspec_command
-      if project.require_bundler?
+      if project.using_bundler?
         'bundle exec rspec'
       else
         'rspec'
