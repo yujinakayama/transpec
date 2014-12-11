@@ -70,7 +70,7 @@ module Transpec
 
       puts 'Copying the project for dynamic analysis...'
 
-      DynamicAnalyzer.new(rspec_command: config.rspec_command) do |analyzer|
+      DynamicAnalyzer.new(project: project, rspec_command: config.rspec_command) do |analyzer|
         puts "Running dynamic analysis with command #{analyzer.rspec_command.inspect}..."
         runtime_data = analyzer.analyze(paths)
       end
