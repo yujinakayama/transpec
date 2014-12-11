@@ -53,7 +53,7 @@ module Transpec
         runtime_data = run_dynamic_analysis(paths)
       end
 
-      spec_suite = SpecSuite.new(paths, runtime_data)
+      spec_suite = SpecSuite.new(project, paths, runtime_data)
       # Actually #analyze does not need to be invoked here, but doing this will avoid long freeze
       # while conversion of files.
       puts 'Gathering the spec suite data...'

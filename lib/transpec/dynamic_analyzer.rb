@@ -76,7 +76,7 @@ module Transpec
     def rewrite_specs(paths)
       rewriter = Rewriter.new
 
-      spec_suite = SpecSuite.new(paths)
+      spec_suite = SpecSuite.new(project, paths)
 
       spec_suite.specs.each do |spec|
         next if spec.error

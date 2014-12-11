@@ -87,9 +87,9 @@ module Transpec
       end
 
       context 'when already in copied project directory' do
-        it 'does not change working directory' do
+        it 'does not copy the project again' do
           DynamicAnalyzer.new(silent: true) do |analyzer|
-            Dir.should_not_receive(:chdir)
+            DirectoryCloner.should_not_receive(:copy_recursively)
             analyzer.analyze
           end
         end
