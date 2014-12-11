@@ -18,7 +18,7 @@ module Transpec
           if runtime_data.present?(node, :rspec_rails?)
             runtime_data[node, :rspec_rails?]
           else
-            true
+            project.depend_on_rspec_rails?
           end
         end
       end
