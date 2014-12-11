@@ -81,7 +81,7 @@ module Transpec
         end
 
         let(:should_object) do
-          Should.new(should_node, source_rewriter, runtime_data)
+          Should.new(should_node, runtime_data)
         end
 
         subject { should_object.have_matcher.conversion_target? }

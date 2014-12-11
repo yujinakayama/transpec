@@ -20,7 +20,7 @@ module Transpec
         end
 
         let(:should_object) do
-          OnelinerShould.new(target_node, source_rewriter, runtime_data)
+          OnelinerShould.new(target_node, runtime_data)
         end
 
         subject { should_object.conversion_target? }

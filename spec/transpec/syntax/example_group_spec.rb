@@ -93,7 +93,7 @@ module Transpec
         shared_context 'multiple #describes' do
           before do
             ast.each_node do |node|
-              example_group = described_class.new(node, source_rewriter, runtime_data)
+              example_group = described_class.new(node, runtime_data, project, source_rewriter)
               next unless example_group.conversion_target?
               example_group.convert_to_non_monkey_patch!
             end

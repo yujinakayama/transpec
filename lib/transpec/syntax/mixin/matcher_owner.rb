@@ -15,7 +15,9 @@ module Transpec
 
             define_method(accessor) do
               return instance_variable_get(ivar) if instance_variable_defined?(ivar)
-              matcher = matcher_class.new(matcher_node, self, source_rewriter, runtime_data, report)
+              matcher = matcher_class.new(
+                matcher_node, self, runtime_data, project, source_rewriter, report
+              )
               instance_variable_set(ivar, matcher)
             end
 

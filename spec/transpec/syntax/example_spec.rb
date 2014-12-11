@@ -22,7 +22,7 @@ module Transpec
         end
 
         let(:example_object) do
-          Example.new(target_node, source_rewriter, runtime_data)
+          Example.new(target_node, runtime_data)
         end
 
         subject { example_object.conversion_target? }

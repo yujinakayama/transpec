@@ -21,7 +21,7 @@ module Transpec
         end
 
         let(:method_stub_object) do
-          MethodStub.new(target_node, source_rewriter, runtime_data)
+          MethodStub.new(target_node, runtime_data)
         end
 
         subject { method_stub_object.conversion_target? }

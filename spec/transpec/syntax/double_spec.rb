@@ -18,7 +18,7 @@ module Transpec
         end
 
         let(:double_object) do
-          Double.new(target_node, source_rewriter, runtime_data)
+          Double.new(target_node, runtime_data)
         end
 
         subject { double_object.conversion_target? }

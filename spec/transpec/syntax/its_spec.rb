@@ -20,7 +20,7 @@ module Transpec
         end
 
         let(:its_object) do
-          Its.new(its_node, source_rewriter, runtime_data)
+          Its.new(its_node, runtime_data)
         end
 
         subject { its_object.conversion_target? }

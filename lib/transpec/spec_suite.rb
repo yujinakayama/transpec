@@ -33,7 +33,7 @@ module Transpec
       specs.each do |spec|
         next unless spec.ast
         spec.ast.each_node do |node|
-          dispatch_node(node, nil, runtime_data)
+          dispatch_node(node, runtime_data, project)
         end
       end
 

@@ -83,7 +83,7 @@ module Transpec
     def convert_spec(spec, spec_suite)
       puts "Converting #{spec.path}"
 
-      converter = Converter.new(spec_suite, config, project.rspec_version)
+      converter = Converter.new(spec_suite, project, config)
       converter.convert_file!(spec)
 
       warn_annotations(converter.report)

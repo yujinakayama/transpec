@@ -2,6 +2,7 @@
 
 require 'transpec/conversion_error'
 require 'transpec/dynamic_analyzer/runtime_data'
+require 'transpec/project'
 require 'transpec/record'
 require 'transpec/report'
 require 'transpec/static_context_inspector'
@@ -53,12 +54,14 @@ end
 module Transpec
   class Syntax
     module Dispatcher
-      def dispatch_node(node, source_rewriter = nil, runtime_data = nil, report = nil)
+      # rubocop:disable LineLength
+      def dispatch_node(node, runtime_data = nil, project = nil, source_rewriter = nil, report = nil)
         Syntax.standalone_syntaxes.find do |syntax_class|
-          syntax = syntax_class.new(node, source_rewriter, runtime_data, report)
+          syntax = syntax_class.new(node, runtime_data, project, source_rewriter, report)
           dispatch_syntax(syntax)
         end
       end
+      # rubocop:enable LineLength
 
       def dispatch_syntax(syntax)
         return false unless syntax.conversion_target?
@@ -145,7 +148,7 @@ module Transpec
     extend Collection
     include Rewritable, DynamicAnalysis
 
-    attr_reader :node, :source_rewriter, :runtime_data, :report
+    attr_reader :node, :runtime_data, :project, :source_rewriter, :report
 
     def self.standalone?
       true
@@ -155,10 +158,11 @@ module Transpec
       @snake_cake_name ||= ModuleUtil.snake_case_name(name)
     end
 
-    def initialize(node, source_rewriter = nil, runtime_data = nil, report = nil)
+    def initialize(node, runtime_data = nil, project = nil, source_rewriter = nil, report = nil)
       @node = node
-      @source_rewriter = source_rewriter
       @runtime_data = runtime_data || DynamicAnalyzer::RuntimeData.new
+      @project = project || Project.new
+      @source_rewriter = source_rewriter
       @report = report || Report.new
     end
 

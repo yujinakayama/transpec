@@ -5,10 +5,15 @@ require 'transpec/converter'
 
 module Transpec
   describe Converter do
-    subject(:converter) { Converter.new(spec_suite, config, rspec_version) }
+    subject(:converter) { Converter.new(spec_suite, project, config) }
     let(:spec_suite) { double('spec_suite', runtime_data: nil).as_null_object }
+    let(:project) { Project.new }
     let(:config) { Config.new }
     let(:rspec_version) { Transpec.required_rspec_version }
+
+    before do
+      converter.stub(:rspec_version).and_return(rspec_version)
+    end
 
     describe '#convert_file!' do
       include_context 'isolated environment'

@@ -20,7 +20,7 @@ module Transpec
         end
 
         let(:current_example_object) do
-          CurrentExample.new(target_node, source_rewriter, runtime_data)
+          CurrentExample.new(target_node, runtime_data)
         end
 
         subject { current_example_object.conversion_target? }
@@ -229,7 +229,7 @@ module Transpec
 
           let(:current_example_objects) do
             ast.each_node.each_with_object([]) do |node, objects|
-              current_example_object = CurrentExample.new(node, source_rewriter, runtime_data)
+              current_example_object = CurrentExample.new(node, runtime_data, project, source_rewriter)
               objects << current_example_object if current_example_object.conversion_target?
             end
           end

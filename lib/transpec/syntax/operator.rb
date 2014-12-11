@@ -21,14 +21,16 @@ module Transpec
         end
       end
 
-      def initialize(node, expectation, source_rewriter = nil, runtime_data = nil, report = nil)
+      def initialize(*args)
+        node = args.shift
+
         operator_node = if node == BE_NODE
                           node.parent
                         else
                           node
                         end
 
-        super(operator_node, expectation, source_rewriter, runtime_data, report)
+        super(operator_node, *args)
       end
 
       def dynamic_analysis_target?
