@@ -92,7 +92,7 @@ module Transpec
         if !method_stub.hash_arg? ||
            rspec_version.receive_messages_available? ||
            config.convert_stub_with_hash_to_allow_to_receive_and_return?
-          method_stub.allowize!(rspec_version)
+          method_stub.allowize!
         elsif config.convert_deprecated_method?
           method_stub.convert_deprecated_method!
         end
@@ -170,7 +170,7 @@ module Transpec
 
     def process_rspec_configure(rspec_configure)
       if config.convert_deprecated_method?
-        rspec_configure.convert_deprecated_options!(rspec_version)
+        rspec_configure.convert_deprecated_options!
       end
 
       if spec_suite.main_rspec_configure_node?(rspec_configure.node)

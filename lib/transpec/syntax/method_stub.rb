@@ -57,7 +57,7 @@ module Transpec
         [:unstub, :unstub!].include?(method_name)
       end
 
-      def allowize!(rspec_version)
+      def allowize!
         return if method_name == :stub_chain && !rspec_version.receive_message_chain_available?
 
         unless allow_to_receive_available?

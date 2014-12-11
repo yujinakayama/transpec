@@ -190,6 +190,10 @@ module Transpec
       node.loc.expression
     end
 
+    def rspec_version
+      project.rspec_version
+    end
+
     def inspect
       "#<#{self.class}: #{node.type}>"
     end

@@ -486,8 +486,8 @@ module Transpec
       let(:method_stub_object) { double('method_stub_object').as_null_object }
 
       shared_examples 'invokes MethodStub#allowize!' do
-        it 'invokes MethodStub#allowize! with RSpecVersion' do
-          method_stub_object.should_receive(:allowize!).with(rspec_version)
+        it 'invokes MethodStub#allowize!' do
+          method_stub_object.should_receive(:allowize!)
           converter.process_method_stub(method_stub_object)
         end
       end
@@ -1148,8 +1148,8 @@ module Transpec
       context 'when Config#convert_deprecated_method? returns true' do
         before { config.convert_deprecated_method = true }
 
-        it 'invokes RSpecConfigure#convert_deprecated_options! with RSpecVersion' do
-          rspec_configure.should_receive(:convert_deprecated_options!).with(rspec_version)
+        it 'invokes RSpecConfigure#convert_deprecated_options!' do
+          rspec_configure.should_receive(:convert_deprecated_options!)
           converter.process_rspec_configure(rspec_configure)
         end
       end

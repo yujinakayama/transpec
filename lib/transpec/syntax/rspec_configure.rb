@@ -67,7 +67,7 @@ module Transpec
         !find_config_node(:infer_spec_type_from_file_location!).nil?
       end
 
-      def convert_deprecated_options!(rspec_version) # rubocop:disable MethodLength
+      def convert_deprecated_options! # rubocop:disable MethodLength
         replace_config!(:backtrace_clean_patterns,  :backtrace_exclusion_patterns)
         replace_config!(:backtrace_clean_patterns=, :backtrace_exclusion_patterns=)
         replace_config!(:color_enabled=, :color=)

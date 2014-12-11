@@ -58,7 +58,8 @@ module Transpec
 
       describe '#convert_deprecated_options!' do
         before do
-          rspec_configure.convert_deprecated_options!(RSpecVersion.new('3.0.0'))
+          rspec_configure.stub(:rspec_version).and_return(RSpecVersion.new('3.0.0'))
+          rspec_configure.convert_deprecated_options!
         end
 
         [
