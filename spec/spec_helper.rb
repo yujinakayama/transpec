@@ -33,15 +33,12 @@ RSpec.configure do |config|
   end
 end
 
-if ENV['TRAVIS'] || ENV['CI'] || ENV['COVERAGE']
+if ENV['TRAVIS'] || ENV['COVERAGE']
   require 'simplecov'
 
   if ENV['TRAVIS']
     require 'coveralls'
     SimpleCov.formatter = Coveralls::SimpleCov::Formatter
-  elsif ENV['CI']
-    require 'simplecov-rcov'
-    SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
   end
 
   SimpleCov.start do
