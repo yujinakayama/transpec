@@ -1328,13 +1328,13 @@ END
 Will be converted to:
 
 ```ruby
-<%= convert(example, rspec_version: rspec_version, path: 'spec/models/some_model_spec.rb') -%>
+<%= convert(example, rspec_version: rspec_version, rails: true, path: 'spec/models/some_model_spec.rb') -%>
 ```
 
 Or with `--explicit-spec-type` option they will be converted to:
 
 ```ruby
-<%= convert(example, rspec_version: rspec_version, path: 'spec/models/some_model_spec.rb', cli: ['--explicit-spec-type']) -%>
+<%= convert(example, rspec_version: rspec_version, rails: true, path: 'spec/models/some_model_spec.rb', cli: ['--explicit-spec-type']) -%>
 ```
 
 * This conversion can be disabled by: `--keep deprecated`

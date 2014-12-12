@@ -53,9 +53,6 @@ class READMEContext
   end
 
   def convert(source, options = {}) # rubocop:disable MethodLength
-    cli = Transpec::CLI.new
-    cli.project.stub(:rspec_version).and_return(options[:rspec_version]) if options[:rspec_version]
-
     cli_args = Array(options[:cli])
     cli_args << '--skip-dynamic-analysis' unless options[:dynamic] # For performance
 
@@ -72,7 +69,19 @@ class READMEContext
     in_isolated_env do
       path = options[:path] || 'spec/example_spec.rb'
       FileHelper.create_file(path, source)
+
+      cli = Transpec::CLI.new
+
+      if options[:rspec_version]
+        cli.project.stub(:rspec_version).and_return(options[:rspec_version])
+      end
+
+      if options[:rails]
+        cli.project.stub(:depend_on_rspec_rails?).and_return(true)
+      end
+
       cli.run(cli_args)
+
       converted_source = File.read(path)
     end
 
