@@ -29,6 +29,9 @@ RegexpLiteral:
   Exclude:
     - 'Guardfile'
 
+EmptyElse:
+  Enabled: false
+
 AlignHash:
   # Alignment of entries using hash rocket as separator. Valid values are:
   #
