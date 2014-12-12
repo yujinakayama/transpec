@@ -3,7 +3,7 @@
 module Transpec
   module Git
     GIT = 'git'
-    COMMIT_MESSAGE_FILE_PATH = File.join('.git', 'COMMIT_EDITMSG')
+    COMMIT_MESSAGE_FILENAME = 'COMMIT_EDITMSG'
 
     module_function
 
@@ -24,15 +24,16 @@ module Transpec
       `#{GIT} status --porcelain`.empty?
     end
 
-    def repository_root
+    def git_dir_path
       fail_unless_inside_of_repository
-      `#{GIT} rev-parse --show-toplevel`.chomp
+      `#{GIT} rev-parse --git-dir`.chomp
     end
 
     def write_commit_message(message)
       fail_unless_inside_of_repository
-      file_path = File.join(repository_root, COMMIT_MESSAGE_FILE_PATH)
+      file_path = File.expand_path(File.join(git_dir_path, COMMIT_MESSAGE_FILENAME))
       File.write(file_path, message)
+      file_path
     end
 
     def fail_unless_inside_of_repository

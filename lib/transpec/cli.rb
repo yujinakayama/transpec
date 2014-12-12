@@ -127,11 +127,12 @@ module Transpec
       return unless Git.command_available? && Git.inside_of_repository?
 
       commit_message = CommitMessage.new(report, project.rspec_version, ARGV)
-      Git.write_commit_message(commit_message.to_s)
+      commit_message_path = Git.write_commit_message(commit_message.to_s)
+      commit_message_path = Pathname.new(commit_message_path).relative_path_from(Pathname.pwd)
 
       puts
       puts 'A commit message that describes the conversion summary was generated to'.color(:cyan)
-      puts '.git/COMMIT_EDITMSG. To use the message, type the following command for'.color(:cyan)
+      puts "#{commit_message_path}. To use the message, type the following command for".color(:cyan)
       puts 'the next commit:'.color(:cyan)
       puts '    git commit -aeF .git/COMMIT_EDITMSG'
     end

@@ -91,13 +91,16 @@ module Transpec
       end
     end
 
-    describe '.repository_root' do
-      context 'when inside of git repository' do
+    describe '.write_commit_message' do
+      let(:message) { 'This is the commit message.' }
+
+      context 'when inside of standard git-dir (.git) repository' do
         include_context 'inside of git repository'
 
         context 'and the current working directory is the repository root' do
-          it 'returns the repository root path' do
-            Git.repository_root.should == File.expand_path('.')
+          it 'writes the message to .git/COMMIT_EDITMSG' do
+            Git.write_commit_message(message)
+            File.read('.git/COMMIT_EDITMSG').should == message
           end
         end
 
@@ -109,44 +112,30 @@ module Transpec
             end
           end
 
-          it 'returns the repository root path' do
-            Git.repository_root.should == File.expand_path('..')
-          end
-        end
-      end
-
-      context 'when not inside of git repository' do
-        it 'raises error' do
-          -> { Git.repository_root }.should raise_error(/is not a Git repository/)
-        end
-      end
-    end
-
-    describe '.write_commit_message' do
-      let(:message) { 'This is the commit message.' }
-
-      context 'when inside of git repository' do
-        include_context 'inside of git repository'
-
-        context 'and there is .git directory in the current working directory' do
-          it 'writes the message to .git/COMMIT_EDITMSG' do
-            Git.write_commit_message(message)
-            File.read('.git/COMMIT_EDITMSG').should == message
-          end
-        end
-
-        context 'and there is not .git directory in the current working directory' do
-          around do |example|
-            Dir.mkdir('dir')
-            Dir.chdir('dir') do
-              example.run
-            end
-          end
-
-          it 'writes the message to .git/COMMIT_EDITMSG in repository root directory' do
+          it 'writes the message to .git/COMMIT_EDITMSG in the repository root' do
             Git.write_commit_message(message)
             File.read('../.git/COMMIT_EDITMSG').should == message
           end
+        end
+
+        it 'returns the commit message file path' do
+          path = Git.write_commit_message(message)
+          File.read(path).should == message
+        end
+      end
+
+      context 'when inside of separated git-dir repository' do
+        around do |example|
+          Dir.mkdir('repo')
+          Dir.chdir('repo') do
+            `git init --separate-git-dir this-is-git-dir`
+            example.run
+          end
+        end
+
+        it 'writes the message to COMMIT_EDITMSG in the separated git-dir' do
+          Git.write_commit_message(message)
+          File.read('this-is-git-dir/COMMIT_EDITMSG').should == message
         end
       end
 
