@@ -53,7 +53,7 @@ module Transpec
         runtime_data = run_dynamic_analysis(paths)
       end
 
-      spec_suite = SpecSuite.new(paths, runtime_data)
+      spec_suite = SpecSuite.new(project, paths, runtime_data)
       # Actually #analyze does not need to be invoked here, but doing this will avoid long freeze
       # while conversion of files.
       puts 'Gathering the spec suite data...'
@@ -70,7 +70,7 @@ module Transpec
 
       puts 'Copying the project for dynamic analysis...'
 
-      DynamicAnalyzer.new(rspec_command: config.rspec_command) do |analyzer|
+      DynamicAnalyzer.new(project: project, rspec_command: config.rspec_command) do |analyzer|
         puts "Running dynamic analysis with command #{analyzer.rspec_command.inspect}..."
         runtime_data = analyzer.analyze(paths)
       end
@@ -83,7 +83,7 @@ module Transpec
     def convert_spec(spec, spec_suite)
       puts "Converting #{spec.path}"
 
-      converter = Converter.new(spec_suite, config, project.rspec_version)
+      converter = Converter.new(spec_suite, project, config)
       converter.convert_file!(spec)
 
       warn_annotations(converter.report)

@@ -74,7 +74,7 @@ module Transpec
 
           found = Syntax.all_syntaxes.find do |syntax_class|
             next unless syntax_class.ancestors.include?(Mixin::Examplish)
-            syntax = syntax_class.new(send_node, source_rewriter, runtime_data)
+            syntax = syntax_class.new(send_node, runtime_data, project, source_rewriter)
             next unless syntax.conversion_target?
             @example = syntax
           end

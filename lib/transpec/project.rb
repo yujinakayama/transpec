@@ -15,9 +15,18 @@ module Transpec
       File.basename(path)
     end
 
-    def require_bundler?
-      gemfile_path = File.join(path, 'Gemfile')
-      File.exist?(gemfile_path)
+    def using_bundler?
+      File.exist?(gemfile_lock_path)
+    end
+
+    def depend_on_rspec_rails?
+      return @depend_on_rspec_rails if instance_variable_defined?(:@depend_on_rspec_rails)
+      return @depend_on_rspec_rails = false unless using_bundler?
+
+      require 'bundler'
+      gemfile_lock_content = File.read(gemfile_lock_path)
+      lockfile = Bundler::LockfileParser.new(gemfile_lock_content)
+      @depend_on_rspec_rails = lockfile.specs.any? { |gem| gem.name == 'rspec-rails' }
     end
 
     def rspec_version
@@ -25,7 +34,7 @@ module Transpec
     end
 
     def with_bundler_clean_env
-      if defined?(Bundler) && require_bundler?
+      if defined?(Bundler) && using_bundler?
         Bundler.with_clean_env do
           # Bundler.with_clean_env cleans environment variables
           # which are set after bundler is loaded.
@@ -38,9 +47,13 @@ module Transpec
 
     private
 
+    def gemfile_lock_path
+      @gemfile_lock_path ||= File.join(path, 'Gemfile.lock')
+    end
+
     def fetch_rspec_version
       command = 'rspec --version'
-      command = 'bundle exec ' + command if require_bundler?
+      command = 'bundle exec ' + command if using_bundler?
 
       output = nil
 

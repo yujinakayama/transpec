@@ -21,7 +21,7 @@ module Transpec
         end
 
         let(:method_stub_object) do
-          MethodStub.new(target_node, source_rewriter, runtime_data)
+          MethodStub.new(target_node, runtime_data)
         end
 
         subject { method_stub_object.conversion_target? }
@@ -176,7 +176,8 @@ module Transpec
 
       describe '#allowize!' do
         before do
-          method_stub_object.allowize!(rspec_version) unless example.metadata[:no_before_allowize!]
+          method_stub_object.stub(:rspec_version).and_return(rspec_version)
+          method_stub_object.allowize! unless example.metadata[:no_before_allowize!]
         end
 
         let(:rspec_version) { Transpec.required_rspec_version }
@@ -241,15 +242,13 @@ module Transpec
                 include_context 'dynamic analysis objects'
 
                 it 'raises ContextError' do
-                  -> { method_stub_object.allowize!(rspec_version) }
-                    .should raise_error(ContextError)
+                  -> { method_stub_object.allowize! }.should raise_error(ContextError)
                 end
               end
 
               context 'without runtime information' do
                 it 'raises ContextError' do
-                  -> { method_stub_object.allowize!(rspec_version) }
-                    .should raise_error(ContextError)
+                  -> { method_stub_object.allowize! }.should raise_error(ContextError)
                 end
               end
             end
@@ -273,15 +272,13 @@ module Transpec
                 include_context 'dynamic analysis objects'
 
                 it 'raises ContextError' do
-                  -> { method_stub_object.allowize!(rspec_version) }
-                    .should raise_error(ContextError)
+                  -> { method_stub_object.allowize! }.should raise_error(ContextError)
                 end
               end
 
               context 'without runtime information' do
                 it 'does not raise ContextError' do
-                  -> { method_stub_object.allowize!(rspec_version) }
-                    .should_not raise_error
+                  -> { method_stub_object.allowize! }.should_not raise_error
                 end
               end
             end

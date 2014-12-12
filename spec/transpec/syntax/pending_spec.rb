@@ -20,7 +20,7 @@ module Transpec
         end
 
         let(:pending_object) do
-          Pending.new(target_node, source_rewriter, runtime_data)
+          Pending.new(target_node, runtime_data)
         end
 
         subject { pending_object.conversion_target? }

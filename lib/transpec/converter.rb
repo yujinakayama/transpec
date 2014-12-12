@@ -2,8 +2,8 @@
 
 require 'transpec/base_rewriter'
 require 'transpec/config'
+require 'transpec/project'
 require 'transpec/report'
-require 'transpec/rspec_version'
 require 'transpec/spec_suite'
 require 'transpec/syntax'
 
@@ -13,16 +13,16 @@ module Transpec
   class Converter < BaseRewriter # rubocop:disable ClassLength
     include Syntax::Dispatcher
 
-    attr_reader :spec_suite, :config, :rspec_version, :report
+    attr_reader :spec_suite, :project, :config, :report
 
     alias_method :convert_file!, :rewrite_file!
     alias_method :convert_source, :rewrite_source
     alias_method :convert, :rewrite
 
-    def initialize(spec_suite = nil, config = nil, rspec_version = nil)
+    def initialize(spec_suite = nil, project = nil, config = nil)
       @spec_suite = spec_suite || SpecSuite.new
+      @project = project || Project.new
       @config = config || Config.new
-      @rspec_version = rspec_version || Transpec.required_rspec_version
       @report = Report.new
     end
 
@@ -30,12 +30,16 @@ module Transpec
       spec_suite.runtime_data
     end
 
+    def rspec_version
+      project.rspec_version
+    end
+
     def process(ast, source_rewriter)
       return unless ast
 
       ast.each_node do |node|
         begin
-          dispatch_node(node, source_rewriter, runtime_data, report)
+          dispatch_node(node, runtime_data, project, source_rewriter, report)
         rescue ConversionError => error
           report.conversion_errors << error
         end
@@ -88,7 +92,7 @@ module Transpec
         if !method_stub.hash_arg? ||
            rspec_version.receive_messages_available? ||
            config.convert_stub_with_hash_to_allow_to_receive_and_return?
-          method_stub.allowize!(rspec_version)
+          method_stub.allowize!
         elsif config.convert_deprecated_method?
           method_stub.convert_deprecated_method!
         end
@@ -166,7 +170,7 @@ module Transpec
 
     def process_rspec_configure(rspec_configure)
       if config.convert_deprecated_method?
-        rspec_configure.convert_deprecated_options!(rspec_version)
+        rspec_configure.convert_deprecated_options!
       end
 
       if spec_suite.main_rspec_configure_node?(rspec_configure.node)

@@ -51,9 +51,9 @@ module Transpec
       end
 
       context 'when command is not specified' do
-        context 'and there is a Gemfile' do
+        context 'and there is a Gemfile.lock' do
           before do
-            create_file('Gemfile', '')
+            create_file('Gemfile.lock', '')
           end
 
           it 'returns "bundle exec rspec"' do
@@ -61,7 +61,7 @@ module Transpec
           end
         end
 
-        context 'and there is no Gemfile' do
+        context 'and there is no Gemfile.lock' do
           it 'returns "rspec"' do
             should == 'rspec'
           end
@@ -87,9 +87,9 @@ module Transpec
       end
 
       context 'when already in copied project directory' do
-        it 'does not change working directory' do
+        it 'does not copy the project again' do
           DynamicAnalyzer.new(silent: true) do |analyzer|
-            Dir.should_not_receive(:chdir)
+            DirectoryCloner.should_not_receive(:copy_recursively)
             analyzer.analyze
           end
         end
@@ -260,7 +260,7 @@ module Transpec
                 gem 'rspec', '~> 2.99'
               END
 
-              Project.new.with_bundler_clean_env do
+              Bundler.with_clean_env do
                 `bundle install --path vendor/bundle`
               end
 

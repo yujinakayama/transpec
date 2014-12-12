@@ -14,6 +14,7 @@ module Transpec
 
       context 'when multiple configurations are added' do
         before do
+          rspec_configure.stub(:rspec_rails?).and_return(true)
           rspec_configure.expose_dsl_globally = true
           rspec_configure.infer_spec_type_from_file_location!
         end
@@ -58,7 +59,8 @@ module Transpec
 
       describe '#convert_deprecated_options!' do
         before do
-          rspec_configure.convert_deprecated_options!(RSpecVersion.new('3.0.0'))
+          rspec_configure.stub(:rspec_version).and_return(RSpecVersion.new('3.0.0'))
+          rspec_configure.convert_deprecated_options!
         end
 
         [
@@ -290,65 +292,72 @@ module Transpec
       end
 
       describe '#infer_spec_type_from_file_location!' do
-        before do
-          rspec_configure.infer_spec_type_from_file_location!
-        end
-
-        context 'when #infer_spec_type_from_file_location! does not exist' do
-          let(:source) do
-            <<-END
-              RSpec.configure do |config|
-              end
-            END
+        context 'in rspec-rails project' do
+          before do
+            rspec_configure.stub(:rspec_rails?).and_return(true)
+            rspec_configure.infer_spec_type_from_file_location!
           end
 
-          let(:expected_source) do
-            <<-END
-              RSpec.configure do |config|
-                # rspec-rails 3 will no longer automatically infer an example group's spec type
-                # from the file location. You can explicitly opt-in to the feature using this
-                # config option.
-                # To explicitly tag specs without using automatic inference, set the `:type`
-                # metadata manually:
-                #
-                #     describe ThingsController, :type => :controller do
-                #       # Equivalent to being in spec/controllers
-                #     end
-                config.infer_spec_type_from_file_location!
-              end
-            END
+          context 'when #infer_spec_type_from_file_location! does not exist' do
+            let(:source) do
+              <<-END
+                RSpec.configure do |config|
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                RSpec.configure do |config|
+                  # rspec-rails 3 will no longer automatically infer an example group's spec type
+                  # from the file location. You can explicitly opt-in to the feature using this
+                  # config option.
+                  # To explicitly tag specs without using automatic inference, set the `:type`
+                  # metadata manually:
+                  #
+                  #     describe ThingsController, :type => :controller do
+                  #       # Equivalent to being in spec/controllers
+                  #     end
+                  config.infer_spec_type_from_file_location!
+                end
+              END
+            end
+
+            it 'adds #infer_spec_type_from_file_location! statement along with comment' do
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record of addition `RSpec.configure { |c| c.expose_dsl_globally = value }`' do
+              record.type.should == :addition
+              record.new_syntax.should == 'RSpec.configure { |c| c.infer_spec_type_from_file_location! }'
+            end
           end
 
-          it 'adds #infer_spec_type_from_file_location! statement along with comment' do
-            rewritten_source.should == expected_source
-          end
+          context 'when #infer_spec_type_from_file_location! already exists' do
+            let(:source) do
+              <<-END
+                RSpec.configure do |config|
+                  config.infer_spec_type_from_file_location!
+                end
+              END
+            end
 
-          it 'adds record of addition `RSpec.configure { |c| c.expose_dsl_globally = value }`' do
-            record.type.should == :addition
-            record.new_syntax.should == 'RSpec.configure { |c| c.infer_spec_type_from_file_location! }'
-          end
-        end
+            it 'does nothing' do
+              rewritten_source.should == source
+            end
 
-        context 'when #infer_spec_type_from_file_location! already exists' do
-          let(:source) do
-            <<-END
-              RSpec.configure do |config|
-                config.infer_spec_type_from_file_location!
-              end
-            END
-          end
-
-          it 'does nothing' do
-            rewritten_source.should == source
-          end
-
-          it 'reports nothing' do
-            record.should be_nil
+            it 'reports nothing' do
+              record.should be_nil
+            end
           end
         end
 
         context 'with runtime information' do
           include_context 'dynamic analysis objects'
+
+          before do
+            rspec_configure.infer_spec_type_from_file_location!
+          end
 
           context 'when rspec-rails is loaded in the spec' do
             let(:source) do
@@ -388,18 +397,18 @@ module Transpec
             it 'adds #infer_spec_type_from_file_location! statement' do
               rewritten_source.should == expected_source
             end
-          end
 
-          context 'when rspec-rails is not loaded in the spec' do
-            let(:source) do
-              <<-END
-                RSpec.configure do |config|
-                end
-              END
-            end
+            context 'when rspec-rails is not loaded in the spec' do
+              let(:source) do
+                <<-END
+                  RSpec.configure do |config|
+                  end
+                END
+              end
 
-            it 'does nothing' do
-              rewritten_source.should == source
+              it 'does nothing' do
+                rewritten_source.should == source
+              end
             end
           end
         end

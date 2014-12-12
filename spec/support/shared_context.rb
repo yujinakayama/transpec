@@ -22,6 +22,11 @@ shared_context 'parsed objects' do
 
   # Include 'dynamic analysis objects' after this context so that this nil will be overridden.
   let(:runtime_data) { nil }
+
+  let(:project) do
+    require 'transpec/project'
+    Transpec::Project.new
+  end
 end
 
 # This context requires `source` to be defined with #let.
@@ -49,7 +54,7 @@ end
 shared_context 'syntax object' do |syntax_class, name|
   let(name) do
     ast.each_node do |node|
-      syntax = syntax_class.new(node, source_rewriter, runtime_data)
+      syntax = syntax_class.new(node, runtime_data, project, source_rewriter)
       return syntax if syntax.conversion_target?
     end
 

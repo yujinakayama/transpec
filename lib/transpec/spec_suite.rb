@@ -10,17 +10,20 @@ module Transpec
   class SpecSuite
     include Syntax::Dispatcher
 
-    attr_reader :runtime_data
+    attr_reader :project, :target_paths, :runtime_data
 
-    def initialize(base_paths = [], runtime_data = nil)
-      @base_paths = base_paths
+    def initialize(project = Project.new, target_paths = [], runtime_data = nil)
+      @project = project
+      @target_paths = target_paths
       @runtime_data = runtime_data
       @analyzed = false
     end
 
     def specs
-      @specs ||= SpecFileFinder.find(@base_paths).map do |path|
-        ProcessedSource.from_file(path)
+      @specs ||= Dir.chdir(project.path) do
+        SpecFileFinder.find(target_paths).map do |path|
+          ProcessedSource.from_file(path)
+        end
       end
     end
 
@@ -30,7 +33,7 @@ module Transpec
       specs.each do |spec|
         next unless spec.ast
         spec.ast.each_node do |node|
-          dispatch_node(node, nil, runtime_data)
+          dispatch_node(node, runtime_data, project)
         end
       end
 

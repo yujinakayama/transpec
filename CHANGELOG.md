@@ -2,6 +2,8 @@
 
 ## Development
 
+* Check whether rspec-rails is used in the target project via `Gemfile.lock` when `-s/--skip-dynamic-analysis` option is specified. ([#88](https://github.com/yujinakayama/transpec/issues/88))
+
 ## v2.3.8
 
 * Fix an error on processing one-liner `should` that is not directly enclosed in an example block. ([#93](https://github.com/yujinakayama/transpec/issues/93))

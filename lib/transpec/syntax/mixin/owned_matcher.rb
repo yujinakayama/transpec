@@ -18,10 +18,12 @@ module Transpec
           end
         end
 
-        def initialize(node, expectation, source_rewriter = nil, runtime_data = nil, report = nil)
-          super(node, source_rewriter, runtime_data, report)
+        # rubocop:disable LineLength
+        def initialize(node, expectation, runtime_data = nil, project = nil, source_rewriter = nil, report = nil)
+          super(node, runtime_data, project, source_rewriter, report)
           @expectation = expectation
         end
+        # rubocop:enable LineLength
       end
     end
   end

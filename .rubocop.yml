@@ -13,6 +13,9 @@ LineLength:
 MethodLength:
   Max: 17
 
+ParameterLists:
+  Max: 6
+
 CyclomaticComplexity:
   Max: 8
 

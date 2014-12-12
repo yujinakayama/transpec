@@ -29,7 +29,7 @@ module Transpec
     end
 
     def default_rspec_command
-      if project.require_bundler?
+      if project.using_bundler?
         'bundle exec rspec'
       else
         'rspec'
@@ -76,7 +76,7 @@ module Transpec
     def rewrite_specs(paths)
       rewriter = Rewriter.new
 
-      spec_suite = SpecSuite.new(paths)
+      spec_suite = SpecSuite.new(project, paths)
 
       spec_suite.specs.each do |spec|
         next if spec.error

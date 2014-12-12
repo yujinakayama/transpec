@@ -9,9 +9,10 @@ module Transpec
     include FileHelper
     include_context 'isolated environment'
 
-    subject(:spec_suite) { SpecSuite.new(base_paths, runtime_data) }
+    subject(:spec_suite) { SpecSuite.new(project, target_paths, runtime_data) }
+    let(:project) { Project.new }
+    let(:target_paths) { [] }
     let(:runtime_data) { nil }
-    let(:base_paths) { [] }
 
     describe '#need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?' do
       subject do
@@ -79,7 +80,7 @@ module Transpec
       end
 
       context 'with runtime information' do
-        let(:runtime_data) { Transpec::DynamicAnalyzer.new(silent: true).analyze(base_paths) }
+        let(:runtime_data) { Transpec::DynamicAnalyzer.new(silent: true).analyze(target_paths) }
 
         let(:main_rspec_configure_node) do
           spec_suite.specs.each do |spec|
