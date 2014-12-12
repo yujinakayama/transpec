@@ -7,8 +7,8 @@ group :red_green_refactor, halt_on_fail: true do
   guard :rspec, cmd: 'bundle exec rspec --format Fuubar' do
     watch(%r{^spec/.+_spec\.rb$})
     watch(%r{^lib/(.+)\.rb$})        { |m| "spec/#{m[1]}_spec.rb" }
-    watch('spec/spec_helper.rb')     { "spec" }
-    watch(%r{^spec/support/.+\.rb$}) { "spec" }
+    watch('spec/spec_helper.rb')     { 'spec' }
+    watch(%r{^spec/support/.+\.rb$}) { 'spec' }
   end
 
   guard :rubocop, all_on_start: false, cli: '--format fuubar' do

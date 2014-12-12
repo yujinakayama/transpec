@@ -1,6 +1,7 @@
 
 AllCops:
   Include:
+    - 'Guardfile'
     - '**/*.rake'
   Exclude:
     - 'tmp/**/*'
@@ -23,6 +24,10 @@ AbcSize:
 
 WordArray:
   Enabled: false
+
+RegexpLiteral:
+  Exclude:
+    - 'Guardfile'
 
 AlignHash:
   # Alignment of entries using hash rocket as separator. Valid values are:
