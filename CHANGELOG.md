@@ -2,6 +2,8 @@
 
 ## Development
 
+## v3.0.0
+
 * Check whether rspec-rails is used in the target project via `Gemfile.lock` when `-s/--skip-dynamic-analysis` option is specified. ([#88](https://github.com/yujinakayama/transpec/issues/88))
 * Now by default the addition of `config.infer_spec_type_from_file_location!` is enabled and the addition of explicit `:type` metadata to each example group is disabled in a project using `rspec-rails` (the former behavior with `-t/--no-explicit-spec-type`).
 * Remove `-t/--no-explicit-spec-type` and add `-e/--explicit-spec-type` option.
