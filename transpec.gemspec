@@ -10,12 +10,14 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Yuji Nakayama']
   spec.email         = ['nkymyj@gmail.com']
   spec.summary       = 'The RSpec syntax converter'
-  spec.description   = 'Transpec converts your specs to the latest RSpec syntax ' +
+  spec.description   = 'Transpec converts your specs to the latest RSpec syntax ' \
                        'with static and dynamic code analysis.'
   spec.homepage      = 'http://yujinakayama.me/transpec/'
   spec.license       = 'MIT'
 
-  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  spec.files         = `git ls-files -z`.split("\x0").reject do |path|
+    path.match(%r{^(test|spec|features)/})
+  end
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 

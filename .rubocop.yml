@@ -2,6 +2,7 @@
 AllCops:
   Include:
     - 'Guardfile'
+    - '*.gemspec'
     - '**/*.rake'
   Exclude:
     - 'tmp/**/*'
@@ -31,6 +32,7 @@ WordArray:
 RegexpLiteral:
   Exclude:
     - 'Guardfile'
+    - '*.gemspec'
 
 EmptyElse:
   Enabled: false
