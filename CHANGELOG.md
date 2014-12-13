@@ -2,6 +2,8 @@
 
 ## Development
 
+## v3.0.1
+
 * Exclude spec files from the gem package to lighten the package size.
 
 ## v3.0.0
