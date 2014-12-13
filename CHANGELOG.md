@@ -2,6 +2,8 @@
 
 ## Development
 
+* Exclude spec files from the gem package to lighten the package size.
+
 ## v3.0.0
 
 * Check whether rspec-rails is used in the target project via `Gemfile.lock` when `-s/--skip-dynamic-analysis` option is specified. ([#88](https://github.com/yujinakayama/transpec/issues/88))
