@@ -10,3 +10,5 @@ matrix:
     - rvm: ruby-head
 before_install: gem update --remote bundler
 script: bundle exec rake ci
+sudo: false
+cache: bundler
