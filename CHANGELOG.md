@@ -2,6 +2,8 @@
 
 ## Development
 
+## v3.0.3
+
 * Fix a bug where `obj.should =~ an_activerecord_relation` was converted to `expect(obj).to match(an_activerecord_relation)` rather than `match_array`. ([#92](https://github.com/yujinakayama/transpec/issues/92))
 
 ## v3.0.2
