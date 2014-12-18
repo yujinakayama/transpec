@@ -603,6 +603,52 @@ module Transpec
             end
           end
 
+          context 'and runtime type of the variable is ActiveRecord::Relation' do
+            include_context 'dynamic analysis objects'
+
+            let(:source) do
+              <<-END
+                module ActiveRecord
+                  class Relation
+                  end
+                end
+
+                describe 'example' do
+                  it 'matches to the pattern' do
+                    variable = ActiveRecord::Relation.new
+                    'string'.should =~ variable
+                  end
+                end
+              END
+            end
+
+            let(:expected_source) do
+              <<-END
+                module ActiveRecord
+                  class Relation
+                  end
+                end
+
+                describe 'example' do
+                  it 'matches to the pattern' do
+                    variable = ActiveRecord::Relation.new
+                    'string'.should match_array(variable)
+                  end
+                end
+              END
+            end
+
+            it 'converts to `match_array(variable)` form' do
+              rewritten_source.should == expected_source
+            end
+
+            it 'adds record `=~ [1, 2]` -> `match_array([1, 2])` without annotation' do
+              record.old_syntax.should == '=~ [1, 2]'
+              record.new_syntax.should == 'match_array([1, 2])'
+              record.annotation.should be_nil
+            end
+          end
+
           context 'and no runtime type information is provided' do
             let(:source) do
               <<-END

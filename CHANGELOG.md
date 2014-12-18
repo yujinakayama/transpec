@@ -2,6 +2,8 @@
 
 ## Development
 
+* Fix a bug where `obj.should =~ an_activerecord_relation` was converted to `expect(obj).to match(an_activerecord_relation)` rather than `match_array`. ([#92](https://github.com/yujinakayama/transpec/issues/92))
+
 ## v3.0.2
 
 * Fix a bug where `have(n).errors_on(:attr)` was unintentionally converted when combined with one-liner `should`. ([#95](https://github.com/yujinakayama/transpec/issues/95))

@@ -17,7 +17,11 @@ module Transpec
 
       define_dynamic_analysis do |rewriter|
         if method_name == :=~
-          rewriter.register_request(arg_node, :enumerable_arg?, 'is_a?(Enumerable)')
+          # https://github.com/rspec/rspec-expectations/blob/v2.14.5/lib/rspec/matchers.rb#L692
+          # https://github.com/rspec/rspec-rails/blob/v2.14.2/lib/rspec/rails/matchers/relation_match_array.rb
+          code = 'is_a?(Enumerable) || ' \
+                 'self.class.ancestors.any? { |klass| klass.name == "ActiveRecord::Relation" }'
+          rewriter.register_request(arg_node, :using_match_array?, code)
         end
       end
 
@@ -78,7 +82,7 @@ module Transpec
       def convert_to_match!(parenthesize_arg)
         handle_anterior_of_operator!
 
-        if enumerable_arg?
+        if using_match_array?
           replace(selector_range, 'match_array')
         else
           replace(selector_range, 'match')
@@ -86,11 +90,11 @@ module Transpec
 
         parenthesize!(parenthesize_arg)
 
-        accurate = !enumerable_arg?.nil? # rubocop:disable NonNilCheck
+        accurate = !using_match_array?.nil? # rubocop:disable NonNilCheck
 
         # Need to register record after all source rewrites are done
         # to avoid false record when failed with overlapped rewrite.
-        if enumerable_arg?
+        if using_match_array?
           add_record('=~ [1, 2]', 'match_array([1, 2])', accurate)
         else
           add_record('=~ /pattern/', 'match(/pattern/)', accurate)
@@ -105,14 +109,14 @@ module Transpec
         end
       end
 
-      def enumerable_arg?
+      def using_match_array?
         case arg_node.type
         when :array
           true
         when :regexp
           false
         else
-          runtime_data[arg_node, :enumerable_arg?]
+          runtime_data[arg_node, :using_match_array?]
         end
       end
 
