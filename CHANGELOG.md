@@ -2,6 +2,8 @@
 
 ## Development
 
+## v3.0.2
+
 * Fix a bug where `have(n).errors_on(:attr)` was unintentionally converted when combined with one-liner `should`. ([#95](https://github.com/yujinakayama/transpec/issues/95))
 
 ## v3.0.1
