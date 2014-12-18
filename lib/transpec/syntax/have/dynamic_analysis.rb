@@ -30,7 +30,7 @@ module Transpec
             rewriter.register_request(target_node, key, code, target_type)
 
             key = :subject_includes_active_model_validations?
-            code = 'is_a?(ActiveModel::Validations)'
+            code = "#{subject_code}.is_a?(ActiveModel::Validations)"
             rewriter.register_request(target_node, key, code, target_type)
 
             key = :project_requires_collection_matcher?
