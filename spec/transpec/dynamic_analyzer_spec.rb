@@ -249,7 +249,7 @@ module Transpec
         end
       end
 
-      context 'when a deprecated syntax is used with `RSpec.configure { |c| c.raise_errors_for_deprecations! }`' do
+      context 'when `RSpec.configure { |c| c.raise_errors_for_deprecations! }` is set before running specs' do
         include CacheHelper
 
         around do |example|
@@ -280,8 +280,8 @@ module Transpec
             require 'spec_helper'
 
             describe 'example' do
-              it 'is deprecated syntax' do
-                mock('something')
+              it "exits without setting analysis error message but this won't be run" do
+                exit!
               end
             end
           END
