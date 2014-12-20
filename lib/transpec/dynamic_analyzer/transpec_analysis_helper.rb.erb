@@ -31,20 +31,21 @@ module <%= ANALYSIS_MODULE %>
     object
   end
 
-  def error_message=(message)
-    data[<%= RUNTIME_DATA_ERROR_MESSAGE_KEY.inspect %>] = message
-  end
-
   def validate_rspec_configuration!(config)
     deprecation_stream_name = config.deprecation_stream.class.name
 
     if deprecation_stream_name.start_with?('RSpec::Core::Formatters::DeprecationFormatter')
-      self.error_message = 'Aborted dynamic analysis. ' \
-                           'Disable `RSpec.configure { |c| c.raise_errors_for_deprecations! }` ' \
-                           "in your spec because it interferes with Transpec's dynamic analysis."
-      save_result
-      exit(1)
+      message = 'Aborted dynamic analysis. ' \
+                'Disable `RSpec.configure { |c| c.raise_errors_for_deprecations! }` ' \
+                "in your spec because it interferes with Transpec's dynamic analysis."
+      fail_with_message!(message)
     end
+  end
+
+  def fail_with_message!(message)
+    data[<%= RUNTIME_DATA_ERROR_MESSAGE_KEY.inspect %>] = message
+    save_result
+    exit!(1)
   end
 
   def save_result
