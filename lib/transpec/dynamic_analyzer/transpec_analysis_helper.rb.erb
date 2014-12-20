@@ -3,12 +3,12 @@ module <%= ANALYSIS_MODULE %>
 
   module_function
 
-  def temporary_data
-    @temporary_data ||= {}
-  end
-
   def data
     @data ||= {}
+  end
+
+  def ephemeral_data
+    @ephemeral_data ||= {}
   end
 
   def <%= ANALYSIS_METHOD %>(object, context, node_id, analysis_codes)

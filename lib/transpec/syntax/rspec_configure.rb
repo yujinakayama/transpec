@@ -16,7 +16,7 @@ module Transpec
       include Mixin::Send, Mixin::RSpecRails, ConfigModification
 
       define_dynamic_analysis do |rewriter|
-        run_order = "#{DynamicAnalyzer::ANALYSIS_MODULE}.temporary_data[:rspec_configure_run_order]"
+        run_order = "#{DynamicAnalyzer::ANALYSIS_MODULE}.ephemeral_data[:rspec_configure_run_order]"
         code = "#{run_order} ||= 0\n" \
                "#{run_order} += 1"
         rewriter.register_request(node, :run_order, code)
