@@ -23,7 +23,7 @@ module Transpec
       File.read(spec_path)
     end
 
-    describe 'one-liner expectation with have(n).items matcher' do
+    describe 'one-liner expectation with have(n).items matcher', rspec: 2 do
       let(:source) do
         <<-END
           class Team
@@ -142,7 +142,7 @@ module Transpec
       end
     end
 
-    describe 'one-liner expectation with have(n).errors_on(attr)' do
+    describe 'one-liner expectation with have(n).errors_on(attr)', rspec: 2 do
       context 'when `is_expected.to` is unavailable' do
         before do
           cli.project.rspec_version.stub(:oneliner_is_expected_available?).and_return(false)

@@ -192,7 +192,7 @@ module Transpec
         end
       end
 
-      describe '#convert_have_items_to_standard_should! and Have#convert_to_standard_expectation!' do
+      describe '#convert_have_items_to_standard_should! and Have#convert_to_standard_expectation!', rspec: 2 do
         before do
           should_object.convert_have_items_to_standard_should!
           should_object.have_matcher.convert_to_standard_expectation!

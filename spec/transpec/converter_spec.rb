@@ -90,7 +90,7 @@ module Transpec
         end
       end
 
-      context 'when the source has overlapped conversion targets' do
+      context 'when the source has overlapped conversion targets', rspec: 2 do
         let(:source) do
           <<-END
             describe 'example group' do
