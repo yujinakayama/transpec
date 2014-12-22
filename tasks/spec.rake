@@ -3,7 +3,10 @@
 require 'rspec/core/rake_task'
 require 'rspec/core/version'
 
-RSpec::Core::RakeTask.new(:spec)
+RSpec::Core::RakeTask.new(:spec) do |task|
+  task.verbose = false
+end
+
 Rake::Task[:spec].enhance(['spec:convert', 'spec:setup'])
 
 namespace :spec do
