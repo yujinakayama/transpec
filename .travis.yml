@@ -5,6 +5,11 @@ rvm:
   - 2.1
   - ruby-head
   - jruby
+env:
+  - RSPEC_VERSION=2.14
+  - RSPEC_VERSION=2.99
+  - RSPEC_VERSION=3.0
+  - RSPEC_VERSION=3.1
 matrix:
   allow_failures:
     - rvm: ruby-head
