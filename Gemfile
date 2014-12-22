@@ -4,7 +4,7 @@ gemspec
 
 group :development, :test do
   gem 'rake',          '~> 10.1'
-  gem 'rspec',         '~> 2.14.0'
+  gem 'rspec',         "~> #{ENV['RSPEC_VERSION'] || '2.14'}.0"
   gem 'simplecov',     '~> 0.7'
   gem 'rubocop',       '~> 0.24'
 end
