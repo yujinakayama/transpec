@@ -29,14 +29,4 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'rainbow',       '>= 1.99.1', '< 3.0'
   spec.add_runtime_dependency 'json',          '~> 1.8'
   spec.add_runtime_dependency 'activesupport', '>= 3.0', '< 5.0'
-
-  spec.add_development_dependency 'rake',          '~> 10.1'
-  spec.add_development_dependency 'rspec',         '~> 2.14.0'
-  spec.add_development_dependency 'fuubar',        '~> 1.3'
-  spec.add_development_dependency 'simplecov',     '~> 0.7'
-  spec.add_development_dependency 'rubocop',       '~> 0.24'
-  spec.add_development_dependency 'guard-rspec',   '>= 4.2.3', '< 5.0'
-  spec.add_development_dependency 'guard-rubocop', '~> 1.0'
-  spec.add_development_dependency 'guard-shell',   '~> 0.5'
-  spec.add_development_dependency 'ruby_gntp',     '~> 0.3'
 end
