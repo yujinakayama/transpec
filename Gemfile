@@ -10,7 +10,7 @@ group :development, :test do
 end
 
 group :development do
-  gem 'fuubar',        '~> 1.3'
+  gem 'fuubar',        '>= 1.3', '< 3.0'
   gem 'guard-rspec',   '>= 4.2.3', '< 5.0'
   gem 'guard-rubocop', '~> 1.0'
   gem 'guard-shell',   '~> 0.5'
