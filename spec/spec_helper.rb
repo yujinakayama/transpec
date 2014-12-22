@@ -1,15 +1,13 @@
 # coding: utf-8
 
 RSpec.configure do |config|
-  unless ENV['TRANSPEC_TEST']
-    # Yes, I'm writing specs in should syntax intentionally!
-    config.expect_with :rspec do |c|
-      c.syntax = :should
-    end
+  # Yes, I'm writing specs in should syntax intentionally!
+  config.expect_with :rspec do |c|
+    c.syntax = :should unless ENV['TRANSPEC_TEST']
+  end
 
-    config.mock_with :rspec do |c|
-      c.syntax = :should
-    end
+  config.mock_with :rspec do |c|
+    c.syntax = :should unless ENV['TRANSPEC_TEST']
   end
 
   config.color_enabled = true
