@@ -143,44 +143,50 @@ module Transpec
     end
 
     describe 'one-liner expectation with have(n).errors_on(attr)' do
-      let(:source) do
-        <<-END
-          module RSpec
-            module Rails
-            end
-          end
+      context 'when `is_expected.to` is unavailable' do
+        before do
+          cli.project.rspec_version.stub(:oneliner_is_expected_available?).and_return(false)
+        end
 
-          module ActiveModel
-            module Validations
-              def errors_on(attribute, options = {})
-                valid_args = [options[:context]].compact
-                self.valid?(*valid_args)
-
-                [self.errors[attribute]].flatten.compact
+        let(:source) do
+          <<-END
+            module RSpec
+              module Rails
               end
             end
-          end
 
-          class SomeModel
-            include ActiveModel::Validations
+            module ActiveModel
+              module Validations
+                def errors_on(attribute, options = {})
+                  valid_args = [options[:context]].compact
+                  self.valid?(*valid_args)
 
-            def valid?(*)
-              false
+                  [self.errors[attribute]].flatten.compact
+                end
+              end
             end
 
-            def errors
-              { name: [:foo, :bar] }
+            class SomeModel
+              include ActiveModel::Validations
+
+              def valid?(*)
+                false
+              end
+
+              def errors
+                { name: [:foo, :bar] }
+              end
             end
-          end
 
-          describe SomeModel do
-            it { should have(2).errors_on(:name) }
-          end
-        END
-      end
+            describe SomeModel do
+              it { should have(2).errors_on(:name) }
+            end
+          END
+        end
 
-      it "won't be converted" do
-        converted_source.should == source
+        it "won't be converted" do
+          converted_source.should == source
+        end
       end
     end
   end
