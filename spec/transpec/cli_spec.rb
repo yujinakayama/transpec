@@ -9,10 +9,6 @@ module Transpec
 
     subject(:cli) { CLI.new }
 
-    before do
-      cli.project.stub(:rspec_version).and_return(Transpec.required_rspec_version)
-    end
-
     describe '.run' do
       it 'invokes #run' do
         args = ['foo', 'bar']
@@ -141,6 +137,19 @@ module Transpec
 
         it 'warns of the RSpec version' do
           cli.should_receive(:warn).with(/rspec.+dependency/i)
+          cli.run(args)
+        end
+      end
+
+      context 'when the project has a Gemfile but no Gemfile.lock' do
+        before do
+          create_file('Gemfile', '')
+        end
+
+        include_examples 'aborts processing'
+
+        it 'warns of the missing Gemfile.lock' do
+          cli.should_receive(:warn).with(/Gemfile.lock/i)
           cli.run(args)
         end
       end

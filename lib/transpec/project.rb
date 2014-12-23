@@ -17,7 +17,8 @@ module Transpec
     end
 
     def using_bundler?
-      File.exist?(gemfile_lock_path)
+      gemfile_path = File.join(path, 'Gemfile')
+      File.exist?(gemfile_path)
     end
 
     def depend_on_rspec_rails?
@@ -45,15 +46,19 @@ module Transpec
     private
 
     def dependency_gems
-      @dependency_gems ||= begin
-        gemfile_lock_content = File.read(gemfile_lock_path)
-        lockfile = Bundler::LockfileParser.new(gemfile_lock_content)
-        lockfile.specs
-      end
+      return @dependency_gems if @dependency_gems
+      lockfile = Bundler::LockfileParser.new(gemfile_lock_content)
+      @dependency_gems = lockfile.specs
     end
 
-    def gemfile_lock_path
-      @gemfile_lock_path ||= File.join(path, 'Gemfile.lock')
+    def gemfile_lock_content
+      gemfile_lock_path = File.join(path, 'Gemfile.lock')
+
+      if File.exist?(gemfile_lock_path)
+        File.read(gemfile_lock_path)
+      else
+        fail GemfileLockNotFoundError, 'Gemfile.lock is missing. Please run `bundle install`.'
+      end
     end
 
     def fetch_rspec_version
@@ -65,5 +70,7 @@ module Transpec
         RSpec::Core::Version::STRING
       end
     end
+
+    class GemfileLockNotFoundError < StandardError; end
   end
 end

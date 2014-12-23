@@ -593,6 +593,8 @@ module Transpec
 
           context 'when rspec-rails is specified in the Gemfile.lock' do
             before do
+              create_file('Gemfile', '')
+
               create_file('Gemfile.lock', <<-END.strip_heredoc)
                 GEM
                   remote: https://rubygems.org/
@@ -675,6 +677,8 @@ module Transpec
 
           context 'when rspec-rails is not specified in the Gemfile.lock' do
             before do
+              create_file('Gemfile', '')
+
               create_file('Gemfile.lock', <<-END.strip_heredoc)
                 GEM
                   remote: https://rubygems.org/

@@ -28,7 +28,7 @@ module Transpec
     def run(args)
       begin
         paths = OptionParser.new(config).parse(args)
-        fail_if_should_not_continue!
+        validate!
       rescue => error
         warn error.message
         return false
@@ -95,7 +95,7 @@ module Transpec
 
     private
 
-    def fail_if_should_not_continue!
+    def validate!
       unless config.forced?
         if Git.command_available? && Git.inside_of_repository? && !Git.clean?
           fail 'The current Git repository is not clean. Aborting. ' \

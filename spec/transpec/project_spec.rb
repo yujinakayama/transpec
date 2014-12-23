@@ -8,34 +8,40 @@ module Transpec
   describe Project do
     include FileHelper
     include CacheHelper
+    include_context 'isolated environment'
 
     subject(:project) { Project.new }
 
     describe '#using_bundler?' do
-      include_context 'isolated environment'
-
       subject { project.using_bundler? }
 
-      context 'when the project has a Gemfile.lock' do
+      context 'when the project has a Gemfile' do
         before do
-          create_file('Gemfile.lock', '')
+          create_file('Gemfile', '')
         end
 
         it { should be_true }
       end
 
-      context 'when the project have no Gemfile.lock' do
+      context 'when the project has no Gemfile but a Gemfile.lock' do
+        before do
+          create_file('Gemfile.lock', '')
+        end
+
+        it { should be_false }
+      end
+
+      context 'when the project have neither Gemfile nor Gemfile.lock' do
         it { should be_false }
       end
     end
 
     describe '#depend_on_rspec_rails?' do
-      include_context 'isolated environment'
-
       subject { project.depend_on_rspec_rails? }
 
-      context 'when the project has a Gemfile.lock' do
+      context 'when the project has both Gemfile and Gemfile.lock' do
         before do
+          create_file('Gemfile', '')
           create_file('Gemfile.lock', gemfile_content)
         end
 
@@ -134,7 +140,19 @@ module Transpec
         end
       end
 
-      context 'when the project have no Gemfile.lock' do
+      context 'when the project has a Gemfile but no Gemfile.lock' do
+        before do
+          create_file('Gemfile', '')
+        end
+
+        it 'raises GemfileLockNotFoundError' do
+          lambda {
+            project.depend_on_rspec_rails?
+          }.should raise_error(Project::GemfileLockNotFoundError)
+        end
+      end
+
+      context 'when the project have neither Gemfile nor Gemfile.lock' do
         it { should be_false }
       end
     end
@@ -146,7 +164,7 @@ module Transpec
         should be_a(RSpecVersion)
       end
 
-      context 'when the project has a Gemfile' do
+      context 'when the project has both Gemfile and Gemfile.lock' do
         context 'and depends on RSpec 2.13.0' do
           around do |example|
             with_cached_dir('rspec-2.13.0-project') do |cached|
@@ -171,9 +189,17 @@ module Transpec
         end
       end
 
-      context 'when the project has no Gemfile' do
-        include_context 'isolated environment'
+      context 'when the project has a Gemfile but no Gemfile.lock' do
+        before do
+          create_file('Gemfile', '')
+        end
 
+        it 'raises GemfileLockNotFoundError' do
+          -> { rspec_version }.should raise_error(Project::GemfileLockNotFoundError)
+        end
+      end
+
+      context 'when the project have neither Gemfile nor Gemfile.lock' do
         it 'returns version of the RSpec installed in the system' do
           require 'rspec/core/version'
           rspec_version.to_s.should == RSpec::Core::Version::STRING

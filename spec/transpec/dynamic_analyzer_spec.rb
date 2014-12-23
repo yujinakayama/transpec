@@ -51,9 +51,9 @@ module Transpec
       end
 
       context 'when command is not specified' do
-        context 'and there is a Gemfile.lock' do
+        context 'and there is a Gemfile' do
           before do
-            create_file('Gemfile.lock', '')
+            create_file('Gemfile', '')
           end
 
           it 'returns "bundle exec rspec"' do
@@ -61,7 +61,7 @@ module Transpec
           end
         end
 
-        context 'and there is no Gemfile.lock' do
+        context 'and there is no Gemfile' do
           it 'returns "rspec"' do
             should == 'rspec'
           end
