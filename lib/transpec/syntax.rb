@@ -179,7 +179,7 @@ module Transpec
     end
 
     def static_context_inspector
-      @static_context_inspector ||= StaticContextInspector.new(node)
+      @static_context_inspector ||= StaticContextInspector.new(node, rspec_version)
     end
 
     def parent_node

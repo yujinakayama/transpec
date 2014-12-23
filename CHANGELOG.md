@@ -3,6 +3,7 @@
 ## Development
 
 * Fix an issue where `obj = Klass.any_instance; obj.should_receive(:message)` was not properly converted to `expect_any_instance_of(Klass).to receive(:message)` when run on RSpec 3.
+* Improve the static context inspection accuracy when run on RSpec 3.
 
 ## v3.0.3
 

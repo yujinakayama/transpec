@@ -73,5 +73,9 @@ module Transpec
     def rspec_2_99?
       RSPEC_2_99 <= self && self < RSPEC_3_0
     end
+
+    def rspec_3?
+      self >= RSPEC_3_0
+    end
   end
 end
