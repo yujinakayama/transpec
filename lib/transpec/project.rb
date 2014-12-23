@@ -1,6 +1,7 @@
 # coding: utf-8
 
 require 'transpec/rspec_version'
+require 'bundler'
 require 'English'
 
 module Transpec
@@ -22,11 +23,7 @@ module Transpec
     def depend_on_rspec_rails?
       return @depend_on_rspec_rails if instance_variable_defined?(:@depend_on_rspec_rails)
       return @depend_on_rspec_rails = false unless using_bundler?
-
-      require 'bundler'
-      gemfile_lock_content = File.read(gemfile_lock_path)
-      lockfile = Bundler::LockfileParser.new(gemfile_lock_content)
-      @depend_on_rspec_rails = lockfile.specs.any? { |gem| gem.name == 'rspec-rails' }
+      @depend_on_rspec_rails = dependency_gems.any? { |gem| gem.name == 'rspec-rails' }
     end
 
     def rspec_version
@@ -47,27 +44,26 @@ module Transpec
 
     private
 
+    def dependency_gems
+      @dependency_gems ||= begin
+        gemfile_lock_content = File.read(gemfile_lock_path)
+        lockfile = Bundler::LockfileParser.new(gemfile_lock_content)
+        lockfile.specs
+      end
+    end
+
     def gemfile_lock_path
       @gemfile_lock_path ||= File.join(path, 'Gemfile.lock')
     end
 
     def fetch_rspec_version
-      command = 'rspec --version'
-      command = 'bundle exec ' + command if using_bundler?
-
-      output = nil
-
-      Dir.chdir(path) do
-        with_bundler_clean_env do
-          IO.popen(command) do |io|
-            output = io.read
-          end
-        end
+      if using_bundler?
+        rspec_core_gem = dependency_gems.find { |gem| gem.name == 'rspec-core' }
+        rspec_core_gem.version
+      else
+        require 'rspec/core/version'
+        RSpec::Core::Version::STRING
       end
-
-      fail 'Failed checking RSpec version.' if output.nil? || $CHILD_STATUS.exitstatus != 0
-
-      output.chomp
     end
   end
 end
