@@ -23,7 +23,9 @@ namespace :spec do
       Bundler.with_clean_env do
         ENV['RSPEC_VERSION'] = '2.99'
         sh 'bundle', 'install', '--retry', '3'
+
         ENV['TRANSPEC_TEST'] = 'true'
+        ENV['CI'] = ENV['JENKINS_URL'] = ENV['COVERALLS_RUN_LOCALLY'] = nil # Disable Coveralls.
         sh 'bundle', 'exec', 'transpec'
       end
     ensure
