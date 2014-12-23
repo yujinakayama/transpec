@@ -2,6 +2,8 @@
 
 ## Development
 
+## v3.0.5
+
 * Abort processing if the project has a `Gemfile` but no `Gemfile.lock`.
 
 ## v3.0.4
