@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require 'transpec/static_context_inspector'
+require 'transpec/rspec_version'
 require 'ast'
 
 module Transpec
@@ -10,6 +11,8 @@ module Transpec
     include ::AST::Sexp
     include_context 'parsed objects'
     include_context 'isolated environment'
+
+    let(:rspec_version) { Transpec::RSpecVersion.new(RSpec::Core::Version::STRING) }
 
     describe '#scopes' do
       def node_id(node)
@@ -150,7 +153,7 @@ module Transpec
           it "returns #{expected_scopes.inspect}" do
             fail 'Target node is not found!' unless target_node
 
-            context_inspector = StaticContextInspector.new(target_node)
+            context_inspector = StaticContextInspector.new(target_node, rspec_version)
             context_inspector.scopes.should == expected_scopes
           end
         end
@@ -161,7 +164,7 @@ module Transpec
       let(:context_inspector) do
         ast.each_node do |node|
           next unless node == s(:send, nil, :target)
-          return StaticContextInspector.new(node)
+          return StaticContextInspector.new(node, rspec_version)
         end
 
         fail 'Target node not found!'
@@ -664,11 +667,43 @@ module Transpec
       include_examples 'context inspection methods'
     end
 
-    context 'when in #before block in RSpec.configure' do
+    context 'when in #before(:each) block in RSpec.configure' do
       let(:source) do
         <<-END
           RSpec.configure do |config|
             config.before do
+              target
+            end
+          end
+
+          describe('test') { example { } }
+        END
+      end
+
+      include_examples 'context inspection methods'
+    end
+
+    context 'when in #before(:all) block in RSpec.configure' do
+      let(:source) do
+        <<-END
+          RSpec.configure do |config|
+            config.before(:all) do
+              target
+            end
+          end
+
+          describe('test') { example { } }
+        END
+      end
+
+      include_examples 'context inspection methods'
+    end
+
+    context 'when in #around block in RSpec.configure' do
+      let(:source) do
+        <<-END
+          RSpec.configure do |config|
+            config.around do
               target
             end
           end

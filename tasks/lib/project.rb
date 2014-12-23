@@ -53,28 +53,6 @@ class Project
   private
 
   def setup
-    if url.start_with?('/')
-      setup_from_local
-    else
-      setup_from_remote
-    end
-  end
-
-  def setup_from_local
-    FileUtils.rm_rf(project_dir) if Dir.exist?(project_dir)
-    Dir.mkdir(project_dir)
-
-    Dir.chdir(url) do
-      Dir.new('.').each do |entry|
-        next if ['.', '..', 'tmp'].include?(entry)
-        FileUtils.cp_r(entry, project_dir)
-      end
-    end
-
-    bundle_install
-  end
-
-  def setup_from_remote
     if Dir.exist?(project_dir)
       git 'checkout', '.'
       git 'checkout', ref
@@ -123,7 +101,5 @@ class Project
   def prepare_env
     # Disable Coveralls.
     ENV['CI'] = ENV['JENKINS_URL'] = ENV['COVERALLS_RUN_LOCALLY'] = nil
-
-    ENV['TRANSPEC_TEST'] = 'true'
   end
 end

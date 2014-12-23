@@ -49,7 +49,8 @@ module CacheHelper
     @cache_dir ||= begin
       project_root = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
       ruby_version = [RUBY_ENGINE, RUBY_VERSION].join('-')
-      cache_dir = File.join(project_root, '.cache', 'spec', ruby_version)
+      rspec_version = ['rspec', RSpec::Core::Version::STRING].join('-')
+      cache_dir = File.join(project_root, '.cache', 'spec', ruby_version, rspec_version)
 
       unless Dir.exist?(cache_dir)
         require 'fileutils'

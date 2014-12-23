@@ -14,7 +14,12 @@ module Transpec
         included do
           define_dynamic_analysis do |rewriter|
             code = <<-END.gsub(/^\s+\|/, '').chomp
-              |if self.class.name == 'RSpec::Mocks::AnyInstance::Recorder'
+              |any_instance_classes = [
+              |  'RSpec::Mocks::AnyInstance::Recorder',
+              |  'RSpec::Mocks::AnyInstance::Proxy'
+              |]
+              |
+              |if any_instance_classes.include?(self.class.name)
               |  if respond_to?(:klass)
               |    klass.name
               |  elsif instance_variable_defined?(:@klass)

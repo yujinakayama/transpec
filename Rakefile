@@ -1,8 +1,7 @@
 require 'bundler/gem_tasks'
-require 'rspec/core/rake_task'
 require 'rubocop/rake_task'
+require 'rspec/core/version'
 
-RSpec::Core::RakeTask.new(:spec)
 RuboCop::RakeTask.new(:style)
 
 Dir['tasks/**/*.rake'].each do |path|
@@ -12,5 +11,9 @@ end
 task default: %w(spec style readme)
 
 ci_tasks = %w(spec)
-ci_tasks.concat(%w(style readme:check test:all)) unless RUBY_ENGINE == 'jruby'
+
+if RUBY_ENGINE != 'jruby' && RSpec::Core::Version::STRING.start_with?('2.14')
+  ci_tasks.concat(%w(style readme:check test:all))
+end
+
 task ci: ci_tasks

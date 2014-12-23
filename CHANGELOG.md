@@ -2,6 +2,10 @@
 
 ## Development
 
+* Fix an issue where `obj = Klass.any_instance; obj.should_receive(:message)` was not properly converted to `expect_any_instance_of(Klass).to receive(:message)` when run on RSpec 3.
+* Improve the static context inspection accuracy when run on RSpec 3.
+* Check target project's RSpec version via `Gemfile.lock` instead of running `rspec --version`.
+
 ## v3.0.3
 
 * Fix a bug where `obj.should =~ an_activerecord_relation` was converted to `expect(obj).to match(an_activerecord_relation)` rather than `match_array`. ([#92](https://github.com/yujinakayama/transpec/issues/92))

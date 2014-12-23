@@ -9,7 +9,7 @@ require 'ast'
 
 module Transpec
   class Syntax
-    describe Have do
+    describe Have, rspec: 2 do
       include ::AST::Sexp
       include_context 'parsed objects'
       include_context 'syntax object', Should, :should_object

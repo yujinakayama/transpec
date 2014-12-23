@@ -1,15 +1,13 @@
 # coding: utf-8
 
 RSpec.configure do |config|
-  unless ENV['TRANSPEC_TEST']
-    # Yes, I'm writing specs in should syntax intentionally!
-    config.expect_with :rspec do |c|
-      c.syntax = :should
-    end
+  # Yes, I'm writing specs in should syntax intentionally!
+  config.expect_with :rspec do |c|
+    c.syntax = :should unless ENV['TRANSPEC_TEST']
+  end
 
-    config.mock_with :rspec do |c|
-      c.syntax = :should
-    end
+  config.mock_with :rspec do |c|
+    c.syntax = :should unless ENV['TRANSPEC_TEST']
   end
 
   config.color_enabled = true
@@ -19,8 +17,9 @@ RSpec.configure do |config|
   # to individual examples or groups you care about by tagging them with
   # `:focus` metadata. When nothing is tagged with `:focus`, all examples
   # get run.
-  config.filter_run :focus
   config.run_all_when_everything_filtered = true
+  config.filter_run_including :focus
+  config.filter_run_excluding rspec: proc { |major| major != RSpec::Core::Version::STRING.to_i }
 
   config.before(:suite) do
     require 'rainbow'

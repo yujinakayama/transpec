@@ -5,7 +5,7 @@ require 'transpec/syntax/its'
 
 module Transpec
   class Syntax
-    describe Its do
+    describe Its, rspec: 2 do
       include_context 'parsed objects'
       include_context 'syntax object', Its, :its_object
 

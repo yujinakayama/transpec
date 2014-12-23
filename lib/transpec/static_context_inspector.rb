@@ -10,34 +10,28 @@ module Transpec
     SCOPE_TYPES = [:module, :class, :sclass, :def, :defs, :block].freeze
     TWISTED_SCOPE_TYPES = (SCOPE_TYPES - [:def, :defs]).freeze
 
-    NON_MONKEY_PATCH_EXPECTATION_AVAILABLE_CONTEXT = [
+    EXAMPLE_CONTEXTS = [
       [:example_group, :example],
       [:example_group, :each_before_after],
+      [:example_group, :helper],
+      [:example_group, :def],
+      [:rspec_configure, :each_before_after],
+      [:rspec_configure, :def],
+      [:module, :def]
+    ].freeze
+
+    EXAMPLE_GROUP_CONTEXTS = [
       [:example_group, :all_before_after],
       [:example_group, :around],
-      [:example_group, :helper],
-      [:example_group, :def],
-      [:rspec_configure, :each_before_after],
       [:rspec_configure, :all_before_after],
-      [:rspec_configure, :around],
-      [:rspec_configure, :def],
-      [:module, :def]
+      [:rspec_configure, :around]
     ].freeze
 
-    NON_MONKEY_PATCH_MOCK_AVAILABLE_CONTEXT = [
-      [:example_group, :example],
-      [:example_group, :each_before_after],
-      [:example_group, :helper],
-      [:example_group, :def],
-      [:rspec_configure, :each_before_after],
-      [:rspec_configure, :def],
-      [:module, :def]
-    ].freeze
+    attr_reader :node, :rspec_version
 
-    attr_reader :node
-
-    def initialize(node)
+    def initialize(node, rspec_version)
       @node = node
+      @rspec_version = rspec_version
     end
 
     def scopes
@@ -50,14 +44,17 @@ module Transpec
 
     def non_monkey_patch_expectation_available?
       return @expectation_available if instance_variable_defined?(:@expectation_available)
-      @expectation_available = match_scopes(NON_MONKEY_PATCH_EXPECTATION_AVAILABLE_CONTEXT)
+      contexts = EXAMPLE_CONTEXTS + EXAMPLE_GROUP_CONTEXTS
+      @expectation_available = match_context?(contexts)
     end
 
     alias_method :expect_available?, :non_monkey_patch_expectation_available?
 
     def non_monkey_patch_mock_available?
       return @mock_available if instance_variable_defined?(:@mock_available)
-      @mock_available = match_scopes(NON_MONKEY_PATCH_MOCK_AVAILABLE_CONTEXT)
+      contexts = EXAMPLE_CONTEXTS
+      contexts += EXAMPLE_GROUP_CONTEXTS if rspec_version.rspec_3?
+      @mock_available = match_context?(contexts)
     end
 
     alias_method :expect_to_receive_available?, :non_monkey_patch_mock_available?
@@ -142,11 +139,11 @@ module Transpec
       :each_before_after
     end
 
-    def match_scopes(scope_suffixes)
+    def match_context?(scope_trailing_patterns)
       return true if scopes == [:def]
 
-      scope_suffixes.any? do |suffix|
-        scopes.end_with?(suffix)
+      scope_trailing_patterns.any? do |pattern|
+        scopes.end_with?(pattern)
       end
     end
 

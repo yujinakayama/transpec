@@ -6,14 +6,6 @@ require_relative 'project'
 class Test < Project
   include RSpec::Matchers
 
-  attr_reader :simple
-  alias_method :simple?, :simple
-
-  def initialize(url, ref = nil, bundler_args = [], simple = false)
-    super(url, ref, bundler_args)
-    @simple = simple
-  end
-
   def run
     puts " Testing transpec on #{name} project ".center(80, '=')
 
@@ -22,7 +14,6 @@ class Test < Project
     in_project_dir do
       transpec '--force'
       sh 'bundle exec rspec'
-      return if simple?
       compare_summary!('2.99.0')
 
       puts 'Rewriting `rspec` version in Gemfile as 3.0.0'
