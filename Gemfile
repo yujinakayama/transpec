@@ -3,10 +3,22 @@ source 'https://rubygems.org'
 gemspec
 
 group :development, :test do
-  gem 'rake',          '~> 10.1'
-  gem 'rspec',         "~> #{ENV['RSPEC_VERSION'] || '2.14'}.0"
-  gem 'simplecov',     '~> 0.7'
-  gem 'rubocop',       '~> 0.24'
+  version = ENV['RSPEC_VERSION'] || '2.14'
+
+  case version
+  when 'head'
+    %w(rspec rspec-core rspec-expectations rspec-mocks rspec-support).each do |lib|
+      gem lib, git: "git://github.com/rspec/#{lib}.git"
+    end
+  when /^\d+\.\d+$/
+    gem 'rspec', "~> #{version}.0"
+  else
+    fail 'RSPEC_VERSION must be specified as "major.minor" like "2.14", or "head".'
+  end
+
+  gem 'rake',      '~> 10.1'
+  gem 'simplecov', '~> 0.7'
+  gem 'rubocop',   '~> 0.24'
 end
 
 group :development do
