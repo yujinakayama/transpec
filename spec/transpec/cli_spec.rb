@@ -139,7 +139,7 @@ module Transpec
 
         include_examples 'aborts processing'
 
-        it 'warns to the version' do
+        it 'warns of the RSpec version' do
           cli.should_receive(:warn).with(/rspec.+dependency/i)
           cli.run(args)
         end
@@ -163,7 +163,7 @@ module Transpec
           create_file(valid_syntax_file_path, 'this_is_valid_syntax')
         end
 
-        it 'warns to the user' do
+        it 'warns of the error' do
           cli.should_receive(:warn)
             .with('Syntax error at spec/invalid_example.rb:2:1. Skipping the file.')
           cli.run(args)
