@@ -146,7 +146,13 @@ module Transpec
       end
 
       context 'when analysis result data file is not found' do
-        let(:source) { 'exit!' }
+        let(:source) do
+          <<-END
+            class JSON
+              undef_method :dump
+            end
+          END
+        end
 
         it 'raises AnalysisError' do
           -> { dynamic_analyzer.analyze }
