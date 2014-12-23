@@ -14,7 +14,7 @@ task default: %w(spec style readme)
 ci_tasks = %w(spec)
 
 if RUBY_ENGINE != 'jruby' && RSpec::Core::Version::STRING.start_with?('2.14')
-  ci_tasks.concat(%w(style readme:check test:all))
+  ci_tasks.concat(%w(style readme:check travis:validate_matrix test:all))
 end
 
 task ci: ci_tasks
