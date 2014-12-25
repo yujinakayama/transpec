@@ -2,6 +2,8 @@
 
 ## Development
 
+## v3.0.6
+
 * Bump `parser` dependency to `~> 2.2` along with the release of MRI 2.2.
 
 ## v3.0.5
