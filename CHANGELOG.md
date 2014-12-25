@@ -2,6 +2,8 @@
 
 ## Development
 
+* Bump `parser` dependency to `~> 2.2` along with the release of MRI 2.2.
+
 ## v3.0.5
 
 * Abort processing if the project has a `Gemfile` but no `Gemfile.lock`.
