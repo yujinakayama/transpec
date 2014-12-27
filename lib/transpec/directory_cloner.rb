@@ -38,6 +38,8 @@ module Transpec
       end
 
       copy_permission(source, destination) if File.exist?(destination)
+    rescue => error
+      raise error.class, "while copying #{source.inspect}.", error.backtrace
     end
 
     def copy_permission(source, destination)

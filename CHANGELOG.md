@@ -2,6 +2,8 @@
 
 ## Development
 
+* Include problematic file path in error message of failure on project copy. ([#96](https://github.com/yujinakayama/transpec/issues/96))
+
 ## v3.0.6
 
 * Bump `parser` dependency to `~> 2.2` along with the release of MRI 2.2.

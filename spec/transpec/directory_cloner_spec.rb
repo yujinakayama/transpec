@@ -69,6 +69,20 @@ module Transpec
         path = DirectoryCloner.copy_recursively('src', 'dst')
         path.should == File.expand_path('dst')
       end
+
+      context 'when failed copying any of the files' do
+        it 'raises error with the problematic file path and the original backtrace' do
+          create_file('src/file', '')
+
+          FileUtils.stub(:copy_file).and_raise(Errno::ENOENT)
+
+          lambda {
+            DirectoryCloner.copy_recursively('src', 'dst')
+          }.should raise_error(/src\/file/) { |error|
+            error.backtrace.first.should_not include('rescue')
+          }
+        end
+      end
     end
   end
 end
