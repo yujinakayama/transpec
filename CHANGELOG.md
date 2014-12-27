@@ -2,6 +2,8 @@
 
 ## Development
 
+## v3.0.7
+
 * Include problematic file path in error message of failure on project copy. ([#96](https://github.com/yujinakayama/transpec/issues/96))
 
 ## v3.0.6
