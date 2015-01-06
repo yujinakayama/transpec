@@ -1438,6 +1438,6 @@ Tested on MRI 1.9, 2.0, 2.1 and JRuby in 1.9 mode.
 
 ## License
 
-Copyright (c) 2013–2014 Yuji Nakayama
+Copyright (c) 2013–2015 Yuji Nakayama
 
 See the [LICENSE.txt](LICENSE.txt) for details.
