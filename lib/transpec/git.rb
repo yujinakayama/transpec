@@ -15,7 +15,7 @@ module Transpec
     end
 
     def inside_of_repository?
-      fail '`git` command is not available' unless command_available?
+      fail "`#{GIT}` command is not available" unless command_available?
       system("#{GIT} rev-parse --is-inside-work-tree > /dev/null 2> /dev/null")
     end
 
@@ -32,7 +32,7 @@ module Transpec
     def write_commit_message(message)
       fail_unless_inside_of_repository
       file_path = File.expand_path(File.join(git_dir_path, COMMIT_MESSAGE_FILENAME))
-      File.write(file_path, message)
+      File.write(file_path, message.to_s)
       file_path
     end
 
