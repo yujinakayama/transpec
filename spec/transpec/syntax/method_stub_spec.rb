@@ -16,7 +16,7 @@ module Transpec
         let(:target_node) do
           ast.each_node(:send).find do |send_node|
             method_name = send_node.children[1]
-            method_name == :stub
+            [:stub, :stub!].include?(method_name)
           end
         end
 
@@ -46,6 +46,20 @@ module Transpec
               describe 'example' do
                 it "is not RSpec's #stub" do
                   Factory.stub(:foo)
+                end
+              end
+            END
+          end
+
+          it { should be_false }
+        end
+
+        context 'when AWS.stub! node is passed' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it "is not RSpec's #stub" do
+                  AWS.stub!
                 end
               end
             END

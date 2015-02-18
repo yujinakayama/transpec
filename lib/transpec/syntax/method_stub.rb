@@ -28,7 +28,8 @@ module Transpec
       def dynamic_analysis_target?
         super &&
           receiver_node &&
-          [:stub, :stub!, :stub_chain, :unstub, :unstub!].include?(method_name)
+          [:stub, :stub!, :stub_chain, :unstub, :unstub!].include?(method_name) &&
+          arg_node
       end
 
       def conversion_target?
