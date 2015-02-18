@@ -2,6 +2,8 @@
 
 ## Development
 
+## v3.0.8
+
 * Fix error on converting spec with AWS.stub! without dynamic analysis. ([#100](https://github.com/yujinakayama/transpec/issues/100))
 
 ## v3.0.7
