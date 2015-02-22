@@ -29,7 +29,10 @@ class Test < Project
   private
 
   def transpec(*args)
-    sh File.join(Transpec.root, 'bin', 'transpec'), *args
+    with_clean_bundler_env do
+      ENV['BUNDLE_GEMFILE'] = File.join(Transpec.root, 'Gemfile')
+      sh 'bundle', 'exec', File.join(Transpec.root, 'bin', 'transpec'), *args
+    end
   end
 
   def add_rspec_3_to_gemfile
