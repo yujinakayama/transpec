@@ -8,38 +8,53 @@ module Transpec
 
     PREDICATES = [
       [:forced,                                                false],
-      [:convert_should,                                        true],
-      [:convert_oneliner,                                      true],
-      [:convert_should_receive,                                true],
-      [:convert_stub,                                          true],
-      [:convert_have_items,                                    true],
-      [:convert_its,                                           true],
-      [:convert_pending,                                       true],
-      [:convert_deprecated_method,                             true],
-      [:convert_example_group,                                 false],
-      [:convert_hook_scope,                                    false],
-      [:convert_stub_with_hash_to_allow_to_receive_and_return, false],
       [:skip_dynamic_analysis,                                 false],
       [:add_explicit_type_metadata_to_example_group,           false],
       [:add_receiver_arg_to_any_instance_implementation_block, true],
       [:parenthesize_matcher_arg,                              true]
     ].freeze
 
+    DEFAULT_CONVERSIONS = {
+              should: true,
+            oneliner: true,
+      should_receive: true,
+                stub: true,
+          have_items: true,
+                 its: true,
+             pending: true,
+          deprecated: true,
+       example_group: false,
+          hook_scope: false,
+      stub_with_hash: false # to allow(obj).to receive(:message).and_return(value) prior to RSpec 3
+    }.freeze
+
     PREDICATES.each do |predicate, _|
       attr_accessor predicate
       alias_method predicate.to_s + '?', predicate
     end
 
+    attr_reader :conversion
     attr_accessor :negative_form_of_to, :boolean_matcher_type, :form_of_be_falsey, :rspec_command
+
+    def self.valid_conversion_type?(type)
+      DEFAULT_CONVERSIONS.keys.include?(type.to_sym)
+    end
 
     def initialize
       PREDICATES.each do |predicate, default_value|
         instance_variable_set('@' + predicate.to_s, default_value)
       end
 
+      @conversion = SymbolKeyHash.new
+      @conversion.update(DEFAULT_CONVERSIONS)
+
       self.negative_form_of_to = 'not_to'
       self.boolean_matcher_type = :conditional
       self.form_of_be_falsey = 'be_falsey'
+    end
+
+    def convert?(type)
+      @conversion[type]
     end
 
     def negative_form_of_to=(form)
@@ -64,6 +79,16 @@ module Transpec
       message = "#{subject} must be either "
       message << valid_values.map(&:inspect).join(' or ')
       fail ArgumentError, message
+    end
+
+    class SymbolKeyHash < Hash
+      def [](key)
+        super(key.to_sym)
+      end
+
+      def []=(key, value)
+        super(key.to_sym, value)
+      end
     end
   end
 end

@@ -41,21 +41,21 @@ module Transpec
 
       describe '-k/--keep option' do
         [
-          ['should',         :convert_should?],
-          ['oneliner',       :convert_oneliner?],
-          ['should_receive', :convert_should_receive?],
-          ['stub',           :convert_stub?],
-          ['have_items',     :convert_have_items?],
-          ['its',            :convert_its?],
-          ['pending',        :convert_pending?],
-          ['deprecated',     :convert_deprecated_method?]
-        ].each do |cli_type, config_attr|
-          context "when #{cli_type.inspect} is specified" do
-            let(:args) { ['--keep', cli_type] }
+          'should',
+          'oneliner',
+          'should_receive',
+          'stub',
+          'have_items',
+          'its',
+          'pending',
+          'deprecated'
+        ].each do |type|
+          context "when #{type.inspect} is specified" do
+            let(:args) { ['--keep', type] }
 
-            it "sets Config##{config_attr} false" do
+            it "sets Config#convert? with :#{type} false" do
               parser.parse(args)
-              config.send(config_attr).should be_false
+              config.convert?(type).should be_false
             end
           end
         end
@@ -65,8 +65,8 @@ module Transpec
 
           it 'handles all of them' do
             parser.parse(args)
-            config.convert_should_receive?.should be_false
-            config.convert_deprecated_method?.should be_false
+            config.convert?(:should_receive).should be_false
+            config.convert?(:deprecated).should be_false
           end
         end
 
@@ -83,16 +83,16 @@ module Transpec
 
       describe '-v/--convert option' do
         [
-          ['example_group',  :convert_example_group?],
-          ['hook_scope',     :convert_hook_scope?],
-          ['stub_with_hash', :convert_stub_with_hash_to_allow_to_receive_and_return?]
-        ].each do |cli_type, config_attr|
-          context "when #{cli_type.inspect} is specified" do
-            let(:args) { ['--convert', cli_type] }
+          'example_group',
+          'hook_scope',
+          'stub_with_hash'
+        ].each do |type|
+          context "when #{type.inspect} is specified" do
+            let(:args) { ['--convert', type] }
 
-            it "sets Config##{config_attr} true" do
+            it "sets Config#convert? with :#{type} true" do
               parser.parse(args)
-              config.send(config_attr).should be_true
+              config.convert?(type).should be_true
             end
           end
         end
@@ -263,12 +263,16 @@ module Transpec
 
       it 'describes all conversion types for -k/--keep option' do
         conversion_types = conversion_types_for_option('-k')
-        conversion_types.should =~ OptionParser::CONFIG_ATTRS_FOR_KEEP_TYPES.keys.map(&:to_s)
+        expected_types =
+          Config::DEFAULT_CONVERSIONS.select { |_, enabled| enabled }.keys.map(&:to_s)
+        conversion_types.should =~ expected_types
       end
 
       it 'describes all conversion types for -v/--convert option' do
         conversion_types = conversion_types_for_option('-v')
-        conversion_types.should =~ OptionParser::CONFIG_ATTRS_FOR_CONVERT_TYPES.keys.map(&:to_s)
+        expected_types =
+          Config::DEFAULT_CONVERSIONS.reject { |_, enabled| enabled }.keys.map(&:to_s)
+        conversion_types.should =~ expected_types
       end
     end
   end

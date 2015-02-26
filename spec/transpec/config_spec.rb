@@ -10,17 +10,6 @@ module Transpec
     context 'by default' do
       [
         [:forced?,                                                false],
-        [:convert_should?,                                        true],
-        [:convert_oneliner?,                                      true],
-        [:convert_should_receive?,                                true],
-        [:convert_stub?,                                          true],
-        [:convert_have_items?,                                    true],
-        [:convert_its?,                                           true],
-        [:convert_pending?,                                       true],
-        [:convert_deprecated_method?,                             true],
-        [:convert_example_group?,                                 false],
-        [:convert_hook_scope?,                                    false],
-        [:convert_stub_with_hash_to_allow_to_receive_and_return?, false],
         [:skip_dynamic_analysis?,                                 false],
         [:negative_form_of_to,                                    'not_to'],
         [:boolean_matcher_type,                                   :conditional],
@@ -34,6 +23,31 @@ module Transpec
 
           it "is #{value.inspect}" do
             should == value
+          end
+        end
+      end
+    end
+
+    describe '#convert?' do
+      subject { config.convert?(syntax) }
+
+      context 'by default' do
+        {
+                  should: true,
+                oneliner: true,
+          should_receive: true,
+                    stub: true,
+              have_items: true,
+                     its: true,
+                 pending: true,
+              deprecated: true,
+           example_group: false,
+              hook_scope: false,
+          stub_with_hash: false
+        }.each do |syntax, expected|
+          context "with #{syntax.inspect}" do
+            let(:syntax) { syntax }
+            it { should be expected }
           end
         end
       end

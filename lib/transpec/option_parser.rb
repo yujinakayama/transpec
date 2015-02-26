@@ -9,30 +9,9 @@ require 'rainbow/ext/string' unless String.respond_to?(:color)
 
 module Transpec
   class OptionParser # rubocop:disable ClassLength
-    CONFIG_ATTRS_FOR_KEEP_TYPES = {
-              should: :convert_should=,
-            oneliner: :convert_oneliner=,
-      should_receive: :convert_should_receive=,
-                stub: :convert_stub=,
-          have_items: :convert_have_items=,
-                 its: :convert_its=,
-             pending: :convert_pending=,
-          deprecated: :convert_deprecated_method=
-    }
-
-    CONFIG_ATTRS_FOR_CONVERT_TYPES = {
-       example_group: :convert_example_group=,
-          hook_scope: :convert_hook_scope=,
-      stub_with_hash: :convert_stub_with_hash_to_allow_to_receive_and_return=
-    }
-
     VALID_BOOLEAN_MATCHER_TYPES = %w(truthy,falsey truthy,falsy true,false)
 
     attr_reader :config
-
-    def self.available_conversion_types
-      CONFIG_ATTRS_FOR_KEEP_TYPES.keys
-    end
 
     def initialize(config = Config.new)
       @config = config
@@ -63,11 +42,11 @@ module Transpec
       end
 
       define_option('-k', '--keep TYPE[,TYPE...]') do |types|
-        configure_conversion(CONFIG_ATTRS_FOR_KEEP_TYPES, types, false)
+        configure_conversion(types, false)
       end
 
       define_option('-v', '--convert TYPE[,TYPE...]') do |types|
-        configure_conversion(CONFIG_ATTRS_FOR_CONVERT_TYPES, types, true)
+        configure_conversion(types, true)
       end
 
       define_option('-s', '--skip-dynamic-analysis') do
@@ -225,11 +204,13 @@ module Transpec
       warn message
     end
 
-    def configure_conversion(type_to_attr_map, inputted_types, boolean)
+    def configure_conversion(inputted_types, boolean)
       inputted_types.split(',').each do |type|
-        config_attr = type_to_attr_map[type.to_sym]
-        fail ArgumentError, "Unknown syntax type #{type.inspect}" unless config_attr
-        config.send(config_attr, boolean)
+        unless Config.valid_conversion_type?(type)
+          fail ArgumentError, "Unknown syntax type #{type.inspect}"
+        end
+
+        config.conversion[type] = boolean
       end
     end
   end
