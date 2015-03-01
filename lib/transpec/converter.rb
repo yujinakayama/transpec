@@ -19,11 +19,14 @@ module Transpec
     alias_method :convert_source, :rewrite_source
     alias_method :convert, :rewrite
 
-    def initialize(spec_suite = nil, project = nil, config = nil)
+    def initialize(spec_suite = nil, config = nil)
       @spec_suite = spec_suite || SpecSuite.new
-      @project = project || Project.new
       @config = config || Config.new
       @report = Report.new
+    end
+
+    def project
+      spec_suite.project
     end
 
     def runtime_data

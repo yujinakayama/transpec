@@ -5,8 +5,8 @@ require 'transpec/converter'
 
 module Transpec
   describe Converter do
-    subject(:converter) { Converter.new(spec_suite, project, config) }
-    let(:spec_suite) { double('spec_suite', runtime_data: nil).as_null_object }
+    subject(:converter) { Converter.new(spec_suite, config) }
+    let(:spec_suite) { double('spec_suite', project: project, runtime_data: nil).as_null_object }
     let(:project) { Project.new }
     let(:config) { Config.new }
     let(:rspec_version) { Transpec.required_rspec_version }
