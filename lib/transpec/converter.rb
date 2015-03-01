@@ -47,64 +47,64 @@ module Transpec
     end
 
     def process_should(should)
-      return unless config.convert_should?
+      return unless config.convert?(:should)
       should.expectize!(config.negative_form_of_to)
     end
 
     def process_oneliner_should(oneliner_should)
       negative_form = config.negative_form_of_to
-      should_convert_have_items = config.convert_have_items? &&
+      should_convert_have_items = config.convert?(:have_items) &&
                                   oneliner_should.have_matcher.conversion_target?
 
       if should_convert_have_items
-        if config.convert_should?
+        if config.convert?(:should)
           oneliner_should.convert_have_items_to_standard_expect!(negative_form)
         else
           oneliner_should.convert_have_items_to_standard_should!
         end
-      elsif config.convert_oneliner? && rspec_version.oneliner_is_expected_available?
+      elsif config.convert?(:oneliner) && rspec_version.oneliner_is_expected_available?
         oneliner_should.expectize!(negative_form)
       end
     end
 
     def process_should_receive(should_receive)
       if should_receive.useless_expectation?
-        if config.convert_deprecated_method?
-          if config.convert_stub?
+        if config.convert?(:deprecated)
+          if config.convert?(:stub)
             should_receive.allowize_useless_expectation!(config.negative_form_of_to)
           else
             should_receive.stubize_useless_expectation!
           end
-        elsif config.convert_should_receive?
+        elsif config.convert?(:should_receive)
           should_receive.expectize!(config.negative_form_of_to)
         end
-      elsif config.convert_should_receive?
+      elsif config.convert?(:should_receive)
         should_receive.expectize!(config.negative_form_of_to)
       end
     end
 
     def process_double(double)
-      double.convert_to_double! if config.convert_deprecated_method?
+      double.convert_to_double! if config.convert?(:deprecated)
     end
 
     def process_method_stub(method_stub)
-      if config.convert_stub?
+      if config.convert?(:stub)
         if !method_stub.hash_arg? ||
            rspec_version.receive_messages_available? ||
-           config.convert_stub_with_hash_to_allow_to_receive_and_return?
+           config.convert?(:stub_with_hash)
           method_stub.allowize!
-        elsif config.convert_deprecated_method?
+        elsif config.convert?(:deprecated)
           method_stub.convert_deprecated_method!
         end
-      elsif config.convert_deprecated_method?
+      elsif config.convert?(:deprecated)
         method_stub.convert_deprecated_method!
       end
 
-      method_stub.remove_no_message_allowance! if config.convert_deprecated_method?
+      method_stub.remove_no_message_allowance! if config.convert?(:deprecated)
     end
 
     def process_operator(operator)
-      return unless config.convert_should?
+      return unless config.convert?(:should)
       return if operator.expectation.is_a?(Syntax::OnelinerShould) &&
                 !rspec_version.oneliner_is_expected_available?
       operator.convert_operator!(config.parenthesize_matcher_arg?)
@@ -112,7 +112,7 @@ module Transpec
 
     def process_be_boolean(be_boolean)
       return unless rspec_version.be_truthy_available?
-      return unless config.convert_deprecated_method?
+      return unless config.convert?(:deprecated)
 
       case config.boolean_matcher_type
       when :conditional
@@ -123,42 +123,42 @@ module Transpec
     end
 
     def process_be_close(be_close)
-      be_close.convert_to_be_within! if config.convert_deprecated_method?
+      be_close.convert_to_be_within! if config.convert?(:deprecated)
     end
 
     def process_raise_error(raise_error)
       return unless raise_error
-      if config.convert_deprecated_method?
+      if config.convert?(:deprecated)
         raise_error.remove_error_specification_with_negative_expectation!
       end
     end
 
     def process_its(its)
-      its.convert_to_describe_subject_it! if config.convert_its?
+      its.convert_to_describe_subject_it! if config.convert?(:its)
     end
 
     def process_example(example)
-      return if !rspec_version.rspec_2_99? || !config.convert_pending?
+      return if !rspec_version.rspec_2_99? || !config.convert?(:pending)
       example.convert_pending_to_skip!
     end
 
     def process_pending(pending)
-      return if !rspec_version.rspec_2_99? || !config.convert_pending?
+      return if !rspec_version.rspec_2_99? || !config.convert?(:pending)
       pending.convert_deprecated_syntax!
     end
 
     def process_current_example(current_example)
       return unless rspec_version.yielded_example_available?
-      current_example.convert! if config.convert_deprecated_method?
+      current_example.convert! if config.convert?(:deprecated)
     end
 
     def process_matcher_definition(matcher_definition)
       return unless rspec_version.non_should_matcher_protocol_available?
-      matcher_definition.convert_deprecated_method! if config.convert_deprecated_method?
+      matcher_definition.convert_deprecated_method! if config.convert?(:deprecated)
     end
 
     def process_example_group(example_group)
-      if rspec_version.non_monkey_patch_example_group_available? && config.convert_example_group?
+      if rspec_version.non_monkey_patch_example_group_available? && config.convert?(:example_group)
         example_group.convert_to_non_monkey_patch!
       end
 
@@ -169,13 +169,13 @@ module Transpec
     end
 
     def process_rspec_configure(rspec_configure)
-      if config.convert_deprecated_method?
+      if config.convert?(:deprecated)
         rspec_configure.convert_deprecated_options!
       end
 
       if spec_suite.main_rspec_configure_node?(rspec_configure.node)
         if rspec_version.non_monkey_patch_example_group_available? &&
-           config.convert_example_group?
+           config.convert?(:example_group)
           rspec_configure.expose_dsl_globally = false
         end
 
@@ -192,31 +192,31 @@ module Transpec
     end
 
     def process_have(have)
-      return if !have || !config.convert_have_items?
+      return if !have || !config.convert?(:have_items)
       have.convert_to_standard_expectation!(config.parenthesize_matcher_arg)
     end
 
     def process_hook(hook)
-      return if !config.convert_hook_scope? || !rspec_version.hook_scope_alias_available?
+      return if !config.convert?(:hook_scope) || !rspec_version.hook_scope_alias_available?
       hook.convert_scope_name!
     end
 
     def process_useless_and_return(messaging_host)
       return unless messaging_host
-      return unless config.convert_deprecated_method?
+      return unless config.convert?(:deprecated)
       messaging_host.remove_useless_and_return!
     end
 
     def process_any_instance_block(messaging_host)
       return unless messaging_host
       return unless rspec_version.rspec_2_99?
-      return unless config.convert_deprecated_method?
+      return unless config.convert?(:deprecated)
       return unless config.add_receiver_arg_to_any_instance_implementation_block?
       messaging_host.add_receiver_arg_to_any_instance_implementation_block!
     end
 
     def need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?
-      rspec_version.rspec_2_99? && config.convert_deprecated_method? &&
+      rspec_version.rspec_2_99? && config.convert?(:deprecated) &&
         spec_suite.need_to_modify_yield_receiver_to_any_instance_implementation_blocks_config?
     end
   end

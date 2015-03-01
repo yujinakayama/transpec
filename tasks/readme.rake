@@ -158,13 +158,15 @@ class READMEContext
     /^#{'#' * level}[^#]/
   end
 
-  def validate_syntax_type_table(markdown_table, types_in_code)
+  def validate_syntax_type_table(markdown_table, enabled_by_default)
     types_in_doc = markdown_table.lines.map do |line|
       first_column = line.split('|').first
       first_column.gsub(/[^\w]/, '').to_sym
     end.sort
 
-    types_in_code.sort!
+    types_in_code = Config::DEFAULT_CONVERSIONS.select do |_type, enabled|
+      enabled == enabled_by_default
+    end.keys.sort
 
     unless types_in_doc == types_in_code
       types_missing_description = types_in_code - types_in_doc

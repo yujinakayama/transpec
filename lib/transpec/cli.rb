@@ -1,10 +1,10 @@
 # coding: utf-8
 
+require 'transpec/cli/option_parser'
 require 'transpec/commit_message'
 require 'transpec/config'
 require 'transpec/converter'
 require 'transpec/dynamic_analyzer'
-require 'transpec/option_parser'
 require 'transpec/project'
 require 'transpec/report'
 require 'transpec/spec_suite'

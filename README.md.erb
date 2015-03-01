@@ -221,7 +221,7 @@ conversion_type_table = <<END
 `deprecated`     | All other deprecated syntaxes  | Latest syntaxes
 END
 
-validate_syntax_type_table(conversion_type_table, OptionParser::CONFIG_ATTRS_FOR_KEEP_TYPES.keys)
+validate_syntax_type_table(conversion_type_table, true)
 conversion_type_table
 -%>
 
@@ -250,7 +250,7 @@ conversion_type_table = <<END
 `stub_with_hash` | `obj.stub(:message => value)`  | `allow(obj).to receive(:message).and_return(value)`
 END
 
-validate_syntax_type_table(conversion_type_table, OptionParser::CONFIG_ATTRS_FOR_CONVERT_TYPES.keys)
+validate_syntax_type_table(conversion_type_table, false)
 conversion_type_table
 -%>
 
@@ -262,6 +262,18 @@ If your project's RSpec is 3.0 or later, it will be converted to `receive_messag
 regardless of this option.
 
 See [Supported Conversions - Method stubs with a hash argument](#method-stubs-with-a-hash-argument) for more details.
+
+### `-o/--convert-only`
+
+Convert specific syntaxes while keeping all other syntaxes.
+
+This option would be useful when you want to convert a non-deprecated syntax
+while keeping another syntax that would be converted by default.
+(e.g. converting the hook scope aliases while keeping the one-liner `should`).
+
+```bash
+$ transpec --convert-only example_group,hook_scope
+```
 
 ### `-s/--skip-dynamic-analysis`
 
