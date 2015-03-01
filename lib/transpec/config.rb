@@ -37,7 +37,11 @@ module Transpec
     attr_accessor :negative_form_of_to, :boolean_matcher_type, :form_of_be_falsey, :rspec_command
 
     def self.valid_conversion_type?(type)
-      DEFAULT_CONVERSIONS.keys.include?(type.to_sym)
+      conversion_types.include?(type.to_sym)
+    end
+
+    def self.conversion_types
+      DEFAULT_CONVERSIONS.keys
     end
 
     def initialize

@@ -108,6 +108,28 @@ module Transpec
         end
       end
 
+      describe '--convert-only option' do
+        let(:args) { ['--convert-only', 'example_group'] }
+
+        it 'enables specified conversion and disabled all other conversions' do
+          parser.parse(args)
+
+          config.conversion.each do |type, enabled|
+            enabled.should == (type == :example_group)
+          end
+        end
+
+        context 'when unknown type is specified' do
+          let(:args) { ['--convert-only', 'unknown'] }
+
+          it 'raises error' do
+            -> { parser.parse(args) }.should raise_error(ArgumentError) { |error|
+              error.message.should == 'Unknown syntax type "unknown"'
+            }
+          end
+        end
+      end
+
       describe '-n/--negative-form option' do
         ['not_to', 'to_not'].each do |form|
           context "when #{form.inspect} is specified" do

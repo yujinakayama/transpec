@@ -49,6 +49,14 @@ module Transpec
         configure_conversion(types, true)
       end
 
+      define_option('-o', '--convert-only TYPE[,TYPE...]') do |types|
+        Config.conversion_types.each do |type|
+          config.conversion[type] = false
+        end
+
+        configure_conversion(types, true)
+      end
+
       define_option('-s', '--skip-dynamic-analysis') do
         config.skip_dynamic_analysis = true
       end
@@ -138,6 +146,9 @@ module Transpec
           '  *stub_with_hash* (`obj.stub(:msg => val)` to',
           '                  `allow(obj).to receive(:msg).and_return(val)`)',
           'These conversions are disabled by default.'
+        ],
+        '-o' => [
+          'Convert specific syntaxes while keeping all other syntaxes.'
         ],
         '-n' => [
           'Specify a negative form of `to` that is used in the `expect(...).to`',
