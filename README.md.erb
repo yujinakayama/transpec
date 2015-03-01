@@ -263,6 +263,18 @@ regardless of this option.
 
 See [Supported Conversions - Method stubs with a hash argument](#method-stubs-with-a-hash-argument) for more details.
 
+### `-o/--convert-only`
+
+Convert specific syntaxes while keeping all other syntaxes.
+
+This option would be useful when you want to convert a non-deprecated syntax
+while keeping another syntax that would be converted by default.
+(e.g. converting the hook scope aliases while keeping the one-liner `should`).
+
+```bash
+$ transpec --convert-only example_group,hook_scope
+```
+
 ### `-s/--skip-dynamic-analysis`
 
 Skip dynamic analysis and convert with only static analysis.

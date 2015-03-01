@@ -2,6 +2,8 @@
 
 ## Development
 
+* Add `-o/--convert-only` option for converting specific syntaxes while keeping all other syntaxes. ([#91](https://github.com/yujinakayama/transpec/issues/91))
+
 ## v3.0.8
 
 * Fix error on converting spec with AWS.stub! without dynamic analysis. ([#100](https://github.com/yujinakayama/transpec/issues/100))
