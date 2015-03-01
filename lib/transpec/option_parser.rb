@@ -66,12 +66,7 @@ module Transpec
       end
 
       define_option('-b', '--boolean-matcher TYPE') do |type|
-        unless VALID_BOOLEAN_MATCHER_TYPES.include?(type)
-          types = VALID_BOOLEAN_MATCHER_TYPES.map(&:inspect).join(', ')
-          fail ArgumentError, "Boolean matcher type must be any of #{types}"
-        end
-        config.boolean_matcher_type = type.include?('truthy') ? :conditional : :exact
-        config.form_of_be_falsey = type.include?('falsy') ? 'be_falsy' : 'be_falsey'
+        configure_boolean_matcher(type)
       end
 
       define_option('-e', '--explicit-spec-type') do
@@ -223,6 +218,16 @@ module Transpec
 
         config.conversion[type] = boolean
       end
+    end
+
+    def configure_boolean_matcher(type)
+      unless VALID_BOOLEAN_MATCHER_TYPES.include?(type)
+        types = VALID_BOOLEAN_MATCHER_TYPES.map(&:inspect).join(', ')
+        fail ArgumentError, "Boolean matcher type must be any of #{types}"
+      end
+
+      config.boolean_matcher_type = type.include?('truthy') ? :conditional : :exact
+      config.form_of_be_falsey = type.include?('falsy') ? 'be_falsy' : 'be_falsey'
     end
   end
 end
