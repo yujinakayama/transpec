@@ -2,6 +2,8 @@
 
 ## Development
 
+## v3.1.0
+
 * Add `-o/--convert-only` option for converting specific syntaxes while keeping all other syntaxes. ([#91](https://github.com/yujinakayama/transpec/issues/91))
 
 ## v3.0.8
