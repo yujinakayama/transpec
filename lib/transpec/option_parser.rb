@@ -93,7 +93,7 @@ module Transpec
 
     def create_parser
       banner = "Usage: transpec [options] [files or directories]\n\n"
-      summary_width = 32 # Default
+      summary_width = 34
       indentation = ' ' * 2
       ::OptionParser.new(banner, summary_width, indentation)
     end
@@ -108,11 +108,12 @@ module Transpec
     def descriptions # rubocop:disable MethodLength
       @descriptions ||= {
         '-f' => [
-          'Force processing even if the current Git repository is not clean.'
+          'Force processing even if the current Git repository is not',
+          'clean.'
         ],
         '-s' => [
-          'Skip dynamic analysis and convert with only static analysis. The',
-          'use of this option is basically *discouraged* since it',
+          'Skip dynamic analysis and convert with only static analysis.',
+          'The use of this option is basically *discouraged* since it',
           'significantly decreases the overall conversion accuracy.'
         ],
         '-c' => [
@@ -146,8 +147,8 @@ module Transpec
           'Convert specific syntaxes while keeping all other syntaxes.'
         ],
         '-n' => [
-          'Specify a negative form of `to` that is used in the `expect(...).to`',
-          'syntax. Either *not_to* or *to_not*.',
+          'Specify a negative form of `to` that is used in the',
+          '`expect(...).to syntax. Either *not_to* or *to_not*.',
           'Default: *not_to*'
         ],
         '-b' => [
@@ -159,8 +160,8 @@ module Transpec
           'Default: *truthy,falsey*'
         ],
         '-e' => [
-          'Add explicit `:type` metadata to example groups in a project using',
-          'rspec-rails.'
+          'Add explicit `:type` metadata to example groups in a project',
+          'using rspec-rails.'
         ],
         '-a' => [
           'Suppress yielding receiver instances to `any_instance`',
@@ -168,11 +169,11 @@ module Transpec
         ],
         '-p' => [
           'Suppress parenthesizing arguments of matchers when converting',
-          '`should` with operator matcher to `expect` with non-operator matcher.',
-          'Note that it will be parenthesized even if this option is',
-          'specified when parentheses are necessary to keep the meaning of',
-          'the expression. By default, arguments of the following operator',
-          'matchers will be parenthesized.',
+          '`should` with operator matcher to `expect` with non-operator',
+          'matcher. Note that it will be parenthesized even if this option',
+          'is specified when parentheses are necessary to keep the meaning',
+          'of the expression. By default, arguments of the following',
+          'operator matchers will be parenthesized.',
           '  `== 10` to `eq(10)`',
           '  `=~ /pattern/` to `match(/pattern/)`',
           '  `=~ [1, 2]` to `match_array([1, 2])`'
