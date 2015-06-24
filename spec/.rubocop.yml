@@ -11,7 +11,7 @@ LineLength:
   Max: 120
 
 # raise_error matcher always requires {} form block.
-Blocks:
+BlockDelimiters:
   Enabled: false
 
 # Sometimes block alignment does not suit RSpec syntax.
