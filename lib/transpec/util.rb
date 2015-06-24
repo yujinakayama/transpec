@@ -105,7 +105,7 @@ module Transpec
       yield origin_node if mode == :include_origin
 
       origin_node.each_ancestor(:send, :block).reduce(origin_node) do |child_node, parent_node|
-        return unless parent_node.children.first.equal?(child_node)
+        break unless parent_node.children.first.equal?(child_node)
 
         if mode == :child_as_second_arg
           yield parent_node, child_node

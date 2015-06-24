@@ -78,7 +78,7 @@ module Transpec
 
           lambda {
             DirectoryCloner.copy_recursively('src', 'dst')
-          }.should raise_error(/src\/file/) { |error|
+          }.should raise_error(%r{src/file}) { |error|
             error.backtrace.first.should_not include('rescue')
           }
         end

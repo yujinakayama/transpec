@@ -79,3 +79,6 @@ ClassLength:
 # This cop should consider symmetries.
 GuardClause:
   Enabled: false
+
+ModuleLength:
+  Enabled: false

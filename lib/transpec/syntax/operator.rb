@@ -90,7 +90,7 @@ module Transpec
 
         parenthesize!(parenthesize_arg)
 
-        accurate = !using_match_array?.nil? # rubocop:disable NonNilCheck
+        accurate = !using_match_array?.nil?
 
         # Need to register record after all source rewrites are done
         # to avoid false record when failed with overlapped rewrite.

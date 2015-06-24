@@ -69,7 +69,7 @@ module Transpec
     private
 
     def rainbow
-      @rainbow ||=  Rainbow.new
+      @rainbow ||= Rainbow.new
     end
 
     def colorize(string, *args)

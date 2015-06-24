@@ -48,7 +48,7 @@ module Transpec
           body_lines[0].chomp
             .should match(/^This conversion is done by Transpec \d+\.\d+\.\d+ with the following command:$/)
           body_lines[1].chomp
-            .should ==     '    transpec --force --rspec-command "bundle exec rspec"'
+            .should == '    transpec --force --rspec-command "bundle exec rspec"'
         end
 
         it 'has blank line after the preface' do
