@@ -1446,7 +1446,16 @@ end
 
 ## Compatibility
 
-Tested on MRI 1.9, 2.0, 2.1, 2.2 and JRuby in 1.9 mode.
+Transpec is tested on the following Ruby implementations:
+
+* MRI
+    * 1.9.3
+    * 2.0.0
+    * 2.1
+    * 2.2
+* JRuby
+    * 1.7 in 1.9 mode
+    * 9.0.0.0
 
 ## License
 
