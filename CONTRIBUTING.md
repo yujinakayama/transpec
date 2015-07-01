@@ -6,8 +6,9 @@ If you're going to report an issue or submit a pull request, please follow these
 
 * Provide the following information:
     * The problematic code or the project's URL
-    * The version of Ruby you're using (`ruby --version`)
-    * The version of Transpec you're using (`transpec --version`)
+    * Transpec version (`transpec --version`)
+    * RSpec version (`bundle exec rspec --version`)
+    * Ruby version (`ruby --version`)
     * The complete command-line options you passed to `transpec`
 
 ## Pull Requests
