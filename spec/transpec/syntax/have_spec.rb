@@ -185,7 +185,7 @@ module Transpec
             end
           end
 
-          context 'and subject includes ActiveModel::Validations' do
+          context 'and subject does not include ActiveModel::Validations' do
             let(:source) do
               <<-END
                 class SomeModel
