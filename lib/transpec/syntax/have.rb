@@ -98,8 +98,15 @@ module Transpec
         source_builder.replacement_subject_source(base_subject)
       end
 
+      # https://github.com/rspec/rspec-expectations/blob/v2.14.5/lib/rspec/matchers/built_in/have.rb#L8-L12
       def size_source
-        size_node.loc.expression.source
+        if size_node.sym_type? && size_node.children.first == :no
+          0
+        elsif size_node.str_type?
+          size_node.children.first.to_i
+        else
+          size_node.loc.expression.source
+        end
       end
 
       def accurate_conversion?

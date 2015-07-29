@@ -2,6 +2,8 @@
 
 ## Development
 
+* Support conversion of `have(:no).items` and `have('2').items`. ([#107](https://github.com/yujinakayama/transpec/issues/107))
+
 ## v3.1.0
 
 * Add `-o/--convert-only` option for converting specific syntaxes while keeping all other syntaxes. ([#91](https://github.com/yujinakayama/transpec/issues/91))

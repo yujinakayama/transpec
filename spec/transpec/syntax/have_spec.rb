@@ -612,6 +612,76 @@ module Transpec
           end
         end
 
+        context 'with expression `expect(collection).to have(:no).items`' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'has no items' do
+                  expect(collection).to have(:no).items
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'has no items' do
+                  expect(collection.size).to eq(0)
+                end
+              end
+            END
+          end
+
+          let(:have_object) { expect_object.have_matcher }
+
+          it 'converts to `expect(collection.size).to eq(0)` form' do
+            have_object.convert_to_standard_expectation!
+            rewritten_source.should == expected_source
+          end
+
+          it 'adds record `expect(collection).to have(n).items` -> `expect(collection.size).to eq(n)`' do
+            have_object.convert_to_standard_expectation!
+            record.old_syntax.should == 'expect(collection).to have(n).items'
+            record.new_syntax.should == 'expect(collection.size).to eq(n)'
+          end
+        end
+
+        context "with expression `expect(collection).to have('2').items`" do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'has 2 items' do
+                  expect(collection).to have('2').items
+                end
+              end
+            END
+          end
+
+          let(:expected_source) do
+            <<-END
+              describe 'example' do
+                it 'has 2 items' do
+                  expect(collection.size).to eq(2)
+                end
+              end
+            END
+          end
+
+          let(:have_object) { expect_object.have_matcher }
+
+          it 'converts to `expect(collection.size).to eq(2)` form' do
+            have_object.convert_to_standard_expectation!
+            rewritten_source.should == expected_source
+          end
+
+          it 'adds record `expect(collection).to have(n).items` -> `expect(collection.size).to eq(n)`' do
+            have_object.convert_to_standard_expectation!
+            record.old_syntax.should == 'expect(collection).to have(n).items'
+            record.new_syntax.should == 'expect(collection.size).to eq(n)'
+          end
+        end
+
         context 'with expression `expect(obj).to have(2).words`' do
           let(:have_object) { expect_object.have_matcher }
 
