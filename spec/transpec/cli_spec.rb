@@ -216,7 +216,7 @@ module Transpec
         let(:args) { ['non-existent-file'] }
 
         it 'does not catch the error' do
-          -> { cli.run(args) }.should raise_error
+          -> { cli.run(args) }.should raise_error(/No such file or directory/)
         end
       end
 
