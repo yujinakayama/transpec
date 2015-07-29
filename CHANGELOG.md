@@ -2,6 +2,8 @@
 
 ## Development
 
+## v3.1.1
+
 * Support conversion of `have(:no).items` and `have('2').items`. ([#107](https://github.com/yujinakayama/transpec/issues/107))
 
 ## v3.1.0
