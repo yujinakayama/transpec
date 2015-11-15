@@ -149,7 +149,7 @@ class READMEContext
     end.compact
 
     titles.map do |title|
-      anchor = '#' + title.gsub(/[^\w_\- ]/, '').downcase.gsub(' ', '-')
+      anchor = '#' + title.gsub(/[^\w_\- ]/, '').downcase.tr(' ', '-')
       "* [#{title}](#{anchor})"
     end.join("\n")
   end

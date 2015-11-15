@@ -85,7 +85,7 @@ module Transpec
         end
 
         if rspec_version.config_backtrace_formatter_available?
-          replace_config!(:backtrace_cleaner,  :backtrace_formatter)
+          replace_config!(:backtrace_cleaner, :backtrace_formatter)
         end
 
         if rspec_version.config_predicate_color_enabled_available?

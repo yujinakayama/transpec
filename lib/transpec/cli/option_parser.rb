@@ -190,8 +190,8 @@ module Transpec
       # rubocop:enable AlignHash
 
       def highlight_text(text)
-        text.gsub(/`.+?`/) { |code| code.gsub('`', '').underline }
-          .gsub(/\*.+?\*/) { |code| code.gsub('*', '').bright }
+        text.gsub(/`.+?`/) { |code| code.delete('`').underline }
+          .gsub(/\*.+?\*/) { |code| code.delete('*').bright }
       end
 
       def convert_deprecated_options(raw_args)

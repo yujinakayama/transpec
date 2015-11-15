@@ -142,7 +142,7 @@ module Transpec
           'in #scenario block in #feature',
           [:example_group, :example]
         ]
-      ].each  do |target_node_id, description, expected_scopes|
+      ].each do |target_node_id, description, expected_scopes|
         context "when #{description}" do
           let(:target_node) do
             ast.each_node.find do |node|

@@ -100,7 +100,7 @@ module Transpec
 
     def special_block_type(block_node) # rubocop:disable MethodLength, CyclomaticComplexity
       send_node = block_node.children.first
-      receiver_node, method_name, *_ = *send_node
+      receiver_node, method_name, = *send_node
 
       if const_name(receiver_node) == 'RSpec'
         case method_name
@@ -127,7 +127,7 @@ module Transpec
     end
 
     def hook_type(send_node)
-      _, method_name, arg_node, *_ = *send_node
+      _, method_name, arg_node, = *send_node
 
       return :around if method_name == :around
 

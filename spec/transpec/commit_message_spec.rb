@@ -44,7 +44,7 @@ module Transpec
       let(:body_lines) { lines[2..-1] }
 
       describe 'body' do
-        it 'has Transpec description at the beginning'  do
+        it 'has Transpec description at the beginning' do
           body_lines[0].chomp
             .should match(/^This conversion is done by Transpec \d+\.\d+\.\d+ with the following command:$/)
           body_lines[1].chomp

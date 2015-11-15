@@ -16,7 +16,7 @@ module Transpec
       return false unless node.block_type?
 
       send_node = node.children.first
-      receiver_node, method_name, *_ = *send_node
+      receiver_node, method_name, = *send_node
 
       if receiver_node.nil? || const_name(receiver_node) == 'Kernel'
         [:lambda, :proc].include?(method_name)
@@ -162,14 +162,14 @@ module Transpec
 
     def literal?(node)
       case node.type
-      when *LITERAL_TYPES
-        true
       when :array, :irange, :erange
         node.children.all? { |n| literal?(n) }
       when :hash
         node.children.all? do |pair_node|
           pair_node.children.all? { |n| literal?(n) }
         end
+      when *LITERAL_TYPES
+        true
       else
         false
       end
