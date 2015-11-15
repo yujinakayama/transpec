@@ -14,6 +14,7 @@ env:
   - RSPEC_VERSION=3.1
   - RSPEC_VERSION=3.2
   - RSPEC_VERSION=3.3
+  - RSPEC_VERSION=3.4
   - RSPEC_VERSION=head
 before_install: gem update --remote bundler
 script: bundle exec rake ci
