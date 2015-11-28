@@ -190,6 +190,9 @@ For this reason, it's recommended to provide a command that runs full spec suite
 If you want to convert only a subset of the files in a spec suite, pass the paths to `transpec`.
 See [Advanced Usage](#advanced-usage) for more details.
 
+You can change the temporary directory that the your project will be copied
+by specifying the `TMPDIR` environment variable.
+
 ```bash
 $ transpec --rspec-command "./special_setup.sh && bundle exec rspec"
 ```
