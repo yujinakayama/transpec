@@ -14,9 +14,9 @@ Also, you can use it on your RSpec 2 project even if you're not going to upgrade
 
 Check out the following posts for the new RSpec syntax and the changes in RSpec 3:
 
-* [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax)
-* [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
-* [Myron Marston » Notable Changes in RSpec 3](http://myronmars.to/n/dev-blog/2014/05/notable-changes-in-rspec-3)
+* [RSpec's New Expectation Syntax](http://rspec.info/blog/2012/06/rspecs-new-expectation-syntax/)
+* [RSpec's new message expectation syntax](http://www.teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
+* [Notable Changes in RSpec 3](http://rspec.info/blog/2014/05/notable-changes-in-rspec-3/)
 
 If you are going to use Transpec in the upgrade process to RSpec 3,
 read the RSpec official guide:
@@ -460,7 +460,7 @@ The monkey-patched `obj.should`:
 
 * Is defined on `BasicObject` (or `Kernel`) and provided by `rspec-expectations` gem.
 * Is deprecated in RSpec 3.
-* Has [the issue](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#delegation_issues) with delegate/proxy objects.
+* Has [the issue](http://rspec.info/blog/2012/06/rspecs-new-expectation-syntax/#delegation-issues) with delegate/proxy objects.
 * There's the alternative syntax [`expect(obj).to`](#standard-expectations) since RSpec 2.11.
 
 The one-liner (implicit receiver) `should`:
@@ -518,7 +518,7 @@ expect(obj).to_not matcher # with `--negative-form to_not`
 
 * This conversion can be disabled by: `--keep should`
 * Deprecation: deprecated since RSpec 3.0
-* See also: [Myron Marston » RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax)
+* See also: [RSpec's New Expectation Syntax](http://rspec.info/blog/2012/06/rspecs-new-expectation-syntax/)
 
 ### One-liner expectations
 
@@ -575,7 +575,7 @@ expect([1, 2, 3]).to match_array([2, 1, 3])
 
 This conversion is combined with the conversion of [standard expectations](#standard-expecatations) and cannot be disabled separately because the `expect` syntax does not directly support the operator matchers.
 
-* See also: [(Almost) All Matchers Are Supported - RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#almost_all_matchers_are_supported)
+* See also: [(Almost) All Matchers Are Supported - RSpec's New Expectation Syntax](http://rspec.info/blog/2012/06/rspecs-new-expectation-syntax/#almost-all-matchers-are-supported)
 
 ### Boolean matchers
 
@@ -705,7 +705,7 @@ So using rspec-collection_matchers gem is recommended for now.
 
 * This conversion can be disabled by: `--keep have_items`
 * Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
-* See also: [Expectations: `have(x).items` matchers will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#expectations__matchers_will_be_moved_into_an_external_gem)
+* See also: [Expectations: `have(x).items` matchers will be moved into an external gem - The Plan for RSpec 3](http://rspec.info/blog/2013/07/the-plan-for-rspec-3/#expectations-havexitems-matchers-will-be-moved-into-an-external-gem)
 
 ### One-liner expectations with `have(n).items` matcher
 
@@ -756,7 +756,7 @@ expect { do_something }.to raise_error
 
 * This conversion can be disabled by: `--keep should`
 * Deprecation: deprecated since RSpec 3.0
-* See also: [Unification of Block vs. Value Syntaxes - RSpec's New Expectation Syntax](http://myronmars.to/n/dev-blog/2012/06/rspecs-new-expectation-syntax#unification_of_block_vs_value_syntaxes)
+* See also: [Unification of Block vs. Value Syntaxes - RSpec's New Expectation Syntax](http://rspec.info/blog/2012/06/rspecs-new-expectation-syntax/#unification-of-block-vs-value-syntaxes)
 
 ### Expectations on attribute of subject with `its`
 
@@ -811,7 +811,7 @@ Read [this post](https://gist.github.com/myronmarston/4503509) for the rationale
 
 * This conversion can be disabled by: `--keep its`
 * Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
-* See also: [Core: `its` will be moved into an external gem - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#core__will_be_moved_into_an_external_gem)
+* See also: [Core: `its` will be moved into an external gem - The Plan for RSpec 3](http://rspec.info/blog/2013/07/the-plan-for-rspec-3/#core-its-will-be-moved-into-an-external-gem)
 
 ### Negative error expectations with specific error
 
@@ -853,7 +853,7 @@ expect_any_instance_of(Klass).to receive(:message)
 
 * This conversion can be disabled by: `--keep should_receive`
 * Deprecation: deprecated since RSpec 3.0
-* See also: [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
+* See also: [RSpec's new message expectation syntax](http://www.teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
 
 ### Message expectations that are actually method stubs
 
@@ -914,7 +914,7 @@ allow(obj).to receive(:message).and_call_original
 * This conversion can be disabled by: `--keep stub`
 * Deprecation: deprecated since RSpec 3.0
 * See also:
-    * [RSpec's new message expectation syntax - Tea is awesome.](http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
+    * [RSpec's new message expectation syntax](http://www.teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/)
     * [Bring back stub_chain (receive_message_chain) · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/464)
 
 ### Method stubs with a hash argument
@@ -942,7 +942,7 @@ allow(obj).to receive(:bar).and_return(2)
 
 `allow(obj).to receive_messages(:foo => 1, :bar => 2)` which is designed to be the replacement for `obj.stub(:foo => 1, :bar => 2)` is available from RSpec 3.0.
 
-So, if you're going to use Transpec in [the upgrade path to RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#the_upgrade_path), you may need to follow these steps:
+So, if you're going to use Transpec in [the upgrade path to RSpec 3](http://rspec.info/blog/2013/07/the-plan-for-rspec-3/#the-upgrade-path), you may need to follow these steps:
 
 1. Upgrade to RSpec 2.99
 2. Run `transpec` (at this time `obj.stub(:message => value)` won't be converted)
@@ -1090,7 +1090,7 @@ end
 
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 2.99
-* See also: [Mocks: `any_instance` block implementations will yield the receiver](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#mocks__block_implementations_will_yield_the_receiver)
+* See also: [Mocks: `any_instance` block implementations will yield the receiver](http://rspec.info/blog/2013/07/the-plan-for-rspec-3/#mocks-anyinstance-block-implementations-will-yield-the-receiver)
 
 ### Deprecated test double aliases
 
@@ -1236,7 +1236,7 @@ Here's an excerpt from [the warning](https://github.com/rspec/rspec-core/blob/7d
 
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 2.99, removed in RSpec 3.0
-* See also: [Core: DSL methods will yield the example - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#core_dsl_methods_will_yield_the_example)
+* See also: [Core: DSL methods will yield the example - The Plan for RSpec 3](http://rspec.info/blog/2013/07/the-plan-for-rspec-3/#core-dsl-methods-will-yield-the-example)
 
 ### Custom matcher DSL
 
@@ -1266,7 +1266,7 @@ end
 
 * This conversion can be disabled by: `--keep deprecated`
 * Deprecation: deprecated since RSpec 3.0
-* See also: [Expectations: Matcher protocol and custom matcher API changes - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#expectations_matcher_protocol_and_custom_matcher_api_changes)
+* See also: [Expectations: Matcher protocol and custom matcher API changes - The Plan for RSpec 3](http://rspec.info/blog/2013/07/the-plan-for-rspec-3/#expectations-matcher-protocol-and-custom-matcher-api-changes)
 
 ### Implicit spec types in rspec-rails
 
@@ -1409,7 +1409,7 @@ end
 
 * This conversion can be enabled by: `--convert example_group`
 * Deprecation: not deprecated
-* See also: [Zero Monkey Patching Mode! - The Plan for RSpec 3](http://myronmars.to/n/dev-blog/2013/07/the-plan-for-rspec-3#zero_monkey_patching_mode)
+* See also: [Zero Monkey Patching Mode! - The Plan for RSpec 3](http://rspec.info/blog/2013/07/the-plan-for-rspec-3/#zero-monkey-patching-mode)
 
 ### Hook scope aliases
 
