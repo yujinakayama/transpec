@@ -13,6 +13,9 @@ env:
   - RSPEC_VERSION=3.0
   - RSPEC_VERSION=3.4
   - RSPEC_VERSION=head
+matrix:
+  allow_failures:
+    - rvm: ruby-head
 before_install: gem update --remote bundler
 script: bundle exec rake ci
 sudo: false
