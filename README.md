@@ -486,11 +486,11 @@ The one-liner (implicit receiver) `should`:
 * [Message expectations that are actually method stubs](#message-expectations-that-are-actually-method-stubs)
 * [Method stubs](#method-stubs)
 * [Method stubs with a hash argument](#method-stubs-with-a-hash-argument)
-* [Deprecated method stub aliases](#deprecated-method-stub-aliases)
+* [Method stub aliases](#method-stub-aliases)
 * [Method stubs with deprecated specification of number of times](#method-stubs-with-deprecated-specification-of-number-of-times)
 * [Useless `and_return`](#useless-and_return)
 * [`any_instance` implementation blocks](#any_instance-implementation-blocks)
-* [Deprecated test double aliases](#deprecated-test-double-aliases)
+* [Test double aliases](#test-double-aliases)
 * [Pending examples](#pending-examples)
 * [Current example object](#current-example-object)
 * [Custom matcher DSL](#custom-matcher-dsl)
@@ -955,7 +955,7 @@ Or if you're going to stay RSpec 2.14 for now but want to convert all `stub` to 
 * Deprecation: deprecated since RSpec 3.0
 * See also: [allow receive with multiple methods · rspec/rspec-mocks](https://github.com/rspec/rspec-mocks/issues/368)
 
-### Deprecated method stub aliases
+### Method stub aliases
 
 Targets:
 
@@ -1092,7 +1092,7 @@ end
 * Deprecation: deprecated since RSpec 2.99
 * See also: [Mocks: `any_instance` block implementations will yield the receiver](http://rspec.info/blog/2013/07/the-plan-for-rspec-3/#mocks-anyinstance-block-implementations-will-yield-the-receiver)
 
-### Deprecated test double aliases
+### Test double aliases
 
 Targets:
 
