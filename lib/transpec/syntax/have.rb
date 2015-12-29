@@ -25,7 +25,8 @@ module Transpec
       def dynamic_analysis_target?
         super &&
           receiver_node.nil? &&
-          [:have, :have_exactly, :have_at_least, :have_at_most].include?(method_name)
+          [:have, :have_exactly, :have_at_least, :have_at_most].include?(method_name) &&
+          node.sibling_index == 0
       end
 
       def conversion_target?

@@ -86,6 +86,20 @@ module Transpec
 
         subject { should_object.have_matcher.conversion_target? }
 
+        context 'when no method is chained' do
+          let(:source) do
+            <<-END
+              describe 'example' do
+                it 'has 2 items' do
+                  [:foo, :bar].should have(2)
+                end
+              end
+            END
+          end
+
+          it { should be_false }
+        end
+
         context 'when rspec-rails is loaded in the spec' do
           let(:source) do
             <<-END
