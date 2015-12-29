@@ -2,6 +2,8 @@
 
 ## Development
 
+## v3.1.2
+
 * Avoid converting invalid `have` matcher without `items` part. ([#108](https://github.com/yujinakayama/transpec/issues/108))
 
 ## v3.1.1
