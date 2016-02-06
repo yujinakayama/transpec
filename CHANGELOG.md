@@ -2,6 +2,8 @@
 
 ## Development
 
+## v3.2.0
+
 * Support Ruby 2.3 syntax.
 
 ## v3.1.2
