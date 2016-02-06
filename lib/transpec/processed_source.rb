@@ -33,6 +33,7 @@ module Transpec
 
       builder = AST::Builder.new
       parser = Parser::CurrentRuby.new(builder)
+      parser.diagnostics.all_errors_are_fatal = true
 
       @ast = parser.parse(@buffer)
     rescue Parser::SyntaxError, EncodingError => error

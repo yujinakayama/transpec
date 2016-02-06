@@ -173,8 +173,9 @@ module Transpec
         end
 
         it 'warns of the error' do
-          cli.should_receive(:warn)
-            .with('Syntax error at spec/invalid_example.rb:2:1. Skipping the file.')
+          cli.should_receive(:warn) do |message|
+            message.should start_with('Syntax error at spec/invalid_example.rb:')
+          end
           cli.run(args)
         end
 
