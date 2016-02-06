@@ -1463,6 +1463,6 @@ Transpec is tested on the following Ruby implementations:
 
 ## License
 
-Copyright (c) 2013–2015 Yuji Nakayama
+Copyright (c) 2013–2016 Yuji Nakayama
 
 See the [LICENSE.txt](LICENSE.txt) for details.
