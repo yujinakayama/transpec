@@ -175,7 +175,7 @@ so that Transpec can know where the root is.
 You can disable specific conversions that are enabled by default with `-k/--keep` option,
 and enable conversions that are disabled by default with the `-v/--convert` option.
 
-If you are willing to try the latest and modern syntax, type the following:
+If you are willing to try the latest and modern syntax, run the following on RSpec 3:
 
 ```
 $ transpec --convert example_group,hook_scope
