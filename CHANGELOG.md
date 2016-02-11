@@ -2,6 +2,8 @@
 
 ## Development
 
+* Pin `parser` gem to 2.3.0.2 temporarily so that dynamic analysis works properly.
+
 ## v3.2.0
 
 * Support Ruby 2.3 syntax.
