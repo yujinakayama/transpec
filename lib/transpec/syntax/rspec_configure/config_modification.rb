@@ -83,7 +83,7 @@ module Transpec
             lines.map! { |line| line + "\n" }
 
             insertion_position = beginning_of_line_range(block_node_to_insert_code.loc.end)
-            insert_before(insertion_position, lines.join(''))
+            insert_after(insertion_position, lines.join(''))
 
             block_node_to_insert_code.metadata[:added_config] = true
 
