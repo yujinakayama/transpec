@@ -16,7 +16,7 @@ group :development, :test do
     fail 'RSPEC_VERSION must be specified as "major.minor" like "2.14", or "head".'
   end
 
-  gem 'rake',      '~> 10.1'
+  gem 'rake',      '~> 11.0'
   gem 'simplecov', '~> 0.7'
   gem 'rubocop',   '~> 0.24'
 end
