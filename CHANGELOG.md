@@ -2,6 +2,8 @@
 
 ## Development
 
+## v3.2.2
+
 * Use `parser` gem 2.3.0.7 or later.
 
 ## v3.2.1
