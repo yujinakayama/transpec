@@ -8,7 +8,7 @@ module Transpec
       # This cannot be a Syntax class since this can be instanciated and used even when there's no
       # corresponding node in the existing code.
       class Framework
-        include ConfigModification
+        include Rewritable, ConfigModification
 
         attr_reader :rspec_configure
 

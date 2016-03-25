@@ -2,6 +2,8 @@
 
 ## Development
 
+* Use `parser` gem 2.3.0.7 or later.
+
 ## v3.2.1
 
 * Pin `parser` gem to 2.3.0.2 temporarily so that dynamic analysis works properly.

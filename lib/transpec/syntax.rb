@@ -105,11 +105,11 @@ module Transpec
       end
 
       def insert_before(range, content)
-        source_rewriter.insert_before(range, content)
+        source_rewriter.insert_before_multi(range, content)
       end
 
       def insert_after(range, content)
-        source_rewriter.insert_after(range, content)
+        source_rewriter.insert_after_multi(range, content)
       end
 
       def replace(range, content)

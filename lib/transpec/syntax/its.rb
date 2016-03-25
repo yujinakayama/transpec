@@ -36,7 +36,7 @@ module Transpec
       end
 
       def insert_blank_line_above!
-        insert_before(line_range(node), "\n")
+        insert_after(beginning_of_line_range(node), "\n")
       end
 
       def attribute_expression

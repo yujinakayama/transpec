@@ -41,7 +41,7 @@ module Transpec
 
         def modify_config_value!(config_node, value)
           arg_range = config_node.children[2].loc.expression
-          source_rewriter.replace(arg_range, value.to_s)
+          replace(arg_range, value.to_s)
 
           config_name = config_node.loc.selector.source
           old_syntax = config_record_syntax(config_name, arg_range.source)
@@ -53,7 +53,7 @@ module Transpec
           config_node = find_config_node(old_config_name)
           return unless config_node
           new_selector = new_config_name.to_s.sub(/=$/, '')
-          source_rewriter.replace(config_node.loc.selector, new_selector)
+          replace(config_node.loc.selector, new_selector)
 
           old_syntax = config_record_syntax(old_config_name)
           new_syntax = config_record_syntax(new_config_name)
@@ -83,7 +83,7 @@ module Transpec
             lines.map! { |line| line + "\n" }
 
             insertion_position = beginning_of_line_range(block_node_to_insert_code.loc.end)
-            source_rewriter.insert_before(insertion_position, lines.join(''))
+            insert_after(insertion_position, lines.join(''))
 
             block_node_to_insert_code.metadata[:added_config] = true
 

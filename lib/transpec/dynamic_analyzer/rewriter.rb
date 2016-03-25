@@ -77,8 +77,8 @@ module Transpec
                          node.loc.expression
                        end
 
-        source_rewriter.insert_before(source_range, front)
-        source_rewriter.insert_after(source_range, rear)
+        source_rewriter.insert_before_multi(source_range, front)
+        source_rewriter.insert_after_multi(source_range, rear)
       end
 
       def build_wrapper_codes(node, analysis_codes)

@@ -8,6 +8,10 @@ module Transpec
       def n(type, children, source_map)
         Node.new(type, children, location: source_map)
       end
+
+      def string_value(token)
+        value(token)
+      end
     end
   end
 end
