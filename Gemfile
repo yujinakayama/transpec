@@ -18,7 +18,7 @@ group :development, :test do
 
   gem 'rake',      '~> 11.0'
   gem 'simplecov', '~> 0.7'
-  gem 'rubocop',   '~> 0.24'
+  gem 'rubocop',   '~> 0.39'
 end
 
 group :development do
