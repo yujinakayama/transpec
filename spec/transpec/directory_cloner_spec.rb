@@ -51,12 +51,12 @@ module Transpec
 
       it 'preserves permission' do
         create_file('src/file', '')
-        File.chmod(0755, 'src/file')
+        File.chmod(0o755, 'src/file')
 
         File.symlink('file', 'src/symlink')
 
         Dir.mkdir('src/dir')
-        File.chmod(0600, 'src/dir')
+        File.chmod(0o600, 'src/dir')
 
         DirectoryCloner.copy_recursively('src', 'dst')
 

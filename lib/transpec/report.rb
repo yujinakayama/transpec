@@ -125,7 +125,7 @@ module Transpec
     def pluralize(number, thing, options = {})
       text = ''
 
-      if number == 0 && options[:no_for_zero]
+      if number.zero? && options[:no_for_zero]
         text = 'no'
       else
         text << number.to_s

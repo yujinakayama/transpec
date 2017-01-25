@@ -43,7 +43,7 @@ module Transpec
           explicit_subject? ? 'self' : 'subject'
         end
 
-        def collection_accessor_inspection_code # rubocop:disable MethodLength
+        def collection_accessor_inspection_code
           # `expect(owner).to have(n).things` invokes private owner#things with Object#__send__
           # if the owner does not respond to any of #size, #count and #length.
           #

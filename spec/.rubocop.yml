@@ -21,3 +21,6 @@ BlockAlignment:
 # Suppress offences for namespace classes only with #describe.
 ClassLength:
   Enabled: false
+
+BlockLength:
+  Enabled: false

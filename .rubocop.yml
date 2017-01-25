@@ -83,3 +83,9 @@ GuardClause:
 
 ModuleLength:
   Enabled: false
+
+Security/JSONLoad:
+  Enabled: false
+
+Security/MarshalLoad:
+  Enabled: false
