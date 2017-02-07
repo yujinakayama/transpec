@@ -18,7 +18,9 @@ env:
 matrix:
   allow_failures:
     - rvm: ruby-head
-before_install: gem update --remote bundler
+before_install:
+  - gem update --system # https://github.com/sickill/rainbow/issues/49
+  - gem update --remote bundler
 script: bundle exec rake ci
 sudo: false
 cache: bundler
