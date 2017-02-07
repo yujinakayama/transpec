@@ -187,4 +187,11 @@ class READMEContext
       replacement << match
     end
   end
+
+  def travis_config
+    @travis_config ||= begin
+      require 'yaml'
+      YAML.parse_file('.travis.yml').to_ruby
+    end
+  end
 end

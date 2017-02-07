@@ -1473,14 +1473,17 @@ Will be converted to:
 Transpec is tested on the following Ruby implementations:
 
 * MRI
-    * 1.9.3
-    * 2.0.0
-    * 2.1
-    * 2.2
-    * 2.3
+<%= travis_config['rvm'].grep(/\A\d/).map { |version| "    * #{version}" }.join("\n") %>
 * JRuby
-    * 1.7 in 1.9 mode
-    * 9.0.0.0
+<%=
+travis_config['rvm'].grep(/\Ajruby-/).map do |name|
+  version = name.sub('jruby-', '')
+  if /\A(?<major>\d)(?<minor>\d)mode\z/ =~ version
+    version = "#{major}.#{minor} mode"
+  end
+  "    * #{version}"
+end.join("\n")
+%>
 
 ## License
 
