@@ -14,7 +14,7 @@ env:
   - RSPEC_VERSION=2.99
   - RSPEC_VERSION=3.0
   - RSPEC_VERSION=3.5
-  - RSPEC_VERSION=head
+  - RSPEC_VERSION=master
 matrix:
   allow_failures:
     - rvm: ruby-head
