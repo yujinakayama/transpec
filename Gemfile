@@ -3,17 +3,15 @@ source 'https://rubygems.org'
 gemspec
 
 group :development, :test do
-  version = ENV['RSPEC_VERSION'] || '2.14'
+  rspec_version = ENV['RSPEC_VERSION'] || '2.14'
 
-  case version
-  when 'head'
-    %w(rspec rspec-core rspec-expectations rspec-mocks rspec-support).each do |lib|
-      gem lib, git: "git://github.com/rspec/#{lib}.git"
-    end
+  case rspec_version
   when /^\d+\.\d+$/
-    gem 'rspec', "~> #{version}.0"
+    gem 'rspec', "~> #{rspec_version}.0"
   else
-    fail 'RSPEC_VERSION must be specified as "major.minor" like "2.14", or "head".'
+    %w(rspec rspec-core rspec-expectations rspec-mocks rspec-support).each do |lib|
+      gem lib, git: "https://github.com/rspec/#{lib}.git", branch: rspec_version
+    end
   end
 
   # We cannot update rake to 12.x since it breaks compatibility with RSpec 2.x.
