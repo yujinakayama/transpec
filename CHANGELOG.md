@@ -2,6 +2,10 @@
 
 ## Development
 
+## v3.3.0
+
+* Support `json` gem 2.x and `activesupport` gem 5.x.
+
 ## v3.2.2
 
 * Use `parser` gem 2.3.0.7 or later.
