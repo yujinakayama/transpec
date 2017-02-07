@@ -13,8 +13,7 @@ module Transpec
       attr_reader :data
 
       def self.load(string_or_io)
-        options = { object_class: CompatibleOpenStruct, symbolize_names: true }
-        data = JSON.load(string_or_io, nil, options)
+        data = JSON.load(string_or_io, nil, object_class: CompatibleOpenStruct)
         new(data)
       end
 
