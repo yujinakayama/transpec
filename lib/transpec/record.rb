@@ -70,7 +70,7 @@ module Transpec
     def <=>(other)
       COMPARISON_ATTRIBUTES.each do |attribute|
         result = send(attribute) <=> other.send(attribute)
-        return result unless result == 0
+        return result unless result.zero?
       end
       0
     end

@@ -97,7 +97,7 @@ module Transpec
         literal = '{ '
 
         hash.each_with_index do |(key, value), index|
-          literal << ', ' unless index == 0
+          literal << ', ' unless index.zero?
           literal << "#{key.inspect} => #{value.inspect}"
         end
 

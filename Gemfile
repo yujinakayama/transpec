@@ -16,6 +16,8 @@ group :development, :test do
     fail 'RSPEC_VERSION must be specified as "major.minor" like "2.14", or "head".'
   end
 
+  # We cannot update rake to 12.x since it breaks compatibility with RSpec 2.x.
+  # https://github.com/rspec/rspec-core/pull/2197
   gem 'rake',      '~> 11.0'
   gem 'simplecov', '~> 0.7'
   gem 'rubocop',   '~> 0.39'
