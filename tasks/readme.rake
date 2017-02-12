@@ -188,6 +188,37 @@ class READMEContext
     end
   end
 
+  def supported_ruby_names
+    supported_ruby_ids.map { |id| ruby_name_from(id) }
+  end
+
+  def ruby_name_from(id)
+    implementation, version = id.split('-', 2)
+
+    if version.nil?
+      version = implementation
+      implementation = 'MRI'
+    elsif implementation == 'jruby'
+      implementation = 'JRuby'
+    else
+      implementation.capitalize!
+    end
+
+    if /\A(?<major>\d)(?<minor>\d)mode\z/ =~ version
+      version = "in #{major}.#{minor} mode"
+    end
+
+    "#{implementation} #{version}"
+  end
+
+  def supported_ruby_ids
+    travis_config['rvm'] - unsupported_ruby_ids
+  end
+
+  def unsupported_ruby_ids
+    travis_config['matrix']['allow_failures'].map { |build| build['rvm'] }.compact
+  end
+
   def travis_config
     @travis_config ||= begin
       require 'yaml'

@@ -1451,16 +1451,14 @@ end
 
 Transpec is tested on the following Ruby implementations:
 
-* MRI
-    * 1.9.3
-    * 2.0.0
-    * 2.1.10
-    * 2.2.6
-    * 2.3.3
-    * 2.4.0
-* JRuby
-    * 1.9 mode
-    * 9.1.7.0
+* MRI 1.9.3
+* MRI 2.0.0
+* MRI 2.1.10
+* MRI 2.2.6
+* MRI 2.3.3
+* MRI 2.4.0
+* JRuby in 1.9 mode
+* JRuby 9.1.7.0
 
 ## License
 
