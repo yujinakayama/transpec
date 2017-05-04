@@ -457,8 +457,8 @@ The one-liner (implicit receiver) `should`:
 ## Supported Conversions
 
 <%=
-supported_conversions_section = select_sections(readme, 2, 'Supported Conversions').first
-table_of_contents(supported_conversions_section, 3)
+supported_conversions_section = find_section('Supported Conversions', level: 2)
+table_of_contents(supported_conversions_section, level: 3)
 %>
 
 ### Standard expectations

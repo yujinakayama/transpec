@@ -41,188 +41,209 @@ class READMEContext
 
   def initialize(readme)
     @readme = readme
-    require 'transpec/cli'
-    require 'stringio'
-    require 'tmpdir'
-    require 'rspec/mocks/standalone'
-    require File.join(Transpec.root, 'spec/support/file_helper')
   end
 
   def binding
     super
   end
 
-  def convert(source, options = {}) # rubocop:disable MethodLength
-    cli_args = Array(options[:cli])
-    cli_args << '--skip-dynamic-analysis' unless options[:dynamic] # For performance
+  module SourceConversion
+    def convert(source, options = {}) # rubocop:disable MethodLength
+      require 'transpec/cli'
+      require File.join(Transpec.root, 'spec/support/file_helper')
 
-    hidden_code = options[:hidden]
-    if hidden_code
-      hidden_code += "\n"
-      source = hidden_code + source
-    end
+      cli_args = Array(options[:cli])
+      cli_args << '--skip-dynamic-analysis' unless options[:dynamic] # For performance
 
-    source = wrap_source(source, options[:wrap_with])
-
-    converted_source = nil
-
-    in_isolated_env do
-      path = options[:path] || 'spec/example_spec.rb'
-      FileHelper.create_file(path, source)
-
-      cli = Transpec::CLI.new
-
-      if options[:rspec_version]
-        cli.project.stub(:rspec_version).and_return(options[:rspec_version])
+      hidden_code = options[:hidden]
+      if hidden_code
+        hidden_code += "\n"
+        source = hidden_code + source
       end
 
-      if options[:rails]
-        cli.project.stub(:depend_on_rspec_rails?).and_return(true)
+      source = wrap_source(source, options[:wrap_with])
+
+      converted_source = nil
+
+      in_isolated_env do
+        path = options[:path] || 'spec/example_spec.rb'
+        FileHelper.create_file(path, source)
+
+        cli = Transpec::CLI.new
+
+        if options[:rspec_version]
+          cli.project.define_singleton_method(:rspec_version) { options[:rspec_version] }
+        end
+
+        if options[:rails]
+          cli.project.define_singleton_method(:depend_on_rspec_rails?) { true }
+        end
+
+        cli.run(cli_args)
+
+        converted_source = File.read(path)
       end
 
-      cli.run(cli_args)
-
-      converted_source = File.read(path)
+      converted_source = unwrap_source(converted_source, options[:wrap_with])
+      converted_source = converted_source[hidden_code.length..-1] if hidden_code
+      converted_source
     end
 
-    converted_source = unwrap_source(converted_source, options[:wrap_with])
-    converted_source = converted_source[hidden_code.length..-1] if hidden_code
-    converted_source
-  end
+    def wrap_source(source, wrapper)
+      source = "it 'is example' do\n" + source + "end\n" if wrapper == :example
 
-  def wrap_source(source, wrapper)
-    source = "it 'is example' do\n" + source + "end\n" if wrapper == :example
+      if [:example, :group].include?(wrapper)
+        source = "describe 'example group' do\n" + source + "end\n"
+      end
 
-    if [:example, :group].include?(wrapper)
-      source = "describe 'example group' do\n" + source + "end\n"
+      source
     end
 
-    source
-  end
+    def unwrap_source(source, wrapper)
+      return source unless wrapper
 
-  def unwrap_source(source, wrapper)
-    return source unless wrapper
+      unwrap_count = case wrapper
+                     when :group then 1
+                     when :example then 2
+                     end
 
-    unwrap_count = case wrapper
-                   when :group then 1
-                   when :example then 2
-                   end
+      lines = source.lines.to_a
 
-    lines = source.lines.to_a
+      unwrap_count.times do
+        lines = lines[1..-2]
+      end
 
-    unwrap_count.times do
-      lines = lines[1..-2]
+      lines.join('')
     end
 
-    lines.join('')
+    def in_isolated_env
+      require 'stringio'
+      require 'tmpdir'
+
+      original_stdout = $stdout
+      $stdout = StringIO.new
+
+      Dir.mktmpdir do |tmpdir|
+        Dir.chdir(tmpdir) do
+          yield
+        end
+      end
+    ensure
+      $stdout = original_stdout
+    end
   end
 
-  def in_isolated_env
-    original_stdout = $stdout
-    $stdout = StringIO.new
+  include SourceConversion
 
-    Dir.mktmpdir do |tmpdir|
-      Dir.chdir(tmpdir) do
-        yield
+  module MarkdownHelper
+    def find_section(section_name, options = {})
+      header_pattern = pattern_for_header_level(options[:level])
+      sections = readme.each_line.slice_before(header_pattern)
+
+      sections.find do |section|
+        header_line = section.first
+        header_line.include?(section_name)
       end
     end
-  ensure
-    $stdout = original_stdout
-  end
 
-  def select_sections(content, header_level, *section_names)
-    header_pattern = pattern_for_header_level(header_level)
-    sections = content.each_line.slice_before(header_pattern)
+    def table_of_contents(lines, options = {})
+      header_pattern = pattern_for_header_level(options[:level])
 
-    sections.select do |section|
-      header_line = section.first
-      section_names.any? { |name| header_line.include?(name) }
+      titles = lines.map do |line|
+        next unless line.match(header_pattern)
+        line.sub(/^[#\s]*/, '').chomp
+      end.compact
+
+      titles.map do |title|
+        anchor = '#' + title.gsub(/[^\w_\- ]/, '').downcase.tr(' ', '-')
+        "* [#{title}](#{anchor})"
+      end.join("\n")
+    end
+
+    def pattern_for_header_level(level)
+      /^#{'#' * level}[^#]/
     end
   end
 
-  def table_of_contents(lines, header_level)
-    header_pattern = pattern_for_header_level(header_level)
+  include MarkdownHelper
 
-    titles = lines.map do |line|
-      next unless line.match(header_pattern)
-      line.sub(/^[#\s]*/, '').chomp
-    end.compact
+  module SyntaxTypeTableHelper
+    def validate_syntax_type_table(markdown_table, enabled_by_default)
+      types_in_doc = markdown_table.lines.map do |line|
+        first_column = line.split('|').first
+        first_column.gsub(/[^\w]/, '').to_sym
+      end.sort
 
-    titles.map do |title|
-      anchor = '#' + title.gsub(/[^\w_\- ]/, '').downcase.tr(' ', '-')
-      "* [#{title}](#{anchor})"
-    end.join("\n")
-  end
+      types_in_code = Transpec::Config::DEFAULT_CONVERSIONS.select do |_type, enabled|
+        enabled == enabled_by_default
+      end.keys.sort
 
-  def pattern_for_header_level(level)
-    /^#{'#' * level}[^#]/
-  end
-
-  def validate_syntax_type_table(markdown_table, enabled_by_default)
-    types_in_doc = markdown_table.lines.map do |line|
-      first_column = line.split('|').first
-      first_column.gsub(/[^\w]/, '').to_sym
-    end.sort
-
-    types_in_code = Config::DEFAULT_CONVERSIONS.select do |_type, enabled|
-      enabled == enabled_by_default
-    end.keys.sort
-
-    unless types_in_doc == types_in_code
-      types_missing_description = types_in_code - types_in_doc
-      fail "No descriptions for syntax types #{types_missing_description}"
-    end
-  end
-
-  def insert_comment_above(code, pattern, comments)
-    regexp = Regexp.new('^([ \t]*).*' + Regexp.escape(pattern))
-
-    code.sub(regexp) do |match|
-      indentation = Regexp.last_match(1)
-      replacement = ''
-      Array(comments).each do |comment|
-        comment = comment.to_s.chomp
-        replacement << "#{indentation}# #{comment}\n"
+      unless types_in_doc == types_in_code
+        types_missing_description = types_in_code - types_in_doc
+        fail "No descriptions for syntax types #{types_missing_description}"
       end
-      replacement << match
     end
   end
 
-  def supported_ruby_names
-    supported_ruby_ids.map { |id| ruby_name_from(id) }
-  end
+  include SyntaxTypeTableHelper
 
-  def ruby_name_from(id)
-    implementation, version = id.split('-', 2)
+  module CodeExampleHelper
+    def insert_comment_above(code, pattern, comments)
+      regexp = Regexp.new('^([ \t]*).*' + Regexp.escape(pattern))
 
-    if version.nil?
-      version = implementation
-      implementation = 'MRI'
-    elsif implementation == 'jruby'
-      implementation = 'JRuby'
-    else
-      implementation.capitalize!
-    end
-
-    if /\A(?<major>\d)(?<minor>\d)mode\z/ =~ version
-      version = "in #{major}.#{minor} mode"
-    end
-
-    "#{implementation} #{version}"
-  end
-
-  def supported_ruby_ids
-    travis_config['rvm'] - unsupported_ruby_ids
-  end
-
-  def unsupported_ruby_ids
-    travis_config['matrix']['allow_failures'].map { |build| build['rvm'] }.compact
-  end
-
-  def travis_config
-    @travis_config ||= begin
-      require 'yaml'
-      YAML.parse_file('.travis.yml').to_ruby
+      code.sub(regexp) do |match|
+        indentation = Regexp.last_match(1)
+        replacement = ''
+        Array(comments).each do |comment|
+          comment = comment.to_s.chomp
+          replacement << "#{indentation}# #{comment}\n"
+        end
+        replacement << match
+      end
     end
   end
+
+  include CodeExampleHelper
+
+  module SupportedRubyListHelper
+    def supported_ruby_names
+      supported_ruby_ids.map { |id| ruby_name_from(id) }
+    end
+
+    def ruby_name_from(id)
+      implementation, version = id.split('-', 2)
+
+      if version.nil?
+        version = implementation
+        implementation = 'MRI'
+      elsif implementation == 'jruby'
+        implementation = 'JRuby'
+      else
+        implementation.capitalize!
+      end
+
+      if /\A(?<major>\d)(?<minor>\d)mode\z/ =~ version
+        version = "in #{major}.#{minor} mode"
+      end
+
+      "#{implementation} #{version}"
+    end
+
+    def supported_ruby_ids
+      travis_config['rvm'] - unsupported_ruby_ids
+    end
+
+    def unsupported_ruby_ids
+      travis_config['matrix']['allow_failures'].map { |build| build['rvm'] }.compact
+    end
+
+    def travis_config
+      @travis_config ||= begin
+        require 'yaml'
+        YAML.parse_file('.travis.yml').to_ruby
+      end
+    end
+  end
+
+  include SupportedRubyListHelper
 end
