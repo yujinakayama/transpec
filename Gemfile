@@ -18,7 +18,7 @@ group :development, :test do
   # https://github.com/rspec/rspec-core/pull/2197
   gem 'rake',      '~> 11.0'
   gem 'simplecov', '~> 0.7'
-  gem 'rubocop',   '~> 0.39'
+  gem 'rubocop',   '~> 0.47.1'
 end
 
 group :development do
