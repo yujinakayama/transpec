@@ -21,14 +21,6 @@ group :development, :test do
   gem 'rubocop',   '~> 0.47.1' if RUBY_VERSION >= '2.0'
 end
 
-group :development do
-  gem 'fuubar',        '>= 1.3', '< 3.0'
-  gem 'guard-rspec',   '>= 4.2.3', '< 5.0'
-  gem 'guard-rubocop', '~> 1.0'
-  gem 'guard-shell',   '~> 0.5'
-  gem 'ruby_gntp',     '~> 0.3'
-end
-
 group :test do
   gem 'coveralls',      '~> 0.6'
 end
