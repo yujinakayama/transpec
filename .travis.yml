@@ -3,24 +3,21 @@ rvm:
   - 1.9.3
   - 2.0.0
   - 2.1.10
-  - 2.2.7
-  - 2.3.4
-  - 2.4.1
-  - ruby-head
-  - jruby-19mode
-  - jruby-9.1.8.0
+  - 2.2.9
+  - 2.3.6
+  - 2.4.3
+  - 2.5.0
+  - jruby-1.7
+  - jruby-9.1.15.0
 env:
   - RSPEC_VERSION=2.14
   - RSPEC_VERSION=2.99
   - RSPEC_VERSION=3.0
   - RSPEC_VERSION=3.6
   - RSPEC_VERSION=master
-matrix:
-  allow_failures:
-    - rvm: ruby-head
+sudo: false
+cache: bundler
 before_install:
   - gem update --system # https://github.com/sickill/rainbow/issues/49
   - gem update --remote bundler
 script: bundle exec rake ci
-sudo: false
-cache: bundler

@@ -213,17 +213,11 @@ class READMEContext
     def ruby_name_from(id)
       implementation, version = id.split('-', 2)
 
-      if version.nil?
+      if implementation == 'jruby'
+        implementation = 'JRuby'
+      elsif version.nil?
         version = implementation
         implementation = 'MRI'
-      elsif implementation == 'jruby'
-        implementation = 'JRuby'
-      else
-        implementation.capitalize!
-      end
-
-      if /\A(?<major>\d)(?<minor>\d)mode\z/ =~ version
-        version = "in #{major}.#{minor} mode"
       end
 
       "#{implementation} #{version}"
@@ -234,6 +228,7 @@ class READMEContext
     end
 
     def unsupported_ruby_ids
+      return [] unless travis_config['matrix']
       travis_config['matrix']['allow_failures'].map { |build| build['rvm'] }.compact
     end
 
