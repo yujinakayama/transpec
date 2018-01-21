@@ -1,5 +1,4 @@
 [![Gem Version](https://badge.fury.io/rb/transpec.svg)](http://badge.fury.io/rb/transpec)
-[![Dependency Status](https://gemnasium.com/yujinakayama/transpec.svg)](https://gemnasium.com/yujinakayama/transpec)
 [![Build Status](https://travis-ci.org/yujinakayama/transpec.svg?branch=master&style=flat)](https://travis-ci.org/yujinakayama/transpec)
 [![Coverage Status](https://coveralls.io/repos/yujinakayama/transpec/badge.svg?branch=master&service=github)](https://coveralls.io/github/yujinakayama/transpec?branch=master)
 [![Code Climate](https://codeclimate.com/github/yujinakayama/transpec/badges/gpa.svg)](https://codeclimate.com/github/yujinakayama/transpec)
