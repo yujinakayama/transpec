@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'activesupport', '< 5.0' if RUBY_VERSION < '2.2'
+gem 'mime-types', '< 3.0' if RUBY_VERSION < '2.0'
 gem 'term-ansicolor', '< 1.4' if RUBY_VERSION < '2.0'
 gem 'tins', '< 1.6' if RUBY_VERSION < '2.0'
 
