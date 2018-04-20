@@ -10,7 +10,7 @@ module Transpec
         source_buffer = source_range.source_buffer
         absolute_path = File.expand_path(source_buffer.name)
         relative_path = Pathname.new(absolute_path).relative_path_from(Pathname.pwd).to_s
-        [relative_path, source_range.begin_pos, source_range.end_pos].join('_')
+        [relative_path, source_range.insert_after, source_range.insert_before].join('_')
       end
     end
   end

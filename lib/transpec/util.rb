@@ -133,8 +133,8 @@ module Transpec
 
     def beginning_of_line_range(arg)
       range = range_from_arg(arg)
-      begin_pos = range.begin_pos - range.column
-      Parser::Source::Range.new(range.source_buffer, begin_pos, begin_pos)
+      insert_after = range.insert_after - range.column
+      Parser::Source::Range.new(range.source_buffer, insert_after, insert_after)
     end
 
     def line_range(arg)
@@ -177,19 +177,19 @@ module Transpec
 
     def expand_range_to_adjacent_whitespaces(range, direction = :both)
       source = range.source_buffer.source
-      begin_pos = if [:both, :begin].include?(direction)
-                    find_consecutive_whitespace_position(source, range.begin_pos, :downto)
+      insert_after = if [:both, :begin].include?(direction)
+                    find_consecutive_whitespace_position(source, range.insert_after, :downto)
                   else
-                    range.begin_pos
+                    range.insert_after
                   end
 
-      end_pos = if [:both, :end].include?(direction)
-                  find_consecutive_whitespace_position(source, range.end_pos - 1, :upto) + 1
+      insert_before = if [:both, :end].include?(direction)
+                  find_consecutive_whitespace_position(source, range.insert_before - 1, :upto) + 1
                 else
-                  range.end_pos
+                  range.insert_before
                 end
 
-      Parser::Source::Range.new(range.source_buffer, begin_pos, end_pos)
+      Parser::Source::Range.new(range.source_buffer, insert_after, insert_before)
     end
 
     def find_consecutive_whitespace_position(source, origin, method)
@@ -227,7 +227,7 @@ module Transpec
       return source if left_of_arg_range.source.include?('(')
 
       if map.selector.source.match(/^\w/)
-        relative_index = left_of_arg_range.begin_pos - map.expression.begin_pos
+        relative_index = left_of_arg_range.insert_after - map.expression.insert_after
         source[relative_index, left_of_arg_range.length] = '('
         source << ')'
       else
