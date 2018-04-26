@@ -44,7 +44,7 @@ module Transpec
     private
 
     def create_source_rewriter(processed_source)
-      Parser::Source::Rewriter.new(processed_source.buffer).tap do |source_rewriter|
+      Parser::Source::TreeRewriter.new(processed_source.buffer).tap do |source_rewriter|
         source_rewriter.diagnostics.consumer = proc do
           fail OverlappedRewriteError
         end

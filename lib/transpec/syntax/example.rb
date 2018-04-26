@@ -59,7 +59,7 @@ module Transpec
       def symbol_range_without_colon(node)
         range = node.loc.expression
         if range.source.start_with?(':')
-          Parser::Source::Range.new(range.source_buffer, range.begin_pos + 1, range.end_pos)
+          Parser::Source::Range.new(range.source_buffer, range.insert_after + 1, range.insert_before)
         else
           range
         end
