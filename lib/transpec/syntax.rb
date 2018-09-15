@@ -115,6 +115,10 @@ module Transpec
       def replace(range, content)
         source_rewriter.replace(range, content)
       end
+
+      def wrap(range, forward_content, backward_content)
+        source_rewriter.wrap(range, forward_content, backward_content)
+      end
     end
   end
 end

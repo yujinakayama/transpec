@@ -19,8 +19,7 @@ module Transpec
           if Util.in_explicit_parentheses?(subject_node)
             insert_before(subject_range, method)
           else
-            insert_before(subject_range, "#{method}(")
-            insert_after(subject_range, ')')
+            wrap(subject_range, "#{method}(", ')')
           end
         end
       end
