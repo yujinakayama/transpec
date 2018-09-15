@@ -1,13 +1,11 @@
 language: ruby
 rvm:
-  - 1.9.3
   - 2.0.0
   - 2.1.10
   - 2.2.9
   - 2.3.6
   - 2.4.3
   - 2.5.0
-  - jruby-1.7
   - jruby-9.1.15.0
 env:
   - RSPEC_VERSION=2.14
