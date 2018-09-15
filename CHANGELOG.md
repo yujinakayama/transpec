@@ -2,6 +2,12 @@
 
 ## Development
 
+## v3.4.0
+
+* Drop support for Ruby 1.9.3.
+* Use `parser` gem 2.5.0.0 or later.
+* Handle deprecation message `Parser::Source::Rewriter is deprecated.` from `parser` gem.
+
 ## v3.3.0
 
 * Support `json` gem 2.x and `activesupport` gem 5.x.
