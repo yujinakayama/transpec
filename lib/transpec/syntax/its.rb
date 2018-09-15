@@ -26,8 +26,7 @@ module Transpec
 
       def convert_to_describe_subject_it!
         insert_before(beginning_of_line_range(block_node), front_code)
-        insert_before(expression_range, additional_indentation_for_it)
-        replace(range_from_its_to_front_of_block, 'it ')
+        replace(range_from_its_to_front_of_block, additional_indentation_for_it + 'it ')
         insert_after(block_node.loc.expression, rear_code)
 
         increment_block_base_indentation!
