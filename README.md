@@ -1452,11 +1452,11 @@ Transpec is tested on the following Ruby implementations:
 
 * MRI 2.0.0
 * MRI 2.1.10
-* MRI 2.2.9
-* MRI 2.3.6
-* MRI 2.4.3
-* MRI 2.5.0
-* JRuby 9.1.15.0
+* MRI 2.2.10
+* MRI 2.3.7
+* MRI 2.4.4
+* MRI 2.5.1
+* JRuby 9.2.0.0
 
 ## License
 
