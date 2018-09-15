@@ -3,9 +3,6 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'activesupport', '< 5.0' if RUBY_VERSION < '2.2'
-gem 'mime-types', '< 3.0' if RUBY_VERSION < '2.0'
-gem 'term-ansicolor', '< 1.4' if RUBY_VERSION < '2.0'
-gem 'tins', '< 1.6' if RUBY_VERSION < '2.0'
 
 group :development, :test do
   rspec_version = ENV['RSPEC_VERSION'] || '2.14'
@@ -23,7 +20,7 @@ group :development, :test do
   # https://github.com/rspec/rspec-core/pull/2197
   gem 'rake',      '~> 11.0'
   gem 'simplecov', '~> 0.7'
-  gem 'rubocop',   '~> 0.47.1' if RUBY_VERSION >= '2.0'
+  gem 'rubocop',   '~> 0.47.1'
 end
 
 group :test do

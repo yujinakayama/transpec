@@ -69,22 +69,20 @@ module Transpec
       end
 
       def inject_analysis_code(node, analysis_codes, source_rewriter)
-        front, rear = build_wrapper_codes(node, analysis_codes)
-
         source_range = if (block_node = block_node_taken_by_method(node))
                          block_node.loc.expression
                        else
                          node.loc.expression
                        end
 
-        source_rewriter.insert_before_multi(source_range, front)
-        source_rewriter.insert_after_multi(source_range, rear)
+        forward, backward = build_wrapper_codes(node, analysis_codes)
+        source_rewriter.wrap(source_range, forward, backward)
       end
 
       def build_wrapper_codes(node, analysis_codes)
-        front = "#{ANALYSIS_MODULE}.#{ANALYSIS_METHOD}(("
-        rear = format('), self, %s, %s)', node_id(node).inspect, hash_literal(analysis_codes))
-        [front, rear]
+        forward = "#{ANALYSIS_MODULE}.#{ANALYSIS_METHOD}(("
+        backward = format('), self, %s, %s)', node_id(node).inspect, hash_literal(analysis_codes))
+        [forward, backward]
       end
 
       # Hash#inspect generates invalid literal with following example:

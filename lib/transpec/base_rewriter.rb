@@ -4,6 +4,23 @@ require 'transpec/processed_source'
 
 module Transpec
   class BaseRewriter
+    def self.create_source_rewriter(processed_source)
+      # We prefer :warn diagnostic level and diagnostic consumer over :raise level
+      # because the Parser::ClobberingError raised with :raise does not contain detailed message.
+      # https://github.com/whitequark/parser/blob/v2.5.1.2/lib/parser/source/tree_rewriter.rb#L297
+      source_rewriter = Parser::Source::TreeRewriter.new(
+        processed_source.buffer,
+        different_replacements: :warn,
+          swallowed_insertions: :warn
+      )
+
+      source_rewriter.diagnostics.consumer = proc do |diagnostic|
+        fail OverlappedRewriteError, diagnostic.render.join("\n")
+      end
+
+      source_rewriter
+    end
+
     def rewrite_file!(arg)
       processed_source = case arg
                          when String          then ProcessedSource.from_file(arg)
@@ -26,7 +43,7 @@ module Transpec
     def rewrite(processed_source)
       fail processed_source.error if processed_source.error
 
-      source_rewriter = create_source_rewriter(processed_source)
+      source_rewriter = self.class.create_source_rewriter(processed_source)
       incomplete = false
 
       begin
@@ -42,14 +59,6 @@ module Transpec
     end
 
     private
-
-    def create_source_rewriter(processed_source)
-      Parser::Source::Rewriter.new(processed_source.buffer).tap do |source_rewriter|
-        source_rewriter.diagnostics.consumer = proc do
-          fail OverlappedRewriteError
-        end
-      end
-    end
 
     def process(ast, source_rewriter) # rubocop:disable UnusedMethodArgument
       fail NotImplementedError
