@@ -25,7 +25,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'parser',        '>= 2.5.0.0'
   spec.add_runtime_dependency 'astrolabe',     '~> 1.2'
-  spec.add_runtime_dependency 'bundler',       '~> 1.3'
+  spec.add_runtime_dependency 'bundler',       '>= 1.3'
   spec.add_runtime_dependency 'rainbow',       '>= 1.99.1', '< 3.0'
   spec.add_runtime_dependency 'json',          '>= 1.8', '< 3.0'
   spec.add_runtime_dependency 'activesupport', '>= 3.0', '< 6.0'
