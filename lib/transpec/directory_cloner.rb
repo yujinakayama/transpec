@@ -46,7 +46,7 @@ module Transpec
       source_mode = File.lstat(source).mode
       begin
         File.lchmod(source_mode, destination)
-      rescue NotImplementedError, Errno::ENOSYS
+      rescue NotImplementedError, Errno::ENOSYS, Errno::EOPNOTSUPP
         # Should not change mode of symlink's destination.
         File.chmod(source_mode, destination) unless File.symlink?(destination)
       end
