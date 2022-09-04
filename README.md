@@ -131,6 +131,12 @@ $ transpec
 
 This will run the specs, convert them, and overwrite all spec files in the `spec` directory.
 
+If you see an error message that reads `You must use Bundler 2 or greater with this lockfile.` it means 
+
+* You're using a ruby whose default bundler is version 2 or up; to address this
+  * Delete your Gemfile.lock
+  * Rebuild it by running `bundle _1.17.3_ install` which uses the version of bundler Transpec depends on
+
 After the conversion, run `rspec` again and check whether everything is still green:
 
 ```bash
